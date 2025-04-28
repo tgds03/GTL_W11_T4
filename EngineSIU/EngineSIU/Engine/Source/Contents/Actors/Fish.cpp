@@ -19,6 +19,7 @@ AFish::AFish()
     , MaxHealth(10)
     , Health(MaxHealth)
     , KillZ(-10.f)
+    , Score(0)
 {
     
 }
@@ -164,8 +165,9 @@ void AFish::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
             GetWorld()->GetMainCamera()->CameraZ = GetActorLocation().Z;
         }
     }
-    else if (OtherActor->IsA<AItemActor>())
+    else if (OtherActor->IsA<AItemActor>() && !OtherActor->IsHidden())
     {
-        
+        ++Score;
+        OtherActor->SetHidden(true);
     }
 }

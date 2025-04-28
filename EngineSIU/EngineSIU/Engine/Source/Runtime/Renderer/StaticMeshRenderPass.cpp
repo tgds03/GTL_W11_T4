@@ -210,7 +210,10 @@ void FStaticMeshRenderPass::PrepareRenderArr()
     {
         if (!Cast<UGizmoBaseComponent>(iter) && iter->GetWorld() == GEngine->ActiveWorld)
         {
-            StaticMeshComponents.Add(iter);
+            if (iter->GetOwner() && !iter->GetOwner()->IsHidden())
+            {
+                StaticMeshComponents.Add(iter);
+            }
         }
     }
 }
