@@ -7,7 +7,7 @@ class UStaticMeshComponent;
 class UFishTailComponent;
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnFishHealthChanged, int32 /* CurrentHealth */, int32 /* MaxHealth */);
-DECLARE_MULTICAST_DELEGATE(FOnFishDied);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnFishDied, bool /* bZeroHealth */);
 
 class AFish : public APlayer
 {
@@ -26,7 +26,7 @@ public:
     void Tick(float DeltaTime) override;
 
     int32 GetHealth() const { return Health; }
-    void SetHealth(int32 InHealth);
+    void SetHealth(int32 InHealth, bool bShouldNotify = true);
 
     int32 GetMaxHealth() const { return MaxHealth; }
     void SetMaxHealth(int32 InMaxHealth);
@@ -72,6 +72,8 @@ protected:
     int32 Health;
 
     float KillZ;
+
+    int32 Score;
 
     void ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
 };

@@ -32,4 +32,6 @@ protected:
 
     UPROPERTY
     (UStaticMeshComponent*, MeshComponent, = nullptr)
+
+    void ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
 };

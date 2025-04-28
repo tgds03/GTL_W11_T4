@@ -24,6 +24,13 @@ void AItemActor::PostSpawnInitialize()
 void AItemActor::BeginPlay()
 {
     AActor::BeginPlay();
+
+    OnActorBeginOverlap.AddLambda(
+        [this](AActor* OverlappedActor, AActor* OtherActor)
+        {
+            ActorBeginOverlap(OverlappedActor, OtherActor);
+        }
+    );
 }
 
 void AItemActor::Tick(float DeltaTime)
@@ -37,4 +44,9 @@ void AItemActor::Tick(float DeltaTime)
         MeshComp->SetRelativeRotation(FRotator(0.f, ElapsedTime * Speed, 0.f));
         MeshComp->SetRelativeLocation(FVector(0.f, 0.f, FMath::Sin(ElapsedTime * FloatingFrequency) * FloatingHeight));       
     }
+}
+
+void AItemActor::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+    
 }

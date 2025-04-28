@@ -134,9 +134,14 @@ public:
     bool IsActorTickInEditor() const { return bTickInEditor; }
     void SetActorTickInEditor(bool InbInTickInEditor);
 
+    bool IsHidden() const { return bHidden; }
+    void SetHidden(bool InbHidden) { bHidden = InbHidden; }
+
 private:
     bool bTickInEditor = false;     // Editor Tick을 수행 여부
 
+    bool bHidden = false;
+    
 public:
     /** 
      * Called when another actor begins to overlap this actor, for example a player walking into a trigger.
