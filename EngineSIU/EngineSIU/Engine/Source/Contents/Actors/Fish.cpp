@@ -73,11 +73,14 @@ void AFish::BeginPlay()
     );
 
     OnDied.AddLambda(
-        [this]()
+        [this](bool bZeroHealth)
         {
-            if (UFishBodyComponent* MeshComp = GetComponentByClass<UFishBodyComponent>())
+            if (bZeroHealth)
             {
-                MeshComp->SetStaticMesh(FObjManager::GetStaticMesh(L"Contents/FishDish/FishDish.obj"));
+                if (UFishBodyComponent* MeshComp = GetComponentByClass<UFishBodyComponent>())
+                {
+                    MeshComp->SetStaticMesh(FObjManager::GetStaticMesh(L"Contents/FishDish/FishDish.obj"));
+                }
             }
         }
     );
@@ -95,15 +98,15 @@ void AFish::Tick(float DeltaTime)
     RotateMesh();
 }
 
-void AFish::SetHealth(int32 InHealth)
+void AFish::SetHealth(int32 InHealth, bool bShouldNotify)
 {
     Health = FMath::Max(0, FMath::Min(InHealth, MaxHealth));
 
     OnHealthChanged.Broadcast(GetHealth(), GetMaxHealth());
 
-    if (IsDead())
+    if (IsDead() && bShouldNotify)
     {
-        OnDied.Broadcast();
+        OnDied.Broadcast(true);
     }
 }
 
@@ -123,6 +126,13 @@ void AFish::Move(float DeltaTime)
     
     FVector NewLocation = GetActorLocation() + Velocity * DeltaTime;
     SetActorLocation(NewLocation);
+
+    if (NewLocation.Z < KillZ)
+    {
+        SetHealth(0, false);
+        OnDied.Broadcast(false);
+        bShouldApplyGravity = false;
+    }
 }
 
 void AFish::RotateMesh()
