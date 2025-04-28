@@ -228,7 +228,6 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Player.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\PlayerController.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\PointLightActor.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\SamplePlayerController.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\SphereActor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\SpotLightActor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\ActorComponent.cpp" />
@@ -266,6 +265,7 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\ResourceMgr.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\StaticMeshActor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\GameFramework\Actor.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\GameFramework\GameMode.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Level.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\UnrealClient.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\UserInterface\Console.cpp" />
@@ -480,7 +480,6 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Player.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\PlayerController.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\PointLightActor.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\SamplePlayerController.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\SphereActor.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\SpotLightActor.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\ActorComponent.h" />
@@ -525,6 +524,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\StaticMeshActor.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Texture.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\GameFramework\Actor.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\GameFramework\GameMode.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Level.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\UnrealClient.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\UserInterface\Console.h" />
@@ -632,6 +632,7 @@
     <Content Include="Engine\Source\ThirdParty\DirectXTK\Lib\x86\Debug\DirectXTK.lib" />
     <Content Include="Engine\Source\ThirdParty\DirectXTK\Lib\x86\Release\DirectXTK.lib" />
     <Content Include="Engine\Source\ThirdParty\tinyfiledialogs\README.txt" />
+    <Content Include="LuaScripts\template.lua" />
     <Natvis Include="EngineSIU.natvis" />
   </ItemGroup>
   <ItemGroup>

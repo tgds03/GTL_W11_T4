@@ -13,6 +13,7 @@
 #include "UnrealEd/SceneManager.h"
 #include "Actors/PointLightActor.h"
 #include "Actors/SpotLightActor.h"
+#include "GameFramework/GameMode.h"
 
 class UEditorEngine;
 
@@ -22,6 +23,7 @@ UWorld* UWorld::CreateWorld(UObject* InOuter, const EWorldType InWorldType, cons
     NewWorld->WorldName = InWorldName;
     NewWorld->WorldType = InWorldType;
     NewWorld->InitializeNewWorld();
+
     
     return NewWorld;
 }
@@ -122,6 +124,12 @@ void UWorld::Tick(float DeltaTime)
 
 void UWorld::BeginPlay()
 {
+    if (!GameMode && this->WorldType == EWorldType::PIE)
+    {
+        GameMode = this->SpawnActor<AGameMode>();
+        GameMode->SetActorLabel(TEXT("OBJ_GAMEMODE"));
+		GameMode->InitializeComponent();
+    }
     for (AActor* Actor : ActiveLevel->Actors)
     {
         if (Actor->GetWorld() == this)
@@ -219,6 +227,62 @@ bool UWorld::DestroyActor(AActor* ThisActor)
 UWorld* UWorld::GetWorld() const
 {
     return const_cast<UWorld*>(this);
+}
+
+UCameraComponent* UWorld::GetMainCamera() const
+{
+    if (MainCamera)
+    {
+        return MainCamera;
+    }
+
+    //메인카메라 설정안하면 있는거중 한개
+    for (const auto iter: TObjectRange<UCameraComponent>())
+    {
+        if (iter->GetWorld() == GEngine->ActiveWorld)
+        {
+            return iter;
+        }
+    }
+
+    return nullptr;
+}
+
+APlayer* UWorld::GetMainPlayer() const
+{
+    if (MainPlayer)
+    {
+        return MainPlayer;
+    }
+    //메인플레이어 설정안하면 있는거중 한개
+    for (const auto iter: TObjectRange<APlayer>())
+    {
+        if (iter->GetWorld() == GEngine->ActiveWorld)
+        {
+            return iter;
+        }
+    }
+    
+    return nullptr;
+}
+
+APlayerController* UWorld::GetPlayerController() const
+{
+    if (PlayerController)
+    {
+        return PlayerController;
+    }
+
+    //메인플레이어컨트롤러 설정안하면 있는거중 한개
+    for (const auto iter: TObjectRange<APlayerController>())
+    {
+        if (iter->GetWorld() == GEngine->ActiveWorld)
+        {
+            return iter;
+        }
+    }
+
+    return nullptr;
 }
 
 void UWorld::CheckOverlap(const UPrimitiveComponent* Component, TArray<FOverlapResult>& OutOverlaps) const

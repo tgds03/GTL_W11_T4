@@ -22,37 +22,54 @@ UObject* UCameraComponent::Duplicate(UObject* InOuter)
 void UCameraComponent::InitializeComponent()
 {
     USceneComponent::InitializeComponent();
+
+    SetFInterpToSpeed(0.8f);
 }
 
 void UCameraComponent::TickComponent(float DeltaTime)
 {
     USceneComponent::TickComponent(DeltaTime);
 
-    ProceedLerp(DeltaTime);
+    FollowMainPlayer();
+    
+    ProceedFInterp(DeltaTime);
 }
 
-void UCameraComponent::ProceedLerp(float DeltaTime)
+void UCameraComponent::FollowMainPlayer()
 {
-    if (LerpTime > 0) // Lerp중
-    {
-        float LerpDeltaTime = DeltaTime;
+    FVector PlayerLocation = GEngine->ActiveWorld->GetMainPlayer()->GetActorLocation();
+    
+    FVector PlayerBackward = -GEngine->ActiveWorld->GetMainPlayer()->GetActorForwardVector();
 
-        //LerpTime이 0이 아닌 음수까지 가면 더 많이 움직이기 때문에 예외처리
-        LerpDeltaTime = std::min(LerpTime, LerpDeltaTime);
-
-        FVector DeltaLocation = LerpMoveVector / LerpTime * LerpDeltaTime;
-
-        FVector CameraLocation = GetWorldLocation();
-        CameraLocation += DeltaLocation;
-        SetWorldLocation(CameraLocation);
-
-        LerpMoveVector -= DeltaLocation;
-        LerpTime -= LerpDeltaTime;
-    }
+    FVector CameraOffset = PlayerBackward * DistanceBehind + FVector(0, 0, CameraHeight);
+    
+    FVector MoveToLocation = FVector(PlayerLocation.X, PlayerLocation.Y, CameraZ) + CameraOffset;
+    
+    SetLocationWithFInterpTo(MoveToLocation);
 }
 
-void UCameraComponent::LerpMovement(FVector& FromLocation, FVector& ToLocation, float Time)
+void UCameraComponent::ProceedFInterp(float DeltaTime)
 {
-    LerpTime = Time;
-    LerpMoveVector = ToLocation - FromLocation;
+    FVector FromLocation = GetWorldLocation();
+
+    //카메라 위치
+    FVector MoveLocation = FMath::FInterpTo(FromLocation, FInterpTargetLocation, DeltaTime, FInterpToSpeed);
+
+    FVector PlayerLocation = GEngine->ActiveWorld->GetMainPlayer()->GetActorLocation();
+    PlayerLocation.Z = CameraZ + CameraZOffset;
+    
+    FRotator TargetRotation = FRotator::MakeLookAtRotation(MoveLocation, PlayerLocation);
+    
+    SetWorldLocation(MoveLocation);
+    SetWorldRotation(TargetRotation);
+}
+
+void UCameraComponent::SetLocationWithFInterpTo(FVector& ToLocation) //LerpSpeed = 0은 안움직이고 1은 바로이동
+{
+    FInterpTargetLocation = ToLocation;
+}
+
+void UCameraComponent::SetFInterpToSpeed(float InSpeed)
+{
+    FInterpToSpeed = InSpeed;
 }
