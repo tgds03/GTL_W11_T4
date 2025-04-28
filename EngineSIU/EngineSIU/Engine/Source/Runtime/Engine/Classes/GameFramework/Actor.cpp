@@ -6,7 +6,7 @@
 
 AActor::AActor()
 {
-    RootComponent = AddComponent<USceneComponent>(FName("RootComponent"));
+    
 }
 
 void AActor::PostSpawnInitialize()

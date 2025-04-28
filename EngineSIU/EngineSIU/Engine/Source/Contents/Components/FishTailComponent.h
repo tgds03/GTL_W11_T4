@@ -21,5 +21,5 @@ protected:
 
     float ElapsedTime = 0.f;
 
-    float MaxYaw = 20.f;
+    float MaxYaw = 50.f;
 };

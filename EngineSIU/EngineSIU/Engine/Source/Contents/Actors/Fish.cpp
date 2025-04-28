@@ -16,13 +16,13 @@ void AFish::PostSpawnInitialize()
 {
     Super::PostSpawnInitialize();
     
-    SphereComponent = AddComponent<USphereComponent>();
+    SphereComponent = AddComponent<USphereComponent>(FName("SphereComponent_0"));
     SetRootComponent(SphereComponent);
 
-    FishBody = AddComponent<UFishBodyComponent>();
+    FishBody = AddComponent<UFishBodyComponent>(FName("FishBodyComponent_0"));
     FishBody->SetupAttachment(SphereComponent);
     
-    FishTail = AddComponent<UFishTailComponent>();
+    FishTail = AddComponent<UFishTailComponent>(FName("FishTailComponent_0"));
     FishTail->SetupAttachment(FishBody);
 }
 

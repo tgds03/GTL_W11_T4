@@ -5,10 +5,10 @@
 
 APlatformActor::APlatformActor()
 {
-    BoxComponent = AddComponent<UBoxComponent>();
+    BoxComponent = AddComponent<UBoxComponent>(FName("BoxComponent_0"));
     RootComponent = BoxComponent;
 
-    MeshComponent = AddComponent<UStaticMeshComponent>();
+    MeshComponent = AddComponent<UStaticMeshComponent>(FName("MeshComponent_0"));
     MeshComponent->SetStaticMesh(FObjManager::GetStaticMesh(L"Contents/CubePrimitive.obj"));
     MeshComponent->SetupAttachment(BoxComponent);
 }
