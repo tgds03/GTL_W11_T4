@@ -38,6 +38,11 @@ public:
     FOnFishHealthChanged OnHealthChanged;
 
     FOnFishDied OnDied;
+
+    void Reset();
+
+    int32 GetScore() const { return Score; }
+    void SetScore(int32 InScore) { Score = InScore; }
     
 protected:
     UPROPERTY

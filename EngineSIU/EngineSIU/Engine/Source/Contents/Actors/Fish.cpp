@@ -117,6 +117,19 @@ void AFish::SetMaxHealth(int32 InMaxHealth)
     SetHealth(GetHealth());
 }
 
+void AFish::Reset()
+{
+    SetHealth(GetMaxHealth());
+    bShouldApplyGravity = true;
+    SetScore(0);
+    Velocity.Z = JumpZVelocity;
+
+    if (UFishBodyComponent* MeshComp = GetComponentByClass<UFishBodyComponent>())
+    {
+        MeshComp->SetStaticMesh(FObjManager::GetStaticMesh(L"Contents/Fish/Fish_Front.obj"));
+    }
+}
+
 void AFish::Move(float DeltaTime)
 {
     FVector NextVelocity = Velocity;
