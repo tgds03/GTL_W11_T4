@@ -141,23 +141,31 @@ void UWorld::BeginPlay()
 
         // GameMode Delegate addition [Need to delete later]
         GameMode->OnGameInit.AddLambda([this]() {
-            FVector Target(-120.0f, 0.0f, 0.0f);
+            if (MainTextComponent) {
+                FVector Target = MainTextComponent->GetWorldLocation();
+                Target.X -= 20.0f;
             
-            MainTextComponent->SetText(L"Press Space to start");
-            GetMainCamera()->SetFollowCustomTarget(Target);
-            });
+                MainTextComponent->SetText(L"Press Space to start");
+                GetMainCamera()->SetFInterpToSpeed(3.0f);
+                GetMainCamera()->SetFollowCustomTarget(Target);
+            }
+        });
 
         GameMode->OnGameStart.AddLambda([this]() {
+            GetMainCamera()->SetFInterpToSpeed(0.8f);
             GetMainCamera()->ResetFollowToPlayer();
             });
 
         GameMode->OnGameEnd.AddLambda([this]() {
-            FVector Target(-120.0f, 0.0f, 0.0f);
+            if (MainTextComponent) {
+                FVector Target = MainTextComponent->GetWorldLocation();
+                Target.X -= 20.0f;
 
-            float Time = GameMode->GameInfo.TotalGameTime;
-            FString Message = FString::Printf(TEXT("TotalTime %d Seconds"), Time);
-            MainTextComponent->SetText(Message.ToWideString());
-            GetMainCamera()->SetFollowCustomTarget(Target);
+                float Time = GameMode->GameInfo.TotalGameTime;
+                FString Message = FString::Printf(TEXT("TotalTime %d Seconds"), Time);
+                MainTextComponent->SetText(Message.ToWideString());
+                GetMainCamera()->SetFollowCustomTarget(Target);
+            }
             });
 
         GameMode->InitGame();
