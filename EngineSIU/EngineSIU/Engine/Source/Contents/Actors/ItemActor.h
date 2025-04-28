@@ -18,6 +18,8 @@ public:
     
     virtual void Tick(float DeltaTime) override;
 
+    void Reset();
+
 protected:
     float Speed = 250.f;
 
