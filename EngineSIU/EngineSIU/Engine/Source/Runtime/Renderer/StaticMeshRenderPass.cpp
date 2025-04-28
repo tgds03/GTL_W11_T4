@@ -372,7 +372,7 @@ void FStaticMeshRenderPass::RenderAllStaticMeshes(const std::shared_ptr<FEditorV
         DM.DiffuseMultiplier = 1.f;
         if (AFish* Fish = Cast<AFish>(Comp->GetOwner()))
         {
-            DM.DiffuseMultiplier = Fish->GetHealthPercent();
+            DM.DiffuseMultiplier = 1.f - Fish->GetHealthPercent();
         }
         DM.DiffuseOverrideColor = FVector(0.55f, 0.45f, 0.067f);
         BufferManager->UpdateConstantBuffer(TEXT("FDiffuseMultiplier"), DM);

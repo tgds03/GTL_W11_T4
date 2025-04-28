@@ -16,3 +16,4 @@ map_Kd carp9_carp_BaseColor.v1.png
 map_Pm carp9_carp_Metallic.1001.png
 map_Pr carp9_carp_Roughness.1001.png
 map_Bump -bm 1.000000 carp9_carp_Normal.1001.png
+map_Ka Tempura.png

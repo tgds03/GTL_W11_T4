@@ -13,7 +13,7 @@ void UFishTailComponent::TickComponent(float DeltaTime)
 
     ElapsedTime += DeltaTime;
 
-    SetRelativeRotation(FRotator(0.f, FMath::Sin(ElapsedTime * PI * Frequency) * MaxYaw, 0.f));
+    SetRelativeRotation(FRotator(0.f, FMath::Sin(ElapsedTime * PI * CurrentFrequency) * CurrentYaw, 0.f));
 
     UE_LOG(LogLevel::Display, TEXT("ElapsedTime: %f, Yaw: %f"), ElapsedTime, GetRelativeRotation().Yaw);
 }

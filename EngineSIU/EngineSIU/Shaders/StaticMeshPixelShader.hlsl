@@ -48,10 +48,14 @@ float4 mainPS(PS_INPUT_StaticMesh Input) : SV_Target
             discard;
         }
         DiffuseColor = DiffuseColor4.rgb;
+        // W08
+        if (DiffuseMultiplier > 0.1)
+        {
+            float3 OtherColor = MaterialTextures[TEXTURE_SLOT_AMBIENT].Sample(MaterialSamplers[TEXTURE_SLOT_AMBIENT], Input.UV).rgb;
+            DiffuseColor = lerp(DiffuseColor, OtherColor, DiffuseMultiplier * DiffuseMultiplier);
+        }
+        //
     }
-    // W08
-    DiffuseColor = lerp(DiffuseOverrideColor, DiffuseColor, DiffuseMultiplier);
-    //
     
     // Normal
     float3 WorldNormal = normalize(Input.WorldNormal);

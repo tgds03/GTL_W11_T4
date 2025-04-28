@@ -6,6 +6,8 @@ class USphereComponent;
 class UStaticMeshComponent;
 class UFishTailComponent;
 
+DECLARE_DELEGATE_OneParam(FOnFishHealthChanged, float /* HealthPercent */);
+
 class AFish : public APlayer
 {
     DECLARE_CLASS(AFish, APlayer)
@@ -23,13 +25,15 @@ public:
     void Tick(float DeltaTime) override;
 
     int32 GetHealth() const { return Health; }
-    void SetHealth(int32 InHealth) { Health = FMath::Max(0, FMath::Min(InHealth, MaxHealth)); }
+    void SetHealth(int32 InHealth);
 
     int32 GetMaxHealth() const { return MaxHealth; }
     void SetMaxHealth(int32 InMaxHealth) { MaxHealth = InMaxHealth; }
 
     float GetHealthPercent() const { return static_cast<float>(Health) / static_cast<float>(MaxHealth); }
 
+    FOnFishHealthChanged OnHealthChanged;
+    
 protected:
     UPROPERTY
     (USphereComponent*, SphereComponent, = nullptr)

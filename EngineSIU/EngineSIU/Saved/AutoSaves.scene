@@ -2,32 +2,10 @@
     "Actors": [
         {
             "ActorClass": "ADirectionalLight",
-            "ActorID": "ADirectionalLight_132",
-            "ActorLabel": "ADirectionalLight132",
+            "ActorID": "ADirectionalLight_139",
+            "ActorLabel": "ADirectionalLight139",
             "ActorTickInEditor": "false",
             "Components": [
-                {
-                    "ComponentClass": "UBillboardComponent",
-                    "ComponentID": "UBillboardComponent_0",
-                    "Properties": {
-                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
-                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
-                        "AttachParentID": "nullptr",
-                        "BufferKey": "Assets/Editor/Icon/S_LightDirectional.PNG",
-                        "ComponentClass": "UBillboardComponent",
-                        "ComponentName": "UBillboardComponent_0",
-                        "ComponentOwner": "ADirectionalLight_132",
-                        "ComponentOwnerClass": "ADirectionalLight",
-                        "FinalIndexU": "0.000000",
-                        "FinalIndexV": "0.000000",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=6.246",
-                        "RelativeRotation": "Pitch=60.610 Yaw=156.534 Roll=-166.977",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "bAutoActive": "true",
-                        "bIsActive": "true",
-                        "m_Type": "UBillboardComponent"
-                    }
-                },
                 {
                     "ComponentClass": "UDirectionalLightComponent",
                     "ComponentID": "UDirectionalLightComponent_0",
@@ -37,7 +15,7 @@
                         "AttachParentID": "UBillboardComponent_0",
                         "ComponentClass": "UDirectionalLightComponent",
                         "ComponentName": "UDirectionalLightComponent_0",
-                        "ComponentOwner": "ADirectionalLight_132",
+                        "ComponentOwner": "ADirectionalLight_139",
                         "ComponentOwnerClass": "ADirectionalLight",
                         "Direction": "X=-1.000 Y=-0.000 Z=-0.000",
                         "Intensity": "10.000000",
@@ -48,14 +26,36 @@
                         "bAutoActive": "true",
                         "bIsActive": "true"
                     }
+                },
+                {
+                    "ComponentClass": "UBillboardComponent",
+                    "ComponentID": "UBillboardComponent_0",
+                    "Properties": {
+                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
+                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
+                        "AttachParentID": "nullptr",
+                        "BufferKey": "Assets/Editor/Icon/S_LightDirectional.PNG",
+                        "ComponentClass": "UBillboardComponent",
+                        "ComponentName": "UBillboardComponent_0",
+                        "ComponentOwner": "ADirectionalLight_139",
+                        "ComponentOwnerClass": "ADirectionalLight",
+                        "FinalIndexU": "0.000000",
+                        "FinalIndexV": "0.000000",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=6.246",
+                        "RelativeRotation": "Pitch=60.610 Yaw=156.534 Roll=-166.977",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": "UBillboardComponent"
+                    }
                 }
             ],
             "RootComponentID": "UBillboardComponent_0"
         },
         {
             "ActorClass": "APlatformActor",
-            "ActorID": "APlatformActor_141",
-            "ActorLabel": "APlatformActor141",
+            "ActorID": "APlatformActor_144",
+            "ActorLabel": "APlatformActor144",
             "ActorTickInEditor": "false",
             "Components": [
                 {
@@ -68,7 +68,7 @@
                         "BoxExtent": "X=1.000 Y=1.000 Z=1.000",
                         "ComponentClass": "UBoxComponent",
                         "ComponentName": "BoxComponent_0",
-                        "ComponentOwner": "APlatformActor_141",
+                        "ComponentOwner": "APlatformActor_144",
                         "ComponentOwnerClass": "APlatformActor",
                         "RelativeLocation": "X=12.861 Y=0.000 Z=-2.307",
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
@@ -87,11 +87,11 @@
                         "AttachParentID": "BoxComponent_0",
                         "ComponentClass": "UStaticMeshComponent",
                         "ComponentName": "MeshComponent_0",
-                        "ComponentOwner": "APlatformActor_141",
+                        "ComponentOwner": "APlatformActor_144",
                         "ComponentOwnerClass": "APlatformActor",
                         "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "RelativeScale3D": "X=2.000 Y=2.000 Z=2.000",
                         "StaticMeshPath": "Contents/CubePrimitive.obj",
                         "bAutoActive": "true",
                         "bIsActive": "true",
@@ -107,6 +107,26 @@
             "ActorLabel": "OBJ_FISH_133",
             "ActorTickInEditor": "false",
             "Components": [
+                {
+                    "ComponentClass": "USphereComponent",
+                    "ComponentID": "SphereComponent_0",
+                    "Properties": {
+                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
+                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
+                        "AttachParentID": "nullptr",
+                        "ComponentClass": "USphereComponent",
+                        "ComponentName": "SphereComponent_0",
+                        "ComponentOwner": "AFish_133",
+                        "ComponentOwnerClass": "AFish",
+                        "RelativeLocation": "X=12.287 Y=0.000 Z=1.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=90.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "SphereRadius": "1.000000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": ""
+                    }
+                },
                 {
                     "ComponentClass": "UFishBodyComponent",
                     "ComponentID": "FishBodyComponent_0",
@@ -128,26 +148,6 @@
                     }
                 },
                 {
-                    "ComponentClass": "USphereComponent",
-                    "ComponentID": "SphereComponent_0",
-                    "Properties": {
-                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
-                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
-                        "AttachParentID": "nullptr",
-                        "ComponentClass": "USphereComponent",
-                        "ComponentName": "SphereComponent_0",
-                        "ComponentOwner": "AFish_133",
-                        "ComponentOwnerClass": "AFish",
-                        "RelativeLocation": "X=12.856 Y=0.000 Z=6.316",
-                        "RelativeRotation": "Pitch=0.000 Yaw=90.000 Roll=-0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "SphereRadius": "1.000000",
-                        "bAutoActive": "true",
-                        "bIsActive": "true",
-                        "m_Type": ""
-                    }
-                },
-                {
                     "ComponentClass": "UFishTailComponent",
                     "ComponentID": "FishTailComponent_0",
                     "Properties": {
@@ -159,7 +159,7 @@
                         "ComponentOwner": "AFish_133",
                         "ComponentOwnerClass": "AFish",
                         "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
                         "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
                         "StaticMeshPath": "Contents/Fish/Fish_Back.obj",
                         "bAutoActive": "true",

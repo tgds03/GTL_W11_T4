@@ -45,6 +45,17 @@ void AFish::BeginPlay()
             ActorBeginOverlap(OverlappedActor, OtherActor);
         }
     );
+
+    OnHealthChanged.BindLambda(
+        [this](float HealthPercent)
+        {
+            if (UFishTailComponent* TailComp = GetComponentByClass<UFishTailComponent>())
+            {
+                TailComp->SetCurrentYaw(TailComp->GetMaxYaw() * HealthPercent);
+                TailComp->SetCurrentFrequency(TailComp->GetMaxFrequency() * HealthPercent);
+            }
+        }
+    );
 }
 
 void AFish::Tick(float DeltaTime)
@@ -54,6 +65,13 @@ void AFish::Tick(float DeltaTime)
     Move(DeltaTime);
 
     RotateMesh();
+}
+
+void AFish::SetHealth(int32 InHealth)
+{
+    Health = FMath::Max(0, FMath::Min(InHealth, MaxHealth));
+
+    OnHealthChanged.ExecuteIfBound(GetHealthPercent());
 }
 
 void AFish::Move(float DeltaTime)
@@ -90,6 +108,6 @@ void AFish::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
     {
         Velocity.Z = JumpZVelocity;
 
-        Health = FMath::Max(0, Health - 1);
+        SetHealth(GetHealth() - 1.f);
     }
 }
