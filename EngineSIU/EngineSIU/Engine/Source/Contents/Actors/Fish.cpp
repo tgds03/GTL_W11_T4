@@ -126,7 +126,7 @@ void AFish::SetMaxHealth(int32 InMaxHealth)
 
 void AFish::Reset()
 {
-    SetMaxHealth(5);
+    SetMaxHealth(500);
     SetHealth(GetMaxHealth());
     bShouldApplyGravity = true;
     SetScore(0);
