@@ -12,6 +12,7 @@ struct FGameInfo
 {
     float TotalGameTime = 0.0f;
     float ElapsedGameTime = 0.0f;
+    uint32 CoinScore = 0;
 };
 
 class AGameMode : public AActor
