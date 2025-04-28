@@ -367,7 +367,7 @@ void FStaticMeshRenderPass::RenderAllStaticMeshes(const std::shared_ptr<FEditorV
 
         UpdateObjectConstant(WorldMatrix, UUIDColor, bIsSelected);
 
-        // W08
+#pragma region W08
         FDiffuseMultiplier DM = {};
         DM.DiffuseMultiplier = 1.f;
         if (AFish* Fish = Cast<AFish>(Comp->GetOwner()))
@@ -376,7 +376,7 @@ void FStaticMeshRenderPass::RenderAllStaticMeshes(const std::shared_ptr<FEditorV
         }
         DM.DiffuseOverrideColor = FVector(0.55f, 0.45f, 0.067f);
         BufferManager->UpdateConstantBuffer(TEXT("FDiffuseMultiplier"), DM);
-        //
+#pragma endregion W08
 
         RenderPrimitive(RenderData, Comp->GetStaticMesh()->GetMaterials(), Comp->GetOverrideMaterials(), Comp->GetselectedSubMeshIndex());
 

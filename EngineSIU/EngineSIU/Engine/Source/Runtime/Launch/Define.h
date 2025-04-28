@@ -502,9 +502,10 @@ struct FFogConstants
     float padding2;
 };
 
-// W08
+#pragma region W08
 struct FDiffuseMultiplier
 {
     float DiffuseMultiplier;
     FVector DiffuseOverrideColor;
 };
+#pragma endregion

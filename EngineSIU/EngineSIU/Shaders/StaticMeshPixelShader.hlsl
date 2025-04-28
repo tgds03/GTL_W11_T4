@@ -49,8 +49,10 @@ float4 mainPS(PS_INPUT_StaticMesh Input) : SV_Target
         }
         DiffuseColor = DiffuseColor4.rgb;
     }
+    // W08
     DiffuseColor = lerp(DiffuseOverrideColor, DiffuseColor, DiffuseMultiplier);
-
+    //
+    
     // Normal
     float3 WorldNormal = normalize(Input.WorldNormal);
     if (Material.TextureFlag & TEXTURE_FLAG_NORMAL)
