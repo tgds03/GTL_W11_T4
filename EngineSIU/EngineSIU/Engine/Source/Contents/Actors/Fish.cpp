@@ -8,6 +8,12 @@
 #include "Engine/FObjLoader.h"
 
 AFish::AFish()
+    : JumpZVelocity(50.f)
+    , Gravity(-9.8f * 10.f)
+    , MeshPitchMax(5.f)
+    , MeshPitch(MeshPitchMax)
+    , MaxHealth(10)
+    , Health(MaxHealth)
 {
     
 }
@@ -47,13 +53,16 @@ void AFish::BeginPlay()
     );
 
     OnHealthChanged.BindLambda(
-        [this](float HealthPercent)
+        [this](int32 InCurrentHealth, int32 InMaxHealth)
         {
+            const float HealthPercent = static_cast<float>(InCurrentHealth) / static_cast<float>(InMaxHealth);
             if (UFishTailComponent* TailComp = GetComponentByClass<UFishTailComponent>())
             {
                 TailComp->SetCurrentYaw(TailComp->GetMaxYaw() * HealthPercent);
                 TailComp->SetCurrentFrequency(TailComp->GetMaxFrequency() * HealthPercent);
             }
+
+            MeshPitch = MeshPitchMax * HealthPercent;
         }
     );
 }
@@ -71,7 +80,7 @@ void AFish::SetHealth(int32 InHealth)
 {
     Health = FMath::Max(0, FMath::Min(InHealth, MaxHealth));
 
-    OnHealthChanged.ExecuteIfBound(GetHealthPercent());
+    OnHealthChanged.ExecuteIfBound(GetHealth(), GetMaxHealth());
 }
 
 void AFish::Move(float DeltaTime)
@@ -95,7 +104,7 @@ void AFish::RotateMesh()
     {
         // 현재 PIE 모드에서 맴버 변수를 접근할 수 없기 때문에 이렇게 접근 함.
         FRotator CompRotation = MeshComp->GetRelativeRotation();
-        CompRotation.Roll = RotFactor * MeshPitchMax + 180.f;
+        CompRotation.Roll = RotFactor * MeshPitch * -1.f;
         
         MeshComp->SetRelativeRotation(CompRotation);
     }

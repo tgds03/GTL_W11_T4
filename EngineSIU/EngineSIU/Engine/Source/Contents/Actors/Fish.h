@@ -6,7 +6,7 @@ class USphereComponent;
 class UStaticMeshComponent;
 class UFishTailComponent;
 
-DECLARE_DELEGATE_OneParam(FOnFishHealthChanged, float /* HealthPercent */);
+DECLARE_DELEGATE_TwoParams(FOnFishHealthChanged, int32 /* CurrentHealth */, int32 /* MaxHealth */);
 
 class AFish : public APlayer
 {
@@ -46,21 +46,23 @@ protected:
 
     FVector Velocity = FVector::ZeroVector;
 
-    float JumpZVelocity = 50.f;
+    float JumpZVelocity;
 
-    float Gravity = -9.8f * 10.f;
+    float Gravity;
 
     void Move(float DeltaTime);
 
     void RotateMesh();
 
-    float MeshPitchMax = 15.f;
+    float MeshPitchMax;
 
+    float MeshPitch;
+    
     float MeshRotSpeed = 10.f;
 
-    int32 Health = 10;
+    int32 MaxHealth;
 
-    int32 MaxHealth = 10;
+    int32 Health;
 
     void ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
 };
