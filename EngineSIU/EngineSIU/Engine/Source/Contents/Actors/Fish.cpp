@@ -7,6 +7,7 @@
 #include "Contents/Components/FishTailComponent.h"
 #include "Contents/Components/FishBodyComponent.h"
 #include "Engine/FObjLoader.h"
+#include "SoundManager.h"
 
 AFish::AFish()
     : JumpZVelocity(50.f)
@@ -134,6 +135,7 @@ void AFish::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
     if (OtherActor->IsA<APlatformActor>())
     {
+        FSoundManager::GetInstance().PlaySound("sizzle");
         if (IsDead())
         {
             Velocity.Z = 0.f;
@@ -141,6 +143,7 @@ void AFish::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
         }
         else
         {
+            
             Velocity.Z = JumpZVelocity;
         }
 
