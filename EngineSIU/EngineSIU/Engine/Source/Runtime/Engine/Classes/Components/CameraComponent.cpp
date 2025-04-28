@@ -1,4 +1,4 @@
-﻿#include "CameraComponent.h"
+#include "CameraComponent.h"
 
 #include <algorithm>
 
@@ -29,8 +29,13 @@ void UCameraComponent::InitializeComponent()
 void UCameraComponent::TickComponent(float DeltaTime)
 {
     USceneComponent::TickComponent(DeltaTime);
-
-    FollowMainPlayer();
+    if (bFollowCustomTarget) {
+        //
+    }
+    else 
+    {
+        FollowMainPlayer();
+    }
     
     ProceedFInterp(DeltaTime);
 }
@@ -73,4 +78,15 @@ void UCameraComponent::SetLocationWithFInterpTo(FVector& ToLocation) //LerpSpeed
 void UCameraComponent::SetFInterpToSpeed(float InSpeed)
 {
     FInterpToSpeed = InSpeed;
+}
+
+void UCameraComponent::SetFollowCustomTarget(const FVector& InLocation)
+{
+    bFollowCustomTarget = true;
+    FInterpTargetLocation = InLocation;
+}
+
+void UCameraComponent::ResetFollowToPlayer()
+{
+    bFollowCustomTarget = false;
 }

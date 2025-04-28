@@ -21,6 +21,7 @@ class UObject;
 class USceneComponent;
 class FCollisionManager;
 class AGameMode;
+class UTextComponent;
 
 class UWorld : public UObject
 {
@@ -97,6 +98,8 @@ private:
     APlayerController* PlayerController = nullptr;
 
     APlayer* MainPlayer = nullptr;
+
+    UTextComponent* MainTextComponent = nullptr;
 
     FCollisionManager* CollisionManager = nullptr;
 };

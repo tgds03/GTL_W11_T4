@@ -14,6 +14,7 @@
 #include "Actors/PointLightActor.h"
 #include "Actors/SpotLightActor.h"
 #include "GameFramework/GameMode.h"
+#include "Classes/Components/TextComponent.h"
 
 class UEditorEngine;
 
@@ -129,6 +130,45 @@ void UWorld::BeginPlay()
         GameMode = this->SpawnActor<AGameMode>();
         GameMode->SetActorLabel(TEXT("OBJ_GAMEMODE"));
 		GameMode->InitializeComponent();
+
+        for (const auto iter : TObjectRange<UTextComponent>())
+        {
+            if (iter->GetWorld() == GEngine->ActiveWorld)
+            {
+                MainTextComponent = iter;
+            }
+        }
+
+        // GameMode Delegate addition [Need to delete later]
+        GameMode->OnGameInit.AddLambda([this]() {
+            if (MainTextComponent) {
+                FVector Target = MainTextComponent->GetWorldLocation();
+                Target.X -= 20.0f;
+            
+                MainTextComponent->SetText(L"Press Space to start");
+                GetMainCamera()->SetFInterpToSpeed(3.0f);
+                GetMainCamera()->SetFollowCustomTarget(Target);
+            }
+        });
+
+        GameMode->OnGameStart.AddLambda([this]() {
+            GetMainCamera()->SetFInterpToSpeed(0.8f);
+            GetMainCamera()->ResetFollowToPlayer();
+            });
+
+        GameMode->OnGameEnd.AddLambda([this]() {
+            if (MainTextComponent) {
+                FVector Target = MainTextComponent->GetWorldLocation();
+                Target.X -= 20.0f;
+
+                float Time = GameMode->GameInfo.TotalGameTime;
+                FString Message = FString::Printf(TEXT("TotalTime %d Seconds"), Time);
+                MainTextComponent->SetText(Message.ToWideString());
+                GetMainCamera()->SetFollowCustomTarget(Target);
+            }
+            });
+
+        GameMode->InitGame();
     }
     for (AActor* Actor : ActiveLevel->Actors)
     {

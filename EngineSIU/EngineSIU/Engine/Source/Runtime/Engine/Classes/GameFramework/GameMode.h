@@ -6,6 +6,8 @@ DECLARE_MULTICAST_DELEGATE(FOnGameInit);
 DECLARE_MULTICAST_DELEGATE(FOnGameStart);
 DECLARE_MULTICAST_DELEGATE(FOnGameEnd);
 
+class UCameraComponent;
+
 struct FGameInfo
 {
     float TotalGameTime = 0.0f;
@@ -42,11 +44,12 @@ public:
     FOnGameStart OnGameStart;
     FOnGameEnd OnGameEnd;
 
+    FGameInfo GameInfo;
 private:
+    UCameraComponent* MainCamera = nullptr;
+
     bool     bGameRunning = false; // 내부 
     bool     bGameEnded = true;
-    FGameInfo GameInfo;
-
 
     float LogTimer = 0.f;
     float LogInterval = 1.f;  // 1초마다 로그
