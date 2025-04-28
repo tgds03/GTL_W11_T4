@@ -383,7 +383,7 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
                     UTextComponent* TextComponent = SpawnedActor->AddComponent<UTextComponent>();
                     TextComponent->SetTexture(L"Assets/Texture/font.png");
                     TextComponent->SetRowColumnCount(106, 106);
-                    TextComponent->SetText(L"");
+                    TextComponent->SetText(L"Default");
                     SpawnedActor->SetRootComponent(TextComponent);
                     
                     break;
