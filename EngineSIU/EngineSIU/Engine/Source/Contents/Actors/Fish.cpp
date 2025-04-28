@@ -96,7 +96,6 @@ void AFish::RotateMesh()
         // 현재 PIE 모드에서 맴버 변수를 접근할 수 없기 때문에 이렇게 접근 함.
         FRotator CompRotation = MeshComp->GetRelativeRotation();
         CompRotation.Roll = RotFactor * MeshPitchMax + 180.f;
-        CompRotation.Pitch = 0.1f;
         
         MeshComp->SetRelativeRotation(CompRotation);
     }
