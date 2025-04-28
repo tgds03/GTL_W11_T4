@@ -161,7 +161,7 @@ void UWorld::BeginPlay()
             if (MainTextComponent) {
                 FVector Target = MainTextComponent->GetWorldLocation();
                 Target.X -= 20.0f;
-
+                Target.Z -= 5.0f;
                 if (bIsWin)
                 {
                     AFish* Fish = Cast<AFish>(GEngine->ActiveWorld->GetMainPlayer());
@@ -173,6 +173,10 @@ void UWorld::BeginPlay()
                 {
                     MainTextComponent->SetText(L"Fish roasted");
                     GetMainCamera()->SetFollowCustomTarget(Target);
+                    
+                    AFish* Fish = Cast<AFish>(GEngine->ActiveWorld->GetMainPlayer());
+                    Fish->SetActorLocation(FVector(-107.0f, 0.0f, -3.0f));
+                    Fish->SetActorRotation(FRotator(70.0f, 0.0f, 0.0f));
                 }
             }
             });
