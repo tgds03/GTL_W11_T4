@@ -330,7 +330,7 @@ void USceneComponent::DetachFromComponent(USceneComponent* Target)
 
 void USceneComponent::SetRelativeRotation(const FRotator& InRotation)
 {
-    SetRelativeRotation(InRotation.ToQuaternion());
+    SetRelativeRotation(InRotation.GetNormalized().ToQuaternion());
 }
 
 void USceneComponent::SetRelativeRotation(const FQuat& InQuat)

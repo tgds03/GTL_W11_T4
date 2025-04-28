@@ -1,0 +1,107 @@
+{
+    "Actors": [
+        {
+            "ActorClass": "ADirectionalLight",
+            "ActorID": "ADirectionalLight_131",
+            "ActorLabel": "ADirectionalLight131",
+            "ActorTickInEditor": "false",
+            "Components": [
+                {
+                    "ComponentClass": "UDirectionalLightComponent",
+                    "ComponentID": "UDirectionalLightComponent_0",
+                    "Properties": {
+                        "AABB_Max": "X=1.000 Y=1.000 Z=0.100",
+                        "AABB_Min": "X=-1.000 Y=-1.000 Z=-0.100",
+                        "AttachParentID": "UBillboardComponent_0",
+                        "ComponentClass": "UDirectionalLightComponent",
+                        "ComponentName": "UDirectionalLightComponent_0",
+                        "ComponentOwner": "ADirectionalLight_131",
+                        "ComponentOwnerClass": "ADirectionalLight",
+                        "Direction": "X=-1.000 Y=-0.000 Z=-0.000",
+                        "Intensity": "10.000000",
+                        "LightColor": "R=1.000 G=1.000 B=1.000 A=1.000",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
+                    }
+                },
+                {
+                    "ComponentClass": "UBillboardComponent",
+                    "ComponentID": "UBillboardComponent_0",
+                    "Properties": {
+                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
+                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
+                        "AttachParentID": "nullptr",
+                        "BufferKey": "Assets/Editor/Icon/S_LightDirectional.PNG",
+                        "ComponentClass": "UBillboardComponent",
+                        "ComponentName": "UBillboardComponent_0",
+                        "ComponentOwner": "ADirectionalLight_131",
+                        "ComponentOwnerClass": "ADirectionalLight",
+                        "FinalIndexU": "0.000000",
+                        "FinalIndexV": "0.000000",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=6.246",
+                        "RelativeRotation": "Pitch=7.524 Yaw=168.634 Roll=-147.772",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": "UBillboardComponent"
+                    }
+                }
+            ],
+            "RootComponentID": "UBillboardComponent_0"
+        },
+        {
+            "ActorClass": "AItemActor",
+            "ActorID": "AItemActor_128",
+            "ActorLabel": "OBJ_COIN_128",
+            "ActorTickInEditor": "false",
+            "Components": [
+                {
+                    "ComponentClass": "USphereComponent",
+                    "ComponentID": "SphereComponent_0",
+                    "Properties": {
+                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
+                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
+                        "AttachParentID": "nullptr",
+                        "ComponentClass": "USphereComponent",
+                        "ComponentName": "SphereComponent_0",
+                        "ComponentOwner": "AItemActor_128",
+                        "ComponentOwnerClass": "AItemActor",
+                        "RelativeLocation": "X=7.104 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "SphereRadius": "1.500000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": ""
+                    }
+                },
+                {
+                    "ComponentClass": "UStaticMeshComponent",
+                    "ComponentID": "MeshComponent_0",
+                    "Properties": {
+                        "AABB_max": "X=0.920 Y=0.130 Z=0.920",
+                        "AABB_min": "X=-0.920 Y=-0.130 Z=-0.920",
+                        "AttachParentID": "SphereComponent_0",
+                        "ComponentClass": "UStaticMeshComponent",
+                        "ComponentName": "MeshComponent_0",
+                        "ComponentOwner": "AItemActor_128",
+                        "ComponentOwnerClass": "AItemActor",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "StaticMeshPath": "Contents/Coin2/Coin2.obj",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": ""
+                    }
+                }
+            ],
+            "RootComponentID": "SphereComponent_0"
+        }
+    ],
+    "NextUUID": 0,
+    "Version": 1
+}

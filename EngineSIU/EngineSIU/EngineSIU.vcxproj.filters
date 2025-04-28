@@ -802,6 +802,7 @@
     <ClCompile Include="Engine\Source\Contents\Actors\Fish.cpp" />
     <ClCompile Include="Engine\Source\Contents\Components\FishBodyComponent.cpp" />
     <ClCompile Include="Engine\Source\Contents\Actors\PlatformActor.cpp" />
+    <ClCompile Include="Engine\Source\Contents\Actors\ItemActor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="EngineSIU.natvis" />
@@ -905,6 +906,7 @@
     <ClInclude Include="Engine\Source\Contents\Actors\Fish.h" />
     <ClInclude Include="Engine\Source\Contents\Components\FishBodyComponent.h" />
     <ClInclude Include="Engine\Source\Contents\Actors\PlatformActor.h" />
+    <ClInclude Include="Engine\Source\Contents\Actors\ItemActor.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />

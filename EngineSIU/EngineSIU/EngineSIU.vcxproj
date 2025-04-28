@@ -173,6 +173,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Source\Contents\Actors\Fish.cpp" />
+    <ClCompile Include="Engine\Source\Contents\Actors\ItemActor.cpp" />
     <ClCompile Include="Engine\Source\Contents\Actors\PlatformActor.cpp" />
     <ClCompile Include="Engine\Source\Contents\Components\FishBodyComponent.cpp" />
     <ClCompile Include="Engine\Source\Contents\Components\FishTailComponent.cpp" />
@@ -407,6 +408,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Source\Contents\Actors\Fish.h" />
+    <ClInclude Include="Engine\Source\Contents\Actors\ItemActor.h" />
     <ClInclude Include="Engine\Source\Contents\Actors\PlatformActor.h" />
     <ClInclude Include="Engine\Source\Contents\Components\FishBodyComponent.h" />
     <ClInclude Include="Engine\Source\Contents\Components\FishTailComponent.h" />

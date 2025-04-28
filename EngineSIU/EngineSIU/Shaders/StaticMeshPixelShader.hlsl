@@ -88,14 +88,14 @@ float4 mainPS(PS_INPUT_StaticMesh Input) : SV_Target
     float Metallic = Material.Metallic;
     if (Material.TextureFlag & TEXTURE_FLAG_METALLIC)
     {
-        Metallic = MaterialTextures[TEXTURE_SLOT_METALLIC].Sample(MaterialSamplers[TEXTURE_SLOT_METALLIC], Input.UV).r;
+        Metallic = MaterialTextures[TEXTURE_SLOT_METALLIC].Sample(MaterialSamplers[TEXTURE_SLOT_METALLIC], Input.UV).b;
     }
 
     // Roughness
     float Roughness = Material.Roughness;
     if (Material.TextureFlag & TEXTURE_FLAG_ROUGHNESS)
     {
-        Roughness = MaterialTextures[TEXTURE_SLOT_ROUGHNESS].Sample(MaterialSamplers[TEXTURE_SLOT_ROUGHNESS], Input.UV).r;
+        Roughness = MaterialTextures[TEXTURE_SLOT_ROUGHNESS].Sample(MaterialSamplers[TEXTURE_SLOT_ROUGHNESS], Input.UV).g;
     }
 #endif
 
