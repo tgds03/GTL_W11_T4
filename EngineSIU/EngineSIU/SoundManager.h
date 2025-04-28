@@ -82,6 +82,26 @@ public:
         );
     }
 
+    void StopAllSounds()
+    {
+        // 1) 개별 채널을 멈추기
+        for (FMOD::Channel* channel : activeChannels)
+        {
+            if (channel)
+            {
+                channel->stop();
+            }
+        }
+        activeChannels.clear();
+
+        // 2) 시스템 전체(마스터 채널 그룹) 정지 (Optional)
+        FMOD::ChannelGroup* masterGroup = nullptr;
+        if (system->getMasterChannelGroup(&masterGroup) == FMOD_OK && masterGroup)
+        {
+            masterGroup->stop();
+        }
+    }
+
 private:
     FSoundManager() : system(nullptr) {}
     ~FSoundManager() { Shutdown(); }
