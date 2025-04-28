@@ -7,6 +7,7 @@
 #include "Contents/Components/FishTailComponent.h"
 #include "Contents/Components/FishBodyComponent.h"
 #include "Engine/FObjLoader.h"
+#include "World/World.h"
 
 AFish::AFish()
     : JumpZVelocity(50.f)
@@ -16,6 +17,7 @@ AFish::AFish()
     , MeshPitch(MeshPitchMax)
     , MaxHealth(10)
     , Health(MaxHealth)
+    , KillZ(-10.f)
 {
     
 }
@@ -152,6 +154,11 @@ void AFish::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
         }
 
         SetHealth(GetHealth() - 1);
+
+        if (GetWorld() && GetWorld()->GetMainCamera())
+        {
+            GetWorld()->GetMainCamera()->CameraZ = GetActorLocation().Z;
+        }
     }
     else if (OtherActor->IsA<AItemActor>())
     {

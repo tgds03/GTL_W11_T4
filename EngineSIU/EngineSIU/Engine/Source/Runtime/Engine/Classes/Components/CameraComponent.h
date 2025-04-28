@@ -19,6 +19,7 @@ public:
 
     float DistanceBehind = 10.f;
     float CameraHeight = 20.f;
+    float CurrentCameraZ = 0.f;
     float CameraZ = 0.f; //바닥에 닿을때마다 바닥 Z로 업데이트
     float CameraZOffset = 5.f; //너무 아래 보기때문에 조금 위를 향해서 보는 변수
 
@@ -26,6 +27,8 @@ public:
 
     void SetLocationWithFInterpTo(FVector& ToLocation);
     void SetFInterpToSpeed(float InSpeed);
+
+    FVector GetLocationWithFInterpTo() const { return FInterpTargetLocation; }
 
 private:
     void ProceedFInterp(float DeltaTime);

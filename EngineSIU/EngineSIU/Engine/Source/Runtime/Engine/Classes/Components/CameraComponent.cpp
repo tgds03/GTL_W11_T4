@@ -56,7 +56,8 @@ void UCameraComponent::ProceedFInterp(float DeltaTime)
     FVector MoveLocation = FMath::FInterpTo(FromLocation, FInterpTargetLocation, DeltaTime, FInterpToSpeed);
 
     FVector PlayerLocation = GEngine->ActiveWorld->GetMainPlayer()->GetActorLocation();
-    PlayerLocation.Z = CameraZ + CameraZOffset;
+    CurrentCameraZ = FMath::FInterpTo(CurrentCameraZ, CameraZ, DeltaTime, 0.05f);
+    PlayerLocation.Z = CurrentCameraZ + CameraZOffset;
     
     FRotator TargetRotation = FRotator::MakeLookAtRotation(MoveLocation, PlayerLocation);
     

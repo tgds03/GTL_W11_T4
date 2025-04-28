@@ -71,5 +71,7 @@ protected:
 
     int32 Health;
 
+    float KillZ;
+
     void ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
 };
