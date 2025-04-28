@@ -126,7 +126,7 @@ void AFish::SetMaxHealth(int32 InMaxHealth)
 
 void AFish::Reset()
 {
-    SetMaxHealth(500);
+    SetMaxHealth(20);
     SetHealth(GetMaxHealth());
     bShouldApplyGravity = true;
     SetScore(0);
@@ -142,6 +142,7 @@ void AFish::Reset()
         MeshComp->SetStaticMesh(FObjManager::GetStaticMesh(L"Contents/Fish/Fish_Front.obj"));
     }
     SetActorLocation(FVector(0, 0, 10));
+    SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
 }
 
 void AFish::Move(float DeltaTime)
@@ -213,6 +214,7 @@ void AFish::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
     {
         if (AGameMode* GameMode = GEngine->ActiveWorld->GetGameMode())
         {
+            bShouldApplyGravity = false;
             GameMode->EndMatch(true);
         }
     }
