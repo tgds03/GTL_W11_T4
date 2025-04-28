@@ -18,7 +18,7 @@ AFish::AFish()
     , bShouldApplyGravity(true)
     , MeshPitchMax(5.f)
     , MeshPitch(MeshPitchMax)
-    , MaxHealth(10)
+    , MaxHealth(9999999) //시작전 안죽게 하려고 임시방편
     , Health(MaxHealth)
     , KillZ(-10.f)
     , Score(0)
@@ -83,6 +83,11 @@ void AFish::BeginPlay()
                 {
                     MeshComp->SetStaticMesh(FObjManager::GetStaticMesh(L"Contents/FishDish/FishDish.obj"));
                 }
+                
+                if (UFishTailComponent* TailComp = GetComponentByClass<UFishTailComponent>())
+                {
+                    TailComp->SetRelativeScale3D(FVector(0.01f,0.01f,0.01f));
+                }
             }
         }
     );
@@ -121,11 +126,17 @@ void AFish::SetMaxHealth(int32 InMaxHealth)
 
 void AFish::Reset()
 {
+    SetMaxHealth(5);
     SetHealth(GetMaxHealth());
     bShouldApplyGravity = true;
     SetScore(0);
     Velocity.Z = JumpZVelocity;
-
+    
+    if (UFishTailComponent* TailComp = GetComponentByClass<UFishTailComponent>())
+    {
+        TailComp->SetRelativeScale3D(FVector(1.f,1.f,1.f));
+    }
+    
     if (UFishBodyComponent* MeshComp = GetComponentByClass<UFishBodyComponent>())
     {
         MeshComp->SetStaticMesh(FObjManager::GetStaticMesh(L"Contents/Fish/Fish_Front.obj"));
