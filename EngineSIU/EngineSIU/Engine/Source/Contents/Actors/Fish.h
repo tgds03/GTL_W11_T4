@@ -29,7 +29,7 @@ public:
     void SetHealth(int32 InHealth);
 
     int32 GetMaxHealth() const { return MaxHealth; }
-    void SetMaxHealth(int32 InMaxHealth) { MaxHealth = InMaxHealth; }
+    void SetMaxHealth(int32 InMaxHealth);
 
     float GetHealthPercent() const { return static_cast<float>(Health) / static_cast<float>(MaxHealth); }
 

@@ -103,6 +103,13 @@ void AFish::SetHealth(int32 InHealth)
     }
 }
 
+void AFish::SetMaxHealth(int32 InMaxHealth)
+{
+    MaxHealth = InMaxHealth;
+
+    SetHealth(GetHealth());
+}
+
 void AFish::Move(float DeltaTime)
 {
     FVector NextVelocity = Velocity;
