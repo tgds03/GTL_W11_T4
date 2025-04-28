@@ -501,3 +501,10 @@ struct FFogConstants
     float padding1;
     float padding2;
 };
+
+// W08
+struct FDiffuseMultiplier
+{
+    float DiffuseMultiplier;
+    FVector DiffuseOverrideColor;
+};

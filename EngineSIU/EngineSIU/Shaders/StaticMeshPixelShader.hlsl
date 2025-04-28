@@ -24,6 +24,12 @@ cbuffer TextureConstants : register(b4)
     float2 TexturePad0;
 }
 
+cbuffer DiffuseMultiplierConstants : register(b6)
+{
+    float DiffuseMultiplier;
+    float3 DiffuseOverrideColor;
+}
+
 #ifdef LIGHTING_MODEL_PBR
 #include "LightPBR.hlsl"
 #else
@@ -43,6 +49,7 @@ float4 mainPS(PS_INPUT_StaticMesh Input) : SV_Target
         }
         DiffuseColor = DiffuseColor4.rgb;
     }
+    DiffuseColor = lerp(DiffuseOverrideColor, DiffuseColor, DiffuseMultiplier);
 
     // Normal
     float3 WorldNormal = normalize(Input.WorldNormal);

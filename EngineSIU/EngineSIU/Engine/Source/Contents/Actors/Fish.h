@@ -22,6 +22,14 @@ public:
 
     void Tick(float DeltaTime) override;
 
+    int32 GetHealth() const { return Health; }
+    void SetHealth(int32 InHealth) { Health = FMath::Max(0, FMath::Min(InHealth, MaxHealth)); }
+
+    int32 GetMaxHealth() const { return MaxHealth; }
+    void SetMaxHealth(int32 InMaxHealth) { MaxHealth = InMaxHealth; }
+
+    float GetHealthPercent() const { return static_cast<float>(Health) / static_cast<float>(MaxHealth); }
+
 protected:
     UPROPERTY
     (USphereComponent*, SphereComponent, = nullptr)
@@ -45,6 +53,10 @@ protected:
     float MeshPitchMax = 15.f;
 
     float MeshRotSpeed = 10.f;
+
+    int32 Health = 10;
+
+    int32 MaxHealth = 10;
 
     void ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
 };

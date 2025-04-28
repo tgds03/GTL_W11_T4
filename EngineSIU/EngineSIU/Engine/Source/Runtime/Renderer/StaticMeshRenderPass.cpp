@@ -27,6 +27,7 @@
 
 #include "UnrealEd/EditorViewportClient.h"
 #include "Components/Light/PointLightComponent.h"
+#include "Contents/Actors/Fish.h"
 
 
 FStaticMeshRenderPass::FStaticMeshRenderPass()
@@ -227,10 +228,11 @@ void FStaticMeshRenderPass::PrepareRenderState(const std::shared_ptr<FEditorView
         TEXT("FMaterialConstants"),
         TEXT("FLitUnlitConstants"),
         TEXT("FSubMeshConstants"),
-        TEXT("FTextureConstants")
+        TEXT("FTextureConstants"),
     };
 
     BufferManager->BindConstantBuffers(PSBufferKeys, 0, EShaderStage::Pixel);
+    BufferManager->BindConstantBuffer(TEXT("FDiffuseMultiplier"), 6, EShaderStage::Pixel);
 
     BufferManager->BindConstantBuffer(TEXT("FLightInfoBuffer"), 0, EShaderStage::Vertex);
     BufferManager->BindConstantBuffer(TEXT("FMaterialConstants"), 1, EShaderStage::Vertex);
@@ -364,6 +366,17 @@ void FStaticMeshRenderPass::RenderAllStaticMeshes(const std::shared_ptr<FEditorV
         const bool bIsSelected = (Engine && TargetComponent == Comp);
 
         UpdateObjectConstant(WorldMatrix, UUIDColor, bIsSelected);
+
+        // W08
+        FDiffuseMultiplier DM = {};
+        DM.DiffuseMultiplier = 1.f;
+        if (AFish* Fish = Cast<AFish>(Comp->GetOwner()))
+        {
+            DM.DiffuseMultiplier = Fish->GetHealthPercent();
+        }
+        DM.DiffuseOverrideColor = FVector(0.55f, 0.45f, 0.067f);
+        BufferManager->UpdateConstantBuffer(TEXT("FDiffuseMultiplier"), DM);
+        //
 
         RenderPrimitive(RenderData, Comp->GetStaticMesh()->GetMaterials(), Comp->GetOverrideMaterials(), Comp->GetselectedSubMeshIndex());
 

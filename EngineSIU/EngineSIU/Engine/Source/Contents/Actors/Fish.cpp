@@ -89,5 +89,7 @@ void AFish::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
     if (OtherActor->IsA<APlatformActor>())
     {
         Velocity.Z = JumpZVelocity;
+
+        Health = FMath::Max(0, Health - 1);
     }
 }
