@@ -1,6 +1,7 @@
 
 #include "Fish.h"
 
+#include "ItemActor.h"
 #include "PlatformActor.h"
 #include "Components/SphereComponent.h"
 #include "Contents/Components/FishTailComponent.h"
@@ -10,6 +11,7 @@
 AFish::AFish()
     : JumpZVelocity(50.f)
     , Gravity(-9.8f * 10.f)
+    , bShouldApplyGravity(true)
     , MeshPitchMax(5.f)
     , MeshPitch(MeshPitchMax)
     , MaxHealth(10)
@@ -52,7 +54,7 @@ void AFish::BeginPlay()
         }
     );
 
-    OnHealthChanged.BindLambda(
+    OnHealthChanged.AddLambda(
         [this](int32 InCurrentHealth, int32 InMaxHealth)
         {
             const float HealthPercent = static_cast<float>(InCurrentHealth) / static_cast<float>(InMaxHealth);
@@ -65,13 +67,26 @@ void AFish::BeginPlay()
             MeshPitch = MeshPitchMax * HealthPercent;
         }
     );
+
+    OnDied.AddLambda(
+        [this]()
+        {
+            if (UFishBodyComponent* MeshComp = GetComponentByClass<UFishBodyComponent>())
+            {
+                MeshComp->SetStaticMesh(FObjManager::GetStaticMesh(L"Contents/FishDish/FishDish.obj"));
+            }
+        }
+    );
 }
 
 void AFish::Tick(float DeltaTime)
 {
     APlayer::Tick(DeltaTime);
 
-    Move(DeltaTime);
+    if (bShouldApplyGravity)
+    {
+        Move(DeltaTime);
+    }
 
     RotateMesh();
 }
@@ -80,7 +95,12 @@ void AFish::SetHealth(int32 InHealth)
 {
     Health = FMath::Max(0, FMath::Min(InHealth, MaxHealth));
 
-    OnHealthChanged.ExecuteIfBound(GetHealth(), GetMaxHealth());
+    OnHealthChanged.Broadcast(GetHealth(), GetMaxHealth());
+
+    if (IsDead())
+    {
+        OnDied.Broadcast();
+    }
 }
 
 void AFish::Move(float DeltaTime)
@@ -114,8 +134,20 @@ void AFish::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
     if (OtherActor->IsA<APlatformActor>())
     {
-        Velocity.Z = JumpZVelocity;
+        if (IsDead())
+        {
+            Velocity.Z = 0.f;
+            bShouldApplyGravity = false;
+        }
+        else
+        {
+            Velocity.Z = JumpZVelocity;
+        }
 
-        SetHealth(GetHealth() - 1.f);
+        SetHealth(GetHealth() - 1);
+    }
+    else if (OtherActor->IsA<AItemActor>())
+    {
+        
     }
 }

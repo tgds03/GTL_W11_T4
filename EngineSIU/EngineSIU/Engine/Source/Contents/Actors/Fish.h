@@ -6,7 +6,8 @@ class USphereComponent;
 class UStaticMeshComponent;
 class UFishTailComponent;
 
-DECLARE_DELEGATE_TwoParams(FOnFishHealthChanged, int32 /* CurrentHealth */, int32 /* MaxHealth */);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnFishHealthChanged, int32 /* CurrentHealth */, int32 /* MaxHealth */);
+DECLARE_MULTICAST_DELEGATE(FOnFishDied);
 
 class AFish : public APlayer
 {
@@ -32,7 +33,11 @@ public:
 
     float GetHealthPercent() const { return static_cast<float>(Health) / static_cast<float>(MaxHealth); }
 
+    bool IsDead() const { return Health <= 0; }
+    
     FOnFishHealthChanged OnHealthChanged;
+
+    FOnFishDied OnDied;
     
 protected:
     UPROPERTY
@@ -49,6 +54,8 @@ protected:
     float JumpZVelocity;
 
     float Gravity;
+
+    bool bShouldApplyGravity;
 
     void Move(float DeltaTime);
 
