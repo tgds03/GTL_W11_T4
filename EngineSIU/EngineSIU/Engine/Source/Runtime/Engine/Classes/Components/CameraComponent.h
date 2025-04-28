@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "SceneComponent.h"
 
 class UCameraComponent : public USceneComponent
@@ -26,6 +26,12 @@ public:
 
     void SetLocationWithFInterpTo(FVector& ToLocation);
     void SetFInterpToSpeed(float InSpeed);
+
+    bool bFollowCustomTarget = false;
+    FVector CustomTargetLocation;
+
+    void SetFollowCustomTarget(const FVector& InLocation);
+    void ResetFollowToPlayer();
 
 private:
     void ProceedFInterp(float DeltaTime);

@@ -2,14 +2,15 @@
 #include "LuaScripts/LuaScriptComponent.h"
 #include "EngineLoop.h"
 #include "InputCore/InputCoreTypes.h"
+#include "Classes/Components/CameraComponent.h"
+#include "Engine/Engine.h"
+#include "Engine/World/World.h"
 
 AGameMode::AGameMode()
 {
     OnGameInit.AddLambda([]() { UE_LOG(LogLevel::Display, TEXT("Game Initialized")); });
-
     
     //LuaScriptComp->GetOuter()->
-
 
     SetActorTickInEditor(false); // PIE 모드에서만 Tick 수행
 
@@ -78,8 +79,7 @@ void AGameMode::StartMatch()
     bGameEnded = false;
     GameInfo.ElapsedGameTime = 0.0f;
     GameInfo.TotalGameTime = 0.0f;
-
-    
+   
     OnGameStart.Broadcast();
 }
 
