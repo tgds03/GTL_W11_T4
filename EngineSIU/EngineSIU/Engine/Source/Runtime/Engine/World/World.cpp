@@ -15,6 +15,7 @@
 #include "Actors/SpotLightActor.h"
 #include "GameFramework/GameMode.h"
 #include "Classes/Components/TextComponent.h"
+#include "Contents/Actors/Fish.h"
 
 class UEditorEngine;
 
@@ -163,8 +164,9 @@ void UWorld::BeginPlay()
 
                 if (bIsWin)
                 {
-                    float Time = GameMode->GameInfo.TotalGameTime;
-                    FString Message = FString::Printf(TEXT("Fish Dinner \n TotalTime %d Seconds"), Time);
+                    AFish* Fish = Cast<AFish>(GEngine->ActiveWorld->GetMainPlayer());
+                    
+                    FString Message = FString::Printf(TEXT("Earned Coin %d"), Fish->GetScore());
                     MainTextComponent->SetText(Message.ToWideString());
                     GetMainCamera()->SetFollowCustomTarget(Target);
                 } else
