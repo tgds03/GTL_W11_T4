@@ -4,7 +4,7 @@
 
 DECLARE_MULTICAST_DELEGATE(FOnGameInit);
 DECLARE_MULTICAST_DELEGATE(FOnGameStart);
-DECLARE_MULTICAST_DELEGATE(FOnGameEnd);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameEnd, bool);
 
 class UCameraComponent;
 
@@ -34,10 +34,11 @@ public:
     virtual void StartMatch();
 
     // 게임 종료
-    virtual void EndMatch();
+    virtual void EndMatch(bool bIsWin);
 
     virtual void Tick(float DeltaTime) override;
 
+    void Reset();
 
 public:
     FOnGameInit OnGameInit;
@@ -54,3 +55,4 @@ private:
     float LogTimer = 0.f;
     float LogInterval = 1.f;  // 1초마다 로그
 };
+

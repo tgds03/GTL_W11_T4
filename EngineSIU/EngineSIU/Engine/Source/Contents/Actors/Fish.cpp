@@ -1,6 +1,7 @@
 
 #include "Fish.h"
 
+#include "GoalPlatformActor.h"
 #include "ItemActor.h"
 #include "PlatformActor.h"
 #include "Components/SphereComponent.h"
@@ -8,6 +9,7 @@
 #include "Contents/Components/FishBodyComponent.h"
 #include "Engine/FObjLoader.h"
 #include "SoundManager.h"
+#include "GameFramework/GameMode.h"
 #include "World/World.h"
 
 AFish::AFish()
@@ -128,6 +130,7 @@ void AFish::Reset()
     {
         MeshComp->SetStaticMesh(FObjManager::GetStaticMesh(L"Contents/Fish/Fish_Front.obj"));
     }
+    SetActorLocation(FVector(0, 0, 10));
 }
 
 void AFish::Move(float DeltaTime)
@@ -145,6 +148,7 @@ void AFish::Move(float DeltaTime)
         SetHealth(0, false);
         OnDied.Broadcast(false);
         bShouldApplyGravity = false;
+        GetWorld()->GetGameMode()->EndMatch(false);
     }
 }
 
@@ -172,6 +176,7 @@ void AFish::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 
         if (IsDead())
         {
+            GetWorld()->GetGameMode()->EndMatch(false);
             Velocity.Z = 0.f;
             bShouldApplyGravity = false;
         }
@@ -192,5 +197,12 @@ void AFish::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
     {
         ++Score;
         OtherActor->SetHidden(true);
+        
+    }else if (OtherActor->IsA<AGoalPlatformActor>())
+    {
+        if (AGameMode* GameMode = GEngine->ActiveWorld->GetGameMode())
+        {
+            GameMode->EndMatch(true);
+        }
     }
 }

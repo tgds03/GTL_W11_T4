@@ -74,7 +74,7 @@ void APlayerController::SetupInputComponent()
 
 void APlayerController::BindAction(const FString& Key, const std::function<void(float)>& Callback)
 {
-    if (bHasPossessed && InputComponent)
+    if (InputComponent)
     {
         InputComponent->BindAction(Key, Callback);
     }

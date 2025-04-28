@@ -156,15 +156,22 @@ void UWorld::BeginPlay()
             GetMainCamera()->ResetFollowToPlayer();
             });
 
-        GameMode->OnGameEnd.AddLambda([this]() {
+        GameMode->OnGameEnd.AddLambda([this](bool bIsWin) {
             if (MainTextComponent) {
                 FVector Target = MainTextComponent->GetWorldLocation();
                 Target.X -= 20.0f;
 
-                float Time = GameMode->GameInfo.TotalGameTime;
-                FString Message = FString::Printf(TEXT("TotalTime %d Seconds"), Time);
-                MainTextComponent->SetText(Message.ToWideString());
-                GetMainCamera()->SetFollowCustomTarget(Target);
+                if (bIsWin)
+                {
+                    float Time = GameMode->GameInfo.TotalGameTime;
+                    FString Message = FString::Printf(TEXT("Fish Dinner \n TotalTime %d Seconds"), Time);
+                    MainTextComponent->SetText(Message.ToWideString());
+                    GetMainCamera()->SetFollowCustomTarget(Target);
+                } else
+                {
+                    MainTextComponent->SetText(L"Fish roasted");
+                    GetMainCamera()->SetFollowCustomTarget(Target);
+                }
             }
             });
 

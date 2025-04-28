@@ -43,6 +43,8 @@ public:
 
     int32 GetScore() const { return Score; }
     void SetScore(int32 InScore) { Score = InScore; }
+
+    void SetVelocity(FVector InVelocity){Velocity = InVelocity;}
     
 protected:
     UPROPERTY

@@ -38,6 +38,7 @@
 #include "Contents/Actors/Fish.h"
 #include "Contents/Actors/ItemActor.h"
 #include "Contents/Actors/PlatformActor.h"
+#include "Contents/Actors/GoalPlatformActor.h"
 
 void ControlEditorPanel::Render()
 {
@@ -311,6 +312,7 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
             {.Label = "CapsuleCol", .OBJ = OBJ_CAPSULE_COLLISION},
             {.Label = "Fish", .OBJ = OBJ_FISH},
             {.Label = "Platform", .OBJ = OBJ_PLATFORM},
+            {.Label = "GoalPlatform", .OBJ = OBJ_GOALPLATFORM},
             {.Label = "Coin", .OBJ = OBJ_COIN},
         };
 
@@ -427,6 +429,10 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
                 case OBJ_PLATFORM:
                     SpawnedActor = World->SpawnActor<APlatformActor>();
                     SpawnedActor->SetActorLabel(TEXT("OBJ_PLATFORM"));
+                    break;
+                case OBJ_GOALPLATFORM:
+                    SpawnedActor = World->SpawnActor<AGoalPlatformActor>();
+                    SpawnedActor->SetActorLabel(TEXT("OBJ_GoalPLATFORM"));
                     break;
                 case OBJ_COIN:
                     SpawnedActor = World->SpawnActor<AItemActor>();

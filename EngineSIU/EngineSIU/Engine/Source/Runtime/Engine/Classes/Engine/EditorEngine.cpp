@@ -172,7 +172,7 @@ void UEditorEngine::BindEssentialObjects()
         ActiveWorld->SetPlayerController(TempController);
     }
 
-    ActiveWorld->GetPlayerController()->Possess(ActiveWorld->GetMainPlayer());
+    // ActiveWorld->GetPlayerController()->Possess(ActiveWorld->GetMainPlayer());
 }
 
 void UEditorEngine::EndPIE()

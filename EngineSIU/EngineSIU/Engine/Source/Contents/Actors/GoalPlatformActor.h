@@ -3,13 +3,13 @@
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 
-class APlatformActor : public AActor
+class AGoalPlatformActor : public AActor
 {
-    DECLARE_CLASS(APlatformActor, AActor)
+    DECLARE_CLASS(AGoalPlatformActor, AActor)
 
 public:
-    APlatformActor();
-    virtual ~APlatformActor() override = default;
+    AGoalPlatformActor();
+    virtual ~AGoalPlatformActor() override = default;
 
 protected:
     UPROPERTY

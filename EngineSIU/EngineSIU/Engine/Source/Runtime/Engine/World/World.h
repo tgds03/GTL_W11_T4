@@ -80,6 +80,7 @@ public:
     void SetPlayerController(APlayerController* InPlayerController){ PlayerController = InPlayerController; }
     APlayerController* GetPlayerController() const;
 
+    AGameMode* GetGameMode() const { return GameMode; }
     
     void CheckOverlap(const UPrimitiveComponent* Component, TArray<FOverlapResult>& OutOverlaps) const;
 
