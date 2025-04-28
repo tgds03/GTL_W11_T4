@@ -161,21 +161,24 @@ void UWorld::BeginPlay()
             if (MainTextComponent) {
                 FVector Target = MainTextComponent->GetWorldLocation();
                 Target.X -= 20.0f;
-                Target.Z -= 5.0f;
+                Target.Z -= GetMainCamera()->CameraHeight;
+
                 if (bIsWin)
                 {
                     AFish* Fish = Cast<AFish>(GEngine->ActiveWorld->GetMainPlayer());
                     
                     FString Message = FString::Printf(TEXT("Earned Coin %d"), Fish->GetScore());
                     MainTextComponent->SetText(Message.ToWideString());
+                    //MainCamera->CameraZOffset = 0.0f;
                     GetMainCamera()->SetFollowCustomTarget(Target);
                 } else
                 {
                     MainTextComponent->SetText(L"Fish roasted");
+                    //MainCamera->CameraZOffset = 0.0f;
                     GetMainCamera()->SetFollowCustomTarget(Target);
                     
                     AFish* Fish = Cast<AFish>(GEngine->ActiveWorld->GetMainPlayer());
-                    Fish->SetActorLocation(FVector(-107.0f, 0.0f, -3.0f));
+                    Fish->SetActorLocation(FVector(-110.0f, 0.0f, -4.0f));
                     Fish->SetActorRotation(FRotator(70.0f, 0.0f, 0.0f));
                 }
             }
