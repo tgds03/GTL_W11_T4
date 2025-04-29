@@ -172,6 +172,7 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraModifier.cpp" />
     <ClCompile Include="Engine\Source\Contents\Actors\Fish.cpp" />
     <ClCompile Include="Engine\Source\Contents\Actors\GoalPlatformActor.cpp" />
     <ClCompile Include="Engine\Source\Contents\Actors\ItemActor.cpp" />
@@ -320,6 +321,7 @@
     <ClCompile Include="Engine\Source\ThirdParty\tinyfiledialogs\tinyfiledialogs.cpp" />
     <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_curve.cpp" />
     <ClCompile Include="LuaScripts\LuaScriptComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\PlayerCameraManager.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <None Include="Shaders\CompositingShader.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -411,6 +413,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraModifier.h" />
     <ClInclude Include="Engine\Source\Contents\Actors\Fish.h" />
     <ClInclude Include="Engine\Source\Contents\Actors\GoalPlatformActor.h" />
     <ClInclude Include="Engine\Source\Contents\Actors\ItemActor.h" />
@@ -619,6 +622,7 @@
     <ClInclude Include="LuaScripts\LuaBindingHelpers.h" />
     <ClInclude Include="LuaScripts\LuaScriptComponent.h" />
     <ClInclude Include="LuaScripts\LuaScriptFileUtils.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\PlayerCameraManager.h" />
     <ClInclude Include="SoundManager.h" />
     <None Include="Shaders\EditorShaderConstants.hlsli">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
