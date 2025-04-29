@@ -173,7 +173,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Source\Contents\Actors\Fish.cpp" />
-    <ClCompile Include="Engine\Source\Contents\Actors\GoalPlatformActor.cpp"/>
+    <ClCompile Include="Engine\Source\Contents\Actors\GoalPlatformActor.cpp" />
     <ClCompile Include="Engine\Source\Contents\Actors\ItemActor.cpp" />
     <ClCompile Include="Engine\Source\Contents\Actors\PlatformActor.cpp" />
     <ClCompile Include="Engine\Source\Contents\Components\FishBodyComponent.cpp" />
@@ -310,6 +310,7 @@
     <ClCompile Include="Engine\Source\Runtime\Windows\WindowsCursor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Windows\WindowsPlatformTime.cpp" />
     <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui.cpp" />
+    <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_bezier.cpp" />
     <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_demo.cpp" />
     <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_draw.cpp" />
     <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_impl_dx11.cpp" />
@@ -317,6 +318,7 @@
     <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_tables.cpp" />
     <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_widgets.cpp" />
     <ClCompile Include="Engine\Source\ThirdParty\tinyfiledialogs\tinyfiledialogs.cpp" />
+    <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_curve.cpp" />
     <ClCompile Include="LuaScripts\LuaScriptComponent.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <None Include="Shaders\CompositingShader.hlsl">
@@ -604,6 +606,7 @@
     <ClInclude Include="Engine\Source\ThirdParty\DirectXTK\Include\XboxDDSTextureLoader.h" />
     <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imconfig.h" />
     <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui.h" />
+    <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui_bezier.h" />
     <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui_impl_dx11.h" />
     <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui_impl_win32.h" />
     <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui_internal.h" />
@@ -612,6 +615,7 @@
     <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imstb_truetype.h" />
     <ClInclude Include="Engine\Source\ThirdParty\JSON\json.hpp" />
     <ClInclude Include="Engine\Source\ThirdParty\tinyfiledialogs\tinyfiledialogs.h" />
+    <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui_curve.h" />
     <ClInclude Include="LuaScripts\LuaBindingHelpers.h" />
     <ClInclude Include="LuaScripts\LuaScriptComponent.h" />
     <ClInclude Include="LuaScripts\LuaScriptFileUtils.h" />

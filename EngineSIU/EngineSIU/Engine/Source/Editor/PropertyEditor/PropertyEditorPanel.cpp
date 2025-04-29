@@ -5,7 +5,6 @@
 //#include <windows.h>
 //#include <tchar.h>
 
-
 #include "World/World.h"
 #include "Actors/Player.h"
 #include "Components/BoxComponent.h"
@@ -33,6 +32,8 @@
 #include "UObject/UObjectIterator.h"
 #include "LuaScripts/LuaScriptComponent.h"
 #include "LuaScripts/LuaScriptFileUtils.h"
+#include "imgui/imgui_bezier.h"
+#include "imgui/imgui_curve.h"
 
 void PropertyEditorPanel::Render()
 {
@@ -193,6 +194,7 @@ void PropertyEditorPanel::HSVToRGB(const float H, const float S, const float V, 
     R += M;  G += M;  B += M;
 }
 
+
 void PropertyEditorPanel::RenderForSceneComponent(USceneComponent* SceneComponent, AEditorPlayer* Player) const
 {
     ImGui::SetItemDefaultFocus();
@@ -231,8 +233,8 @@ void PropertyEditorPanel::RenderForSceneComponent(USceneComponent* SceneComponen
         {
             Player->AddCoordiMode();
         }
-
-        ImGui::TreePop(); // 트리 닫기
+         
+        ImGui::TreePop();
     }
 
     ImGui::PopStyleColor();
