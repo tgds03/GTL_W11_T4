@@ -366,7 +366,13 @@ void FEditorViewportClient::GetViewInfo(FMinimalViewInfo& OutViewInfo) const
     {
         if (APlayerCameraManager* PCM = PC->PlayerCameraManager)
         {
-            OutViewInfo = PCM->ViewTarget.POV;
+            if (PCM->PendingViewTarget.Target != nullptr)
+            {
+                OutViewInfo = PCM->LastFrameViewTarget.POV;
+            }else
+            {
+                OutViewInfo = PCM->ViewTarget.POV;
+            }
             bGotViewInfo = true;
         }
     }

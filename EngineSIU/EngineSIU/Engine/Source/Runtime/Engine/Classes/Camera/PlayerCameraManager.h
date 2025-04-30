@@ -123,28 +123,10 @@ public:
     void StopCameraFade();
 
     void ApplyCameraModifiers(float DeltaTime, FMinimalViewInfo& InOutPOV);
-    void AddCachedPPBlend(float BlendWeight, EViewTargetBlendOrder BlendOrder);
 
     void AssignViewTarget(AActor* NewTarget, FTViewTarget& VT, struct FViewTargetTransitionParams TransitionParams=FViewTargetTransitionParams());
     
     void SetViewTarget(class AActor* NewTarget, struct FViewTargetTransitionParams TransitionParams);
-
-    virtual void SetCameraCachePOV(const FMinimalViewInfo& InPOV);
-    virtual void SetLastFrameCameraCachePOV(const FMinimalViewInfo& InPOV);
-    virtual const FMinimalViewInfo& GetCameraCacheView() const;
-    virtual const FMinimalViewInfo& GetLastFrameCameraCacheView() const;
-
-    void FillCameraCache(const FMinimalViewInfo& NewInfo);
-
-    float GetCameraCacheTime() const { return CameraCachePrivate.TimeStamp; }
-
-    float GetLastFrameCameraCacheTime() const { return LastFrameCameraCachePrivate.TimeStamp; }
-
-    /** Get value of CameraCachePrivate.Time  */
-    void SetCameraCacheTime(float InTime) { CameraCachePrivate.TimeStamp = InTime; }
-
-    /** Get value of LastFrameCameraCachePrivate.Time  */
-    void SetLastFrameCameraCacheTime(float InTime) { LastFrameCameraCachePrivate.TimeStamp = InTime; }
     
 protected:
     virtual void DoUpdateCamera(float DeltaTime);
@@ -158,16 +140,13 @@ protected:
     TArray<UCameraModifier*> ModifierList;
 
     UCameraModifier_CameraShake* CachedCameraShakeMod;
-
-private:
-    struct FCameraCacheEntry CameraCachePrivate;
-
-    struct FCameraCacheEntry LastFrameCameraCachePrivate;
     
 public:
     FTViewTarget ViewTarget;
 
     FTViewTarget PendingViewTarget;
+
+    FTViewTarget LastFrameViewTarget;
 
     float BlendTimeToGo;
 

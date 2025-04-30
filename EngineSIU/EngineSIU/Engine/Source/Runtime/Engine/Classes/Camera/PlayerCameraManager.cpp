@@ -16,11 +16,6 @@ void FTViewTarget::CheckViewTarget(APlayerController* OwningController)
     {
         Target = OwningController;
     }
-
-    if (Target == OwningController->GetPossessedActor())
-    {
-        return;
-    }
     
     if (Target != nullptr)
     {
@@ -143,8 +138,6 @@ void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, FMinimalViewInf
 
 void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
 {
-    FMinimalViewInfo NewPOV = ViewTarget.POV;
-
     //Progress가 진행중이 아니면
     if (PendingViewTarget.Target == nullptr)
     {
@@ -152,14 +145,13 @@ void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
         UpdateViewTarget(ViewTarget, DeltaTime);
     }
 
-    NewPOV = ViewTarget.POV;
+    FMinimalViewInfo NewPOV = ViewTarget.POV;
     
     if (PendingViewTarget.Target != nullptr)
-    {
+    {        
         BlendTimeToGo -= DeltaTime;
-        //PendingViewTarget은 움직여야할 목표가 아니라 얘를 움직여야함.
-        //그래서 얘를 ViewTarget으로 설정해줌
-        PendingViewTarget.CheckViewTarget(PCOwner);
+
+        UpdateViewTarget(ViewTarget, DeltaTime);
         UpdateViewTarget(PendingViewTarget, DeltaTime);
 
         if (BlendTimeToGo > 0)
@@ -190,23 +182,20 @@ void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
             default:
                 break;
             }
-
+            
             // Update pending view target blend
             NewPOV = ViewTarget.POV;
             //@TODO: CAMERA: Make sure the sense is correct!  BlendViewTargets(ViewTarget, PendingViewTarget, BlendPct);
             NewPOV.BlendViewInfo(PendingViewTarget.POV, BlendPct);
+            
+            UE_LOG(LogLevel::Error, TEXT("%.2f %.2f %.2f"), NewPOV.Location.X, NewPOV.Location.Y, NewPOV.Location.Z);
         }
         else
         {
-            // we're done blending, set new view target
-            ViewTarget = PendingViewTarget;
-
-            // clear pending view target
             PendingViewTarget.Target = nullptr;
 
             BlendTimeToGo = 0;
 
-            // our camera is now viewing there
             NewPOV = PendingViewTarget.POV;
 
             OnBlendCompleteEvent.Broadcast();
@@ -229,7 +218,7 @@ void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
         }
     }
 
-    FillCameraCache(NewPOV);
+    LastFrameViewTarget.POV = NewPOV;
 }
 
 void APlayerCameraManager::SetViewTarget(class AActor* NewTarget, struct FViewTargetTransitionParams TransitionParams)
@@ -240,102 +229,17 @@ void APlayerCameraManager::SetViewTarget(class AActor* NewTarget, struct FViewTa
 		NewTarget = PCOwner;
 	}
 
-	// Update current ViewTargets
-	ViewTarget.CheckViewTarget(PCOwner);
-	if (PendingViewTarget.Target)
+	if (TransitionParams.BlendTime > 0)
 	{
-		PendingViewTarget.CheckViewTarget(PCOwner);
+
+		BlendTimeToGo = TransitionParams.BlendTime;
+
+		AssignViewTarget(PCOwner->GetPossessedActor(), ViewTarget);
+		AssignViewTarget(NewTarget, PendingViewTarget, TransitionParams);
+
 	}
 
-	// If we're already transitioning to this new target, don't interrupt.
-	if (PendingViewTarget.Target != nullptr && NewTarget == PendingViewTarget.Target)
-	{
-		return;
-	}
-
-	// if viewtarget different then new one or we're transitioning from the same target with locked outgoing, then assign it
-	if ((NewTarget != ViewTarget.Target) || (PendingViewTarget.Target))
-	{
-		// if a transition time is specified, then set pending view target accordingly
-		if (TransitionParams.BlendTime > 0)
-		{
-			// band-aid fix so that EndViewTarget() gets called properly in this case
-			if (PendingViewTarget.Target == nullptr)
-			{
-				PendingViewTarget.Target = ViewTarget.Target;
-			}
-
-			// use last frame's POV
-			// ViewTarget.POV = GetLastFrameCameraCacheView();
-			BlendTimeToGo = TransitionParams.BlendTime;
-
-			AssignViewTarget(NewTarget, PendingViewTarget, TransitionParams);
-			PendingViewTarget.CheckViewTarget(PCOwner);
-
-		}
-		else
-		{
-			// otherwise, assign new viewtarget instantly
-			AssignViewTarget(NewTarget, ViewTarget);
-			ViewTarget.CheckViewTarget(PCOwner);
-			// remove old pending ViewTarget so we don't still try to switch to it
-			PendingViewTarget.Target = nullptr;
-		}
-	}
-	else
-	{
-		// we're setting the viewtarget to the viewtarget we were transitioning away from,
-		// just abort the transition.
-		// @fixme, investigate if we want this case to go through the above code, so AssignViewTarget et al
-		// get called
-		if (PendingViewTarget.Target != nullptr)
-		{
-			if (!PCOwner->IsActorBeingDestroyed())
-			{
-				PCOwner->ClientSetViewTarget(NewTarget, TransitionParams);
-			}
-		}
-		PendingViewTarget.Target = nullptr;
-	}
-
-	// update the blend params after all the assignment logic so that sub-classes can compare
-	// the old vs new parameters if needed.
 	BlendParams = TransitionParams;
-}
-
-void APlayerCameraManager::SetCameraCachePOV(const FMinimalViewInfo& InPOV)
-{
-    CameraCachePrivate.POV = InPOV;
-}
-
-void APlayerCameraManager::SetLastFrameCameraCachePOV(const FMinimalViewInfo& InPOV)
-{
-    LastFrameCameraCachePrivate.POV = InPOV;
-}
-
-const FMinimalViewInfo& APlayerCameraManager::GetCameraCacheView() const
-{
-    return CameraCachePrivate.POV;
-}
-
-const FMinimalViewInfo& APlayerCameraManager::GetLastFrameCameraCacheView() const
-{
-    return LastFrameCameraCachePrivate.POV;
-}
-
-void APlayerCameraManager::FillCameraCache(const FMinimalViewInfo& NewInfo)
-{
-    // Backup last frame results.
-    const float CurrentCacheTime = GetCameraCacheTime();
-    const float CurrentGameTime = GetWorld()->TimeSeconds;
-    if (CurrentCacheTime != CurrentGameTime)
-    {
-        SetLastFrameCameraCachePOV(GetCameraCacheView());
-        SetLastFrameCameraCacheTime(CurrentCacheTime);
-    }
-
-    SetCameraCachePOV(NewInfo);
-    SetCameraCacheTime(CurrentGameTime);
 }
 
 void APlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
@@ -357,8 +261,7 @@ void APlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime
 
 	bool bDoNotApplyModifiers = false;
 
-    //카메라가 없으면 액터 자기위치와 자기 로테이션 반영
-    OutVT.POV.Location = OutVT.Target->GetActorLocation() + OutVT.Target->GetActorForwardVector() * 2;
+    OutVT.POV.Location = OutVT.Target->GetActorLocation();
     OutVT.POV.Rotation = OutVT.Target->GetActorRotation();
     
 	if (UCameraComponent* CamComp = OutVT.Target->GetComponentByClass<UCameraComponent>())
@@ -398,17 +301,4 @@ void APlayerCameraManager::AssignViewTarget(AActor* NewTarget, FTViewTarget& VT,
     // Use default FOV and aspect ratio.
     VT.POV.FOV = DefaultFOV;
 
-    // EndViewTarget시 행동을 해야하면 정의 후 부르기
-    // if (OldViewTarget)
-    // {
-    //     OldViewTarget->EndViewTarget(PCOwner);
-    // }
-
-    // ViewTarget 세팅됐을때 행동을 해야하면 정의 후 부르기
-    // VT.Target->BecomeViewTarget(PCOwner);
-
-    PCOwner->ClientSetViewTarget(VT.Target, TransitionParams);
-    
-    // ViewTarget바뀔때 Delegate필요하면 호출
-    // FGameDelegates::Get().GetViewTargetChangedDelegate().Broadcast(PCOwner, OldViewTarget, NewTarget);
 }
