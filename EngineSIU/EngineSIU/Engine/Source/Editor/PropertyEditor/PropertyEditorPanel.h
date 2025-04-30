@@ -2,7 +2,7 @@
 
 #include "Actors/Player.h"
 #include "Components/ActorComponent.h"
-#include "Components/CameraComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Components/SceneComponent.h"
 #include "GameFramework/Actor.h"
 #include "UnrealEd/EditorPanel.h"

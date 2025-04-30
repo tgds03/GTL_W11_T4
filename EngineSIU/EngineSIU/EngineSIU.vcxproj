@@ -236,7 +236,7 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\ActorComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\BillboardComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\BoxComponent.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\CameraComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\CapsuleComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\CubeComp.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\HeightFogComponent.cpp" />
@@ -269,6 +269,7 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\StaticMeshActor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\GameFramework\Actor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\GameFramework\GameMode.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\GameFramework\SpringArmComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Level.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\UnrealClient.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\UserInterface\Console.cpp" />
@@ -496,7 +497,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\ActorComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\BillboardComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\BoxComponent.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\CameraComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\CapsuleComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\CubeComp.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\HeightFogComponent.h" />
@@ -536,6 +537,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Texture.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\GameFramework\Actor.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\GameFramework\GameMode.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\GameFramework\SpringArmComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Level.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\UnrealClient.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\UserInterface\Console.h" />

@@ -7,7 +7,7 @@
 #include "Level.h"
 #include "Actors/Player.h"
 #include "Actors/PlayerController.h"
-#include "Components/CameraComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/EventManager.h"
 #include "UObject/UObjectIterator.h"
