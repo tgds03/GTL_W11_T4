@@ -16,6 +16,13 @@ APlayerController::~APlayerController()
 {
 }
 
+void APlayerController::PostSpawnInitialize()
+{
+    AActor::PostSpawnInitialize();
+
+    SpawnPlayerCameraManager();
+}
+
 void APlayerController::BeginPlay()
 {
 }
@@ -111,4 +118,14 @@ AActor* APlayerController::GetViewTarget() const
     AActor* CameraManagerViewTarget = PlayerCameraManager ? PlayerCameraManager->GetViewTarget() : nullptr;
 
     return CameraManagerViewTarget ? CameraManagerViewTarget : const_cast<APlayerController*>(this);
+}
+
+void APlayerController::SpawnPlayerCameraManager()
+{
+    PlayerCameraManager = GetWorld()->SpawnActor<APlayerCameraManager>();
+
+    if (PlayerCameraManager)
+    {
+        PlayerCameraManager->InitializeFor(this);
+    }
 }

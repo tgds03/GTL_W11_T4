@@ -1,4 +1,5 @@
 #pragma once
+#include "Camera/CameraComponent.h"
 #include "GameFramework/Actor.h" 
 #include "Classes/Components/InputComponent.h"
 
@@ -7,9 +8,12 @@ class APlayerCameraManager;
 class APlayerController : public AActor
 {
     DECLARE_CLASS(APlayerController, AActor)
+    
 public:
     APlayerController();
     ~APlayerController();
+
+    virtual void PostSpawnInitialize() override;
 
     virtual void BeginPlay();
 
@@ -34,8 +38,10 @@ public:
     void FOV(float NewFOV);
     AActor* GetViewTarget() const;
 
-    APlayerCameraManager* PlayerCameraManager;
+    virtual void SpawnPlayerCameraManager();
 
+    APlayerCameraManager* PlayerCameraManager;
+    
 protected:
     UPROPERTY
     (UInputComponent*, InputComponent, = nullptr)

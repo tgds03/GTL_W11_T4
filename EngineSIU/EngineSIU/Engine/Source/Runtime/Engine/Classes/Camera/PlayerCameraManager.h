@@ -1,7 +1,9 @@
 #pragma once
+#include "CameraTypes.h"
 #include "GameFramework/Actor.h"
 
 class UCameraComponent;
+class UCameraModifier_CameraShake;
 class APlayerController;
 class UCameraModifier;
 
@@ -12,8 +14,8 @@ struct FTViewTarget
 {
     AActor* Target;
     FMinimalViewInfo POV;
-public:
 
+public:
     void SetNewTarget(AActor* NewTarget);
     AActor* GetTargetActor() const;
 
@@ -30,8 +32,13 @@ public:
 class APlayerCameraManager : public AActor
 {
     DECLARE_CLASS(APlayerCameraManager, AActor)
+
+    APlayerController* PCOwner;
+    
 public:
     APlayerCameraManager();
+
+    virtual void InitializeFor(APlayerController* PC);
 
     AActor* GetViewTarget() const;
     
@@ -41,15 +48,21 @@ public:
     void StartCameraFade(float FromAlpha, float ToAlpha, float Duration, FLinearColor Color, bool bHoldWhenFinished = false);
 
     void StopCameraFade();
+
+    void ApplyCameraModifiers(float DeltaTime, FMinimalViewInfo& InOutPOV);
+    
 protected:
+    virtual void DoUpdateCamera(float DeltaTime);
 
     FMinimalViewInfo BlendViewTargets(const FTViewTarget& A, const FTViewTarget& B, float Alpha);
+    virtual void UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime);
 
-protected:
     TArray<UCameraModifier*> ModifierList;
 
+    UCameraModifier_CameraShake* CachedCameraShakeMod;
+
 public:
-    UCameraComponent* TargetCamera = nullptr;
+    UCameraComponent* TargetCamera;
     
     FTViewTarget ViewTarget;
 
