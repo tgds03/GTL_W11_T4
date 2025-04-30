@@ -7,6 +7,7 @@
 
 
 APlayerController::APlayerController()
+    : PlayerCameraManager(nullptr)
 {
 }
 

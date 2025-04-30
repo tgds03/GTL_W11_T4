@@ -39,6 +39,7 @@
 #include "Contents/Actors/ItemActor.h"
 #include "Contents/Actors/PlatformActor.h"
 #include "Contents/Actors/GoalPlatformActor.h"
+#include "Renderer/CompositingPass.h"
 
 void ControlEditorPanel::Render()
 {
@@ -272,6 +273,16 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
         if (ImGui::DragFloat("##CamSpeed", &CameraSpeed, 0.1f, 0.198f, 192.0f, "%.1f"))
         {
             GEngineLoop.GetLevelEditor()->GetActiveViewportClient()->SetCameraSpeed(CameraSpeed);
+        }
+
+        ImGui::Separator();
+
+        ImGui::Text("Gamma");
+        float Gamma = FEngineLoop::Renderer.CompositingPass->GammaValue;
+        ImGui::SetNextItemWidth(120.0f);
+        if (ImGui::DragFloat("##Gamma", &Gamma, 0.01f, 0.01f, 4.0f, "%.1f"))
+        {
+            FEngineLoop::Renderer.CompositingPass->GammaValue = Gamma;
         }
 
         ImGui::EndPopup();

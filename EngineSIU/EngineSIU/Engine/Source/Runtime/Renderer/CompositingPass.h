@@ -18,6 +18,8 @@ public:
     virtual void Render(const std::shared_ptr<FEditorViewportClient>& Viewport) override;
 
     virtual void ClearRenderArr() override;
+
+    float GammaValue = 1.f;
     
 private:
     FDXDBufferManager* BufferManager;

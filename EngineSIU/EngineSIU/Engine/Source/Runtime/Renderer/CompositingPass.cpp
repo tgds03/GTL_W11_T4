@@ -40,6 +40,9 @@ void FCompositingPass::Initialize(FDXDBufferManager* InBufferManager, FGraphicsD
     Graphics->Device->CreateSamplerState(&SamplerDesc, &Sampler);
 
     ViewModeBuffer = BufferManager->GetConstantBuffer("FViewModeConstants");
+
+    UINT DiffuseMultiplierSize = sizeof(FGammaConstants);
+    BufferManager->CreateBufferGeneric<FGammaConstants>("FGammaConstants", nullptr, DiffuseMultiplierSize, D3D11_BIND_CONSTANT_BUFFER, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
 }
 
 void FCompositingPass::PrepareRenderArr()
@@ -77,6 +80,12 @@ void FCompositingPass::Render(const std::shared_ptr<FEditorViewportClient>& View
     FViewModeConstants ViewModeConstantData = {};
     ViewModeConstantData.ViewMode = static_cast<uint32>(Viewport->GetViewMode());
     BufferManager->UpdateConstantBuffer<FViewModeConstants>("FViewModeConstants", ViewModeConstantData);
+
+    BufferManager->BindConstantBuffer(TEXT("FGammaConstants"), 1, EShaderStage::Pixel);
+    
+    FGammaConstants GammaConstantData = {};
+    GammaConstantData.GammaValue = GammaValue;
+    BufferManager->UpdateConstantBuffer<FGammaConstants>("FGammaConstants", GammaConstantData);
 
     // Render
     ID3D11VertexShader* VertexShader = ShaderManager->GetVertexShaderByKey(L"Compositing");

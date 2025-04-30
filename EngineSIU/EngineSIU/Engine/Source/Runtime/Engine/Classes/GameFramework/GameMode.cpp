@@ -108,16 +108,15 @@ void AGameMode::StartMatch()
     // /** Camera smoothly accelerates and decelerates.  Ease amount controlled by BlendExp. */
     // VTBlend_EaseInOut
 
-    FViewTargetTransitionParams Params;
-    Params.BlendTime = 5.0f;
-    Params.BlendFunction = VTBlend_EaseOut;
-    Params.BlendExp = 3.f;
+//    FViewTargetTransitionParams Params;
+//    Params.BlendTime = 5.0f;
+//    Params.BlendFunction = VTBlend_EaseOut;
+//    Params.BlendExp = 3.f;
 
-    AActor* TargetActor = GEngine->ActiveWorld->SpawnActor<AActor>();
-    TargetActor->SetActorLocation(FVector(5.f, 200.f, 15.f));
-    TargetActor->SetActorRotation(FRotator(0.f, -90.f, 0.f));
-    
-    GEngine->ActiveWorld->GetPlayerController()->SetViewTarget(TargetActor, Params);
+//    AActor* TargetActor = GEngine->ActiveWorld->SpawnActor<AActor>();
+//    TargetActor->SetActorLocation(FVector(5.f, 200.f, 15.f));
+//    TargetActor->SetActorRotation(FRotator(0.f, -90.f, 0.f));
+//    GEngine->ActiveWorld->GetPlayerController()->SetViewTarget(TargetActor, Params);
     
     FSoundManager::GetInstance().PlaySound("fishdream");
     OnGameStart.Broadcast();
