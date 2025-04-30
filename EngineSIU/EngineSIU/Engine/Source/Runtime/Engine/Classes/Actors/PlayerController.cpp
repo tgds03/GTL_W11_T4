@@ -6,6 +6,7 @@
 
 
 APlayerController::APlayerController()
+    : PlayerCameraManager(nullptr)
 {
     SetupInputComponent();
 }
