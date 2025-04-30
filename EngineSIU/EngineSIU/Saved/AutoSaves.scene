@@ -140,22 +140,6 @@
             "ActorTickInEditor": "false",
             "Components": [
                 {
-                    "ComponentClass": "USceneComponent",
-                    "ComponentID": "USceneComponent_136",
-                    "Properties": {
-                        "AttachParentID": "nullptr",
-                        "ComponentClass": "USceneComponent",
-                        "ComponentName": "USceneComponent_136",
-                        "ComponentOwner": "APlatformActor_151",
-                        "ComponentOwnerClass": "APlatformActor",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "bAutoActive": "true",
-                        "bIsActive": "true"
-                    }
-                },
-                {
                     "ComponentClass": "UBoxComponent",
                     "ComponentID": "BoxComponent_0",
                     "Properties": {
@@ -173,6 +157,22 @@
                         "bAutoActive": "true",
                         "bIsActive": "true",
                         "m_Type": ""
+                    }
+                },
+                {
+                    "ComponentClass": "USceneComponent",
+                    "ComponentID": "USceneComponent_136",
+                    "Properties": {
+                        "AttachParentID": "nullptr",
+                        "ComponentClass": "USceneComponent",
+                        "ComponentName": "USceneComponent_136",
+                        "ComponentOwner": "APlatformActor_151",
+                        "ComponentOwnerClass": "APlatformActor",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
                     }
                 },
                 {
@@ -205,12 +205,12 @@
             "ActorTickInEditor": "false",
             "Components": [
                 {
-                    "ComponentClass": "USpringArmComponent",
-                    "ComponentID": "USpringArmComponent_275",
+                    "ComponentClass": "USceneComponent",
+                    "ComponentID": "USceneComponent_140",
                     "Properties": {
                         "AttachParentID": "SphereComponent_0",
-                        "ComponentClass": "USpringArmComponent",
-                        "ComponentName": "USpringArmComponent_275",
+                        "ComponentClass": "USceneComponent",
+                        "ComponentName": "USceneComponent_140",
                         "ComponentOwner": "AFish_204",
                         "ComponentOwnerClass": "AFish",
                         "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
@@ -221,26 +221,12 @@
                     }
                 },
                 {
-                    "ComponentClass": "ULuaScriptComponent",
-                    "ComponentID": "ULuaScriptComponent_208",
+                    "ComponentClass": "UCameraComponent",
+                    "ComponentID": "CameraComponent_0",
                     "Properties": {
-                        "ComponentClass": "ULuaScriptComponent",
-                        "ComponentName": "ULuaScriptComponent_208",
-                        "ComponentOwner": "AFish_204",
-                        "ComponentOwnerClass": "AFish",
-                        "DisplayName": "UWorld_57_AFish_204.lua",
-                        "ScriptPath": "LuaScripts\\UWorld_57_AFish_204.lua",
-                        "bAutoActive": "true",
-                        "bIsActive": "true"
-                    }
-                },
-                {
-                    "ComponentClass": "USceneComponent",
-                    "ComponentID": "USceneComponent_140",
-                    "Properties": {
-                        "AttachParentID": "SphereComponent_0",
-                        "ComponentClass": "USceneComponent",
-                        "ComponentName": "USceneComponent_140",
+                        "AttachParentID": "SpringArmComponent_0",
+                        "ComponentClass": "UCameraComponent",
+                        "ComponentName": "CameraComponent_0",
                         "ComponentOwner": "AFish_204",
                         "ComponentOwnerClass": "AFish",
                         "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
@@ -271,26 +257,6 @@
                     }
                 },
                 {
-                    "ComponentClass": "UFishTailComponent",
-                    "ComponentID": "FishTailComponent_0",
-                    "Properties": {
-                        "AABB_max": "X=0.187 Y=-0.000 Z=0.664",
-                        "AABB_min": "X=-0.187 Y=-1.549 Z=-0.638",
-                        "AttachParentID": "FishBodyComponent_0",
-                        "ComponentClass": "UFishTailComponent",
-                        "ComponentName": "FishTailComponent_0",
-                        "ComponentOwner": "AFish_204",
-                        "ComponentOwnerClass": "AFish",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "StaticMeshPath": "Contents/Fish/Fish_Back.obj",
-                        "bAutoActive": "true",
-                        "bIsActive": "true",
-                        "m_Type": ""
-                    }
-                },
-                {
                     "ComponentClass": "UFishBodyComponent",
                     "ComponentID": "FishBodyComponent_0",
                     "Properties": {
@@ -311,6 +277,40 @@
                     }
                 },
                 {
+                    "ComponentClass": "UFishTailComponent",
+                    "ComponentID": "FishTailComponent_0",
+                    "Properties": {
+                        "AABB_max": "X=0.187 Y=-0.000 Z=0.664",
+                        "AABB_min": "X=-0.187 Y=-1.549 Z=-0.638",
+                        "AttachParentID": "FishBodyComponent_0",
+                        "ComponentClass": "UFishTailComponent",
+                        "ComponentName": "FishTailComponent_0",
+                        "ComponentOwner": "AFish_204",
+                        "ComponentOwnerClass": "AFish",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "StaticMeshPath": "Contents/Fish/Fish_Back.obj",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": ""
+                    }
+                },
+                {
+                    "ComponentClass": "ULuaScriptComponent",
+                    "ComponentID": "ULuaScriptComponent_208",
+                    "Properties": {
+                        "ComponentClass": "ULuaScriptComponent",
+                        "ComponentName": "ULuaScriptComponent_208",
+                        "ComponentOwner": "AFish_204",
+                        "ComponentOwnerClass": "AFish",
+                        "DisplayName": "UWorld_57_AFish_204.lua",
+                        "ScriptPath": "LuaScripts\\UWorld_57_AFish_204.lua",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
+                    }
+                },
+                {
                     "ComponentClass": "USpringArmComponent",
                     "ComponentID": "SpringArmComponent_0",
                     "Properties": {
@@ -320,38 +320,6 @@
                         "ComponentOwner": "AFish_204",
                         "ComponentOwnerClass": "AFish",
                         "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "bAutoActive": "true",
-                        "bIsActive": "true"
-                    }
-                },
-                {
-                    "ComponentClass": "UCameraComponent",
-                    "ComponentID": "CameraComponent_0",
-                    "Properties": {
-                        "AttachParentID": "SpringArmComponent_0",
-                        "ComponentClass": "UCameraComponent",
-                        "ComponentName": "CameraComponent_0",
-                        "ComponentOwner": "AFish_204",
-                        "ComponentOwnerClass": "AFish",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "bAutoActive": "true",
-                        "bIsActive": "true"
-                    }
-                },
-                {
-                    "ComponentClass": "UCameraComponent",
-                    "ComponentID": "UCameraComponent_276",
-                    "Properties": {
-                        "AttachParentID": "USpringArmComponent_275",
-                        "ComponentClass": "UCameraComponent",
-                        "ComponentName": "UCameraComponent_276",
-                        "ComponentOwner": "AFish_204",
-                        "ComponentOwnerClass": "AFish",
-                        "RelativeLocation": "X=-6.499 Y=0.000 Z=3.302",
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
                         "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
                         "bAutoActive": "true",
@@ -378,6 +346,22 @@
                         "ComponentOwnerClass": "APlatformActor",
                         "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
+                    }
+                },
+                {
+                    "ComponentClass": "USceneComponent",
+                    "ComponentID": "USceneComponent_148",
+                    "Properties": {
+                        "AttachParentID": "nullptr",
+                        "ComponentClass": "USceneComponent",
+                        "ComponentName": "USceneComponent_148",
+                        "ComponentOwner": "APlatformActor_139",
+                        "ComponentOwnerClass": "APlatformActor",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
                         "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
                         "bAutoActive": "true",
                         "bIsActive": "true"
@@ -469,6 +453,22 @@
                     }
                 },
                 {
+                    "ComponentClass": "USceneComponent",
+                    "ComponentID": "USceneComponent_153",
+                    "Properties": {
+                        "AttachParentID": "nullptr",
+                        "ComponentClass": "USceneComponent",
+                        "ComponentName": "USceneComponent_153",
+                        "ComponentOwner": "APlatformActor_142",
+                        "ComponentOwnerClass": "APlatformActor",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
+                    }
+                },
+                {
                     "ComponentClass": "UBoxComponent",
                     "ComponentID": "BoxComponent_0",
                     "Properties": {
@@ -498,22 +498,6 @@
             "ActorTickInEditor": "false",
             "Components": [
                 {
-                    "ComponentClass": "USceneComponent",
-                    "ComponentID": "USceneComponent_158",
-                    "Properties": {
-                        "AttachParentID": "nullptr",
-                        "ComponentClass": "USceneComponent",
-                        "ComponentName": "USceneComponent_158",
-                        "ComponentOwner": "APlatformActor_147",
-                        "ComponentOwnerClass": "APlatformActor",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "bAutoActive": "true",
-                        "bIsActive": "true"
-                    }
-                },
-                {
                     "ComponentClass": "UBoxComponent",
                     "ComponentID": "BoxComponent_0",
                     "Properties": {
@@ -531,6 +515,22 @@
                         "bAutoActive": "true",
                         "bIsActive": "true",
                         "m_Type": ""
+                    }
+                },
+                {
+                    "ComponentClass": "USceneComponent",
+                    "ComponentID": "USceneComponent_158",
+                    "Properties": {
+                        "AttachParentID": "nullptr",
+                        "ComponentClass": "USceneComponent",
+                        "ComponentName": "USceneComponent_158",
+                        "ComponentOwner": "APlatformActor_147",
+                        "ComponentOwnerClass": "APlatformActor",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
                     }
                 },
                 {
@@ -628,22 +628,6 @@
             "ActorTickInEditor": "false",
             "Components": [
                 {
-                    "ComponentClass": "USceneComponent",
-                    "ComponentID": "USceneComponent_166",
-                    "Properties": {
-                        "AttachParentID": "UTextComponent_172",
-                        "ComponentClass": "USceneComponent",
-                        "ComponentName": "USceneComponent_166",
-                        "ComponentOwner": "AActor_171",
-                        "ComponentOwnerClass": "AActor",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "bAutoActive": "true",
-                        "bIsActive": "true"
-                    }
-                },
-                {
                     "ComponentClass": "UTextComponent",
                     "ComponentID": "UTextComponent_172",
                     "Properties": {
@@ -669,6 +653,22 @@
                         "bAutoActive": "true",
                         "bIsActive": "true",
                         "m_Type": "UTextComponent"
+                    }
+                },
+                {
+                    "ComponentClass": "USceneComponent",
+                    "ComponentID": "USceneComponent_166",
+                    "Properties": {
+                        "AttachParentID": "UTextComponent_172",
+                        "ComponentClass": "USceneComponent",
+                        "ComponentName": "USceneComponent_166",
+                        "ComponentOwner": "AActor_171",
+                        "ComponentOwnerClass": "AActor",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
                     }
                 }
             ],
@@ -1148,6 +1148,44 @@
             "ActorTickInEditor": "false",
             "Components": [
                 {
+                    "ComponentClass": "UBillboardComponent",
+                    "ComponentID": "UBillboardComponent_0",
+                    "Properties": {
+                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
+                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
+                        "AttachParentID": "nullptr",
+                        "BufferKey": "Assets/Editor/Icon/S_LightSpot.PNG",
+                        "ComponentClass": "UBillboardComponent",
+                        "ComponentName": "UBillboardComponent_0",
+                        "ComponentOwner": "ASpotLight_245",
+                        "ComponentOwnerClass": "ASpotLight",
+                        "FinalIndexU": "0.000000",
+                        "FinalIndexV": "0.000000",
+                        "RelativeLocation": "X=5.730 Y=58.224 Z=10.090",
+                        "RelativeRotation": "Pitch=-31.313 Yaw=66.270 Roll=-4.002",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": "UBillboardComponent"
+                    }
+                },
+                {
+                    "ComponentClass": "USceneComponent",
+                    "ComponentID": "USceneComponent_197",
+                    "Properties": {
+                        "AttachParentID": "nullptr",
+                        "ComponentClass": "USceneComponent",
+                        "ComponentName": "USceneComponent_197",
+                        "ComponentOwner": "ASpotLight_245",
+                        "ComponentOwnerClass": "ASpotLight",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
+                    }
+                },
+                {
                     "ComponentClass": "USpotLightComponent",
                     "ComponentID": "USpotLightComponent_0",
                     "Properties": {
@@ -1172,44 +1210,6 @@
                         "Type": "2",
                         "bAutoActive": "true",
                         "bIsActive": "true"
-                    }
-                },
-                {
-                    "ComponentClass": "USceneComponent",
-                    "ComponentID": "USceneComponent_197",
-                    "Properties": {
-                        "AttachParentID": "nullptr",
-                        "ComponentClass": "USceneComponent",
-                        "ComponentName": "USceneComponent_197",
-                        "ComponentOwner": "ASpotLight_245",
-                        "ComponentOwnerClass": "ASpotLight",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "bAutoActive": "true",
-                        "bIsActive": "true"
-                    }
-                },
-                {
-                    "ComponentClass": "UBillboardComponent",
-                    "ComponentID": "UBillboardComponent_0",
-                    "Properties": {
-                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
-                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
-                        "AttachParentID": "nullptr",
-                        "BufferKey": "Assets/Editor/Icon/S_LightSpot.PNG",
-                        "ComponentClass": "UBillboardComponent",
-                        "ComponentName": "UBillboardComponent_0",
-                        "ComponentOwner": "ASpotLight_245",
-                        "ComponentOwnerClass": "ASpotLight",
-                        "FinalIndexU": "0.000000",
-                        "FinalIndexV": "0.000000",
-                        "RelativeLocation": "X=5.730 Y=58.224 Z=10.090",
-                        "RelativeRotation": "Pitch=-31.313 Yaw=66.270 Roll=-4.002",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "bAutoActive": "true",
-                        "bIsActive": "true",
-                        "m_Type": "UBillboardComponent"
                     }
                 }
             ],
@@ -1364,6 +1364,22 @@
             "ActorTickInEditor": "false",
             "Components": [
                 {
+                    "ComponentClass": "USceneComponent",
+                    "ComponentID": "USceneComponent_209",
+                    "Properties": {
+                        "AttachParentID": "nullptr",
+                        "ComponentClass": "USceneComponent",
+                        "ComponentName": "USceneComponent_209",
+                        "ComponentOwner": "APointLight_417",
+                        "ComponentOwnerClass": "APointLight",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
+                    }
+                },
+                {
                     "ComponentClass": "UPointLightComponent",
                     "ComponentID": "PointLightComponent_0",
                     "Properties": {
@@ -1383,22 +1399,6 @@
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
                         "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
                         "Type": "1",
-                        "bAutoActive": "true",
-                        "bIsActive": "true"
-                    }
-                },
-                {
-                    "ComponentClass": "USceneComponent",
-                    "ComponentID": "USceneComponent_209",
-                    "Properties": {
-                        "AttachParentID": "nullptr",
-                        "ComponentClass": "USceneComponent",
-                        "ComponentName": "USceneComponent_209",
-                        "ComponentOwner": "APointLight_417",
-                        "ComponentOwnerClass": "APointLight",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
                         "bAutoActive": "true",
                         "bIsActive": "true"
                     }

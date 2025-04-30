@@ -16,7 +16,7 @@ USpringArmComponent::USpringArmComponent()
     TargetOffset = FVector(-13.f, 0.f, 4.f); // 부모에 대한 상대 위치
 
     bUsePawnControlRotation = false;
-    bDoCollisionTest = true;
+    bDoCollisionTest = false;
 
     bInheritPitch = bInheritYaw = bInheritRoll = true;
     bEnableCameraLag = true;
