@@ -72,9 +72,6 @@ public:
     
     FEventManager EventManager;
 
-    void SetMainCamera(UCameraComponent* InCamera) { PlayerController->PlayerCameraManager->MainCamera = InCamera; }
-    UCameraComponent* GetMainCamera() const;
-    
     void SetMainPlayer(APlayer* InPlayer){ MainPlayer = InPlayer; }
     APlayer* GetMainPlayer() const;
 
@@ -95,6 +92,7 @@ private:
     /** Actor가 Spawn되었고, 아직 BeginPlay가 호출되지 않은 Actor들 */
     TArray<AActor*> PendingBeginPlayActors;
 
+    // TODO: 싱글 플레이어면 상관 없지만, 로컬 멀티 플레이어인 경우를 위해 배열로 관리하는 방법을 고려하기.
     APlayerController* PlayerController = nullptr;
 
     APlayer* MainPlayer = nullptr;

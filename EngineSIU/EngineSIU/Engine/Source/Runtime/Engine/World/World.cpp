@@ -147,25 +147,25 @@ void UWorld::BeginPlay()
                 Target.X -= 20.0f;
             
                 MainTextComponent->SetText(L"Press Space to start");
-                GetMainCamera()->SetFInterpToSpeed(3.0f);
-                GetMainCamera()->SetFollowCustomTarget(Target);
+                //GetMainCamera()->SetFInterpToSpeed(3.0f);
+                //GetMainCamera()->SetFollowCustomTarget(Target);
             }
         });
 
         GameMode->OnGameStart.AddLambda([this]() {
-            GetMainCamera()->SetFInterpToSpeed(0.8f);
-            GetMainCamera()->ResetFollowToPlayer();
+            //GetMainCamera()->SetFInterpToSpeed(0.8f);
+            //GetMainCamera()->ResetFollowToPlayer();
             });
 
         GameMode->OnGameEnd.AddLambda([this](bool bIsWin) {
             if (MainTextComponent) {
-                FVector Target = MainTextComponent->GetWorldLocation();
-                FVector TextLoc = Target;
-                Target.X -= 20.0f;
-                Target.Z -= GetMainCamera()->CameraHeight;
+//                FVector Target = MainTextComponent->GetWorldLocation();
+//                FVector TextLoc = Target;
+//                Target.X -= 20.0f;
+//                Target.Z -= GetMainCamera()->CameraHeight;
 
-                GetMainCamera()->SetFollowCustomTarget(Target);
-                GetMainCamera()->SetLookTarget(TextLoc);
+//                GetMainCamera()->SetFollowCustomTarget(Target);
+//                GetMainCamera()->SetLookTarget(TextLoc);
                 
                 if (bIsWin)
                 {
@@ -284,16 +284,6 @@ bool UWorld::DestroyActor(AActor* ThisActor)
 UWorld* UWorld::GetWorld() const
 {
     return const_cast<UWorld*>(this);
-}
-
-UCameraComponent* UWorld::GetMainCamera() const
-{
-    if (UCameraComponent* CameraComponent = PlayerController->PlayerCameraManager->MainCamera)
-    {
-        return CameraComponent;
-    }
-
-    return nullptr;
 }
 
 APlayer* UWorld::GetMainPlayer() const

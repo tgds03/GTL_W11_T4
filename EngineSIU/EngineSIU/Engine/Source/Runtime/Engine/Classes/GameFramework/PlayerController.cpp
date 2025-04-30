@@ -8,18 +8,25 @@
 
 APlayerController::APlayerController()
 {
-    SetupInputComponent();
 }
 
 
 APlayerController::~APlayerController()
 {
+    UnPossess();
+
+    if (InputComponent)
+    {
+        delete InputComponent;
+        InputComponent = nullptr;
+    }
 }
 
 void APlayerController::PostSpawnInitialize()
 {
     AActor::PostSpawnInitialize();
 
+    SetupInputComponent();
     SpawnPlayerCameraManager();
 }
 
@@ -53,10 +60,12 @@ void APlayerController::ProcessInput(float DeltaTime) const
 
 void APlayerController::Destroyed()
 {
+    UnPossess();
 }
 
 void APlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+    UnPossess();
 }
 
 void APlayerController::Possess(AActor* InActor)
