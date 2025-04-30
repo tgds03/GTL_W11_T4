@@ -16,7 +16,7 @@ UTestCameraShake::UTestCameraShake()
     Pattern->Pitch.Amplitude = 10.f;
     Pattern->Pitch.Frequency = 8.f;
 
-    Pattern->Roll.Amplitude = 40.f;
+    Pattern->Roll.Amplitude = 6.f;
     Pattern->Roll.Frequency = 20.f;
     
     SetRootShakePattern(Pattern);
