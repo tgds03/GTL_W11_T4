@@ -138,8 +138,7 @@ bool UCameraModifier_CameraShake::ModifyCamera(float DeltaTime, FMinimalViewInfo
 
 void UCameraModifier_CameraShake::SaveShakeInExpiredPool(UCameraShakeBase* ShakeInst)
 {
-    FName ClassName = ShakeInst->GetClass()->GetFName();
-    TArray<UCameraShakeBase*>& PooledCameraShakes = ExpiredPooledShakesMap.FindOrAdd(ClassName);
+    TArray<UCameraShakeBase*>& PooledCameraShakes = ExpiredPooledShakesMap.FindOrAdd(ShakeInst->GetClass());
     if (PooledCameraShakes.Num() < 5)
     {
         PooledCameraShakes.Add(ShakeInst);
@@ -148,8 +147,7 @@ void UCameraModifier_CameraShake::SaveShakeInExpiredPool(UCameraShakeBase* Shake
 
 UCameraShakeBase* UCameraModifier_CameraShake::ReclaimShakeFromExpiredPool(UClass* ShakeClass)
 {
-    FName ClassName = ShakeClass->GetFName();
-    if (TArray<UCameraShakeBase*>* PooledCameraShakes = ExpiredPooledShakesMap.Find(ClassName))
+    if (TArray<UCameraShakeBase*>* PooledCameraShakes = ExpiredPooledShakesMap.Find(ShakeClass))
     {
         if (!PooledCameraShakes->IsEmpty())
         {

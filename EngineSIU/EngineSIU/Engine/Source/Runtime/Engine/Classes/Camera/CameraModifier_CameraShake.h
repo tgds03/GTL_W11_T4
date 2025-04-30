@@ -26,7 +26,7 @@ protected:
     TArray<UCameraShakeBase*> ActiveShakes;
 
     // TODO: 현재 Pool 작동 안됨.
-    TMap<FName, TArray<UCameraShakeBase*>> ExpiredPooledShakesMap;
+    TMap<UClass*, TArray<UCameraShakeBase*>> ExpiredPooledShakesMap;
 
     void SaveShakeInExpiredPool(UCameraShakeBase* ShakeInst);
     UCameraShakeBase* ReclaimShakeFromExpiredPool(UClass* ShakeClass);
