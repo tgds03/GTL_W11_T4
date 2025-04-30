@@ -1,10 +1,10 @@
 
-#include "TestCameraShake.h"
+#include "DamageCameraShake.h"
 
 #include "Camera/PerlinNoiseCameraShakePattern.h"
 #include "Camera/Shakes/WaveOscillatorCameraShakePattern.h"
 
-UTestCameraShake::UTestCameraShake()
+UDamageCameraShake::UDamageCameraShake()
 {
     //UWaveOscillatorCameraShakePattern* Pattern = new UWaveOscillatorCameraShakePattern();
     UPerlinNoiseCameraShakePattern* Pattern = new UPerlinNoiseCameraShakePattern();
