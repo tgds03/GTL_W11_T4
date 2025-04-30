@@ -108,7 +108,7 @@ void AGameMode::Tick(float DeltaTime)
     {
         GameInfo.ElapsedGameTime += DeltaTime / 2.0f;
 
-        UE_LOG(LogLevel::Display, TEXT("Game Time: %.2f"), GameInfo.ElapsedGameTime);
+        //UE_LOG(LogLevel::Display, TEXT("Game Time: %.2f"), GameInfo.ElapsedGameTime);
         
     }
 }
