@@ -139,22 +139,21 @@ bool UCameraModifier_CameraShake::ModifyCamera(float DeltaTime, FMinimalViewInfo
 void UCameraModifier_CameraShake::SaveShakeInExpiredPool(UCameraShakeBase* ShakeInst)
 {
     FName ClassName = ShakeInst->GetClass()->GetFName();
-    std::vector<UCameraShakeBase*>& PooledCameraShakes = ExpiredPooledShakesMap[ClassName];
-    if (PooledCameraShakes.size() < 5)
+    TArray<UCameraShakeBase*>& PooledCameraShakes = ExpiredPooledShakesMap.FindOrAdd(ClassName);
+    if (PooledCameraShakes.Num() < 5)
     {
-        PooledCameraShakes.push_back(ShakeInst);
+        PooledCameraShakes.Add(ShakeInst);
     }
 }
 
 UCameraShakeBase* UCameraModifier_CameraShake::ReclaimShakeFromExpiredPool(UClass* ShakeClass)
 {
     FName ClassName = ShakeClass->GetFName();
-    if (ExpiredPooledShakesMap.contains(ClassName))
+    if (TArray<UCameraShakeBase*>* PooledCameraShakes = ExpiredPooledShakesMap.Find(ClassName))
     {
-        if (ExpiredPooledShakesMap[ClassName].empty() == false)
+        if (!PooledCameraShakes->IsEmpty())
         {
-            UCameraShakeBase* OldShake = ExpiredPooledShakesMap[ClassName].back();
-            ExpiredPooledShakesMap[ClassName].pop_back();
+            UCameraShakeBase* OldShake = PooledCameraShakes->Pop();
             OldShake->StartShake();
             return OldShake;
         }
