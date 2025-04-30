@@ -357,6 +357,32 @@ void FEditorViewportClient::DeprojectFVector2D(const FVector2D& ScreenPos, FVect
     OutWorldDir = (RayEnd - RayOrigin).GetSafeNormal();
 }
 
+void FEditorViewportClient::GetViewInfo(FMinimalViewInfo& OutViewInfo) const
+{
+    bool bGotViewInfo = false;
+        
+    OutViewInfo = FMinimalViewInfo();
+    if (APlayerController* PC = GEngine->ActiveWorld->GetPlayerController())
+    {
+        if (APlayerCameraManager* PCM = PC->PlayerCameraManager)
+        {
+            if (PCM->PendingViewTarget.Target != nullptr)
+            {
+                OutViewInfo = PCM->LastFrameViewTarget.POV;
+            }else
+            {
+                OutViewInfo = PCM->ViewTarget.POV;
+            }
+            bGotViewInfo = true;
+        }
+    }
+
+    if (!bGotViewInfo)
+    {
+        OutViewInfo = FMinimalViewInfo();
+    }
+}
+
 
 D3D11_VIEWPORT& FEditorViewportClient::GetD3DViewport() const
 {
@@ -442,23 +468,20 @@ void FEditorViewportClient::UpdateViewMatrix()
 {
     if (GEngine->ActiveWorld->WorldType == EWorldType::PIE)
     {
-        UCameraComponent* MainCamera = GEngine->ActiveWorld->GetMainCamera();
+        FMinimalViewInfo ViewInfo;
+        GetViewInfo(ViewInfo);
 
-        if (MainCamera == nullptr)
-        {
-            MainCamera = UCameraComponent::DefaultCamera.get();
-        }
+        FMatrix RotationMatrix = ViewInfo.Rotation.ToMatrix();
+        FVector FinalUp = FMatrix::TransformVector(FVector::UpVector, RotationMatrix);
         
         View = JungleMath::CreateViewMatrix(
-            MainCamera->GetWorldLocation(),
-            MainCamera->GetWorldLocation() + MainCamera->GetForwardVector(),
-            FVector{ 0.0f,0.0f, 1.0f }
+            ViewInfo.Location,
+            ViewInfo.Location + ViewInfo.Rotation.ToVector(),
+            FinalUp
         );
-        //TODO: 2D Orthogonal모드 추가 - Perpective(3D 시점) 게임만 가정하고 2D Orthogonal시점의 게임은 가정안함
-    }else
+    }
+    else
     {
-        UCameraComponent* MainCamera = GEngine->ActiveWorld->GetMainCamera();
-
         if (IsPerspective())
         {
             View = JungleMath::CreateViewMatrix(PerspectiveCamera.GetLocation(),
@@ -491,18 +514,14 @@ void FEditorViewportClient::UpdateProjectionMatrix()
 
     if (GEngine->ActiveWorld->WorldType == EWorldType::PIE)
     {
-        UCameraComponent* MainCamera = GEngine->ActiveWorld->GetMainCamera();
-
-        if (MainCamera == nullptr)
-        {
-            MainCamera = UCameraComponent::DefaultCamera.get();
-        }
+        FMinimalViewInfo ViewInfo;
+        GetViewInfo(ViewInfo);
         
         Projection = JungleMath::CreateProjectionMatrix(
-            FMath::DegreesToRadians(MainCamera->ViewFOV),
+            FMath::DegreesToRadians(ViewInfo.FOV),
             AspectRatio,
-            MainCamera->NearClip,
-            MainCamera->FarClip
+            ViewInfo.PerspectiveNearClip,
+            ViewInfo.PerspectiveFarClip
         );
     }else
     {
@@ -703,8 +722,8 @@ FVector FViewportCamera::GetForwardVector() const
 FVector FViewportCamera::GetRightVector() const
 {
     FVector Right = FVector(0.f, 1.f, 0.0f);
-	Right = JungleMath::FVectorRotate(Right, ViewRotation);
-	return Right;
+    Right = JungleMath::FVectorRotate(Right, ViewRotation);
+    return Right;
 }
 
 FVector FViewportCamera::GetUpVector() const

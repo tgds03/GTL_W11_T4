@@ -157,23 +157,39 @@
             "ActorTickInEditor": "false",
             "Components": [
                 {
-                    "ComponentClass": "UFishTailComponent",
-                    "ComponentID": "FishTailComponent_0",
+                    "ComponentClass": "USphereComponent",
+                    "ComponentID": "SphereComponent_0",
                     "Properties": {
-                        "AABB_max": "X=0.187 Y=-0.000 Z=0.664",
-                        "AABB_min": "X=-0.187 Y=-1.549 Z=-0.638",
-                        "AttachParentID": "FishBodyComponent_0",
-                        "ComponentClass": "UFishTailComponent",
-                        "ComponentName": "FishTailComponent_0",
+                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
+                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
+                        "AttachParentID": "nullptr",
+                        "ComponentClass": "USphereComponent",
+                        "ComponentName": "SphereComponent_0",
                         "ComponentOwner": "AFish_204",
                         "ComponentOwnerClass": "AFish",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=7.492",
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
                         "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "StaticMeshPath": "Contents/Fish/Fish_Back.obj",
+                        "SphereRadius": "1.000000",
                         "bAutoActive": "true",
                         "bIsActive": "true",
                         "m_Type": ""
+                    }
+                },
+                {
+                    "ComponentClass": "UCameraComponent",
+                    "ComponentID": "UCameraComponent_276",
+                    "Properties": {
+                        "AttachParentID": "USpringArmComponent_275",
+                        "ComponentClass": "UCameraComponent",
+                        "ComponentName": "UCameraComponent_276",
+                        "ComponentOwner": "AFish_204",
+                        "ComponentOwnerClass": "AFish",
+                        "RelativeLocation": "X=-6.499 Y=0.000 Z=3.302",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
                     }
                 },
                 {
@@ -197,20 +213,36 @@
                     }
                 },
                 {
-                    "ComponentClass": "USphereComponent",
-                    "ComponentID": "SphereComponent_0",
+                    "ComponentClass": "USpringArmComponent",
+                    "ComponentID": "USpringArmComponent_275",
                     "Properties": {
-                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
-                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
-                        "AttachParentID": "nullptr",
-                        "ComponentClass": "USphereComponent",
-                        "ComponentName": "SphereComponent_0",
+                        "AttachParentID": "SphereComponent_0",
+                        "ComponentClass": "USpringArmComponent",
+                        "ComponentName": "USpringArmComponent_275",
                         "ComponentOwner": "AFish_204",
                         "ComponentOwnerClass": "AFish",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=7.492",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
                         "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "SphereRadius": "1.000000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
+                    }
+                },
+                {
+                    "ComponentClass": "UFishTailComponent",
+                    "ComponentID": "FishTailComponent_0",
+                    "Properties": {
+                        "AABB_max": "X=0.187 Y=-0.000 Z=0.664",
+                        "AABB_min": "X=-0.187 Y=-1.549 Z=-0.638",
+                        "AttachParentID": "FishBodyComponent_0",
+                        "ComponentClass": "UFishTailComponent",
+                        "ComponentName": "FishTailComponent_0",
+                        "ComponentOwner": "AFish_204",
+                        "ComponentOwnerClass": "AFish",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "StaticMeshPath": "Contents/Fish/Fish_Back.obj",
                         "bAutoActive": "true",
                         "bIsActive": "true",
                         "m_Type": ""
@@ -240,26 +272,6 @@
             "ActorTickInEditor": "false",
             "Components": [
                 {
-                    "ComponentClass": "UStaticMeshComponent",
-                    "ComponentID": "MeshComponent_0",
-                    "Properties": {
-                        "AABB_max": "X=1.000 Y=1.000 Z=1.000",
-                        "AABB_min": "X=-1.000 Y=-1.000 Z=-1.000",
-                        "AttachParentID": "BoxComponent_0",
-                        "ComponentClass": "UStaticMeshComponent",
-                        "ComponentName": "MeshComponent_0",
-                        "ComponentOwner": "APlatformActor_139",
-                        "ComponentOwnerClass": "APlatformActor",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "StaticMeshPath": "Contents/Oil/Oil.obj",
-                        "bAutoActive": "true",
-                        "bIsActive": "true",
-                        "m_Type": ""
-                    }
-                },
-                {
                     "ComponentClass": "UBoxComponent",
                     "ComponentID": "BoxComponent_0",
                     "Properties": {
@@ -278,6 +290,26 @@
                         "bIsActive": "true",
                         "m_Type": ""
                     }
+                },
+                {
+                    "ComponentClass": "UStaticMeshComponent",
+                    "ComponentID": "MeshComponent_0",
+                    "Properties": {
+                        "AABB_max": "X=1.000 Y=1.000 Z=1.000",
+                        "AABB_min": "X=-1.000 Y=-1.000 Z=-1.000",
+                        "AttachParentID": "BoxComponent_0",
+                        "ComponentClass": "UStaticMeshComponent",
+                        "ComponentName": "MeshComponent_0",
+                        "ComponentOwner": "APlatformActor_139",
+                        "ComponentOwnerClass": "APlatformActor",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "StaticMeshPath": "Contents/Oil/Oil.obj",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": ""
+                    }
                 }
             ],
             "RootComponentID": "BoxComponent_0"
@@ -288,26 +320,6 @@
             "ActorLabel": "APlatformActor142",
             "ActorTickInEditor": "false",
             "Components": [
-                {
-                    "ComponentClass": "UBoxComponent",
-                    "ComponentID": "BoxComponent_0",
-                    "Properties": {
-                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
-                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
-                        "AttachParentID": "nullptr",
-                        "BoxExtent": "X=1.000 Y=1.000 Z=1.000",
-                        "ComponentClass": "UBoxComponent",
-                        "ComponentName": "BoxComponent_0",
-                        "ComponentOwner": "APlatformActor_142",
-                        "ComponentOwnerClass": "APlatformActor",
-                        "RelativeLocation": "X=35.660 Y=45.188 Z=5.425",
-                        "RelativeRotation": "Pitch=-13.582 Yaw=130.600 Roll=0.000",
-                        "RelativeScale3D": "X=20.128 Y=8.536 Z=1.000",
-                        "bAutoActive": "true",
-                        "bIsActive": "true",
-                        "m_Type": ""
-                    }
-                },
                 {
                     "ComponentClass": "UStaticMeshComponent",
                     "ComponentID": "MeshComponent_0",
@@ -323,6 +335,26 @@
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
                         "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
                         "StaticMeshPath": "Contents/Oil/Oil.obj",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": ""
+                    }
+                },
+                {
+                    "ComponentClass": "UBoxComponent",
+                    "ComponentID": "BoxComponent_0",
+                    "Properties": {
+                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
+                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
+                        "AttachParentID": "nullptr",
+                        "BoxExtent": "X=1.000 Y=1.000 Z=1.000",
+                        "ComponentClass": "UBoxComponent",
+                        "ComponentName": "BoxComponent_0",
+                        "ComponentOwner": "APlatformActor_142",
+                        "ComponentOwnerClass": "APlatformActor",
+                        "RelativeLocation": "X=35.660 Y=45.188 Z=5.425",
+                        "RelativeRotation": "Pitch=-13.582 Yaw=130.600 Roll=0.000",
+                        "RelativeScale3D": "X=20.128 Y=8.536 Z=1.000",
                         "bAutoActive": "true",
                         "bIsActive": "true",
                         "m_Type": ""
@@ -681,26 +713,6 @@
             "ActorTickInEditor": "false",
             "Components": [
                 {
-                    "ComponentClass": "UStaticMeshComponent",
-                    "ComponentID": "MeshComponent_0",
-                    "Properties": {
-                        "AABB_max": "X=0.920 Y=0.130 Z=0.920",
-                        "AABB_min": "X=-0.920 Y=-0.130 Z=-0.920",
-                        "AttachParentID": "SphereComponent_0",
-                        "ComponentClass": "UStaticMeshComponent",
-                        "ComponentName": "MeshComponent_0",
-                        "ComponentOwner": "AItemActor_412",
-                        "ComponentOwnerClass": "AItemActor",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "StaticMeshPath": "Contents/Coin2/Coin2.obj",
-                        "bAutoActive": "true",
-                        "bIsActive": "true",
-                        "m_Type": ""
-                    }
-                },
-                {
                     "ComponentClass": "USphereComponent",
                     "ComponentID": "SphereComponent_0",
                     "Properties": {
@@ -719,6 +731,26 @@
                         "bIsActive": "true",
                         "m_Type": ""
                     }
+                },
+                {
+                    "ComponentClass": "UStaticMeshComponent",
+                    "ComponentID": "MeshComponent_0",
+                    "Properties": {
+                        "AABB_max": "X=0.920 Y=0.130 Z=0.920",
+                        "AABB_min": "X=-0.920 Y=-0.130 Z=-0.920",
+                        "AttachParentID": "SphereComponent_0",
+                        "ComponentClass": "UStaticMeshComponent",
+                        "ComponentName": "MeshComponent_0",
+                        "ComponentOwner": "AItemActor_412",
+                        "ComponentOwnerClass": "AItemActor",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "StaticMeshPath": "Contents/Coin2/Coin2.obj",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": ""
+                    }
                 }
             ],
             "RootComponentID": "SphereComponent_0"
@@ -729,6 +761,26 @@
             "ActorLabel": "OBJ_COIN_415",
             "ActorTickInEditor": "false",
             "Components": [
+                {
+                    "ComponentClass": "UStaticMeshComponent",
+                    "ComponentID": "MeshComponent_0",
+                    "Properties": {
+                        "AABB_max": "X=0.920 Y=0.130 Z=0.920",
+                        "AABB_min": "X=-0.920 Y=-0.130 Z=-0.920",
+                        "AttachParentID": "SphereComponent_0",
+                        "ComponentClass": "UStaticMeshComponent",
+                        "ComponentName": "MeshComponent_0",
+                        "ComponentOwner": "AItemActor_415",
+                        "ComponentOwnerClass": "AItemActor",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "StaticMeshPath": "Contents/Coin2/Coin2.obj",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": ""
+                    }
+                },
                 {
                     "ComponentClass": "USphereComponent",
                     "ComponentID": "SphereComponent_0",
@@ -748,26 +800,6 @@
                         "bIsActive": "true",
                         "m_Type": ""
                     }
-                },
-                {
-                    "ComponentClass": "UStaticMeshComponent",
-                    "ComponentID": "MeshComponent_0",
-                    "Properties": {
-                        "AABB_max": "X=0.920 Y=0.130 Z=0.920",
-                        "AABB_min": "X=-0.920 Y=-0.130 Z=-0.920",
-                        "AttachParentID": "SphereComponent_0",
-                        "ComponentClass": "UStaticMeshComponent",
-                        "ComponentName": "MeshComponent_0",
-                        "ComponentOwner": "AItemActor_415",
-                        "ComponentOwnerClass": "AItemActor",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "StaticMeshPath": "Contents/Coin2/Coin2.obj",
-                        "bAutoActive": "true",
-                        "bIsActive": "true",
-                        "m_Type": ""
-                    }
                 }
             ],
             "RootComponentID": "SphereComponent_0"
@@ -778,26 +810,6 @@
             "ActorLabel": "OBJ_COIN_418",
             "ActorTickInEditor": "false",
             "Components": [
-                {
-                    "ComponentClass": "UStaticMeshComponent",
-                    "ComponentID": "MeshComponent_0",
-                    "Properties": {
-                        "AABB_max": "X=0.920 Y=0.130 Z=0.920",
-                        "AABB_min": "X=-0.920 Y=-0.130 Z=-0.920",
-                        "AttachParentID": "SphereComponent_0",
-                        "ComponentClass": "UStaticMeshComponent",
-                        "ComponentName": "MeshComponent_0",
-                        "ComponentOwner": "AItemActor_418",
-                        "ComponentOwnerClass": "AItemActor",
-                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
-                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
-                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "StaticMeshPath": "Contents/Coin2/Coin2.obj",
-                        "bAutoActive": "true",
-                        "bIsActive": "true",
-                        "m_Type": ""
-                    }
-                },
                 {
                     "ComponentClass": "USphereComponent",
                     "ComponentID": "SphereComponent_0",
@@ -813,6 +825,26 @@
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
                         "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
                         "SphereRadius": "1.000000",
+                        "bAutoActive": "true",
+                        "bIsActive": "true",
+                        "m_Type": ""
+                    }
+                },
+                {
+                    "ComponentClass": "UStaticMeshComponent",
+                    "ComponentID": "MeshComponent_0",
+                    "Properties": {
+                        "AABB_max": "X=0.920 Y=0.130 Z=0.920",
+                        "AABB_min": "X=-0.920 Y=-0.130 Z=-0.920",
+                        "AttachParentID": "SphereComponent_0",
+                        "ComponentClass": "UStaticMeshComponent",
+                        "ComponentName": "MeshComponent_0",
+                        "ComponentOwner": "AItemActor_418",
+                        "ComponentOwnerClass": "AItemActor",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
+                        "StaticMeshPath": "Contents/Coin2/Coin2.obj",
                         "bAutoActive": "true",
                         "bIsActive": "true",
                         "m_Type": ""

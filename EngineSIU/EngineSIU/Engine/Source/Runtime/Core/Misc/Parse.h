@@ -20,7 +20,7 @@ struct FParse
                 occur multiple times.
     */
     static bool Value( const TCHAR* Stream, const TCHAR* Match, TCHAR* Value, int32 MaxLen, bool bShouldStopOnSeparator=true, const TCHAR** OptStreamGotTo = nullptr);
-	
+    
 
     /** Parses a name. */
     static  bool Value( const TCHAR* Stream, const TCHAR* Match, FName& Name );

@@ -5,6 +5,8 @@
 #include "Matrix.h"
 #include "Misc/Parse.h"
 
+const FRotator FRotator::ZeroRotator(0.0f, 0.0f, 0.0f);
+
 FRotator::FRotator(const FVector& InVector)
     : Pitch(FMath::RadiansToDegrees(InVector.Y)), Yaw(FMath::RadiansToDegrees(InVector.Z)), Roll(FMath::RadiansToDegrees(InVector.X))
 {
@@ -119,7 +121,7 @@ FQuat FRotator::ToQuaternion() const
     FMath::SinCos(&SP, &CP, PitchNoWinding * Div);
     FMath::SinCos(&SY, &CY, YawNoWinding * Div);
     FMath::SinCos(&SR, &CR, RollNoWinding * Div);
-	
+    
     FQuat RotationQuat;
     RotationQuat.X = CR * SP * SY - SR * CP * CY;
     RotationQuat.Y = -CR * SP * CY - SR * CP * SY;

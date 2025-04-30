@@ -580,7 +580,7 @@ void FShadowManager::UpdateCascadeMatrices(const std::shared_ptr<FEditorViewport
 
     for (uint32 c = 0; c< NumCascades; ++c)
     {
-		// i 단계의 Near / Far (월드 단위) 계산
+    	// i 단계의 Near / Far (월드 단위) 계산
 		float splitN = CascadeSplits[c];
 		float splitF = CascadeSplits[c + 1];
 		float zn = (splitN - NearClip) / (FarClip - NearClip);

@@ -9,6 +9,7 @@
 #include "Contents/Components/FishBodyComponent.h"
 #include "Engine/FObjLoader.h"
 #include "SoundManager.h"
+#include "Contents/Objects/TestCameraShake.h"
 #include "GameFramework/GameMode.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "World/World.h"
@@ -148,8 +149,8 @@ void AFish::Reset()
     {
         MeshComp->SetStaticMesh(FObjManager::GetStaticMesh(L"Contents/Fish/Fish_Front.obj"));
     }
-    SetActorLocation(FVector(0, 0, 10));
-    SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
+    // SetActorLocation(FVector(0, 0, 10));
+    // SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
 }
 
 void AFish::Move(float DeltaTime)
@@ -193,6 +194,8 @@ void AFish::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
     {
         FSoundManager::GetInstance().PlaySound("sizzle");
 
+        GetWorld()->GetPlayerController()->ClientStartCameraShake(UTestCameraShake::StaticClass());
+
         if (IsDead())
         {
             GetWorld()->GetGameMode()->EndMatch(false);
@@ -207,10 +210,12 @@ void AFish::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 
         SetHealth(GetHealth() - 1);
 
+        /* DEPRECATED
         if (GetWorld() && GetWorld()->GetMainCamera())
         {
             //GetWorld()->GetMainCamera()->CameraZ = GetActorLocation().Z;
         }
+        */
     }
     else if (OtherActor->IsA<AItemActor>() && !OtherActor->IsHidden())
     {

@@ -54,7 +54,7 @@ static void RecursivelyPopulateDerivedClasses(FUObjectHashTables& ThreadHash, co
 
         if (SearchIndex < OutAllDerivedClass.Num())
         {
-            SearchClass = OutAllDerivedClass[SearchIndex];			
+            SearchClass = OutAllDerivedClass[SearchIndex];            
         }
         else
         {

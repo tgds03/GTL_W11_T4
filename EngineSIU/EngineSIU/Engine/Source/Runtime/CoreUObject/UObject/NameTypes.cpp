@@ -10,16 +10,16 @@
 
 enum ENameCase : uint8
 {
-	IgnoreCase,   // 대소문자 무시
-	CaseSensitive // 대소문자 구분
+    IgnoreCase,   // 대소문자 무시
+    CaseSensitive // 대소문자 구분
 };
 
 /** ANSICAHR나 WIDECHAR를 담는 인터페이스 비슷한 클래스 */
 struct FNameStringView
 {
-	FNameStringView() : Data(nullptr), Len(0), bIsWide(false) {}
-	FNameStringView(const ANSICHAR* Str, uint32 InLen) : Ansi(Str), Len(InLen), bIsWide(false) {}
-	FNameStringView(const WIDECHAR* Str, uint32 InLen) : Wide(Str), Len(InLen), bIsWide(true) {}
+    FNameStringView() : Data(nullptr), Len(0), bIsWide(false) {}
+    FNameStringView(const ANSICHAR* Str, uint32 InLen) : Ansi(Str), Len(InLen), bIsWide(false) {}
+    FNameStringView(const WIDECHAR* Str, uint32 InLen) : Wide(Str), Len(InLen), bIsWide(true) {}
 	FNameStringView(const void* InData, uint32 InLen, bool bInIsWide) : Data(InData), Len(InLen), bIsWide(bInIsWide) {}
 
 	union

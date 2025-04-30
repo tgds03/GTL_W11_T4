@@ -108,15 +108,15 @@ public:
     ValueType& Emplace(InitKeyType&& InKey, InitValueType&& InValue)
     {
         auto result = ContainerPrivate.emplace(std::forward<InitKeyType>(InKey), std::forward<InitValueType>(InValue));
-    	return result.first->second;
+        return result.first->second;
     }
 
-	// Key만 넣고, Value는 기본값으로 삽입
-	template <typename InitKeyType = KeyType>
+    // Key만 넣고, Value는 기본값으로 삽입
+    template <typename InitKeyType = KeyType>
     ValueType& Emplace(InitKeyType&& InKey)
     {
         auto result = ContainerPrivate.emplace(std::forward<InitKeyType>(InKey), ValueType{});
-    	return result.first->second;
+        return result.first->second;
     }
 
     void Remove(const KeyType& Key)

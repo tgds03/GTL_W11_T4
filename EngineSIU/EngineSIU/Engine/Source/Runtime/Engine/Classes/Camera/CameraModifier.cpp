@@ -6,17 +6,14 @@ UCameraModifier::UCameraModifier()
 {
 }
 
-/* 카메라에 적용할 변형/수정 효과를 매 프레임마다 적용
- * 위치/회전/FOV/PostProcess 등에 영향
- */
 bool UCameraModifier::ModifyCamera(float DeltaTime, FMinimalViewInfo& InOutPOV)
 {
     UpdateAlpha(DeltaTime);
 
     /* 예제
         if (Alpha > 0.0f)
-	    {
-		    InOutPOV.FOV -= 20.f * Alpha; // 알파 비율로 줌 효과 주기
+        {
+            InOutPOV.FOV -= 20.f * Alpha; // 알파 비율로 줌 효과 주기
 	    }
      *
      */
