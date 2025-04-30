@@ -14,12 +14,6 @@ APlayerController::APlayerController()
 APlayerController::~APlayerController()
 {
     UnPossess();
-
-    if (InputComponent)
-    {
-        delete InputComponent;
-        InputComponent = nullptr;
-    }
 }
 
 void APlayerController::PostSpawnInitialize()
@@ -81,6 +75,11 @@ void APlayerController::Possess(AActor* InActor)
 
 void APlayerController::UnPossess()
 {
+    if (!bHasPossessed && PossessedActor == nullptr)
+    {
+        return;
+    }
+    
     PossessedActor = nullptr;
     bHasPossessed = false;
 
