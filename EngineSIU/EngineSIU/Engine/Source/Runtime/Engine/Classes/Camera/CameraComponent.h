@@ -1,4 +1,5 @@
 #pragma once
+#include "CameraTypes.h"
 #include "Components/SceneComponent.h"
 
 class UCameraComponent : public USceneComponent
@@ -33,6 +34,8 @@ public:
 
     void SetFollowCustomTarget(const FVector& InLocation);
     void ResetFollowToPlayer();
+
+    void GetCameraView(float DeltaTime, FMinimalViewInfo& DesiredView);
 
 private:
     void ProceedFInterp(float DeltaTime);

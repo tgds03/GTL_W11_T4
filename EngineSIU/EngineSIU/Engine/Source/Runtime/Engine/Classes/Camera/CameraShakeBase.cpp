@@ -1,6 +1,8 @@
 
 #include "CameraShakeBase.h"
 
+#include "Math/Quat.h"
+
 UCameraShakeBase::UCameraShakeBase()
     : ShakeScale(1.0f)
     , RootShakePattern(nullptr)
@@ -46,7 +48,26 @@ void UCameraShakeBase::StopShake(bool bImmediately)
 void UCameraShakeBase::ApplyResult(float Scale, const FCameraShakePatternUpdateResult& InResult, FMinimalViewInfo& InOutPOV)
 {
     // InResult를 기반으로 InOutPOV 업데이트
+    InOutPOV.Location += InResult.Location * Scale;
+    InOutPOV.FOV += InResult.FOV * Scale;
     
+    FQuat CurrentRotation = InOutPOV.Rotation.ToQuaternion();
+    FQuat DeltaRotation = InResult.Rotation.ToQuaternion();
+    InOutPOV.Rotation = FRotator(DeltaRotation * CurrentRotation);
+}
+
+bool UCameraShakeBase::IsFinished() const
+{
+    if (RootShakePattern)
+    {
+        return RootShakePattern->IsFinished();
+    }
+    return true;
+}
+
+void UCameraShakePattern::StartShakePattern()
+{
+    StartShakePatternImpl();
 }
 
 void UCameraShakePattern::UpdateShakePattern(const FCameraShakePatternUpdateParams& Params, FCameraShakePatternUpdateResult& OutResult)

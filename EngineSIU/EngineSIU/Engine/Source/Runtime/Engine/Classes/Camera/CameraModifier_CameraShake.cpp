@@ -103,6 +103,17 @@ bool UCameraModifier_CameraShake::ModifyCamera(float DeltaTime, FMinimalViewInfo
                 Shake->UpdateAndApplyCameraShake(DeltaTime, Alpha, InOutPOV);
             }
         }
+
+        // Delete any obsolete shakes
+        for (int32 i = ActiveShakes.Num() - 1; i >= 0; i--)
+        {
+            if (ActiveShakes[i] == nullptr || ActiveShakes[i]->IsFinished())
+            {
+                UCameraShakeBase* Shake = ActiveShakes[i];
+                ActiveShakes.RemoveAt(i);
+                SaveShakeInExpiredPool(Shake);
+            }
+        }
     }
 
     return true;

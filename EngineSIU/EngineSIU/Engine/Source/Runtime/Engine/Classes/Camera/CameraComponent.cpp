@@ -85,3 +85,19 @@ void UCameraComponent::ResetFollowToPlayer()
 {
     bFollowCustomTarget = false;
 }
+
+void UCameraComponent::GetCameraView(float DeltaTime, FMinimalViewInfo& DesiredView)
+{
+    DesiredView.Location = GetWorldLocation();
+    DesiredView.Rotation = GetWorldRotation();
+    DesiredView.FOV = ViewFOV;
+    DesiredView.PerspectiveNearClip = NearClip;
+    DesiredView.PerspectiveFarClip = FarClip;
+    
+    // See if the CameraActor wants to override the PostProcess settings used.
+    // DesiredView.PostProcessBlendWeight = PostProcessBlendWeight;
+    // if (PostProcessBlendWeight > 0.0f)
+    // {
+    //     DesiredView.PostProcessSettings = PostProcessSettings;
+    // }
+}

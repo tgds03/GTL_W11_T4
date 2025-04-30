@@ -149,11 +149,33 @@ void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
 
 void APlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
 {
+    // Don't update outgoing viewtarget during an interpolation 
+    if (PendingViewTarget.Target != nullptr && OutVT.Equal(ViewTarget))
+    {
+        return;
+    }
+
+    // Store previous POV, in case we need it later
     FMinimalViewInfo OrigPOV = OutVT.POV;
 
-    // TODO: 새로운 기본 POV 생성 후 OutVT에 지정
-    
+    // Reset the view target POV fully
+    static const FMinimalViewInfo DefaultViewInfo;
+    OutVT.POV = DefaultViewInfo;
+    OutVT.POV.FOV = DefaultFOV;
+    OutVT.POV.PostProcessBlendWeight = 1.0f;
 
+    bool bDoNotApplyModifiers = false;
+
+    //카메라가 없으면 액터 자기위치와 자기 로테이션 반영
+    OutVT.POV.Location = OutVT.Target->GetActorLocation() + OutVT.Target->GetActorForwardVector() * 2;
+    OutVT.POV.Rotation = OutVT.Target->GetActorRotation();
+    
+    if (UCameraComponent* CamComp = OutVT.Target->GetComponentByClass<UCameraComponent>())
+    {
+        // Viewing through a camera actor.
+        CamComp->GetCameraView(DeltaTime, OutVT.POV); // Desired FMinimalViewInfo
+    }
+    
     ApplyCameraModifiers(DeltaTime, OutVT.POV);
 }
 

@@ -23,12 +23,14 @@ struct FMinimalViewInfo
     float OrthoNearClipPlane;
     float OrthoFarClipPlane;
     float AspectRatio;*/
+    float PostProcessBlendWeight;
     FMinimalViewInfo()
         : Location(0.0f, 0.0f, 0.0f)
         , Rotation(0.0f, 0.0f, 0.0f)
         , FOV(90.0f)
         , PerspectiveNearClip(0.1f)
         , PerspectiveFarClip(1000.f)
+        , PostProcessBlendWeight(1.f)
         /*, OrthoWidth(512.0f)
         , OrthoNearClipPlane(1.0f)
         , OrthoFarClipPlane(10000.0f)

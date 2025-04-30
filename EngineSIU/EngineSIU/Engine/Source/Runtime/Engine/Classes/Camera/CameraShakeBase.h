@@ -71,6 +71,8 @@ public:
     void SetRootShakePattern(UCameraShakePattern* InPattern) { RootShakePattern = InPattern; }
 
     void ApplyResult(float Scale, const FCameraShakePatternUpdateResult& InResult, FMinimalViewInfo& InOutPOV);
+
+    bool IsFinished() const;
     
 private:
     UCameraShakePattern* RootShakePattern;
@@ -88,10 +90,8 @@ public:
     UCameraShakePattern() = default;
     virtual ~UCameraShakePattern() override = default;
 
-	/** Gets information about this shake pattern */
-	void GetShakePatternInfo(FCameraShakeInfo& OutInfo) const;
 	/** Called when the shake pattern starts */
-	void StartShakePattern(const FCameraShakePatternStartParams& Params);
+	void StartShakePattern();
 	/** Updates the shake pattern, which should add its generated offset to the given result */
 	void UpdateShakePattern(const FCameraShakePatternUpdateParams& Params, FCameraShakePatternUpdateResult& OutResult);
 	/** Returns whether this shake pattern is finished */
@@ -101,10 +101,8 @@ public:
 
 private:
 	// UCameraShakePattern interface
-	virtual void GetShakePatternInfoImpl(FCameraShakeInfo& OutInfo) const {}
-	virtual void StartShakePatternImpl(const FCameraShakePatternStartParams& Params) {}
+	virtual void StartShakePatternImpl() {}
 	virtual void UpdateShakePatternImpl(const FCameraShakePatternUpdateParams& Params, FCameraShakePatternUpdateResult& OutResult) {}
-	virtual void ScrubShakePatternImpl(const FCameraShakePatternScrubParams& Params, FCameraShakePatternUpdateResult& OutResult) {}
 	virtual bool IsFinishedImpl() const { return true; }
 	virtual void StopShakePatternImpl(bool bImmediately) {}
 	virtual void TeardownShakePatternImpl()  {}
