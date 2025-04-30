@@ -10,11 +10,11 @@
 #if USE_WIDECHAR
 std::wstring FString::ConvertToWideChar(const ANSICHAR* NarrowStr)
 {
-	const int Size = MultiByteToWideChar(CP_UTF8, 0, NarrowStr, -1, nullptr, 0);
-	std::wstring Str;
-	Str.resize(Size - 1);
-	MultiByteToWideChar(CP_UTF8, 0, NarrowStr, -1, Str.data(), Size);
-	return Str;
+    const int Size = MultiByteToWideChar(CP_UTF8, 0, NarrowStr, -1, nullptr, 0);
+    std::wstring Str;
+    Str.resize(Size - 1);
+    MultiByteToWideChar(CP_UTF8, 0, NarrowStr, -1, Str.data(), Size);
+    return Str;
 }
 #endif
 
@@ -30,7 +30,7 @@ FString FString::SanitizeFloat(float InFloat)
 
 float FString::ToFloat(const FString& InString)
 {
-	return std::stof(*InString);
+    return std::stof(*InString);
 }
 
 int FString::ToInt(const FString& InString)
@@ -83,15 +83,15 @@ bool FString::Equals(const FString& Other, ESearchCase::Type SearchCase) const
     {
         if (SearchCase == ESearchCase::CaseSensitive)
         {
-        	return TCString<ElementType>::Strcmp(**this, *Other) == 0;
+            return TCString<ElementType>::Strcmp(**this, *Other) == 0;
         }
         else
         {
-        	return std::ranges::equal(
-		        PrivateString, Other.PrivateString, [](char a, char b)
-	        {
-		        return std::tolower(a) == std::tolower(b);
-	        });
+            return std::ranges::equal(
+                PrivateString, Other.PrivateString, [](char a, char b)
+            {
+                return std::tolower(a) == std::tolower(b);
+            });
         }
     }
 

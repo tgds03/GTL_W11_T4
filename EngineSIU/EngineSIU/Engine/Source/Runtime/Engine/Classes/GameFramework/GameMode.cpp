@@ -49,7 +49,7 @@ AGameMode::AGameMode()
 
 AGameMode::~AGameMode()
 {
-    EndMatch(false);
+    // EndMatch(false);
 }
 
 void AGameMode::InitializeComponent()
@@ -96,6 +96,26 @@ void AGameMode::StartMatch()
     Fish->Reset();
     // GEngine->ActiveWorld->GetMainPlayer()->SetActorLocation(FVector(0, 0, 10));
     GEngine->ActiveWorld->GetPlayerController()->Possess(GEngine->ActiveWorld->GetMainPlayer());
+
+    // /** Camera does a simple linear interpolation. */
+    // VTBlend_Linear
+    // /** Camera has a slight ease in and ease out, but amount of ease cannot be tweaked. */
+    // VTBlend_Cubic
+    // /** Camera immediately accelerates, but smoothly decelerates into the target.  Ease amount controlled by BlendExp. */
+    // VTBlend_EaseIn
+    // /** Camera smoothly accelerates, but does not decelerate into the target.  Ease amount controlled by BlendExp. */
+    // VTBlend_EaseOut
+    // /** Camera smoothly accelerates and decelerates.  Ease amount controlled by BlendExp. */
+    // VTBlend_EaseInOut
+
+    FViewTargetTransitionParams Params;
+    Params.BlendTime = 5.0f;
+    Params.BlendFunction = VTBlend_Linear;
+
+    AActor* TargetActor = GEngine->ActiveWorld->SpawnActor<AActor>();
+    TargetActor->SetActorLocation(FVector(5.f, 100.f, 15.f));
+    
+    GEngine->ActiveWorld->GetPlayerController()->SetViewTarget(TargetActor, Params);
     
     FSoundManager::GetInstance().PlaySound("fishdream");
     OnGameStart.Broadcast();

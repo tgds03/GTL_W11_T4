@@ -39,8 +39,8 @@ public:
 protected:
 
     // PointLight: 6개의 ViewMatrix를 가집니다
-    TArray<FMatrix>		ViewMatrices;
-    FMatrix		ProjectionMatrix;
+    TArray<FMatrix>        ViewMatrices;
+    FMatrix        ProjectionMatrix;
     
     FBoundingBox AABB;
 

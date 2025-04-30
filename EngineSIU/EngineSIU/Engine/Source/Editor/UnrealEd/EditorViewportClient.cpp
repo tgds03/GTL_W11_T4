@@ -379,7 +379,7 @@ void FEditorViewportClient::GetViewInfo(FMinimalViewInfo& OutViewInfo) const
 
     if (!bGotViewInfo)
     {
-        // TODO: 기본 FMinimalViewInfo 사용하기.
+        OutViewInfo = FMinimalViewInfo();
     }
 }
 
@@ -470,11 +470,14 @@ void FEditorViewportClient::UpdateViewMatrix()
     {
         FMinimalViewInfo ViewInfo;
         GetViewInfo(ViewInfo);
+
+        FMatrix RotationMatrix = ViewInfo.Rotation.ToMatrix();
+        FVector FinalUp = FMatrix::TransformVector(FVector::UpVector, RotationMatrix);
         
         View = JungleMath::CreateViewMatrix(
             ViewInfo.Location,
             ViewInfo.Location + ViewInfo.Rotation.ToVector(),
-            FVector{ 0.0f,0.0f, 1.0f }
+            FinalUp
         );
     }
     else
@@ -719,8 +722,8 @@ FVector FViewportCamera::GetForwardVector() const
 FVector FViewportCamera::GetRightVector() const
 {
     FVector Right = FVector(0.f, 1.f, 0.0f);
-	Right = JungleMath::FVectorRotate(Right, ViewRotation);
-	return Right;
+    Right = JungleMath::FVectorRotate(Right, ViewRotation);
+    return Right;
 }
 
 FVector FViewportCamera::GetUpVector() const

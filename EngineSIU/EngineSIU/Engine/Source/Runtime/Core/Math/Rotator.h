@@ -30,6 +30,8 @@ struct FRotator
     explicit FRotator(const FVector& InVector);
     explicit FRotator(const FQuat& InQuat);
 
+    static const FRotator ZeroRotator;
+
     FRotator operator+(const FRotator& Other) const;
     FRotator& operator+=(const FRotator& Other);
 

@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: Zlib
 Copyright (c) 2014 - 2024 Guillaume Vareille http://ysengrin.com
-	 ________________________________________________________________
-	|                                                                |
-	| 100% compatible C C++  ->  You can rename this .c file as .cpp |
-	|________________________________________________________________|
+     ________________________________________________________________
+    |                                                                |
+    | 100% compatible C C++  ->  You can rename this .c file as .cpp |
+    |________________________________________________________________|
 
 ********* TINY FILE DIALOGS OFFICIAL WEBSITE IS ON SOURCEFORGE *********
   _________
@@ -11,11 +11,11 @@ Copyright (c) 2014 - 2024 Guillaume Vareille http://ysengrin.com
  |tiny file| Unique code file created [November 9, 2014]
  | dialogs |
  \____  ___/ http://tinyfiledialogs.sourceforge.net
-	  \|     git clone http://git.code.sf.net/p/tinyfiledialogs/code tinyfd
-			  ____________________________________________
-			 |                                            |
-			 |   email: tinyfiledialogs at ysengrin.com   |
-			 |____________________________________________|
+      \|     git clone http://git.code.sf.net/p/tinyfiledialogs/code tinyfd
+              ____________________________________________
+             |                                            |
+             |   email: tinyfiledialogs at ysengrin.com   |
+             |____________________________________________|
   _________________________________________________________________________________
  |                                                                                 |
  | the windows only wchar_t UTF-16 prototypes are at the bottom of the header file |
@@ -196,34 +196,34 @@ char tinyfd_needs[] = "\
 
 static int getenvDISPLAY(void)
 {
-		/* return tinyfd_assumeGraphicDisplay || getenv("DISPLAY") || getenv("WAYLAND_DISPLAY") ; */
-	static int lReturnValue = -1 ;
+        /* return tinyfd_assumeGraphicDisplay || getenv("DISPLAY") || getenv("WAYLAND_DISPLAY") ; */
+    static int lReturnValue = -1 ;
 
-	if ( lReturnValue < 0 )
-	{
-		lReturnValue = 0 ;
-		if ( getenv("DISPLAY") ) lReturnValue += 1 ;
-		if ( getenv("WAYLAND_DISPLAY") ) lReturnValue += 2 ;
-	}
+    if ( lReturnValue < 0 )
+    {
+        lReturnValue = 0 ;
+        if ( getenv("DISPLAY") ) lReturnValue += 1 ;
+        if ( getenv("WAYLAND_DISPLAY") ) lReturnValue += 2 ;
+    }
 
-	return lReturnValue ;
+    return lReturnValue ;
 }
 
 
 static char * getCurDir(void)
 {
-		static char lCurDir[MAX_PATH_OR_CMD];
-		return getcwd(lCurDir, sizeof(lCurDir));
+        static char lCurDir[MAX_PATH_OR_CMD];
+        return getcwd(lCurDir, sizeof(lCurDir));
 }
 
 
 static char * getPathWithoutFinalSlash(
-		char * aoDestination, /* make sure it is allocated, use _MAX_PATH */
-		char const * aSource) /* aoDestination and aSource can be the same */
+        char * aoDestination, /* make sure it is allocated, use _MAX_PATH */
+        char const * aSource) /* aoDestination and aSource can be the same */
 {
-		char const * lTmp ;
-		if ( aSource )
-		{
+        char const * lTmp ;
+        if ( aSource )
+        {
 				lTmp = strrchr(aSource, '/');
 				if (!lTmp)
 				{

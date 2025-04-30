@@ -3,10 +3,10 @@
 #include "HAL/PlatformType.h"
 
 /**
- * @param A0	Selects which element (0-3) from 'A' into 1st slot in the result
- * @param A1	Selects which element (0-3) from 'A' into 2nd slot in the result
- * @param B2	Selects which element (0-3) from 'B' into 3rd slot in the result
- * @param B3	Selects which element (0-3) from 'B' into 4th slot in the result
+ * @param A0    Selects which element (0-3) from 'A' into 1st slot in the result
+ * @param A1    Selects which element (0-3) from 'A' into 2nd slot in the result
+ * @param B2    Selects which element (0-3) from 'B' into 3rd slot in the result
+ * @param B3    Selects which element (0-3) from 'B' into 4th slot in the result
  */
 #define SHUFFLEMASK(A0,A1,B2,B3) ( (A0) | ((A1)<<2) | ((B2)<<4) | ((B3)<<6) )
 
@@ -16,7 +16,7 @@ struct FMatrix;
 
 
 // 4 floats
-typedef __m128	VectorRegister4Float;
+typedef __m128    VectorRegister4Float;
 
 
 namespace SSE

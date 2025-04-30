@@ -2,6 +2,7 @@
 #include <cmath>
 #include <numbers>
 
+#include <random>
 #include "Core/HAL/PlatformType.h"
 
 
@@ -10,24 +11,23 @@
 #define KINDA_SMALL_NUMBER   (1.e-4f)
 
 #define PI_DOUBLE            (3.141592653589793238462643383279502884197169399)
-#define UE_SMALL_NUMBER			(1.e-8f)
-
+#define UE_SMALL_NUMBER            (1.e-8f)
 
 struct FMath
 {
-	/** A와 B중에 더 작은 값을 반환합니다. */
-	template <typename T>
-	[[nodiscard]] static FORCEINLINE constexpr T Min(const T A, const T B)
-	{
-		return A < B ? A : B;
-	}
+    /** A와 B중에 더 작은 값을 반환합니다. */
+    template <typename T>
+    [[nodiscard]] static FORCEINLINE constexpr T Min(const T A, const T B)
+    {
+        return A < B ? A : B;
+    }
 
-	/** A와 B중에 더 큰 값을 반환합니다. */
-	template <typename T>
-	[[nodiscard]] static FORCEINLINE constexpr T Max(const T A, const T B)
-	{
-		return B < A ? A : B;
-	}
+    /** A와 B중에 더 큰 값을 반환합니다. */
+    template <typename T>
+    [[nodiscard]] static FORCEINLINE constexpr T Max(const T A, const T B)
+    {
+        return B < A ? A : B;
+    }
 
     /** A, B, C 중에 가장 큰 값을 반환합니다. */
     template <typename T>
@@ -36,57 +36,57 @@ struct FMath
         return Max(A, Max(B, C));
     }
 
-	/** X를 Min과 Max의 사이의 값으로 클램핑 합니다. */
-	template <typename T>
-	[[nodiscard]] static FORCEINLINE constexpr T Clamp(const T X, const T MinValue, const T MaxValue)
-	{
-		return Max(Min(X, MaxValue), MinValue);
-	}
+    /** X를 Min과 Max의 사이의 값으로 클램핑 합니다. */
+    template <typename T>
+    [[nodiscard]] static FORCEINLINE constexpr T Clamp(const T X, const T MinValue, const T MaxValue)
+    {
+        return Max(Min(X, MaxValue), MinValue);
+    }
 
-	/** A의 절댓값을 구합니다. */
-	template <typename T>
-	[[nodiscard]] static FORCEINLINE constexpr T Abs(const T A)
-	{
-		return A < T(0) ? -A : A;
-	}
+    /** A의 절댓값을 구합니다. */
+    template <typename T>
+    [[nodiscard]] static FORCEINLINE constexpr T Abs(const T A)
+    {
+        return A < T(0) ? -A : A;
+    }
 
     /** Returns 1, 0, or -1 depending on relation of T to 0 */
     template< class T > 
     static constexpr FORCEINLINE T Sign( const T A )
-	{
+    {
         return (A > (T)0) ? (T)1 : ((A < (T)0) ? (T)-1 : (T)0);
-	}
+    }
 
-	/** A의 제곱을 구합니다. */
-	template <typename T>
-	[[nodiscard]] static FORCEINLINE constexpr T Pow(const T A)
-	{
-		return A * A;
-	}
+    /** A의 제곱을 구합니다. */
+    template <typename T>
+    [[nodiscard]] static FORCEINLINE constexpr T Pow(const T A)
+    {
+        return A * A;
+    }
 
     template <typename T>
     [[nodiscard]] static FORCEINLINE constexpr T Pow(const T A, const T B)
-	{
-	    return pow(A, B);
-	}
+    {
+        return pow(A, B);
+    }
 
-	// A의 제곱근을 구합니다.
-	[[nodiscard]] static FORCEINLINE float Sqrt(float A) { return sqrtf(A); }
-	[[nodiscard]] static FORCEINLINE double Sqrt(double A) { return sqrt(A); }
+    // A의 제곱근을 구합니다.
+    [[nodiscard]] static FORCEINLINE float Sqrt(float A) { return sqrtf(A); }
+    [[nodiscard]] static FORCEINLINE double Sqrt(double A) { return sqrt(A); }
 
-	/** A의 역제곱근을 구합니다. */
-	[[nodiscard]] static FORCEINLINE float InvSqrt(float A) { return 1.0f / sqrtf(A); }
-	[[nodiscard]] static FORCEINLINE double InvSqrt(double A) { return 1.0 / sqrt(A); }
+    /** A의 역제곱근을 구합니다. */
+    [[nodiscard]] static FORCEINLINE float InvSqrt(float A) { return 1.0f / sqrtf(A); }
+    [[nodiscard]] static FORCEINLINE double InvSqrt(double A) { return 1.0 / sqrt(A); }
 
-	/** A와 B를 Alpha값에 따라 선형으로 보간합니다. */
-	template <typename T>
-	[[nodiscard]] static FORCEINLINE constexpr T Lerp(const T& A, const T& B, float Alpha)
-	{
-		return static_cast<T>((A * (1.0f - Alpha)) + (B * Alpha));
-	}
+    /** A와 B를 Alpha값에 따라 선형으로 보간합니다. */
+    template <typename T>
+    [[nodiscard]] static FORCEINLINE constexpr T Lerp(const T& A, const T& B, float Alpha)
+    {
+        return static_cast<T>((A * (1.0f - Alpha)) + (B * Alpha));
+    }
 
-	/** A와 B를 Alpha값에 따라 선형으로 보간합니다. */
-	template <typename T>
+    /** A와 B를 Alpha값에 따라 선형으로 보간합니다. */
+    template <typename T>
 	[[nodiscard]] static FORCEINLINE constexpr T Lerp(const T& A, const T& B, double Alpha)
 	{
 		return static_cast<T>((A * (1.0 - Alpha)) + (B * Alpha));
@@ -354,4 +354,37 @@ struct FMath
 
 	    return fmodf(X, Y);
 	}
+
+    static int RandHelper(int max)
+    {
+        static std::mt19937 rng(std::random_device{}());
+        std::uniform_int_distribution<int> dist(0, max - 1);
+        return dist(rng);
+    }
+
+    static const int p[512];
+
+    static float fade(float t) {
+        return t * t * t * (t * (t * 6 - 15) + 10);
+    }
+
+    static float lerp(float a, float b, float t) {
+        return a + t * (b - a);
+    }
+
+    static float grad(int hash, float x) {
+        int h = hash & 15;
+        float grad = 1.0f + (h & 7); // Gradient value 1-8
+        if (h & 8) grad = -grad;
+        return grad * x;
+    }
+
+    static float PerlinNoise1D(float x) {
+        int xi = static_cast<int>(std::floor(x)) & 255;
+        float xf = x - std::floor(x);
+        float u = fade(xf);
+        int a = p[xi];
+        int b = p[xi + 1];
+        return lerp(grad(a, xf), grad(b, xf - 1.0f), u);
+    }
 };

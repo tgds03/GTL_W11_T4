@@ -428,22 +428,22 @@ HRESULT FDXDShaderManager::AddPixelShader(const std::wstring& Key, const std::ws
 
 HRESULT FDXDShaderManager::AddPixelShader(const std::wstring& Key, const std::wstring& FileName, const std::string& EntryPoint, const D3D_SHADER_MACRO* defines)
 {
-	UINT shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+    UINT shaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
 #ifdef _DEBUG
-	shaderFlags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+    shaderFlags |= D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
-	HRESULT hr = S_OK;
+    HRESULT hr = S_OK;
 
-	if (DXDDevice == nullptr)
-		return S_FALSE;
+    if (DXDDevice == nullptr)
+        return S_FALSE;
 
-	ID3DBlob* PsBlob = nullptr;
+    ID3DBlob* PsBlob = nullptr;
 
     // Begin Test
     ID3DBlob* errorBlob = nullptr;
-	//hr = D3DCompileFromFile(FileName.c_str(), defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, EntryPoint.c_str(), "ps_5_0", shaderFlags, 0, &PsBlob, nullptr);
-	//if (FAILED(hr))
-	//	return hr;
+    //hr = D3DCompileFromFile(FileName.c_str(), defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, EntryPoint.c_str(), "ps_5_0", shaderFlags, 0, &PsBlob, nullptr);
+    //if (FAILED(hr))
+    //    return hr;
     hr = D3DCompileFromFile(FileName.c_str(), defines, D3D_COMPILE_STANDARD_FILE_INCLUDE, EntryPoint.c_str(), "ps_5_0", shaderFlags, 0, &PsBlob, &errorBlob);
 
     if (FAILED(hr)) {
@@ -458,14 +458,14 @@ HRESULT FDXDShaderManager::AddPixelShader(const std::wstring& Key, const std::ws
     }
     // End Test
 
-	ID3D11PixelShader* NewPixelShader;
-	hr = DXDDevice->CreatePixelShader(PsBlob->GetBufferPointer(), PsBlob->GetBufferSize(), nullptr, &NewPixelShader);
-	if (PsBlob)
-	{
-		PsBlob->Release();
-	}
-	if (FAILED(hr))
-		return hr;
+    ID3D11PixelShader* NewPixelShader;
+    hr = DXDDevice->CreatePixelShader(PsBlob->GetBufferPointer(), PsBlob->GetBufferSize(), nullptr, &NewPixelShader);
+    if (PsBlob)
+    {
+        PsBlob->Release();
+    }
+    if (FAILED(hr))
+        return hr;
 
     if (SUCCEEDED(hr) && !PixelShaders.Contains(Key))
     {
@@ -475,8 +475,8 @@ HRESULT FDXDShaderManager::AddPixelShader(const std::wstring& Key, const std::ws
     // Pixel Shader Map에 존재한다면 해당 PS 제거
     if (PixelShaders.Contains(Key)) { PixelShaders[Key]->Release();PixelShaders[Key] = nullptr; }
 
-	PixelShaders[Key] = NewPixelShader;
-	return S_OK;
+    PixelShaders[Key] = NewPixelShader;
+    return S_OK;
 }
 
 HRESULT FDXDShaderManager::AddVertexShader(const std::wstring& Key, const std::wstring& FileName)

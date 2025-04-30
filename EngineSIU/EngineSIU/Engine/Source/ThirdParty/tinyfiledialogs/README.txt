@@ -125,7 +125,7 @@ char const * tinyfd_selectFolderDialog(
 
 char const * tinyfd_colorChooser(
     char const * aTitle , // NULL or ""
-    char const * aDefaultHexRGB , // NULL or "#FF0000�ǥ
+    char const * aDefaultHexRGB , // NULL or "#FF0000�ǥ
     unsigned char const aDefaultRGB[3] , // unsigned char lDefaultRGB[3] = { 0 , 128 , 255 };
     unsigned char aoResultRGB[3] ); // unsigned char lResultRGB[3];
         // returns the hexcolor as a string "#FF0000"
@@ -227,6 +227,6 @@ $ clang -o hello hello.c tinyfiledialogs.c
   > cl hello.c tinyfiledialogs.c comdlg32.lib ole32.lib user32.lib shell32.lib /W4
 
   VisualStudio
-	In the properties of your project, in the linker input field,
+    In the properties of your project, in the linker input field,
 	      you may need to add: comdlg32.lib ole32.lib user32.lib shell32.lib
 	         or maybe simply add: %(AdditionalDependencies)

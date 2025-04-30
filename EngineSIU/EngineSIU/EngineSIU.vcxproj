@@ -178,6 +178,7 @@
   <ItemGroup>
     <ClCompile Include="Engine\Source\Runtime\Core\Math\MathUtility.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\CameraEffectRenderPass.cpp" />
+    <ClCompile Include="Engine\Source\Contents\Objects\TestCameraShake.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraModifier.cpp" />
     <ClCompile Include="Engine\Source\Contents\Actors\Fish.cpp" />
     <ClCompile Include="Engine\Source\Contents\Actors\GoalPlatformActor.cpp" />
@@ -235,6 +236,9 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\LightActor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Player.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraModifier_CameraShake.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraShakeBase.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\Shakes\SimpleCameraShakePattern.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\Shakes\WaveOscillatorCameraShakePattern.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\GameFramework\PlayerController.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\PointLightActor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\SphereActor.cpp" />
@@ -330,6 +334,7 @@
     <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_curve.cpp" />
     <ClCompile Include="LuaScripts\LuaScriptComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\PlayerCameraManager.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\PerlinNoiseCameraShakePattern.cpp" />
     <ClCompile Include="SoundManager.cpp" />
     <None Include="Shaders\CompositingShader.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -422,6 +427,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Source\Runtime\Renderer\CameraEffectRenderPass.h" />
+    <ClInclude Include="Engine\Source\Contents\Objects\TestCameraShake.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraModifier.h" />
     <ClInclude Include="Engine\Source\Contents\Actors\Fish.h" />
     <ClInclude Include="Engine\Source\Contents\Actors\GoalPlatformActor.h" />
@@ -496,6 +502,9 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\LightActor.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Player.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraModifier_CameraShake.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraShakeBase.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\Shakes\SimpleCameraShakePattern.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\Shakes\WaveOscillatorCameraShakePattern.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\GameFramework\PlayerController.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\PointLightActor.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\SphereActor.h" />
@@ -635,6 +644,7 @@
     <ClInclude Include="LuaScripts\LuaScriptComponent.h" />
     <ClInclude Include="LuaScripts\LuaScriptFileUtils.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\PlayerCameraManager.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\PerlinNoiseCameraShakePattern.h" />
     <ClInclude Include="SoundManager.h" />
     <None Include="Shaders\EditorShaderConstants.hlsli">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

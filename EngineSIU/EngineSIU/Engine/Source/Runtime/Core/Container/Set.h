@@ -45,7 +45,7 @@ public:
     int32 Emplace(ArgsType&& Args) 
     { 
         auto iter = ContainerPrivate.emplace(std::forward<ArgsType>(Args));
-    	return std::distance(ContainerPrivate.begin(), iter.first);
+        return std::distance(ContainerPrivate.begin(), iter.first);
     }
 
     // Num (개수)
@@ -55,8 +55,8 @@ public:
     Iterator Find(const T& Item) { return ContainerPrivate.find(Item); }
     ConstIterator Find(const T& Item) const { return ContainerPrivate.find(Item); }
 
-	// Contains
-	bool Contains(const T& Item) const { return ContainerPrivate.contains(Item); }
+    // Contains
+    bool Contains(const T& Item) const { return ContainerPrivate.contains(Item); }
 
     // Array (TArray로 반환)
     TArray<T, Allocator> Array() const

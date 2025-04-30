@@ -36,7 +36,7 @@ struct FMinimalViewInfo
         , FOV(90.0f)
         , PerspectiveNearClip(0.1f)
         , PerspectiveFarClip(1000.f)
-		, PostProcessBlendWeight(0.0f)
+    	, PostProcessBlendWeight(0.0f)
         /*, OrthoWidth(512.0f)
         , OrthoNearClipPlane(1.0f)
         , OrthoFarClipPlane(10000.0f)

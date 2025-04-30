@@ -43,6 +43,10 @@ public:
 
     virtual void SpawnPlayerCameraManager();
 
+    void ClientStartCameraShake(UClass* Shake);
+
+    void ClientStopCameraShake(UClass* Shake, bool bImmediately = true);
+
     APlayerCameraManager* PlayerCameraManager = nullptr;
     
 protected:

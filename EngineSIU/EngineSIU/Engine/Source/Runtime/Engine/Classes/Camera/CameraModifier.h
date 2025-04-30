@@ -32,7 +32,7 @@ protected:
 
     APlayerCameraManager* CameraOwner;
 
-private:
+protected:
     uint32 bDisabled : 1;
     uint32 bPendingDisable : 1;
 

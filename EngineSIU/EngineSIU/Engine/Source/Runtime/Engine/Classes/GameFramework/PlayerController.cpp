@@ -14,12 +14,6 @@ APlayerController::APlayerController()
 APlayerController::~APlayerController()
 {
     UnPossess();
-
-    if (InputComponent)
-    {
-        delete InputComponent;
-        InputComponent = nullptr;
-    }
 }
 
 void APlayerController::PostSpawnInitialize()
@@ -45,7 +39,7 @@ void APlayerController::Tick(float DeltaTime)
 
     if (PlayerCameraManager)
     {
-        //PlayerCameraManager->UpdateCamera(DeltaTime);
+        PlayerCameraManager->UpdateCamera(DeltaTime);
     }
 
 }
@@ -89,7 +83,11 @@ void APlayerController::Possess(AActor* InActor)
 
 void APlayerController::UnPossess()
 {
-   
+    if (!bHasPossessed && PossessedActor == nullptr)
+    {
+        return;
+    }
+    
     PossessedActor = nullptr;
     bHasPossessed = false;
 
@@ -130,5 +128,21 @@ void APlayerController::SpawnPlayerCameraManager()
     if (PlayerCameraManager)
     {
         PlayerCameraManager->InitializeFor(this);
+    }
+}
+
+void APlayerController::ClientStartCameraShake(UClass* Shake)
+{
+    if (PlayerCameraManager != nullptr)
+    {
+        PlayerCameraManager->StartCameraShake(Shake);
+    }
+}
+
+void APlayerController::ClientStopCameraShake(UClass* Shake, bool bImmediately)
+{
+    if (PlayerCameraManager != nullptr)
+    {
+        PlayerCameraManager->StopAllInstancesOfCameraShake(Shake, bImmediately);
     }
 }

@@ -14,15 +14,15 @@ struct VS_OUTPUT_CubeMap
 
 struct GS_OUTPUT
 {
-	float4 pos : SV_POSITION;
+    float4 pos : SV_POSITION;
     uint RTIndex : SV_RenderTargetArrayIndex;
 };
 
 
 [maxvertexcount(3 * NUM_FACES)]
 void mainGS(
-	triangle VS_OUTPUT_CubeMap input[3],
-	inout TriangleStream<GS_OUTPUT> TriStream
+    triangle VS_OUTPUT_CubeMap input[3],
+    inout TriangleStream<GS_OUTPUT> TriStream
 )
 {
     for (uint face = 0; face < NUM_FACES; ++face)

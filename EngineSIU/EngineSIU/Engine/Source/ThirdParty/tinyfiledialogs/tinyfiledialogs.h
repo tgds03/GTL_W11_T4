@@ -1,9 +1,9 @@
 /* SPDX-License-Identifier: Zlib
 Copyright (c) 2014 - 2024 Guillaume Vareille http://ysengrin.com
-	 ____________________________________________________________________
-	|                                                                    |
-	| 100% compatible C C++  ->  You can rename tinfiledialogs.c as .cpp |
-	|____________________________________________________________________|
+     ____________________________________________________________________
+    |                                                                    |
+    | 100% compatible C C++  ->  You can rename tinfiledialogs.c as .cpp |
+    |____________________________________________________________________|
 
 ********* TINY FILE DIALOGS OFFICIAL WEBSITE IS ON SOURCEFORGE *********
   _________
@@ -62,7 +62,7 @@ misrepresented as being the original software.
 #ifndef TINYFILEDIALOGS_H
 #define TINYFILEDIALOGS_H
 
-#ifdef	__cplusplus
+#ifdef    __cplusplus
 extern "C" {
 #endif
 
@@ -93,7 +93,7 @@ int tinyfd_getGlobalInt(char const * aIntVariableName); /* returns -1 on error *
 int tinyfd_setGlobalInt(char const * aIntVariableName, int aValue); /* returns -1 on error */
 /* aCharVariableName: "tinyfd_version" "tinyfd_needs" "tinyfd_response"
    aIntVariableName : "tinyfd_verbose" "tinyfd_silent" "tinyfd_allowCursesDialogs"
-				      "tinyfd_forceConsole" "tinyfd_assumeGraphicDisplay" "tinyfd_winUtf8"
+                      "tinyfd_forceConsole" "tinyfd_assumeGraphicDisplay" "tinyfd_winUtf8"
 **************/
 
 extern char tinyfd_version[8]; /* contains tinyfd current version number */
@@ -132,38 +132,38 @@ for console mode:
 void tinyfd_beep(void);
 
 int tinyfd_notifyPopup(
-	char const * aTitle, /* NULL or "" */
-	char const * aMessage, /* NULL or "" may contain \n \t */
-	char const * aIconType); /* "info" "warning" "error" */
-		/* return has only meaning for tinyfd_query */
+    char const * aTitle, /* NULL or "" */
+    char const * aMessage, /* NULL or "" may contain \n \t */
+    char const * aIconType); /* "info" "warning" "error" */
+        /* return has only meaning for tinyfd_query */
 
 int tinyfd_messageBox(
-	char const * aTitle , /* NULL or "" */
-	char const * aMessage , /* NULL or "" may contain \n \t */
-	char const * aDialogType , /* "ok" "okcancel" "yesno" "yesnocancel" */
-	char const * aIconType , /* "info" "warning" "error" "question" */
-	int aDefaultButton ) ;
-		/* 0 for cancel/no , 1 for ok/yes , 2 for no in yesnocancel */
+    char const * aTitle , /* NULL or "" */
+    char const * aMessage , /* NULL or "" may contain \n \t */
+    char const * aDialogType , /* "ok" "okcancel" "yesno" "yesnocancel" */
+    char const * aIconType , /* "info" "warning" "error" "question" */
+    int aDefaultButton ) ;
+        /* 0 for cancel/no , 1 for ok/yes , 2 for no in yesnocancel */
 
 char * tinyfd_inputBox(
-	char const * aTitle , /* NULL or "" */
-	char const * aMessage , /* NULL or "" (\n and \t have no effect) */
-	char const * aDefaultInput ) ;  /* NULL = passwordBox, "" = inputbox */
-		/* returns NULL on cancel */
+    char const * aTitle , /* NULL or "" */
+    char const * aMessage , /* NULL or "" (\n and \t have no effect) */
+    char const * aDefaultInput ) ;  /* NULL = passwordBox, "" = inputbox */
+        /* returns NULL on cancel */
 
 char * tinyfd_saveFileDialog(
-	char const * aTitle , /* NULL or "" */
-	char const * aDefaultPathAndOrFile , /* NULL or "" , ends with / to set only a directory */
-	int aNumOfFilterPatterns , /* 0  (1 in the following example) */
-	char const * const * aFilterPatterns , /* NULL or char const * lFilterPatterns[1]={"*.txt"} */
-	char const * aSingleFilterDescription ) ; /* NULL or "text files" */
-		/* returns NULL on cancel */
+    char const * aTitle , /* NULL or "" */
+    char const * aDefaultPathAndOrFile , /* NULL or "" , ends with / to set only a directory */
+    int aNumOfFilterPatterns , /* 0  (1 in the following example) */
+    char const * const * aFilterPatterns , /* NULL or char const * lFilterPatterns[1]={"*.txt"} */
+    char const * aSingleFilterDescription ) ; /* NULL or "text files" */
+        /* returns NULL on cancel */
 
 char * tinyfd_openFileDialog(
-	char const * aTitle, /* NULL or "" */
-	char const * aDefaultPathAndOrFile, /* NULL or "" , ends with / to set only a directory */
-	int aNumOfFilterPatterns , /* 0 (2 in the following example) */
-	char const * const * aFilterPatterns, /* NULL or char const * lFilterPatterns[2]={"*.png","*.jpg"}; */
+    char const * aTitle, /* NULL or "" */
+    char const * aDefaultPathAndOrFile, /* NULL or "" , ends with / to set only a directory */
+    int aNumOfFilterPatterns , /* 0 (2 in the following example) */
+    char const * const * aFilterPatterns, /* NULL or char const * lFilterPatterns[2]={"*.png","*.jpg"}; */
 	char const * aSingleFilterDescription, /* NULL or "image files" */
 	int aAllowMultipleSelects ) ; /* 0 or 1 */
 		/* in case of multiple files, the separator is | */

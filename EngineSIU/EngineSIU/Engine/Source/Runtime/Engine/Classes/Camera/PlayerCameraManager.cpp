@@ -2,6 +2,7 @@
 
 #include "CameraModifier.h"
 #include "GameFramework/PlayerController.h"
+#include "Camera/CameraModifier_CameraShake.h"
 #include "World/World.h"
 
 bool FTViewTarget::Equal(const FTViewTarget& OtherTarget) const
@@ -63,6 +64,14 @@ APlayerCameraManager::APlayerCameraManager()
     ViewYawMax = 359.999f;
     ViewRollMin = -89.9f;
     ViewRollMax = 89.9f;
+}
+
+void APlayerCameraManager::PostSpawnInitialize()
+{
+    AActor::PostSpawnInitialize();
+
+    CachedCameraShakeMod = new UCameraModifier_CameraShake();
+    ModifierList.Add(CachedCameraShakeMod);
 }
 
 void APlayerCameraManager::InitializeFor(APlayerController* PC)
@@ -141,6 +150,32 @@ void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, FMinimalViewInf
         {
             return;
         }
+    }
+}
+
+UCameraShakeBase* APlayerCameraManager::StartCameraShake(UClass* ShakeClass)
+{
+    if (ShakeClass && CachedCameraShakeMod)
+    {
+        return CachedCameraShakeMod->AddCameraShake(ShakeClass);
+    }
+
+    return nullptr;
+}
+
+void APlayerCameraManager::StopCameraShake(UCameraShakeBase* ShakeInst, bool bImmediately)
+{
+    if (ShakeInst && CachedCameraShakeMod)
+    {
+        CachedCameraShakeMod->RemoveCameraShake(ShakeInst, bImmediately);
+    }
+}
+
+void APlayerCameraManager::StopAllInstancesOfCameraShake(UClass* ShakeClass, bool bImmediately)
+{
+    if (ShakeClass && CachedCameraShakeMod)
+    {
+        CachedCameraShakeMod->RemoveAllCameraShakesOfClass(ShakeClass, bImmediately);
     }
 }
 
@@ -271,7 +306,7 @@ void APlayerCameraManager::SetViewTarget(class AActor* NewTarget, struct FViewTa
 void APlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
 {
     // Don't update outgoing viewtarget during an interpolation 
-	if (PendingViewTarget.Target != nullptr && OutVT.Equal(ViewTarget))
+    if (PendingViewTarget.Target != nullptr && OutVT.Equal(ViewTarget))
 	{
 		return;
 	}

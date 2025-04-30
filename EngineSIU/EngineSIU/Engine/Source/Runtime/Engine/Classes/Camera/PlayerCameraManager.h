@@ -2,6 +2,7 @@
 #include "CameraTypes.h"
 #include "GameFramework/Actor.h"
 
+class UCameraShakeBase;
 class UCameraComponent;
 class UCameraModifier_CameraShake;
 class APlayerController;
@@ -96,6 +97,8 @@ class APlayerCameraManager : public AActor
 public:
     APlayerCameraManager();
 
+    virtual void PostSpawnInitialize() override;
+
     virtual void InitializeFor(APlayerController* PC);
 
     AActor* GetViewTarget() const;
@@ -110,19 +113,24 @@ public:
     void ApplyCameraModifiers(float DeltaTime, FMinimalViewInfo& InOutPOV);
 
     void AssignViewTarget(AActor* NewTarget, FTViewTarget& VT, struct FViewTargetTransitionParams TransitionParams=FViewTargetTransitionParams());
-    
-    void SetViewTarget(class AActor* NewTarget, struct FViewTargetTransitionParams TransitionParams);
-    
-    void SetCameraVignette(float InIntensity, float InRadius, float InSmoothness);
-    void SetCameraVignetteColor(FLinearColor InColor);
     void StartVignetteAnimation(float FromIntensity, float ToIntensity, float Duration);
+
+    void SetViewTarget(class AActor* NewTarget, struct FViewTargetTransitionParams TransitionParams);
+
+    virtual UCameraShakeBase* StartCameraShake(UClass* ShakeClass);
+
+    virtual void StopCameraShake(UCameraShakeBase* ShakeInstance, bool bImmediately = true);
+
+    virtual void StopAllInstancesOfCameraShake(UClass* ShakeClass, bool bImmediately = true);
     
     float GetLetterBoxRatio();
 protected:
     virtual void DoUpdateCamera(float DeltaTime);
 
     virtual void UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime);
-    
+    void SetCameraVignette(float InIntensity, float InRadius, float InSmoothness);
+
+    void SetCameraVignetteColor(FLinearColor InColor);
     FMinimalViewInfo BlendViewTargets(const FTViewTarget& A, const FTViewTarget& B, float Alpha);
 
     FMinimalViewInfo LastFrameFOV;

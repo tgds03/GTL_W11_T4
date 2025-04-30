@@ -97,7 +97,7 @@ public:
         Serialize((void*)&Value, sizeof(T));
     }
 
-	virtual void Seek(int64 InPos) {}
+    virtual void Seek(int64 InPos) {}
     virtual int64 Tell() { return INDEX_NONE; }
 
 
