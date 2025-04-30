@@ -22,6 +22,7 @@ void FCameraShakeState::Start(const UCameraShakePattern* InShakePattern)
     FCameraShakeInfo Info;
     InShakePattern->GetShakePatternInfo(Info);
 
+    ShakeInfo = Info;
     bHasBlendIn = Info.BlendIn > 0.f;
     bHasBlendOut = Info.BlendOut > 0.f;
 

@@ -49,7 +49,7 @@ void UWaveOscillatorCameraShakePattern::UpdateShakePatternImpl(const FCameraShak
 {
     UpdateOscillators(Params.DeltaTime, OutResult);
 
-    //const float BlendWeight = State.Update(Params.DeltaTime);
+    const float BlendWeight = State.Update(Params.DeltaTime);
     //OutResult.ApplyScale(BlendWeight);
 }
 
