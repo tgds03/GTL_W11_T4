@@ -16,6 +16,8 @@ public:
 
     virtual void RemoveCameraShake(UCameraShakeBase* ShakeInst, bool bImmediately = true);
 
+    virtual void RemoveAllCameraShakesOfClass(UClass* ShakeClass, bool bImmediately = true);
+    
     virtual void RemoveAllCameraShakes(bool bImmediately = true);
 
     virtual bool ModifyCamera(float DeltaTime, FMinimalViewInfo& InOutPOV) override;

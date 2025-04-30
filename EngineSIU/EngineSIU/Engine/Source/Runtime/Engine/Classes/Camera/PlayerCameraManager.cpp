@@ -145,6 +145,32 @@ void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, FMinimalViewInf
     }
 }
 
+UCameraShakeBase* APlayerCameraManager::StartCameraShake(UClass* ShakeClass)
+{
+    if (ShakeClass && CachedCameraShakeMod)
+    {
+        return CachedCameraShakeMod->AddCameraShake(ShakeClass);
+    }
+
+    return nullptr;
+}
+
+void APlayerCameraManager::StopCameraShake(UCameraShakeBase* ShakeInst, bool bImmediately)
+{
+    if (ShakeInst && CachedCameraShakeMod)
+    {
+        CachedCameraShakeMod->RemoveCameraShake(ShakeInst, bImmediately);
+    }
+}
+
+void APlayerCameraManager::StopAllInstancesOfCameraShake(UClass* ShakeClass, bool bImmediately)
+{
+    if (ShakeClass && CachedCameraShakeMod)
+    {
+        CachedCameraShakeMod->RemoveAllCameraShakesOfClass(ShakeClass, bImmediately);
+    }
+}
+
 void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
 {
     FMinimalViewInfo NewPOV = ViewTarget.POV;

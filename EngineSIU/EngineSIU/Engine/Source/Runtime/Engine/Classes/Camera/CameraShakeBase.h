@@ -184,7 +184,7 @@ class UCameraShakeBase : public UObject
 public:
     UCameraShakeBase();
     
-    virtual ~UCameraShakeBase() override = default;
+    virtual ~UCameraShakeBase() override;
 
     void UpdateAndApplyCameraShake(float DeltaTime, float Alpha, FMinimalViewInfo& InOutPOV);
 

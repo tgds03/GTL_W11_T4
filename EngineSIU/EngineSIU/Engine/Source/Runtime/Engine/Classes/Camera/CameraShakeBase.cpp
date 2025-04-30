@@ -160,6 +160,15 @@ UCameraShakeBase::UCameraShakeBase()
 {
 }
 
+UCameraShakeBase::~UCameraShakeBase()
+{
+    if (RootShakePattern)
+    {
+        delete RootShakePattern;
+        RootShakePattern = nullptr;
+    }
+}
+
 void UCameraShakeBase::UpdateAndApplyCameraShake(float DeltaTime, float Alpha, FMinimalViewInfo& InOutPOV)
 {
     if (RootShakePattern)

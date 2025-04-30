@@ -64,6 +64,23 @@ void UCameraModifier_CameraShake::RemoveCameraShake(UCameraShakeBase* ShakeInst,
     }
 }
 
+void UCameraModifier_CameraShake::RemoveAllCameraShakesOfClass(UClass* ShakeClass, bool bImmediately)
+{
+    for (int32 i = ActiveShakes.Num()- 1; i >= 0; --i)
+    {
+        UCameraShakeBase* ShakeInst = ActiveShakes[i];
+        if (ShakeInst != nullptr && (ShakeInst->GetClass()->IsChildOf(ShakeClass)))
+        {
+            ShakeInst->StopShake(bImmediately);
+            if (bImmediately)
+            {
+                SaveShakeInExpiredPool(ShakeInst);
+                ActiveShakes.RemoveAt(i);
+            }
+        }
+    }
+}
+
 void UCameraModifier_CameraShake::RemoveAllCameraShakes(bool bImmediately)
 {
     // Clean up any active camera shake anims

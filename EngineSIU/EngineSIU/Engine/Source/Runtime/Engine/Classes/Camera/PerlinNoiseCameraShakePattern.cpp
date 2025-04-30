@@ -1,3 +1,6 @@
+
+#pragma once
+
 #include "PerlinNoiseCameraShakePattern.h"
 
 float FPerlinNoiseShaker::Update(float DeltaTime, float AmplitudeMultiplier, float FrequencyMultiplier, float& InOutCurrentOffset) const
@@ -42,8 +45,8 @@ void UPerlinNoiseCameraShakePattern::UpdateShakePatternImpl(const FCameraShakePa
 {
     UpdatePerlinNoise(Params.DeltaTime, OutResult);
 
-    const float BlendWeight = State.Update(Params.DeltaTime);
-    OutResult.ApplyScale(BlendWeight);
+    //const float BlendWeight = State.Update(Params.DeltaTime);
+    //OutResult.ApplyScale(BlendWeight);
 }
 
 //void UPerlinNoiseCameraShakePattern::ScrubShakePatternImpl(const FCameraShakePatternScrubParams& Params, FCameraShakePatternUpdateResult& OutResult)

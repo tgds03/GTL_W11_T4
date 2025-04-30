@@ -9,6 +9,7 @@
 #include "Contents/Components/FishBodyComponent.h"
 #include "Engine/FObjLoader.h"
 #include "SoundManager.h"
+#include "Contents/Objects/TestCameraShake.h"
 #include "GameFramework/GameMode.h"
 #include "World/World.h"
 
@@ -185,6 +186,8 @@ void AFish::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
     if (OtherActor->IsA<APlatformActor>())
     {
         FSoundManager::GetInstance().PlaySound("sizzle");
+
+        GetWorld()->GetPlayerController()->ClientStartCameraShake(UTestCameraShake::StaticClass());
 
         if (IsDead())
         {

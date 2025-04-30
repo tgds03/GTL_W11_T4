@@ -2,6 +2,7 @@
 #include "CameraTypes.h"
 #include "GameFramework/Actor.h"
 
+class UCameraShakeBase;
 class UCameraComponent;
 class UCameraModifier_CameraShake;
 class APlayerController;
@@ -147,6 +148,12 @@ public:
 
     /** Get value of LastFrameCameraCachePrivate.Time  */
     void SetLastFrameCameraCacheTime(float InTime) { LastFrameCameraCachePrivate.TimeStamp = InTime; }
+
+    virtual UCameraShakeBase* StartCameraShake(UClass* ShakeClass);
+
+    virtual void StopCameraShake(UCameraShakeBase* ShakeInstance, bool bImmediately = true);
+
+    virtual void StopAllInstancesOfCameraShake(UClass* ShakeClass, bool bImmediately = true);
     
 protected:
     virtual void DoUpdateCamera(float DeltaTime);

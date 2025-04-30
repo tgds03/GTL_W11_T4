@@ -143,3 +143,19 @@ void APlayerController::SpawnPlayerCameraManager()
         PlayerCameraManager->InitializeFor(this);
     }
 }
+
+void APlayerController::ClientStartCameraShake(UClass* Shake)
+{
+    if (PlayerCameraManager != nullptr)
+    {
+        PlayerCameraManager->StartCameraShake(Shake);
+    }
+}
+
+void APlayerController::ClientStopCameraShake(UClass* Shake, bool bImmediately)
+{
+    if (PlayerCameraManager != nullptr)
+    {
+        PlayerCameraManager->StopAllInstancesOfCameraShake(Shake, bImmediately);
+    }
+}
