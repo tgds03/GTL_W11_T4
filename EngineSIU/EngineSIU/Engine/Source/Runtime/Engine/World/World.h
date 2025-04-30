@@ -6,7 +6,7 @@
 #include "WorldType.h"
 #include "Level.h"
 #include "Actors/Player.h"
-#include "Actors/PlayerController.h"
+#include "GameFramework/PlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/Engine.h"
 #include "Engine/EventManager.h"

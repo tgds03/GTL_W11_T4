@@ -4,6 +4,11 @@ APlayerCameraManager::APlayerCameraManager()
 {
 }
 
+void APlayerCameraManager::InitializeFor(APlayerController* PC)
+{
+    PCOwner = PC;
+}
+
 AActor* APlayerCameraManager::GetViewTarget() const
 {
     return ViewTarget.Target;

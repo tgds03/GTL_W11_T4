@@ -30,8 +30,13 @@ public:
 class APlayerCameraManager : public AActor
 {
     DECLARE_CLASS(APlayerCameraManager, AActor)
+
+    APlayerController* PCOwner;
+    
 public:
     APlayerCameraManager();
+
+    virtual void InitializeFor(APlayerController* PC);
 
     AActor* GetViewTarget() const;
     
@@ -40,9 +45,8 @@ public:
     /* Fade IN / OUT */
     void StartCameraFade(float FromAlpha, float ToAlpha, float Duration, FLinearColor Color, bool bHoldWhenFinished = false);
     void StopCameraFade();
+
 protected:
-
-
     FPOV BlendViewTargets(const FTViewTarget& A, const FTViewTarget& B, float Alpha);
 
 protected:

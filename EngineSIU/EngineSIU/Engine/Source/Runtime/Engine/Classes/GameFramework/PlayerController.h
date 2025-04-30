@@ -7,9 +7,12 @@ class APlayerCameraManager;
 class APlayerController : public AActor
 {
     DECLARE_CLASS(APlayerController, AActor)
+    
 public:
     APlayerController();
     ~APlayerController();
+
+    virtual void PostSpawnInitialize() override;
 
     virtual void BeginPlay();
 
@@ -32,6 +35,8 @@ public:
 public:
     void FOV(float NewFOV);
     AActor* GetViewTarget() const;
+
+    virtual void SpawnPlayerCameraManager();
 
 public:
     APlayerCameraManager* PlayerCameraManager;
