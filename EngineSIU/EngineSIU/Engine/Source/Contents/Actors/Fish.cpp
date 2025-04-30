@@ -149,8 +149,8 @@ void AFish::Reset()
     {
         MeshComp->SetStaticMesh(FObjManager::GetStaticMesh(L"Contents/Fish/Fish_Front.obj"));
     }
-    // SetActorLocation(FVector(0, 0, 10));
-    // SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
+    SetActorLocation(FVector(0, 0, 0));
+    SetActorRotation(FRotator(0.0f, 0.0f, 0.0f));
 }
 
 void AFish::Move(float DeltaTime)
