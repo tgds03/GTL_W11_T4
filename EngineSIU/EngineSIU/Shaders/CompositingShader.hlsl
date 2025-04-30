@@ -3,6 +3,7 @@ Texture2D SceneTexture : register(t100);
 Texture2D PP_PostProcessTexture : register(t101);
 Texture2D EditorTexture : register(t102);
 Texture2D DebugTexture : register(t104);
+Texture2D CameraEffectTexture : register(t105);
 
 SamplerState CompositingSampler : register(s0);
 
@@ -59,7 +60,8 @@ float4 mainPS(PS_Input Input) : SV_TARGET
     float4 PostProcess = PP_PostProcessTexture.Sample(CompositingSampler, Input.UV);
     float4 Editor = EditorTexture.Sample(CompositingSampler, Input.UV);
     float4 Debug = DebugTexture.Sample(CompositingSampler, Input.UV);
-
+    float4 CameraEffect = CameraEffectTexture.Sample(CompositingSampler, Input.UV);
+    
     float4 FinalColor = float4(0, 0, 0, 0);
     if (ViewMode == VMI_LightHeatMap)
     {
@@ -70,6 +72,8 @@ float4 mainPS(PS_Input Input) : SV_TARGET
     {
         FinalColor = lerp(Scene, PostProcess, PostProcess.a);
         FinalColor = lerp(FinalColor, Editor, Editor.a);
+        FinalColor = lerp(FinalColor, CameraEffect, CameraEffect.a);
+        // FinalColor = CameraEffect;
     }
 
     return FinalColor;
