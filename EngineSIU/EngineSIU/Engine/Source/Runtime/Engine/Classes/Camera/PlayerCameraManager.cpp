@@ -2,6 +2,7 @@
 
 #include "CameraModifier.h"
 #include "GameFramework/PlayerController.h"
+#include "Camera/CameraModifier_CameraShake.h"
 
 void FTViewTarget::CheckViewTarget(APlayerController* OwningController)
 {
@@ -29,6 +30,14 @@ AActor* FTViewTarget::GetTargetActor() const
 
 APlayerCameraManager::APlayerCameraManager()
 {
+}
+
+void APlayerCameraManager::PostSpawnInitialize()
+{
+    AActor::PostSpawnInitialize();
+
+    CachedCameraShakeMod = new UCameraModifier_CameraShake();
+    ModifierList.Add(CachedCameraShakeMod);
 }
 
 void APlayerCameraManager::InitializeFor(APlayerController* PC)

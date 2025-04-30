@@ -38,6 +38,8 @@ class APlayerCameraManager : public AActor
 public:
     APlayerCameraManager();
 
+    virtual void PostSpawnInitialize() override;
+
     virtual void InitializeFor(APlayerController* PC);
 
     AActor* GetViewTarget() const;

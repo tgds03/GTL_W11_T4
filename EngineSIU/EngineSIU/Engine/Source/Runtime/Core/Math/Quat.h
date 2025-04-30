@@ -36,7 +36,9 @@ struct FQuat
     bool IsNormalized() const;
 
     // 쿼터니언 정규화 (단위 쿼터니언으로 만듬)
-    FQuat Normalize() const;
+    void Normalize();
+
+    FQuat GetNormalized() const;
 
     // 회전 각도와 축으로부터 쿼터니언 생성 (axis-angle 방식)
     static FQuat FromAxisAngle(const FVector& Axis, float Angle);

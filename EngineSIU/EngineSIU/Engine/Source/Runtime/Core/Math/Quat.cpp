@@ -93,10 +93,17 @@ bool FQuat::IsNormalized() const
     return fabs(W * W + X * X + Y * Y + Z * Z - 1.0f) < 1e-6f;
 }
 
-FQuat FQuat::Normalize() const
+void FQuat::Normalize()
 {
     float magnitude = sqrtf(W * W + X * X + Y * Y + Z * Z);
-    return FQuat(W / magnitude, X / magnitude, Y / magnitude, Z / magnitude);
+    *this = FQuat(W / magnitude, X / magnitude, Y / magnitude, Z / magnitude);
+}
+
+FQuat FQuat::GetNormalized() const
+{
+    FQuat Result = *this;
+    Result.Normalize();
+    return Result;
 }
 
 FQuat FQuat::FromAxisAngle(const FVector& Axis, float Angle)

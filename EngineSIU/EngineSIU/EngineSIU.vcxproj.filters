@@ -811,6 +811,7 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraModifier.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\GameFramework\SpringArmComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraModifier_CameraShake.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraShakeBase.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="EngineSIU.natvis" />
@@ -924,6 +925,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraTypes.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\GameFramework\SpringArmComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraModifier_CameraShake.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraShakeBase.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />

@@ -153,6 +153,8 @@ public:
 
         return true;
     }
+
+    ElementType Pop();
 };
 
 
@@ -398,6 +400,14 @@ template <typename Compare>
 void TArray<T, Allocator>::Sort(const Compare& CompFn)
 {
     std::sort(ContainerPrivate.begin(), ContainerPrivate.end(), CompFn);
+}
+
+template <typename T, typename Allocator>
+typename TArray<T, Allocator>::ElementType TArray<T, Allocator>::Pop()
+{
+    ElementType Element = ContainerPrivate.back();
+    ContainerPrivate.pop_back();
+    return Element;
 }
 
 template <typename ElementType, typename Allocator>
