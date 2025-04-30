@@ -1,6 +1,8 @@
 #pragma once
+#include "CameraTypes.h"
 #include "GameFramework/Actor.h"
 
+class UCameraModifier_CameraShake;
 class APlayerController;
 class UCameraModifier;
 
@@ -10,9 +12,9 @@ class UCameraModifier;
 struct FTViewTarget
 {
     AActor* Target;
-    FPOV POV;
-public:
+    FMinimalViewInfo POV;
 
+public:
     void SetNewTarget(AActor* NewTarget);
 
     bool Equal(const FTViewTarget& OtherTarget) const;
@@ -46,13 +48,19 @@ public:
     void StartCameraFade(float FromAlpha, float ToAlpha, float Duration, FLinearColor Color, bool bHoldWhenFinished = false);
     void StopCameraFade();
 
+    void ApplyCameraModifiers(float DeltaTime, FMinimalViewInfo& InOutPOV);
+    
 protected:
     virtual void DoUpdateCamera(float DeltaTime);
+
+    virtual void UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime);
     
     FPOV BlendViewTargets(const FTViewTarget& A, const FTViewTarget& B, float Alpha);
 
 protected:
     TArray<UCameraModifier*> ModifierList;
+
+    UCameraModifier_CameraShake* CachedCameraShakeMod;
 
 public:
     FTViewTarget ViewTarget;

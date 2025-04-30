@@ -1,5 +1,7 @@
 #include "PlayerCameraManager.h"
 
+#include "CameraModifier.h"
+
 APlayerCameraManager::APlayerCameraManager()
 {
 }
@@ -54,8 +56,34 @@ void APlayerCameraManager::StopCameraFade()
     }
 }
 
+void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, FMinimalViewInfo& InOutPOV)
+{
+    TArray<UCameraModifier*> LocalModifierList = ModifierList;
+
+    for (int32 ModifierIdx = 0; ModifierIdx < LocalModifierList.Num(); ++ModifierIdx)
+    {
+        bool bContinue = true;
+
+        UCameraModifier* CameraModifier = LocalModifierList[ModifierIdx];
+        if (CameraModifier)
+        {
+            bContinue = !CameraModifier->ModifyCamera(DeltaTime, InOutPOV);
+        }
+
+        if (!bContinue)
+        {
+            return;
+        }
+    }
+}
+
 void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
 {
+    if (PendingViewTarget.Target == nullptr)
+    {
+        UpdateViewTarget(ViewTarget, DeltaTime);
+    }
+    
     // 만일 PendingViewTarget이 존재한다면 그로의 Transition 수행
     if (PendingViewTarget.Target != nullptr)
     {
@@ -83,6 +111,16 @@ void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
             StopCameraFade();
         }
     }
+}
+
+void APlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
+{
+    FMinimalViewInfo OrigPOV = OutVT.POV;
+
+    // TODO: 새로운 기본 POV 생성 후 OutVT에 지정
+    
+
+    ApplyCameraModifiers(DeltaTime, OutVT.POV);
 }
 
 /* A로부터 B로의 ViewTarget Blend 수행
