@@ -24,6 +24,12 @@ cbuffer ViewMode : register(b0)
     float3 Padding;
 }
 
+cbuffer Gamma : register(b1)
+{
+    float GammaValue;
+    float3 GammaPadding;
+}
+
 struct PS_Input
 {
     float4 Position : SV_POSITION;
