@@ -502,6 +502,12 @@ struct FFogConstants
     float padding2;
 };
 
+struct FGammaConstants
+{
+    float GammaValue;
+    FVector Padding;
+};
+
 #pragma region W08
 struct FDiffuseMultiplier
 {
