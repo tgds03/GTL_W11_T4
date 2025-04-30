@@ -1,7 +1,4 @@
 #include "CameraComponent.h"
-
-#include <algorithm>
-
 #include "Engine/Engine.h"
 #include "UObject/Casts.h"
 #include "World/World.h"

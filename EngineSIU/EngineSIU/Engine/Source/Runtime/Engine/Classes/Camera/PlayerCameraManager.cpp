@@ -1,5 +1,31 @@
 #include "PlayerCameraManager.h"
 
+#include "Actors/PlayerController.h"
+
+void FTViewTarget::CheckViewTarget(APlayerController* OwningController)
+{
+}
+
+void FTViewTarget::SetNewTarget(AActor* NewTarget)
+{
+    Target = NewTarget;
+}
+
+AActor* FTViewTarget::GetTargetActor() const
+{
+    if (Target)
+    {
+        return Target;
+    }
+
+    if (APlayerController* Controller = Cast<APlayerController>(Target))
+    {
+        return Controller->GetPossessedActor();
+    }
+
+    return nullptr;
+}
+
 APlayerCameraManager::APlayerCameraManager()
 {
 }
@@ -76,9 +102,9 @@ void APlayerCameraManager::StopCameraFade()
 /* A로부터 B로의 ViewTarget Blend 수행
  * 실제 언리얼 코드에선 사용하지 않음
  */
-FPOV APlayerCameraManager::BlendViewTargets(const FTViewTarget& A, const FTViewTarget& B, float Alpha)
+FMinimalViewInfo APlayerCameraManager::BlendViewTargets(const FTViewTarget& A, const FTViewTarget& B, float Alpha)
 {
-    FPOV POV;
+    FMinimalViewInfo POV;
     POV.Location = FMath::Lerp(A.POV.Location, B.POV.Location, Alpha);
     POV.FOV = (A.POV.FOV + Alpha * (B.POV.FOV - A.POV.FOV));
 

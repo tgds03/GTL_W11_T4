@@ -287,18 +287,9 @@ UWorld* UWorld::GetWorld() const
 
 UCameraComponent* UWorld::GetMainCamera() const
 {
-    if (MainCamera)
+    if (UCameraComponent* CameraComponent = PlayerController->PlayerCameraManager->TargetCamera)
     {
-        return MainCamera;
-    }
-
-    //메인카메라 설정안하면 있는거중 한개
-    for (const auto iter: TObjectRange<UCameraComponent>())
-    {
-        if (iter->GetWorld() == GEngine->ActiveWorld)
-        {
-            return iter;
-        }
+        return CameraComponent;
     }
 
     return nullptr;
@@ -310,6 +301,7 @@ APlayer* UWorld::GetMainPlayer() const
     {
         return MainPlayer;
     }
+    
     //메인플레이어 설정안하면 있는거중 한개
     for (const auto iter: TObjectRange<APlayer>())
     {

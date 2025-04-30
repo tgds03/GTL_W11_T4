@@ -8,6 +8,7 @@
 #include "Actors/Player.h"
 #include "Actors/PlayerController.h"
 #include "Camera/CameraComponent.h"
+#include "Camera/PlayerCameraManager.h"
 #include "Engine/Engine.h"
 #include "Engine/EventManager.h"
 #include "UObject/UObjectIterator.h"
@@ -71,7 +72,7 @@ public:
     
     FEventManager EventManager;
 
-    void SetMainCamera(UCameraComponent* InCamera) { MainCamera = InCamera; }
+    void SetMainCamera(UCameraComponent* InCamera) { PlayerController->PlayerCameraManager->TargetCamera = InCamera; }
     UCameraComponent* GetMainCamera() const;
     
     void SetMainPlayer(APlayer* InPlayer){ MainPlayer = InPlayer; }
@@ -93,8 +94,6 @@ private:
 
     /** Actor가 Spawn되었고, 아직 BeginPlay가 호출되지 않은 Actor들 */
     TArray<AActor*> PendingBeginPlayActors;
-
-    UCameraComponent* MainCamera = nullptr;
 
     APlayerController* PlayerController = nullptr;
 

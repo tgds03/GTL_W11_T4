@@ -124,27 +124,16 @@ void UEditorEngine::StartPIE()
 }
 
 void UEditorEngine::BindEssentialObjects()
-{
-    //나중에 MainCamera 설정할 좋은 방법 나온다고 해서 Camera 1개라고 전제하고 진행 
-    for (const auto iter : TObjectRange<UCameraComponent>())
-    {
-        if (iter->GetWorld() == ActiveWorld)
-        {
-            ActiveWorld->SetMainCamera(iter);
-            break;
-        }
-    }
-
+{    
     //실수로 안만들면 넣어주기
-    if (ActiveWorld->GetMainCamera() == nullptr)
+    if (ActiveWorld->GetMainPlayer() == nullptr)
     {
-        AActor* TempActor = ActiveWorld->SpawnActor<AActor>();
-        TempActor->SetActorLabel(TEXT("OBJ_CAMERA"));
-        TempActor->SetActorTickInEditor(false);
-        UCameraComponent* TempCameraComponent = TempActor->AddComponent<UCameraComponent>();
-        ActiveWorld->SetMainCamera(TempCameraComponent);
+        APlayer* TempPlayer = ActiveWorld->SpawnActor<APlayer>();
+        TempPlayer->SetActorLabel(TEXT("OBJ_PLAYER"));
+        TempPlayer->SetActorTickInEditor(false);
+        ActiveWorld->SetMainPlayer(TempPlayer);
     }
-
+    
     //마찬가지
     for (const auto iter: TObjectRange<APlayer>())
     {
@@ -155,23 +144,35 @@ void UEditorEngine::BindEssentialObjects()
         }
     }
     
-    //실수로 안만들면 넣어주기
-    if (ActiveWorld->GetMainPlayer() == nullptr)
-    {
-        APlayer* TempPlayer = ActiveWorld->SpawnActor<APlayer>();
-        TempPlayer->SetActorLabel(TEXT("OBJ_PLAYER"));
-        TempPlayer->SetActorTickInEditor(false);
-        ActiveWorld->SetMainPlayer(TempPlayer);
-    }
-
+    //무조건 PIE들어갈때 만들어주기
     if (ActiveWorld->GetPlayerController() == nullptr)
     {
-        APlayerController* TempController = ActiveWorld->SpawnActor<APlayerController>();
-        TempController->SetActorLabel(TEXT("OBJ_PLAYER_CONTROLLER"));
-        TempController->SetActorTickInEditor(false);
-        ActiveWorld->SetPlayerController(TempController);
+        APlayerController* PlayerController = ActiveWorld->SpawnActor<APlayerController>();
+        PlayerController->SetActorLabel(TEXT("OBJ_PLAYER_CONTROLLER"));
+        PlayerController->SetActorTickInEditor(false);
+        ActiveWorld->SetPlayerController(PlayerController);
     }
 
+    //나중에 MainCamera 설정할 좋은 방법 나온다고 해서 Camera 1개라고 전제하고 진행 
+    for (const auto iter : TObjectRange<UCameraComponent>())
+    {
+        if (iter->GetWorld() == ActiveWorld)
+        {
+            ActiveWorld->SetMainCamera(iter);
+            break;
+        }
+    }
+    
+    //실수로 안만들면 넣어주기
+    if (ActiveWorld->GetMainCamera() == nullptr)
+    {
+        AActor* TempActor = ActiveWorld->SpawnActor<AActor>();
+        TempActor->SetActorLabel(TEXT("OBJ_CAMERA"));
+        TempActor->SetActorTickInEditor(false);
+        UCameraComponent* TempCameraComponent = TempActor->AddComponent<UCameraComponent>();
+        ActiveWorld->SetMainCamera(TempCameraComponent);
+    }
+    
     // ActiveWorld->GetPlayerController()->Possess(ActiveWorld->GetMainPlayer());
 }
 

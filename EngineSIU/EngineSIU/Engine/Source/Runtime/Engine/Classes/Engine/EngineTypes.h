@@ -17,24 +17,25 @@ enum Type : uint8
 }
 
 
-struct FPOV
+struct FMinimalViewInfo //CameraInfo
 {
     FVector Location;
     FRotator Rotation;
     float FOV;
-
-    FPOV()
+    FVector CameraToViewTarget;
+    
+    FMinimalViewInfo()
         : Location(), Rotation(), FOV(90.0f)
     {
     }
 
-    FPOV(FVector InLocation, FRotator InRotation, float InFOV)
+    FMinimalViewInfo(FVector InLocation, FRotator InRotation, float InFOV)
         : Location(InLocation), Rotation(InRotation), FOV(InFOV)
     {
     }
 
     // Serializer.
-    friend FArchive& operator<<(FArchive& Ar, FPOV& POV)
+    friend FArchive& operator<<(FArchive& Ar, FMinimalViewInfo& POV)
     {
         return Ar << POV.Location << POV.Rotation << POV.FOV;
     }

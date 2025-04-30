@@ -28,12 +28,12 @@ public:
     
     virtual void BindAction(const FString& Key, const std::function<void(float)>& Callback);
 
+    AActor* GetPossessedActor() { return PossessedActor; }
     // 카메라 관련 함수
 public:
     void FOV(float NewFOV);
     AActor* GetViewTarget() const;
 
-public:
     APlayerCameraManager* PlayerCameraManager;
 
 protected:
@@ -42,7 +42,7 @@ protected:
 
     virtual void SetupInputComponent();
 
-    AActor* CurrentPossess = nullptr;
+    AActor* PossessedActor = nullptr;
 
     bool bHasPossessed = false;
 };
