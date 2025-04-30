@@ -3,6 +3,10 @@
 
 #include "Math/Quat.h"
 
+void FCameraShakeState::Start(const FCameraShakeInfo& InShakeInfo)
+{
+}
+
 UCameraShakeBase::UCameraShakeBase()
     : ShakeScale(1.0f)
     , RootShakePattern(nullptr)
