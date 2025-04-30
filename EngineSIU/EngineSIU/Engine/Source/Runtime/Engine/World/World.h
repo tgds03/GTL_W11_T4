@@ -82,6 +82,9 @@ public:
     
     void CheckOverlap(const UPrimitiveComponent* Component, TArray<FOverlapResult>& OutOverlaps) const;
 
+public:
+    double TimeSeconds;
+    
 private:
     AGameMode* GameMode = nullptr;
 

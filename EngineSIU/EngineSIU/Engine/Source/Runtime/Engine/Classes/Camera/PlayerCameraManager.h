@@ -87,6 +87,21 @@ public:
     }
 };
 
+struct FCameraCacheEntry
+{
+public:
+
+    /** World time this entry was created. */
+    float TimeStamp;
+
+    /** Camera POV to cache. */
+    FMinimalViewInfo POV;
+
+    FCameraCacheEntry()
+        : TimeStamp(0.f)
+    {}
+};
+
 class APlayerCameraManager : public AActor
 {
     DECLARE_CLASS(APlayerCameraManager, AActor)
@@ -114,18 +129,41 @@ public:
     
     void SetViewTarget(class AActor* NewTarget, struct FViewTargetTransitionParams TransitionParams);
 
-    mutable FOnBlendComplete OnBlendCompleteEvent;
+    virtual void SetCameraCachePOV(const FMinimalViewInfo& InPOV);
+    virtual void SetLastFrameCameraCachePOV(const FMinimalViewInfo& InPOV);
+    virtual const FMinimalViewInfo& GetCameraCacheView() const;
+    virtual const FMinimalViewInfo& GetLastFrameCameraCacheView() const;
 
+    void FillCameraCache(const FMinimalViewInfo& NewInfo);
+
+    float GetCameraCacheTime() const { return CameraCachePrivate.TimeStamp; }
+
+    float GetLastFrameCameraCacheTime() const { return LastFrameCameraCachePrivate.TimeStamp; }
+
+    /** Get value of CameraCachePrivate.Time  */
+    void SetCameraCacheTime(float InTime) { CameraCachePrivate.TimeStamp = InTime; }
+
+    /** Get value of LastFrameCameraCachePrivate.Time  */
+    void SetLastFrameCameraCacheTime(float InTime) { LastFrameCameraCachePrivate.TimeStamp = InTime; }
+    
 protected:
     virtual void DoUpdateCamera(float DeltaTime);
 
-    FMinimalViewInfo BlendViewTargets(const FTViewTarget& A, const FTViewTarget& B, float Alpha);
     virtual void UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime);
+    
+    FMinimalViewInfo BlendViewTargets(const FTViewTarget& A, const FTViewTarget& B, float Alpha);
+
+    FMinimalViewInfo LastFrameFOV;
 
     TArray<UCameraModifier*> ModifierList;
 
     UCameraModifier_CameraShake* CachedCameraShakeMod;
 
+private:
+    struct FCameraCacheEntry CameraCachePrivate;
+
+    struct FCameraCacheEntry LastFrameCameraCachePrivate;
+    
 public:
     FTViewTarget ViewTarget;
 
@@ -150,6 +188,8 @@ public:
     float DefaultFOV;
     float DefaultAspectRatio;
     uint32 bDefaultConstrainAspectRatio : 1;
+
+    mutable FOnBlendComplete OnBlendCompleteEvent;
 
   	/** Minimum view pitch, in degrees. */
     float ViewPitchMin;

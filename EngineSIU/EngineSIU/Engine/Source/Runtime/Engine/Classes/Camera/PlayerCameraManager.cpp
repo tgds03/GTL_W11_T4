@@ -2,6 +2,7 @@
 
 #include "CameraModifier.h"
 #include "GameFramework/PlayerController.h"
+#include "World/World.h"
 
 bool FTViewTarget::Equal(const FTViewTarget& OtherTarget) const
 {
@@ -222,6 +223,8 @@ void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
             StopCameraFade();
         }
     }
+
+    FillCameraCache(NewPOV);
 }
 
 void APlayerCameraManager::SetViewTarget(class AActor* NewTarget, struct FViewTargetTransitionParams TransitionParams)
@@ -245,11 +248,6 @@ void APlayerCameraManager::SetViewTarget(class AActor* NewTarget, struct FViewTa
 		return;
 	}
 
-	if (UWorld* World = GetWorld())
-	{
-		World->GetTimerManager().ClearTimer(SwapPendingViewTargetWhenUsingClientSideCameraUpdatesTimerHandle);
-	}
-
 	// if viewtarget different then new one or we're transitioning from the same target with locked outgoing, then assign it
 	if ((NewTarget != ViewTarget.Target) || (PendingViewTarget.Target && BlendParams.bLockOutgoing))
 	{
@@ -269,13 +267,6 @@ void APlayerCameraManager::SetViewTarget(class AActor* NewTarget, struct FViewTa
 			AssignViewTarget(NewTarget, PendingViewTarget, TransitionParams);
 			PendingViewTarget.CheckViewTarget(PCOwner);
 
-			if (bUseClientSideCameraUpdates && GetNetMode() != NM_Client)
-			{
-				if (UWorld* World = GetWorld())
-				{
-					World->GetTimerManager().SetTimer(SwapPendingViewTargetWhenUsingClientSideCameraUpdatesTimerHandle, this, &ThisClass::SwapPendingViewTargetWhenUsingClientSideCameraUpdates, TransitionParams.BlendTime, false);
-				}
-			}
 		}
 		else
 		{
@@ -294,7 +285,7 @@ void APlayerCameraManager::SetViewTarget(class AActor* NewTarget, struct FViewTa
 		// get called
 		if (PendingViewTarget.Target != nullptr)
 		{
-			if (!PCOwner->IsPendingKillPending() && !PCOwner->IsLocalPlayerController() && GetNetMode() != NM_Client)
+			if (!PCOwner->IsActorBeingDestroyed())
 			{
 				PCOwner->ClientSetViewTarget(NewTarget, TransitionParams);
 			}
@@ -305,6 +296,41 @@ void APlayerCameraManager::SetViewTarget(class AActor* NewTarget, struct FViewTa
 	// update the blend params after all the assignment logic so that sub-classes can compare
 	// the old vs new parameters if needed.
 	BlendParams = TransitionParams;
+}
+
+void APlayerCameraManager::SetCameraCachePOV(const FMinimalViewInfo& InPOV)
+{
+    CameraCachePrivate.POV = InPOV;
+}
+
+void APlayerCameraManager::SetLastFrameCameraCachePOV(const FMinimalViewInfo& InPOV)
+{
+    LastFrameCameraCachePrivate.POV = InPOV;
+}
+
+const FMinimalViewInfo& APlayerCameraManager::GetCameraCacheView() const
+{
+    return CameraCachePrivate.POV;
+}
+
+const FMinimalViewInfo& APlayerCameraManager::GetLastFrameCameraCacheView() const
+{
+    return LastFrameCameraCachePrivate.POV;
+}
+
+void APlayerCameraManager::FillCameraCache(const FMinimalViewInfo& NewInfo)
+{
+    // Backup last frame results.
+    const float CurrentCacheTime = GetCameraCacheTime();
+    const float CurrentGameTime = GetWorld()->TimeSeconds;
+    if (CurrentCacheTime != CurrentGameTime)
+    {
+        SetLastFrameCameraCachePOV(GetCameraCacheView());
+        SetLastFrameCameraCacheTime(CurrentCacheTime);
+    }
+
+    SetCameraCachePOV(NewInfo);
+    SetCameraCacheTime(CurrentGameTime);
 }
 
 void APlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)

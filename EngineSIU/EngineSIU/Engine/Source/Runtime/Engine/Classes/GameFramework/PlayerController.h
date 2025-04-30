@@ -1,5 +1,6 @@
 #pragma once
 #include "Camera/CameraComponent.h"
+#include "Camera/PlayerCameraManager.h"
 #include "GameFramework/Actor.h" 
 #include "Classes/Components/InputComponent.h"
 
