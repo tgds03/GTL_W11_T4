@@ -16,6 +16,11 @@ void FTViewTarget::CheckViewTarget(APlayerController* OwningController)
     {
         Target = OwningController;
     }
+
+    if (Target == OwningController->GetPossessedActor())
+    {
+        return;
+    }
     
     if (Target != nullptr)
     {
@@ -249,7 +254,7 @@ void APlayerCameraManager::SetViewTarget(class AActor* NewTarget, struct FViewTa
 	}
 
 	// if viewtarget different then new one or we're transitioning from the same target with locked outgoing, then assign it
-	if ((NewTarget != ViewTarget.Target) || (PendingViewTarget.Target && BlendParams.bLockOutgoing))
+	if ((NewTarget != ViewTarget.Target) || (PendingViewTarget.Target))
 	{
 		// if a transition time is specified, then set pending view target accordingly
 		if (TransitionParams.BlendTime > 0)
@@ -261,7 +266,7 @@ void APlayerCameraManager::SetViewTarget(class AActor* NewTarget, struct FViewTa
 			}
 
 			// use last frame's POV
-			ViewTarget.POV = GetLastFrameCameraCacheView();
+			// ViewTarget.POV = GetLastFrameCameraCacheView();
 			BlendTimeToGo = TransitionParams.BlendTime;
 
 			AssignViewTarget(NewTarget, PendingViewTarget, TransitionParams);

@@ -96,6 +96,16 @@ void AGameMode::StartMatch()
     Fish->Reset();
     // GEngine->ActiveWorld->GetMainPlayer()->SetActorLocation(FVector(0, 0, 10));
     GEngine->ActiveWorld->GetPlayerController()->Possess(GEngine->ActiveWorld->GetMainPlayer());
+
+
+    FViewTargetTransitionParams Params;
+    Params.BlendTime = 2.0f; // 2초 동안 블렌딩
+    Params.BlendFunction = VTBlend_EaseInOut;
+
+    AActor* TargetActor = GEngine->ActiveWorld->SpawnActor<AActor>();
+    TargetActor->SetActorLocation(FVector(10.f, 10.f, 10.f));
+    
+    GEngine->ActiveWorld->GetPlayerController()->SetViewTarget(TargetActor, Params);
     
     FSoundManager::GetInstance().PlaySound("fishdream");
     OnGameStart.Broadcast();
@@ -113,7 +123,6 @@ void AGameMode::Tick(float DeltaTime)
         
     }
 }
-
 
 void AGameMode::EndMatch(bool bIsWin)
 {
