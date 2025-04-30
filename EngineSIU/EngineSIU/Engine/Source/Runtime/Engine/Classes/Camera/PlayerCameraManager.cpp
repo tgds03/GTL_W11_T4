@@ -28,6 +28,11 @@ AActor* FTViewTarget::GetTargetActor() const
     return nullptr;
 }
 
+bool FTViewTarget::Equal(const FTViewTarget& OtherTarget) const
+{
+    return Target == OtherTarget.Target && POV.Equals(OtherTarget.POV);
+}
+
 APlayerCameraManager::APlayerCameraManager()
 {
 }

@@ -37,5 +37,18 @@ struct FMinimalViewInfo
         , AspectRatio(1.33333333f)*/
     {
     }
+
+    bool Equals(const FMinimalViewInfo& Other) const;
 };
+
+inline bool FMinimalViewInfo::Equals(const FMinimalViewInfo& Other) const
+{
+    return
+        Location == Other.Location &&
+        Rotation == Other.Rotation &&
+        FOV == Other.FOV &&
+        PerspectiveNearClip == Other.PerspectiveNearClip &&
+        PerspectiveFarClip == Other.PerspectiveFarClip &&
+        PostProcessBlendWeight == Other.PostProcessBlendWeight;
+}
 

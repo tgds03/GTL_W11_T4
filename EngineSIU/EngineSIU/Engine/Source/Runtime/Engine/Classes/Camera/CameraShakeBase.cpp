@@ -35,10 +35,18 @@ void UCameraShakeBase::UpdateAndApplyCameraShake(float DeltaTime, float Alpha, F
 
 void UCameraShakeBase::StartShake()
 {
+    bIsActive = true;
+
+    if (RootShakePattern)
+    {
+        RootShakePattern->StartShakePattern();
+    }
 }
 
 void UCameraShakeBase::StopShake(bool bImmediately)
 {
+    bIsActive = false;
+    
     if (RootShakePattern)
     {
         RootShakePattern->StopShakePattern(bImmediately);
@@ -50,10 +58,19 @@ void UCameraShakeBase::ApplyResult(float Scale, const FCameraShakePatternUpdateR
     // InResult를 기반으로 InOutPOV 업데이트
     InOutPOV.Location += InResult.Location * Scale;
     InOutPOV.FOV += InResult.FOV * Scale;
+
+    FRotator ScaledDeltaRotator = InResult.Rotation;
+    ScaledDeltaRotator.Pitch *= Scale;
+    ScaledDeltaRotator.Yaw *= Scale;
+    ScaledDeltaRotator.Roll *= Scale;
     
     FQuat CurrentRotation = InOutPOV.Rotation.ToQuaternion();
-    FQuat DeltaRotation = InResult.Rotation.ToQuaternion();
-    InOutPOV.Rotation = FRotator(DeltaRotation * CurrentRotation);
+    FQuat DeltaRotation = ScaledDeltaRotator.ToQuaternion();
+
+    FQuat FinalRotationQuat = DeltaRotation * CurrentRotation; // TODO: 앞 뒤 바꿔야 하는지 생각하기.
+    FinalRotationQuat.Normalize();
+    
+    InOutPOV.Rotation = FinalRotationQuat.Rotator();
 }
 
 bool UCameraShakeBase::IsFinished() const
