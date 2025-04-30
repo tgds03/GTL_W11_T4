@@ -3,12 +3,15 @@
 #include "UObject/ObjectMacros.h"
 #include "Engine/EngineTypes.h"
 #include "Components/SceneComponent.h"
+#include "Math/Quat.h"
 #include "Math/Vector.h"
+#include "PropertyEditor/PropertyEditorPanel.h"
 
 
 class USpringArmComponent : public USceneComponent
 {
     DECLARE_CLASS(USpringArmComponent, USceneComponent)
+    friend class PropertyEditorPanel;
 public:
     USpringArmComponent();
     virtual ~USpringArmComponent() override = default;
@@ -23,7 +26,7 @@ public:
     FRotator GetDesiredRotation() const;
     FRotator GetTargetRotation() const;
 private:
-    FVector TargetOffset;           // 월드 기준 부모 대비 절대 위치
+    FVector TargetOffset;           // 월드 공간 오프셋
     float TargetArmLength;          // 카메라와의 거리
 
     float ProbeSize;                // 충돌에 사용할 구 반지름
@@ -49,4 +52,8 @@ private:
     FVector PreviousDesiredLoc;
     FVector PreviousArmOrigin;
     FRotator PreviousDesiredRot;
+
+
+    FVector RelativeSocketLocation; // 암을 따라 회전되는 로컬 오프셋
+    FQuat RelativeSocketRotation;
 };

@@ -5,7 +5,8 @@
 
 USpringArmComponent::USpringArmComponent()
 {
-    TargetArmLength = 5.f; 
+    TargetArmLength = 5.f;
+    TargetOffset = FVector(-13.f, 0.f, 4.f); // 부모에 대한 상대 위치
 
     bUsePawnControlRotation = false;
     bDoCollisionTest = false;
@@ -20,7 +21,55 @@ USpringArmComponent::USpringArmComponent()
     CameraRotationLagSpeed = 10.f;
     CameraLagMaxTimeStep = 1.f / 60.f;
     CameraLagMaxDistance = 0.f;
+
+    bAbsoluteRotation = false;
+    
 }
+
+FRotator USpringArmComponent::GetDesiredRotation() const
+{
+    return GetWorldRotation();
+}
+
+FRotator USpringArmComponent::GetTargetRotation() const
+{
+    FRotator DesiredRot = GetDesiredRotation();
+
+    /* bUsePawnControlRotation : 액터의 ViewRotation을 기준으로 삼음 */
+    if (AActor* OwningActor = Cast<AActor>(GetOwner()))
+    {
+        if (bUsePawnControlRotation)
+        {
+            const FRotator ActorViewRoation = OwningActor->GetActorRotation();
+            DesiredRot = ActorViewRoation;
+        }
+    }
+
+    /* 만일 월드 기준 절대 회전 값이 아닌 상대 회전 값을 쓴다면
+     * binheritPitch, bInheritYaw, bInheritRoll를 검사하여
+     * 일부 회전 값만 부모에서 가져오고, 나머지는 본인의 로컬 회전 사용
+     * ex) bInheritYaw == false : 부모의 Yaw 회전 무시하고, 본인의 Yaw 회전 사용
+     */
+    if (!IsUsingAbsoluteRotation())
+    {
+        const FRotator LocalRelativeRotation = GetRelativeRotation();
+        if (!bInheritPitch)
+        {
+            DesiredRot.Pitch = LocalRelativeRotation.Pitch;
+        }
+        if (!bInheritYaw)
+        {
+            DesiredRot.Yaw = LocalRelativeRotation.Yaw;
+        }
+        if (!bInheritRoll)
+        {
+            DesiredRot.Roll = LocalRelativeRotation.Roll;
+        }
+    }
+
+    return DesiredRot;
+}
+
 
 void USpringArmComponent::TickComponent(float DeltaTime)
 {
@@ -58,9 +107,14 @@ void USpringArmComponent::UpdateDesiredArmLocation(bool bDoTrace, bool bDoLocati
             DesiredRot = FMath::RInterpTo(PreviousDesiredRot, DesiredRot, DeltaTime, CameraRotationLagSpeed);
         }
     }
+    PreviousDesiredRot = DesiredRot;
 
     /* 위치 지연 여부 검사 및 반영 : bDoLocationLag */
-    FVector ArmOrigin = GetWorldLocation() + TargetOffset;
+    
+
+    /* 카메라 포지션으로부터 회전을 반영한 TargetOffset 만큼 떨어짐  */
+    FVector RotatedOffset = DesiredRot.RotateVector(TargetOffset);
+    FVector ArmOrigin = GetOwner()->GetActorLocation() + RotatedOffset;
     FVector DesiredLoc = ArmOrigin;
 
 
@@ -109,7 +163,7 @@ void USpringArmComponent::UpdateDesiredArmLocation(bool bDoTrace, bool bDoLocati
     }
 
     SetWorldLocation(ResultLoc);
-    SetWorldRotation(DesiredRot);
+    //SetWorldRotation(DesiredRot);
 }
 
 FVector USpringArmComponent::BlendLocations(const FVector& DesiredArmLocation, const FVector& TraceHitLocation, bool bHitSomething, float DeltaTime)
@@ -117,28 +171,3 @@ FVector USpringArmComponent::BlendLocations(const FVector& DesiredArmLocation, c
     return bHitSomething ? TraceHitLocation : DesiredArmLocation;
 }
 
-FRotator USpringArmComponent::GetDesiredRotation() const
-{
-    return GetWorldRotation();
-}
-
-FRotator USpringArmComponent::GetTargetRotation() const
-{
-    FRotator DesiredRot = GetDesiredRotation();
-
-    if (AActor* OwningActor = Cast<AActor>(GetOwner()))
-    {
-        if (bUsePawnControlRotation)
-        {
-            const FRotator ActorViewRoation = OwningActor->GetActorRotation();
-            DesiredRot = ActorViewRoation;
-        }
-    }
-
-    /* 만일 월드 기준 절대 회전 값이 아닌 상대 회전 값을 쓴다면
-     * binheritPitch, bInheritYaw, bInheritRoll를 검사하여
-     * DesiredRot = LocalRelativeRotation으로 변경
-     */
-
-    return DesiredRot;
-}
