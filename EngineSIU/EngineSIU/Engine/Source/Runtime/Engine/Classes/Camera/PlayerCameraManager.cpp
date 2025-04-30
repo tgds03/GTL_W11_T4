@@ -16,33 +16,9 @@ AActor* APlayerCameraManager::GetViewTarget() const
 
 void APlayerCameraManager::UpdateCamera(float DeltaTime)
 {
-
-    // 만일 PendingViewTarget이 존재한다면 그로의 Transition 수행
-    if (PendingViewTarget.Target != nullptr)
+    if (PCOwner)
     {
-        /* Blend 관련 switch case 분기 및 인자 설정 .. */
-
-        /* Note) 언리얼 코드에선 BlendViewTargets 호출 X
-         * 더 많은 인자와 처리를 지원하는 BlendViewInfos() 호출
-         * NewPOV = ViewTarget.POV;
-         * NewPOV.BlendViewInfo(PendingViewTarget.POV, BlendPct);
-         */
-    }
-
-    // Fade Enabled 되었다면 Fade 처리 수행
-    if (bEnableFading)
-    {
-        FadeTimeRemaining = FMath::Max(FadeTimeRemaining - DeltaTime, 0.0f);
-        if (FadeTime > 0.0f)
-        {
-            FadeAmount = FadeAlpha.X + ((1.f - FadeTimeRemaining / FadeTime) * (FadeAlpha.Y - FadeAlpha.X));
-        }
-
-        if (/*(bHoldFadeWhenFinished == false) && */(FadeTimeRemaining <= 0.f))
-        {
-            // done
-            StopCameraFade();
-        }
+        DoUpdateCamera(DeltaTime);
     }
 }
 
@@ -75,6 +51,37 @@ void APlayerCameraManager::StopCameraFade()
         FadeAmount = FadeAlpha.Y;
         bEnableFading = false;
         //StopAudioFade();
+    }
+}
+
+void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
+{
+    // 만일 PendingViewTarget이 존재한다면 그로의 Transition 수행
+    if (PendingViewTarget.Target != nullptr)
+    {
+        /* Blend 관련 switch case 분기 및 인자 설정 .. */
+
+        /* Note) 언리얼 코드에선 BlendViewTargets 호출 X
+         * 더 많은 인자와 처리를 지원하는 BlendViewInfos() 호출
+         * NewPOV = ViewTarget.POV;
+         * NewPOV.BlendViewInfo(PendingViewTarget.POV, BlendPct);
+         */
+    }
+
+    // Fade Enabled 되었다면 Fade 처리 수행
+    if (bEnableFading)
+    {
+        FadeTimeRemaining = FMath::Max(FadeTimeRemaining - DeltaTime, 0.0f);
+        if (FadeTime > 0.0f)
+        {
+            FadeAmount = FadeAlpha.X + ((1.f - FadeTimeRemaining / FadeTime) * (FadeAlpha.Y - FadeAlpha.X));
+        }
+
+        if (/*(bHoldFadeWhenFinished == false) && */(FadeTimeRemaining <= 0.f))
+        {
+            // done
+            StopCameraFade();
+        }
     }
 }
 

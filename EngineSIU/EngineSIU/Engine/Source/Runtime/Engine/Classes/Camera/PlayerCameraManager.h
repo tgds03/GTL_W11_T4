@@ -47,6 +47,8 @@ public:
     void StopCameraFade();
 
 protected:
+    virtual void DoUpdateCamera(float DeltaTime);
+    
     FPOV BlendViewTargets(const FTViewTarget& A, const FTViewTarget& B, float Alpha);
 
 protected:
