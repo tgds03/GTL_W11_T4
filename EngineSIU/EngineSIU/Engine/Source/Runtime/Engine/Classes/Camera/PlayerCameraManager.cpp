@@ -2,6 +2,13 @@
 
 APlayerCameraManager::APlayerCameraManager()
 {
+    VignetteColor = FLinearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    VignetteCenter = FVector2D(0.5f, 0.5f);
+    VignetteRadius = 0.5f;
+    VignetteSmoothness = 0.5f;
+    VignetteIntensity = 0.0f;
+    LetterBoxWidth = 2.35f;
+    LetterBoxHeight = 1.0f;
 }
 
 AActor* APlayerCameraManager::GetViewTarget() const
@@ -11,7 +18,6 @@ AActor* APlayerCameraManager::GetViewTarget() const
 
 void APlayerCameraManager::UpdateCamera(float DeltaTime)
 {
-
     // 만일 PendingViewTarget이 존재한다면 그로의 Transition 수행
     if (PendingViewTarget.Target != nullptr)
     {
@@ -37,6 +43,23 @@ void APlayerCameraManager::UpdateCamera(float DeltaTime)
         {
             // done
             StopCameraFade();
+        }
+    }
+
+    if (bAnimateVignette)
+    {
+        VignetteTimeRemaining = FMath::Max(VignetteTimeRemaining - DeltaTime, 0.0f);
+        if (VignetteTime > 0.0f)
+        {
+            VignetteIntensity = VignetteStartIntensity + ((1.f - VignetteTimeRemaining / VignetteTime) * (VignetteTargetIntensity - VignetteStartIntensity));
+
+            SetCameraVignette(VignetteIntensity, 0.8f, 0.8f);
+        }
+
+        if (VignetteTimeRemaining <= 0.0f)
+        {
+            VignetteIntensity = VignetteTargetIntensity;
+            bAnimateVignette = false;
         }
     }
 }
@@ -73,6 +96,18 @@ void APlayerCameraManager::StopCameraFade()
     }
 }
 
+void APlayerCameraManager::SetCameraVignette(float InIntensity, float InRadius, float InSmoothness)
+{
+    VignetteIntensity = InIntensity;
+    VignetteRadius = InRadius;
+    VignetteSmoothness = InSmoothness;
+}
+
+void APlayerCameraManager::SetCameraVignetteColor(FLinearColor InColor)
+{
+    VignetteColor = InColor;
+}
+
 /* A로부터 B로의 ViewTarget Blend 수행
  * 실제 언리얼 코드에선 사용하지 않음
  */
@@ -86,4 +121,18 @@ FPOV APlayerCameraManager::BlendViewTargets(const FTViewTarget& A, const FTViewT
     POV.Rotation = A.POV.Rotation + DeltaAng * Alpha;
 
     return POV;
+}
+
+void APlayerCameraManager::StartVignetteAnimation(float FromIntensity, float ToIntensity, float Duration)
+{
+    bAnimateVignette = true;
+    VignetteStartIntensity = FromIntensity;
+    VignetteTargetIntensity = ToIntensity;
+    VignetteTime = Duration;
+    VignetteTimeRemaining = Duration;
+}
+
+float APlayerCameraManager::GetLetterBoxRatio()
+{
+    return LetterBoxWidth / LetterBoxHeight;
 }
