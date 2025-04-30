@@ -83,11 +83,6 @@ struct FCameraShakeState
 	/**
 	 * Initialize the state with a shake's info and start playing.
 	 */
-	void Start(const FCameraShakeInfo& InShakeInfo);
-
-	/**
-	 * Initialize the state with a shake's info and start playing.
-	 */
 	void Start(const UCameraShakePattern* InShakePattern);
 
 	/**
@@ -150,13 +145,13 @@ struct FCameraShakeState
 	const FCameraShakeInfo& GetShakeInfo() const { return ShakeInfo; }
 
 	/** Helper method to get GetShakeInfo().Duration.IsFixed() */
-	bool HasDuration() const { return ShakeInfo.Duration.IsFixed(); }
+	bool HasDuration() const { return ShakeInfo.DurationType != ECameraShakeDurationType::Infinite; }
 
 	/** Helper method to get GetShakeInfo().Duration.Get() */
-	float GetDuration() const { return ShakeInfo.Duration.Get(); }
+	float GetDuration() const { return ShakeInfo.Duration; }
 
 	/** Helper method to get GetShakeInfo().Duration.IsInifnite() */
-	bool IsInfinite() const { return ShakeInfo.Duration.IsInfinite(); }
+	bool IsInfinite() const { return ShakeInfo.DurationType == ECameraShakeDurationType::Infinite; }
 
 private:
 	void InitializePlaying();
@@ -223,6 +218,7 @@ public:
     UCameraShakePattern() = default;
     virtual ~UCameraShakePattern() override = default;
 
+    void GetShakePatternInfo(FCameraShakeInfo& Info) const;
     /** Called when the shake pattern starts */
 	void StartShakePattern();
 	/** Updates the shake pattern, which should add its generated offset to the given result */
@@ -234,6 +230,7 @@ public:
 
 private:
 	// UCameraShakePattern interface
+    virtual void GetShakePatternInfoImpl(FCameraShakeInfo& OutInfo) const {}
 	virtual void StartShakePatternImpl() {}
 	virtual void UpdateShakePatternImpl(const FCameraShakePatternUpdateParams& Params, FCameraShakePatternUpdateResult& OutResult) {}
 	virtual bool IsFinishedImpl() const { return true; }

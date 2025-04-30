@@ -22,9 +22,9 @@ protected:
 
     // UCameraShakePattern interface
     virtual void GetShakePatternInfoImpl(FCameraShakeInfo& OutInfo) const override;
-    virtual void StartShakePatternImpl(const FCameraShakePatternStartParams& Params) override;
+    virtual void StartShakePatternImpl() override;
     virtual bool IsFinishedImpl() const override;
-    virtual void StopShakePatternImpl(const FCameraShakePatternStopParams& Params) override;
+    virtual void StopShakePatternImpl(bool bImmediately) override;
     virtual void TeardownShakePatternImpl()  override;
 
 protected:
