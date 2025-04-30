@@ -11,7 +11,7 @@
 
 #include "UObject/ObjectFactory.h"
 #include "BaseGizmos/TransformGizmo.h"
-#include "Components/CameraComponent.h"
+#include "Camera/CameraComponent.h"
 #include "LevelEditor/SLevelEditor.h"
 #include "SlateCore/Input/Events.h"
 

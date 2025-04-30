@@ -3,7 +3,7 @@
 #include "EngineLoop.h"
 #include "SoundManager.h"
 #include "InputCore/InputCoreTypes.h"
-#include "Classes/Components/CameraComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Contents/Actors/Fish.h"
 #include "Contents/Actors/ItemActor.h"
 #include "Engine/Engine.h"

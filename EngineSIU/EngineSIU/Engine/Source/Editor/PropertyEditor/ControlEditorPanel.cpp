@@ -12,7 +12,7 @@
 #include "Components/SphereComp.h"
 #include "Components/ParticleSubUVComponent.h"
 #include "Components/TextComponent.h"
-#include "Components/CameraComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Components/ProjectileMovementComponent.h"
 
 #include "Engine/FObjLoader.h"
