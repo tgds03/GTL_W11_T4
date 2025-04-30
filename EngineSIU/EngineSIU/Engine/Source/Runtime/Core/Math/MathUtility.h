@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <numbers>
+#include <random>
 #include "Core/HAL/PlatformType.h"
 
 
@@ -10,7 +11,6 @@
 
 #define PI_DOUBLE            (3.141592653589793238462643383279502884197169399)
 #define UE_SMALL_NUMBER            (1.e-8f)
-
 
 struct FMath
 {
@@ -298,4 +298,37 @@ struct FMath
 
 	    return fmodf(X, Y);
 	}
+
+    static int RandHelper(int max)
+    {
+        static std::mt19937 rng(std::random_device{}());
+        std::uniform_int_distribution<int> dist(0, max - 1);
+        return dist(rng);
+    }
+
+    static const int p[512];
+
+    static float fade(float t) {
+        return t * t * t * (t * (t * 6 - 15) + 10);
+    }
+
+    static float lerp(float a, float b, float t) {
+        return a + t * (b - a);
+    }
+
+    static float grad(int hash, float x) {
+        int h = hash & 15;
+        float grad = 1.0f + (h & 7); // Gradient value 1-8
+        if (h & 8) grad = -grad;
+        return grad * x;
+    }
+
+    static float PerlinNoise1D(float x) {
+        int xi = static_cast<int>(std::floor(x)) & 255;
+        float xf = x - std::floor(x);
+        float u = fade(xf);
+        int a = p[xi];
+        int b = p[xi + 1];
+        return lerp(grad(a, xf), grad(b, xf - 1.0f), u);
+    }
 };
