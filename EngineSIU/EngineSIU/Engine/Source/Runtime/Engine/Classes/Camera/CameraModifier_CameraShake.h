@@ -25,7 +25,8 @@ public:
 protected:
     TArray<UCameraShakeBase*> ActiveShakes;
 
-    TMap<UClass*, TArray<UCameraShakeBase*>> ExpiredPooledShakesMap;
+    // TODO: 현재 Pool 작동 안됨.
+    std::unordered_map<FName, std::vector<UCameraShakeBase*>> ExpiredPooledShakesMap;
 
     void SaveShakeInExpiredPool(UCameraShakeBase* ShakeInst);
     UCameraShakeBase* ReclaimShakeFromExpiredPool(UClass* ShakeClass);
