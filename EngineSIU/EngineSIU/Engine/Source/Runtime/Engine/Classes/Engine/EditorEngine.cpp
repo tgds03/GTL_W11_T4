@@ -173,7 +173,7 @@ void UEditorEngine::BindEssentialObjects()
         ActiveWorld->SetMainCamera(TempCameraComponent);
     }
     
-    // ActiveWorld->GetPlayerController()->Possess(ActiveWorld->GetMainPlayer());
+    ActiveWorld->GetPlayerController()->Possess(ActiveWorld->GetMainPlayer());
 }
 
 void UEditorEngine::EndPIE()

@@ -454,11 +454,9 @@ void FEditorViewportClient::UpdateViewMatrix()
             MainCamera->GetWorldLocation() + MainCamera->GetForwardVector(),
             FVector{ 0.0f,0.0f, 1.0f }
         );
-        //TODO: 2D Orthogonal모드 추가 - Perpective(3D 시점) 게임만 가정하고 2D Orthogonal시점의 게임은 가정안함
-    }else
+    }
+    else
     {
-        UCameraComponent* MainCamera = GEngine->ActiveWorld->GetMainCamera();
-
         if (IsPerspective())
         {
             View = JungleMath::CreateViewMatrix(PerspectiveCamera.GetLocation(),

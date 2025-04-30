@@ -62,8 +62,6 @@ protected:
     UCameraModifier_CameraShake* CachedCameraShakeMod;
 
 public:
-    UCameraComponent* TargetCamera;
-    
     FTViewTarget ViewTarget;
 
     FTViewTarget PendingViewTarget;
