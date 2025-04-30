@@ -160,9 +160,13 @@ void UWorld::BeginPlay()
         GameMode->OnGameEnd.AddLambda([this](bool bIsWin) {
             if (MainTextComponent) {
                 FVector Target = MainTextComponent->GetWorldLocation();
+                FVector TextLoc = Target;
                 Target.X -= 20.0f;
                 Target.Z -= GetMainCamera()->CameraHeight;
 
+                GetMainCamera()->SetFollowCustomTarget(Target);
+                GetMainCamera()->SetLookTarget(TextLoc);
+                
                 if (bIsWin)
                 {
                     AFish* Fish = Cast<AFish>(GEngine->ActiveWorld->GetMainPlayer());
@@ -170,12 +174,9 @@ void UWorld::BeginPlay()
                     FString Message = FString::Printf(TEXT("Earned Coin %d"), Fish->GetScore());
                     MainTextComponent->SetText(Message.ToWideString());
                     //MainCamera->CameraZOffset = 0.0f;
-                    GetMainCamera()->SetFollowCustomTarget(Target);
                 } else
                 {
                     MainTextComponent->SetText(L"Fish roasted");
-                    //MainCamera->CameraZOffset = 0.0f;
-                    GetMainCamera()->SetFollowCustomTarget(Target);
                     
                     AFish* Fish = Cast<AFish>(GEngine->ActiveWorld->GetMainPlayer());
                     Fish->SetActorLocation(FVector(-110.0f, 0.0f, -4.0f));
@@ -287,7 +288,7 @@ UWorld* UWorld::GetWorld() const
 
 UCameraComponent* UWorld::GetMainCamera() const
 {
-    if (UCameraComponent* CameraComponent = PlayerController->PlayerCameraManager->TargetCamera)
+    if (UCameraComponent* CameraComponent = PlayerController->PlayerCameraManager->MainCamera)
     {
         return CameraComponent;
     }

@@ -159,6 +159,7 @@ void UEditorEngine::BindEssentialObjects()
         if (iter->GetWorld() == ActiveWorld)
         {
             ActiveWorld->SetMainCamera(iter);
+            
             break;
         }
     }

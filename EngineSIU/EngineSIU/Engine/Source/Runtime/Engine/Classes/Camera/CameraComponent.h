@@ -27,6 +27,7 @@ public:
 
     void SetLocationWithFInterpTo(FVector& ToLocation);
     void SetFInterpToSpeed(float InSpeed);
+    void SetLookTarget(FVector& Location);
 
     FVector GetLocationWithFInterpTo() const { return FInterpTargetLocation; }
 
@@ -40,5 +41,6 @@ private:
     void ProceedFInterp(float DeltaTime);
     
     FVector FInterpTargetLocation = FVector::ZeroVector;
+    FVector LookTarget = FVector::ZeroVector;
     float FInterpToSpeed = 0.8f;
 };

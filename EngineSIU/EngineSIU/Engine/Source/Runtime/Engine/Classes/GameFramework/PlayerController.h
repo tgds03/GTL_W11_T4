@@ -47,7 +47,6 @@ protected:
     (UInputComponent*, InputComponent, = nullptr)
 
     virtual void SetupInputComponent();
-    virtual void SetupPlayerCameraManager();
 
     AActor* PossessedActor = nullptr;
 

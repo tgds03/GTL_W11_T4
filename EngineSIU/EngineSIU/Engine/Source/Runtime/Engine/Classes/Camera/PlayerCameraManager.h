@@ -12,13 +12,10 @@ class UCameraModifier;
 
 struct FTViewTarget
 {
-    AActor* Target;
+    AActor* Target; 
     FMinimalViewInfo POV;
 
 public:
-    void SetNewTarget(AActor* NewTarget);
-    AActor* GetTargetActor() const;
-
     bool Equal(const FTViewTarget& OtherTarget) const;
 
     FTViewTarget()
@@ -27,6 +24,9 @@ public:
     }
 
     void CheckViewTarget(APlayerController* OwningController);
+
+    void SetNewTarget(AActor* NewTarget);
+    AActor* GetTargetActor() const;
 };
 
 class APlayerCameraManager : public AActor
@@ -62,7 +62,7 @@ protected:
     UCameraModifier_CameraShake* CachedCameraShakeMod;
 
 public:
-    UCameraComponent* TargetCamera;
+    UCameraComponent* MainCamera = nullptr;
     
     FTViewTarget ViewTarget;
 

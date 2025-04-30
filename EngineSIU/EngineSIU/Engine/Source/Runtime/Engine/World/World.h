@@ -72,7 +72,7 @@ public:
     
     FEventManager EventManager;
 
-    void SetMainCamera(UCameraComponent* InCamera) { PlayerController->PlayerCameraManager->TargetCamera = InCamera; }
+    void SetMainCamera(UCameraComponent* InCamera) { PlayerController->PlayerCameraManager->MainCamera = InCamera; }
     UCameraComponent* GetMainCamera() const;
     
     void SetMainPlayer(APlayer* InPlayer){ MainPlayer = InPlayer; }
