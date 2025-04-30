@@ -809,6 +809,7 @@
     <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_curve.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\PlayerCameraManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraModifier.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Renderer\CameraEffectRenderPass.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\GameFramework\SpringArmComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -921,6 +922,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\PlayerCameraManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraModifier.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraTypes.h" />
+    <ClInclude Include="Engine\Source\Runtime\Renderer\CameraEffectRenderPass.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\GameFramework\SpringArmComponent.h" />
   </ItemGroup>
   <ItemGroup>
@@ -976,5 +978,6 @@
     <FxCompile Include="Shaders\PointLightCubemapGS.hlsl" />
     <FxCompile Include="Shaders\CascadedShadowMap.hlsl" />
     <FxCompile Include="Shaders\LightPBR.hlsl" />
+    <FxCompile Include="Shaders\CameraEffectShader.hlsl" />
   </ItemGroup>
 </Project>

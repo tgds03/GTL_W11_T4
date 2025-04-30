@@ -40,10 +40,17 @@ public:
     /* Fade IN / OUT */
     void StartCameraFade(float FromAlpha, float ToAlpha, float Duration, FLinearColor Color, bool bHoldWhenFinished = false);
     void StopCameraFade();
+
+    void SetCameraVignette(float InIntensity, float InRadius, float InSmoothness);
+    void SetCameraVignetteColor(FLinearColor InColor);
+    void StartVignetteAnimation(float FromIntensity, float ToIntensity, float Duration);
+    
+    float GetLetterBoxRatio();
 protected:
 
 
     FPOV BlendViewTargets(const FTViewTarget& A, const FTViewTarget& B, float Alpha);
+
 
 protected:
     TArray<UCameraModifier*> ModifierList;
@@ -69,7 +76,32 @@ public:
 
     FName CameraStyle;
 
+    // [TEMP] Vignette factor
+    FVector2D VignetteCenter;
+
+    FLinearColor VignetteColor;
+
+    float VignetteRadius;
+
+    float VignetteIntensity;
+
+    float VignetteSmoothness;
+
+    float VignetteTime;
+
+    float VignetteTimeRemaining;
+
+    float VignetteStartIntensity;
+
+    float VignetteTargetIntensity;
+
+    // [TEMP] LetterBox factor;
+    float LetterBoxWidth;
+
+    float LetterBoxHeight;
+
     uint32 bEnableFading : 1;
+    uint32 bAnimateVignette : 1;
     uint32 bHoldFadeWhenFinished : 1; /* true일 경우 페이드 종료 상태 유지 */
 };
 

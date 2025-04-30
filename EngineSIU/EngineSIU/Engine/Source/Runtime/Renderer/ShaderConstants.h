@@ -217,3 +217,31 @@ struct FConstantBufferDebugCapsule
     float Height;
     float Radius;
 };
+
+struct alignas(16) FConstantBufferCameraFade
+{
+    FLinearColor FadeColor;
+    float  FadeAmount;
+    FVector Padding;
+};
+
+struct alignas(16) FConstantBufferCameraVignette
+{
+    FLinearColor VignetteColor;
+    
+    FVector2D VignetteCenter;
+    float VignetteRadius;
+    float VignetteSmoothness;
+    
+    float VignetteIntensity;
+    FVector Padding;
+};
+
+struct alignas(16) FConstantBufferLetterBox
+{
+    FLinearColor LetterBoxColor;
+
+    float ScreenAspectRatio;
+    float LetterBoxAspectRatio;
+    FVector2D Padding;
+};
