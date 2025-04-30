@@ -91,6 +91,63 @@ struct FMath
 		return static_cast<T>((A * (1.0 - Alpha)) + (B * Alpha));
 	}
 
+    /**
+ *	Checks if a floating point number is nearly zero.
+ *	@param Value			Number to compare
+ *	@param ErrorTolerance	Maximum allowed difference for considering Value as 'nearly zero'
+ *	@return					true if Value is nearly zero
+ */
+    [[nodiscard]] static FORCEINLINE bool IsNearlyZero(float Value, float ErrorTolerance = UE_SMALL_NUMBER)
+	{
+	    return Abs<float>( Value ) <= ErrorTolerance;
+	}
+    
+    /**
+     * Performs a cubic interpolation
+     *
+     * @param  P - end points
+     * @param  T - tangent directions at end points
+     * @param  A - distance along spline
+     *
+     * @return  Interpolated value
+     */
+    template <
+        typename T,
+        typename U
+    >
+    [[nodiscard]] static constexpr FORCEINLINE T CubicInterp( const T& P0, const T& T0, const T& P1, const T& T1, const U& A )
+	{
+	    const U A2 = A * A;
+	    const U A3 = A2 * A;
+
+	    return T((((2*A3)-(3*A2)+1) * P0) + ((A3-(2*A2)+A) * T0) + ((A3-A2) * T1) + (((-2*A3)+(3*A2)) * P1));
+	}
+
+    /** Interpolate between A and B, applying an ease in function.  Exp controls the degree of the curve. */
+    template< class T >
+    [[nodiscard]] static FORCEINLINE T InterpEaseIn(const T& A, const T& B, float Alpha, float Exp)
+	{
+	    float const ModifiedAlpha = Pow(Alpha, Exp);
+	    return Lerp<T>(A, B, ModifiedAlpha);
+	}
+
+    /** Interpolate between A and B, applying an ease out function.  Exp controls the degree of the curve. */
+    template< class T >
+    [[nodiscard]] static FORCEINLINE T InterpEaseOut(const T& A, const T& B, float Alpha, float Exp)
+	{
+	    float const ModifiedAlpha = 1.f - Pow(1.f - Alpha, Exp);
+	    return Lerp<T>(A, B, ModifiedAlpha);
+	}
+    
+    /** Interpolate between A and B, applying an ease in/out function.  Exp controls the degree of the curve. */
+    template< class T > 
+    [[nodiscard]] static FORCEINLINE T InterpEaseInOut( const T& A, const T& B, float Alpha, float Exp )
+	{
+	    return Lerp<T>(A, B, (Alpha < 0.5f) ?
+            InterpEaseIn(0.f, 1.f, Alpha * 2.f, Exp) * 0.5f :
+            InterpEaseOut(0.f, 1.f, Alpha * 2.f - 1.f, Exp) * 0.5f + 0.5f);
+	}
+    
     /** Interpolate float from Current to Target. Scaled by distance to Target, so it has a strong start speed and ease out. */
     template<typename T1, typename T2 = T1, typename T3 = T2, typename T4 = T3>
     [[nodiscard]] static auto FInterpTo( T1  Current, T2 Target, T3 DeltaTime, T4 InterpSpeed )

@@ -78,3 +78,8 @@ inline FArchive& operator<<(FArchive& Ar, FRotator& R)
     Ar << R.Pitch << R.Yaw << R.Roll;
     return Ar;
 }
+
+FRotator operator*(float Scalar, const FRotator& Rotator)
+{
+    return Rotator * Scalar; // 기존 멤버 함수 재활용
+}

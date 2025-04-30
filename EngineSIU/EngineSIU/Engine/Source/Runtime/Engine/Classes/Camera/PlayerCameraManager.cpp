@@ -137,30 +137,74 @@ void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, FMinimalViewInf
 
 void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
 {
-    bool bIsProgressCameraTransition = PendingViewTarget.Target;
+    FMinimalViewInfo NewPOV = ViewTarget.POV;
 
     //Progress가 진행중이 아니면
-    if (bIsProgressCameraTransition == false)
+    if (PendingViewTarget.Target == nullptr)
     {
         ViewTarget.CheckViewTarget(PCOwner);
         UpdateViewTarget(ViewTarget, DeltaTime);
     }
+
+    NewPOV = ViewTarget.POV;
     
-    if (bIsProgressCameraTransition)
+    if (PendingViewTarget.Target != nullptr)
     {
+        BlendTimeToGo -= DeltaTime;
         //PendingViewTarget은 움직여야할 목표가 아니라 얘를 움직여야함.
         //그래서 얘를 ViewTarget으로 설정해줌
         PendingViewTarget.CheckViewTarget(PCOwner);
         UpdateViewTarget(PendingViewTarget, DeltaTime);
-        
-        // 만일 PendingViewTarget이 존재한다면 그로의 Transition 수행
-        /* Blend 관련 switch case 분기 및 인자 설정 .. */
 
-        /* Note) 언리얼 코드에선 BlendViewTargets 호출 X
-         * 더 많은 인자와 처리를 지원하는 BlendViewInfos() 호출
-         * NewPOV = ViewTarget.POV;
-         * NewPOV.BlendViewInfo(PendingViewTarget.POV, BlendPct);
-         */
+        if (BlendTimeToGo > 0)
+        {
+            float DurationPct = (BlendParams.BlendTime - BlendTimeToGo) / BlendParams.BlendTime;
+
+            float BlendPct = 0.f;
+            switch (BlendParams.BlendFunction)
+            {
+            case VTBlend_Linear:
+                BlendPct = FMath::Lerp(0.f, 1.f, DurationPct);
+                break;
+            case VTBlend_Cubic:
+                BlendPct = FMath::CubicInterp(0.f, 0.f, 1.f, 0.f, DurationPct);
+                break;
+            case VTBlend_EaseIn:
+                BlendPct = FMath::Lerp(0.f, 1.f, FMath::Pow(DurationPct, BlendParams.BlendExp));
+                break;
+            case VTBlend_EaseOut:
+                BlendPct = FMath::Lerp(0.f, 1.f, FMath::Pow(DurationPct, 1.f / BlendParams.BlendExp));
+                break;
+            case VTBlend_EaseInOut:
+                BlendPct = FMath::InterpEaseInOut(0.f, 1.f, DurationPct, BlendParams.BlendExp);
+                break;
+            case VTBlend_PreBlended:
+                BlendPct = 1.0f;
+                break;
+            default:
+                break;
+            }
+
+            // Update pending view target blend
+            NewPOV = ViewTarget.POV;
+            //@TODO: CAMERA: Make sure the sense is correct!  BlendViewTargets(ViewTarget, PendingViewTarget, BlendPct);
+            NewPOV.BlendViewInfo(PendingViewTarget.POV, BlendPct);
+        }
+        else
+        {
+            // we're done blending, set new view target
+            ViewTarget = PendingViewTarget;
+
+            // clear pending view target
+            PendingViewTarget.Target = nullptr;
+
+            BlendTimeToGo = 0;
+
+            // our camera is now viewing there
+            NewPOV = PendingViewTarget.POV;
+
+            OnBlendCompleteEvent.Broadcast();
+        }
     }
     
     // Fade Enabled 되었다면 Fade 처리 수행
@@ -180,6 +224,89 @@ void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
     }
 }
 
+void APlayerCameraManager::SetViewTarget(class AActor* NewTarget, struct FViewTargetTransitionParams TransitionParams)
+{
+	// Make sure view target is valid
+	if (NewTarget == nullptr)
+	{
+		NewTarget = PCOwner;
+	}
+
+	// Update current ViewTargets
+	ViewTarget.CheckViewTarget(PCOwner);
+	if (PendingViewTarget.Target)
+	{
+		PendingViewTarget.CheckViewTarget(PCOwner);
+	}
+
+	// If we're already transitioning to this new target, don't interrupt.
+	if (PendingViewTarget.Target != nullptr && NewTarget == PendingViewTarget.Target)
+	{
+		return;
+	}
+
+	if (UWorld* World = GetWorld())
+	{
+		World->GetTimerManager().ClearTimer(SwapPendingViewTargetWhenUsingClientSideCameraUpdatesTimerHandle);
+	}
+
+	// if viewtarget different then new one or we're transitioning from the same target with locked outgoing, then assign it
+	if ((NewTarget != ViewTarget.Target) || (PendingViewTarget.Target && BlendParams.bLockOutgoing))
+	{
+		// if a transition time is specified, then set pending view target accordingly
+		if (TransitionParams.BlendTime > 0)
+		{
+			// band-aid fix so that EndViewTarget() gets called properly in this case
+			if (PendingViewTarget.Target == nullptr)
+			{
+				PendingViewTarget.Target = ViewTarget.Target;
+			}
+
+			// use last frame's POV
+			ViewTarget.POV = GetLastFrameCameraCacheView();
+			BlendTimeToGo = TransitionParams.BlendTime;
+
+			AssignViewTarget(NewTarget, PendingViewTarget, TransitionParams);
+			PendingViewTarget.CheckViewTarget(PCOwner);
+
+			if (bUseClientSideCameraUpdates && GetNetMode() != NM_Client)
+			{
+				if (UWorld* World = GetWorld())
+				{
+					World->GetTimerManager().SetTimer(SwapPendingViewTargetWhenUsingClientSideCameraUpdatesTimerHandle, this, &ThisClass::SwapPendingViewTargetWhenUsingClientSideCameraUpdates, TransitionParams.BlendTime, false);
+				}
+			}
+		}
+		else
+		{
+			// otherwise, assign new viewtarget instantly
+			AssignViewTarget(NewTarget, ViewTarget);
+			ViewTarget.CheckViewTarget(PCOwner);
+			// remove old pending ViewTarget so we don't still try to switch to it
+			PendingViewTarget.Target = nullptr;
+		}
+	}
+	else
+	{
+		// we're setting the viewtarget to the viewtarget we were transitioning away from,
+		// just abort the transition.
+		// @fixme, investigate if we want this case to go through the above code, so AssignViewTarget et al
+		// get called
+		if (PendingViewTarget.Target != nullptr)
+		{
+			if (!PCOwner->IsPendingKillPending() && !PCOwner->IsLocalPlayerController() && GetNetMode() != NM_Client)
+			{
+				PCOwner->ClientSetViewTarget(NewTarget, TransitionParams);
+			}
+		}
+		PendingViewTarget.Target = nullptr;
+	}
+
+	// update the blend params after all the assignment logic so that sub-classes can compare
+	// the old vs new parameters if needed.
+	BlendParams = TransitionParams;
+}
+
 void APlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
 {
     // Don't update outgoing viewtarget during an interpolation 
@@ -195,6 +322,7 @@ void APlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime
 	static const FMinimalViewInfo DefaultViewInfo;
 	OutVT.POV = DefaultViewInfo;
 	OutVT.POV.FOV = DefaultFOV;
+    OutVT.POV.PostProcessBlendWeight = 1.0f;
 
 	bool bDoNotApplyModifiers = false;
 
@@ -226,7 +354,7 @@ FMinimalViewInfo APlayerCameraManager::BlendViewTargets(const FTViewTarget& A, c
     return POV;
 }
 
-void APlayerCameraManager::AssignViewTarget(AActor* NewTarget, FTViewTarget& VT/*, struct FViewTargetTransitionParams TransitionParams*/)
+void APlayerCameraManager::AssignViewTarget(AActor* NewTarget, FTViewTarget& VT, struct FViewTargetTransitionParams TransitionParams)
 {
     if (!NewTarget || NewTarget == VT.Target)
     {
@@ -247,6 +375,8 @@ void APlayerCameraManager::AssignViewTarget(AActor* NewTarget, FTViewTarget& VT/
 
     // ViewTarget 세팅됐을때 행동을 해야하면 정의 후 부르기
     // VT.Target->BecomeViewTarget(PCOwner);
+
+    PCOwner->ClientSetViewTarget(VT.Target, TransitionParams);
     
     // ViewTarget바뀔때 Delegate필요하면 호출
     // FGameDelegates::Get().GetViewTargetChangedDelegate().Broadcast(PCOwner, OldViewTarget, NewTarget);
