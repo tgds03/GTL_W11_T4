@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include <numbers>
+
 #include "Core/HAL/PlatformType.h"
 
 
@@ -114,13 +115,68 @@ struct FMath
 	    }
 
 	    // Delta Move, Clamp so we do not over shoot.
-	    const RetType DeltaMove = Dist * FMath::Clamp<float>(DeltaTime * InterpSpeed, 0.f, 1.f);
+	    //const RetType DeltaMove = Dist * FMath::Clamp<float>(DeltaTime * InterpSpeed, 0.f, 1.f);
 	    
 	    // TODO: 현재 float * FVector가 float값으로 받는게 안되기때문에 float로 강제하는 중. 아래가 원래 Unreal Code
-	    // const RetType DeltaMove = Dist * FMath::Clamp<RetType>(DeltaTime * InterpSpeed, 0.f, 1.f);
+	    const RetType DeltaMove = Dist * FMath::Clamp<RetType>(DeltaTime * InterpSpeed, 0.f, 1.f);
 
 	    return Current + DeltaMove;				
 	}
+
+
+    template<typename FVector>
+    [[nodiscard]] static FVector VInterpTo(const FVector Current, const FVector Target, float DeltaTime, float InterpSpeed)
+	{
+        // If no interp speed, jump to target value
+        if (InterpSpeed <= 0.f)
+        {
+            return Target;
+        }
+
+        // Distance to reach
+        const FVector Dist = Target - Current;
+
+        // If distance is too small, just set the desired location
+        if (Dist.SizeSquared() < KINDA_SMALL_NUMBER)
+        {
+            return Target;
+        }
+
+        // Delta Move, Clamp so we do not over shoot.
+        const FVector DeltaMove = Dist * FMath::Clamp<float>(DeltaTime * InterpSpeed, 0.f, 1.f);
+
+        return Current + DeltaMove;
+	}
+
+    template <typename FRotator>
+    [[nodiscard]] static FRotator RInterpTo(const FRotator Current, const FRotator Target, float DeltaTime, float InterpSpeed)
+    {
+        // if DeltaTime is 0, do not perform any interpolation (Location was already calculated for that frame)
+        if (DeltaTime == 0.f || Current == Target)
+        {
+            return Current;
+        }
+
+        // If no interp speed, jump to target value
+        if (InterpSpeed <= 0.f)
+        {
+            return Target;
+        }
+
+        const float DeltaInterpSpeed = InterpSpeed * DeltaTime;
+
+        const FRotator Delta = (Target - Current).GetNormalized();
+
+        // If steps are too small, just return Target and assume we have reached our destination.
+        if (Delta.IsNearlyZero())
+        {
+            return Target;
+        }
+
+        // Delta Move, Clamp so we do not over shoot.
+        const FRotator DeltaMove = Delta * FMath::Clamp<float>(DeltaInterpSpeed, 0.f, 1.f);
+        return (Current + DeltaMove).GetNormalized();
+    }
 
 	template <typename T>
 	[[nodiscard]] static FORCEINLINE constexpr auto RadiansToDegrees(const T& RadVal) -> decltype(RadVal * (180.0f / PI))

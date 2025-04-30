@@ -394,3 +394,13 @@ bool USceneComponent::MoveComponentImpl(const FVector& Delta, const FQuat& NewRo
 
     return true;
 }
+
+bool USceneComponent::IsUsingAbsoluteRotation() const
+{
+    return bAbsoluteRotation; 
+}
+
+void USceneComponent::SetUsingAbsoluteRotation(const bool bInAbsoluteRotation)
+{
+    bAbsoluteRotation = bInAbsoluteRotation;
+}

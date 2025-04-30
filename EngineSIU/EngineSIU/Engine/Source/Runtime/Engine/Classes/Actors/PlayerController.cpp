@@ -30,7 +30,7 @@ void APlayerController::Tick(float DeltaTime)
 
     if (PlayerCameraManager)
     {
-        PlayerCameraManager->UpdateCamera(DeltaTime);
+        //PlayerCameraManager->UpdateCamera(DeltaTime);
     }
 
 }
