@@ -12,43 +12,43 @@
 struct FPlane : public FVector
 {
 public:
-	/** 평면 방정식의 D 성분 (Ax+By+Cz+D=0) */
-	float W;
+    /** 평면 방정식의 D 성분 (Ax+By+Cz+D=0) */
+    float W;
 
 public:
-	/** 기본 생성자 (평면을 Z=0 평면으로 설정, Normal=(0,0,1), W=0). */
-	FPlane();
+    /** 기본 생성자 (평면을 Z=0 평면으로 설정, Normal=(0,0,1), W=0). */
+    FPlane();
 
-	/**
-	 * 생성자.
-	 * @param V 평면의 법선 벡터 성분. V가 정규화되었다고 가정합니다.
-	 * @param InW 평면 방정식의 D 성분.
-	 */
-	FPlane(const FVector& V, float InW);
+    /**
+     * 생성자.
+     * @param V 평면의 법선 벡터 성분. V가 정규화되었다고 가정합니다.
+     * @param InW 평면 방정식의 D 성분.
+     */
+    FPlane(const FVector& V, float InW);
 
-	/**
-	 * 구성 요소로부터의 생성자.
-	 * @param InX 법선 벡터의 X-성분.
-	 * @param InY 법선 벡터의 Y-성분.
-	 * @param InZ 법선 벡터의 Z-성분.
-	 * @param InW 평면 방정식의 D 성분.
-	 * 법선(InX, InY, InZ)이 정규화되었다고 가정합니다.
-	 */
-	FPlane(float InX, float InY, float InZ, float InW);
+    /**
+     * 구성 요소로부터의 생성자.
+     * @param InX 법선 벡터의 X-성분.
+     * @param InY 법선 벡터의 Y-성분.
+     * @param InZ 법선 벡터의 Z-성분.
+     * @param InW 평면 방정식의 D 성분.
+     * 법선(InX, InY, InZ)이 정규화되었다고 가정합니다.
+     */
+    FPlane(float InX, float InY, float InZ, float InW);
 
-	/**
-	 * 점과 법선 벡터로부터의 생성자.
-	 * 생성자는 법선 벡터를 정규화합니다.
-	 * @param InPoint 평면 위의 한 점.
-	 * @param InNormal 평면에 대한 법선 벡터.
-	 */
-	FPlane(const FVector& InPoint, const FVector& InNormal);
+    /**
+     * 점과 법선 벡터로부터의 생성자.
+     * 생성자는 법선 벡터를 정규화합니다.
+     * @param InPoint 평면 위의 한 점.
+     * @param InNormal 평면에 대한 법선 벡터.
+     */
+    FPlane(const FVector& InPoint, const FVector& InNormal);
 
-	/**
-	 * 동일 선상에 있지 않은 세 점으로부터의 생성자.
-	 * 법선 벡터를 계산하고, 정규화하며, W를 계산합니다.
-	 * @param A 평면 위의 첫 번째 점.
-	 * @param B 평면 위의 두 번째 점.
+    /**
+     * 동일 선상에 있지 않은 세 점으로부터의 생성자.
+     * 법선 벡터를 계산하고, 정규화하며, W를 계산합니다.
+     * @param A 평면 위의 첫 번째 점.
+     * @param B 평면 위의 두 번째 점.
 	 * @param C 평면 위의 세 번째 점.
 	 */
 	FPlane(const FVector& A, const FVector& B, const FVector& C);

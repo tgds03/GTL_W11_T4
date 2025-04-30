@@ -7,10 +7,10 @@
 
 struct FVector2D
 {
-	float X, Y;
+    float X, Y;
 
     FVector2D() : X(0), Y(0) {}
-	FVector2D(float InX, float InY) : X(InX), Y(InY) {}
+    FVector2D(float InX, float InY) : X(InX), Y(InY) {}
     FVector2D(float Scalar) : X(Scalar), Y(Scalar) {}
 
     static const FVector2D ZeroVector;
@@ -70,7 +70,7 @@ public:
     * Initialize this Vector based on an FString. The String is expected to contain X=, Y=.
     * The TVector2<T> will be bogus when InitFromString returns false.
     *
-    * @param	InSourceString	FString containing the vector values.
+    * @param    InSourceString    FString containing the vector values.
     * @return true if the X,Y values were read successfully; false otherwise.
     */
     bool InitFromString(const FString& InSourceString);
@@ -432,8 +432,8 @@ inline bool FVector::IsNearlyZero(float Tolerance) const
 {
     return
         FMath::Abs(X)<=Tolerance
-        &&	FMath::Abs(Y)<=Tolerance
-        &&	FMath::Abs(Z)<=Tolerance;
+        &&    FMath::Abs(Y)<=Tolerance
+        &&    FMath::Abs(Z)<=Tolerance;
 }
 
 inline bool FVector::IsZero() const

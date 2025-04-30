@@ -305,17 +305,17 @@ void FTileLightCullingPass::CreateViews()
     }
 
     // SpotLight Buffer
-	hr = Graphics->Device->CreateBuffer(&BufferDesc, nullptr, &PerTileSpotLightIndexMaskBuffer);
-	if (FAILED(hr))
-	{
-		UE_LOG(LogLevel::Error, TEXT("Failed to create Tile SpotLight UAV Buffer!"));
-	}
+    hr = Graphics->Device->CreateBuffer(&BufferDesc, nullptr, &PerTileSpotLightIndexMaskBuffer);
+    if (FAILED(hr))
+    {
+        UE_LOG(LogLevel::Error, TEXT("Failed to create Tile SpotLight UAV Buffer!"));
+    }
 
-	hr = Graphics->Device->CreateUnorderedAccessView(PerTileSpotLightIndexMaskBuffer, &UAVDesc, &PerTileSpotLightIndexMaskBufferUAV);
-	if (FAILED(hr))
-	{
-		UE_LOG(LogLevel::Error, TEXT("Failed to create Tile Spot UAV!"));
-	}
+    hr = Graphics->Device->CreateUnorderedAccessView(PerTileSpotLightIndexMaskBuffer, &UAVDesc, &PerTileSpotLightIndexMaskBufferUAV);
+    if (FAILED(hr))
+    {
+        UE_LOG(LogLevel::Error, TEXT("Failed to create Tile Spot UAV!"));
+    }
 
     hr = Graphics->Device->CreateShaderResourceView(PerTileSpotLightIndexMaskBuffer, &SRVDesc, &PerTileSpotLightIndexMaskBufferSRV);
     if (FAILED(hr))
@@ -416,8 +416,8 @@ void FTileLightCullingPass::Release()
     SAFE_RELEASE(PerTilePointLightIndexMaskBufferUAV)
     SAFE_RELEASE(PerTilePointLightIndexMaskBufferSRV)
 
-	SAFE_RELEASE(PerTileSpotLightIndexMaskBuffer)
-	SAFE_RELEASE(PerTileSpotLightIndexMaskBufferUAV)
+    SAFE_RELEASE(PerTileSpotLightIndexMaskBuffer)
+    SAFE_RELEASE(PerTileSpotLightIndexMaskBufferUAV)
     SAFE_RELEASE(PerTileSpotLightIndexMaskBufferSRV)
 
     SAFE_RELEASE(CulledPointLightIndexMaskBuffer)
@@ -445,8 +445,8 @@ void FTileLightCullingPass::ClearUAVs() const
     constexpr UINT ClearColor[4] = { 0, 0, 0, 0 };
 
     // 1. 타일 마스크 초기화
-	Graphics->DeviceContext->ClearUnorderedAccessViewUint(PerTilePointLightIndexMaskBufferUAV, ClearColor);
-	Graphics->DeviceContext->ClearUnorderedAccessViewUint(PerTileSpotLightIndexMaskBufferUAV, ClearColor);
+    Graphics->DeviceContext->ClearUnorderedAccessViewUint(PerTilePointLightIndexMaskBufferUAV, ClearColor);
+    Graphics->DeviceContext->ClearUnorderedAccessViewUint(PerTileSpotLightIndexMaskBufferUAV, ClearColor);
     Graphics->DeviceContext->ClearUnorderedAccessViewUint(CulledPointLightIndexMaskBufferUAV, ClearColor);
     Graphics->DeviceContext->ClearUnorderedAccessViewUint(CulledSpotLightIndexMaskBufferUAV, ClearColor);
 

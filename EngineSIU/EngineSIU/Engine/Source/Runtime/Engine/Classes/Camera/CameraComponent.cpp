@@ -46,6 +46,8 @@ void UCameraComponent::FollowMainPlayer()
     FVector MoveToLocation = FVector(PlayerLocation.X, PlayerLocation.Y, CameraZ) + CameraOffset;
     
     SetLocationWithFInterpTo(MoveToLocation);
+
+    SetLookTarget(PlayerLocation);
 }
 
 void UCameraComponent::ProceedFInterp(float DeltaTime)
@@ -55,11 +57,12 @@ void UCameraComponent::ProceedFInterp(float DeltaTime)
     //카메라 위치
     FVector MoveLocation = FMath::FInterpTo(FromLocation, FInterpTargetLocation, DeltaTime, FInterpToSpeed);
 
-    FVector PlayerLocation = GEngine->ActiveWorld->GetMainPlayer()->GetActorLocation();
-    CurrentCameraZ = FMath::FInterpTo(CurrentCameraZ, CameraZ, DeltaTime, 0.05f);
-    PlayerLocation.Z = CurrentCameraZ + CameraZOffset;
+    FVector Lookat = LookTarget;
     
-    FRotator TargetRotation = FRotator::MakeLookAtRotation(MoveLocation, PlayerLocation);
+    CurrentCameraZ = FMath::FInterpTo(CurrentCameraZ, CameraZ, DeltaTime, 0.05f);
+    Lookat.Z = CurrentCameraZ + CameraZOffset;
+    
+    FRotator TargetRotation = FRotator::MakeLookAtRotation(MoveLocation, Lookat);
     
     SetWorldLocation(MoveLocation);
     SetWorldRotation(TargetRotation);
@@ -75,6 +78,11 @@ void UCameraComponent::SetFInterpToSpeed(float InSpeed)
     FInterpToSpeed = InSpeed;
 }
 
+void UCameraComponent::SetLookTarget(FVector& Location)
+{
+    LookTarget = Location;
+}
+
 void UCameraComponent::SetFollowCustomTarget(const FVector& InLocation)
 {
     bFollowCustomTarget = true;
@@ -86,8 +94,10 @@ void UCameraComponent::ResetFollowToPlayer()
     bFollowCustomTarget = false;
 }
 
+
 void UCameraComponent::GetCameraView(float DeltaTime, FMinimalViewInfo& DesiredView)
 {
+
     DesiredView.Location = GetWorldLocation();
     DesiredView.Rotation = GetWorldRotation();
     DesiredView.FOV = ViewFOV;

@@ -31,7 +31,7 @@ public:
 
     T& operator[](SizeType Index);
     const T& operator[](SizeType Index) const;
-	void operator+(const TArray& OtherArray);
+    void operator+(const TArray& OtherArray);
 
 public:
     ArrayType& GetContainerPrivate() { return ContainerPrivate; }
@@ -55,31 +55,31 @@ public:
     // 이동 할당 연산자
     TArray& operator=(TArray&& Other) noexcept;
 
-	/** Element를 Number개 만큼 초기화 합니다. */
+    /** Element를 Number개 만큼 초기화 합니다. */
     void Init(const T& Element, SizeType Number);
     SizeType Add(const T& Item);
     SizeType Add(T&& Item);
     SizeType AddUnique(const T& Item);
 
-	template <typename... Args>
+    template <typename... Args>
     SizeType Emplace(Args&&... Item);
 
     /** Array가 비어있는지 확인합니다. */
     bool IsEmpty() const;
 
-	/** Array를 비웁니다 */
+    /** Array를 비웁니다 */
     void Empty();
 
-	/** Item과 일치하는 모든 요소를 제거합니다. */
+    /** Item과 일치하는 모든 요소를 제거합니다. */
     SizeType Remove(const T& Item);
 
-	/** 왼쪽부터 Item과 일치하는 요소를 1개 제거합니다. */
+    /** 왼쪽부터 Item과 일치하는 요소를 1개 제거합니다. */
     bool RemoveSingle(const T& Item);
 
-	/** 특정 위치에 있는 요소를 제거합니다. */
+    /** 특정 위치에 있는 요소를 제거합니다. */
     void RemoveAt(SizeType Index);
 
-	/** Predicate에 부합하는 모든 요소를 제거합니다. */
+    /** Predicate에 부합하는 모든 요소를 제거합니다. */
     template <typename Predicate>
         requires std::is_invocable_r_v<bool, Predicate, const T&>
     SizeType RemoveAll(const Predicate& Pred);
@@ -134,10 +134,10 @@ public:
     /** Array의 Capacity를 가져옵니다. */
     SizeType Len() const;
 
-	/** Array의 Size를 Number로 설정합니다. */
-	void SetNum(SizeType Number);
+    /** Array의 Size를 Number로 설정합니다. */
+    void SetNum(SizeType Number);
 
-	/** Array의 Capacity를 Number로 설정합니다. */
+    /** Array의 Capacity를 Number로 설정합니다. */
     void Reserve(SizeType Number);
 
     /** Count만큼 초기화되지 않은 공간을 확장합니다. */
@@ -173,7 +173,7 @@ const T& TArray<T, Allocator>::operator[](SizeType Index) const
 template <typename T, typename Allocator>
 void TArray<T, Allocator>::operator+(const TArray& OtherArray)
 {
-	ContainerPrivate.insert(end(), OtherArray.begin(), OtherArray.end());
+    ContainerPrivate.insert(end(), OtherArray.begin(), OtherArray.end());
 }
 
 template <typename T, typename Allocator>
@@ -361,7 +361,7 @@ typename TArray<T, Allocator>::SizeType TArray<T, Allocator>::Len() const
 template <typename T, typename Allocator>
 void TArray<T, Allocator>::SetNum(SizeType Number)
 {
-	ContainerPrivate.resize(Number);
+    ContainerPrivate.resize(Number);
 }
 
 template <typename T, typename Allocator>

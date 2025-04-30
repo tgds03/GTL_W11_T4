@@ -75,15 +75,15 @@ public:
 
     /** 
      * Returns a list of actors that this component is overlapping.
-     * @param OverlappingActors		[out] Returned list of overlapping actors
-     * @param ClassFilter			[optional] If set, only returns actors of this class or subclasses
+     * @param OverlappingActors        [out] Returned list of overlapping actors
+     * @param ClassFilter            [optional] If set, only returns actors of this class or subclasses
      */
     //void GetOverlappingActors(TArray<AActor*>& OverlappingActors, TSubclassOf<AActor> ClassFilter=nullptr) const;
 
     /** 
     * Returns the set of actors that this component is overlapping.
-    * @param OverlappingActors		[out] Returned list of overlapping actors
-    * @param ClassFilter			[optional] If set, only returns actors of this class or subclasses
+    * @param OverlappingActors        [out] Returned list of overlapping actors
+    * @param ClassFilter            [optional] If set, only returns actors of this class or subclasses
     */
     //void GetOverlappingActors(TSet<AActor*>& OverlappingActors, TSubclassOf<AActor> ClassFilter=nullptr) const;
 

@@ -11,6 +11,11 @@ namespace ECameraProjectionMode
     };
 }
 
+struct FPostProcessSettings
+{
+    
+};
+
 /* 카메라 필요 인자 추가하시면 됩니다 */
 struct FMinimalViewInfo
 {
@@ -19,18 +24,19 @@ struct FMinimalViewInfo
     float FOV;
     float PerspectiveNearClip;
     float PerspectiveFarClip;
+    float PostProcessBlendWeight;
+
     /*float OrthoWidth;
     float OrthoNearClipPlane;
     float OrthoFarClipPlane;
     float AspectRatio;*/
-    float PostProcessBlendWeight;
     FMinimalViewInfo()
         : Location(0.0f, 0.0f, 0.0f)
         , Rotation(0.0f, 0.0f, 0.0f)
         , FOV(90.0f)
         , PerspectiveNearClip(0.1f)
         , PerspectiveFarClip(1000.f)
-        , PostProcessBlendWeight(1.f)
+    	, PostProcessBlendWeight(0.0f)
         /*, OrthoWidth(512.0f)
         , OrthoNearClipPlane(1.0f)
         , OrthoFarClipPlane(10000.0f)
@@ -39,16 +45,27 @@ struct FMinimalViewInfo
     }
 
     bool Equals(const FMinimalViewInfo& Other) const;
+    void BlendViewInfo(FMinimalViewInfo& OtherInfo, float OtherWeight);
 };
 
 inline bool FMinimalViewInfo::Equals(const FMinimalViewInfo& Other) const
 {
-    return
+    return 
         Location == Other.Location &&
         Rotation == Other.Rotation &&
         FOV == Other.FOV &&
         PerspectiveNearClip == Other.PerspectiveNearClip &&
         PerspectiveFarClip == Other.PerspectiveFarClip &&
         PostProcessBlendWeight == Other.PostProcessBlendWeight;
+}
+
+inline void FMinimalViewInfo::BlendViewInfo(FMinimalViewInfo& OtherInfo, float OtherWeight)
+{
+    Location = FMath::Lerp(Location, OtherInfo.Location, OtherWeight);
+
+    const FRotator DeltaAng = (OtherInfo.Rotation - Rotation).GetNormalized();
+    Rotation = Rotation + OtherWeight * DeltaAng;
+
+    FOV = FMath::Lerp(FOV, OtherInfo.FOV, OtherWeight);
 }
 

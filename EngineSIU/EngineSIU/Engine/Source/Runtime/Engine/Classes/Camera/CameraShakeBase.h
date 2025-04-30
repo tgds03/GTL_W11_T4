@@ -90,7 +90,7 @@ public:
     UCameraShakePattern() = default;
     virtual ~UCameraShakePattern() override = default;
 
-	/** Called when the shake pattern starts */
+    /** Called when the shake pattern starts */
 	void StartShakePattern();
 	/** Updates the shake pattern, which should add its generated offset to the given result */
 	void UpdateShakePattern(const FCameraShakePatternUpdateParams& Params, FCameraShakePatternUpdateResult& OutResult);

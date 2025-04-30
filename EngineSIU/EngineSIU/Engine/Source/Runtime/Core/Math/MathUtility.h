@@ -9,24 +9,24 @@
 #define KINDA_SMALL_NUMBER   (1.e-4f)
 
 #define PI_DOUBLE            (3.141592653589793238462643383279502884197169399)
-#define UE_SMALL_NUMBER			(1.e-8f)
+#define UE_SMALL_NUMBER            (1.e-8f)
 
 
 struct FMath
 {
-	/** A와 B중에 더 작은 값을 반환합니다. */
-	template <typename T>
-	[[nodiscard]] static FORCEINLINE constexpr T Min(const T A, const T B)
-	{
-		return A < B ? A : B;
-	}
+    /** A와 B중에 더 작은 값을 반환합니다. */
+    template <typename T>
+    [[nodiscard]] static FORCEINLINE constexpr T Min(const T A, const T B)
+    {
+        return A < B ? A : B;
+    }
 
-	/** A와 B중에 더 큰 값을 반환합니다. */
-	template <typename T>
-	[[nodiscard]] static FORCEINLINE constexpr T Max(const T A, const T B)
-	{
-		return B < A ? A : B;
-	}
+    /** A와 B중에 더 큰 값을 반환합니다. */
+    template <typename T>
+    [[nodiscard]] static FORCEINLINE constexpr T Max(const T A, const T B)
+    {
+        return B < A ? A : B;
+    }
 
     /** A, B, C 중에 가장 큰 값을 반환합니다. */
     template <typename T>
@@ -35,62 +35,119 @@ struct FMath
         return Max(A, Max(B, C));
     }
 
-	/** X를 Min과 Max의 사이의 값으로 클램핑 합니다. */
-	template <typename T>
-	[[nodiscard]] static FORCEINLINE constexpr T Clamp(const T X, const T MinValue, const T MaxValue)
-	{
-		return Max(Min(X, MaxValue), MinValue);
-	}
+    /** X를 Min과 Max의 사이의 값으로 클램핑 합니다. */
+    template <typename T>
+    [[nodiscard]] static FORCEINLINE constexpr T Clamp(const T X, const T MinValue, const T MaxValue)
+    {
+        return Max(Min(X, MaxValue), MinValue);
+    }
 
-	/** A의 절댓값을 구합니다. */
-	template <typename T>
-	[[nodiscard]] static FORCEINLINE constexpr T Abs(const T A)
-	{
-		return A < T(0) ? -A : A;
-	}
+    /** A의 절댓값을 구합니다. */
+    template <typename T>
+    [[nodiscard]] static FORCEINLINE constexpr T Abs(const T A)
+    {
+        return A < T(0) ? -A : A;
+    }
 
     /** Returns 1, 0, or -1 depending on relation of T to 0 */
     template< class T > 
     static constexpr FORCEINLINE T Sign( const T A )
-	{
+    {
         return (A > (T)0) ? (T)1 : ((A < (T)0) ? (T)-1 : (T)0);
-	}
+    }
 
-	/** A의 제곱을 구합니다. */
-	template <typename T>
-	[[nodiscard]] static FORCEINLINE constexpr T Pow(const T A)
-	{
-		return A * A;
-	}
+    /** A의 제곱을 구합니다. */
+    template <typename T>
+    [[nodiscard]] static FORCEINLINE constexpr T Pow(const T A)
+    {
+        return A * A;
+    }
 
     template <typename T>
     [[nodiscard]] static FORCEINLINE constexpr T Pow(const T A, const T B)
-	{
-	    return pow(A, B);
-	}
+    {
+        return pow(A, B);
+    }
 
-	// A의 제곱근을 구합니다.
-	[[nodiscard]] static FORCEINLINE float Sqrt(float A) { return sqrtf(A); }
-	[[nodiscard]] static FORCEINLINE double Sqrt(double A) { return sqrt(A); }
+    // A의 제곱근을 구합니다.
+    [[nodiscard]] static FORCEINLINE float Sqrt(float A) { return sqrtf(A); }
+    [[nodiscard]] static FORCEINLINE double Sqrt(double A) { return sqrt(A); }
 
-	/** A의 역제곱근을 구합니다. */
-	[[nodiscard]] static FORCEINLINE float InvSqrt(float A) { return 1.0f / sqrtf(A); }
-	[[nodiscard]] static FORCEINLINE double InvSqrt(double A) { return 1.0 / sqrt(A); }
+    /** A의 역제곱근을 구합니다. */
+    [[nodiscard]] static FORCEINLINE float InvSqrt(float A) { return 1.0f / sqrtf(A); }
+    [[nodiscard]] static FORCEINLINE double InvSqrt(double A) { return 1.0 / sqrt(A); }
 
-	/** A와 B를 Alpha값에 따라 선형으로 보간합니다. */
-	template <typename T>
-	[[nodiscard]] static FORCEINLINE constexpr T Lerp(const T& A, const T& B, float Alpha)
-	{
-		return static_cast<T>((A * (1.0f - Alpha)) + (B * Alpha));
-	}
+    /** A와 B를 Alpha값에 따라 선형으로 보간합니다. */
+    template <typename T>
+    [[nodiscard]] static FORCEINLINE constexpr T Lerp(const T& A, const T& B, float Alpha)
+    {
+        return static_cast<T>((A * (1.0f - Alpha)) + (B * Alpha));
+    }
 
-	/** A와 B를 Alpha값에 따라 선형으로 보간합니다. */
-	template <typename T>
+    /** A와 B를 Alpha값에 따라 선형으로 보간합니다. */
+    template <typename T>
 	[[nodiscard]] static FORCEINLINE constexpr T Lerp(const T& A, const T& B, double Alpha)
 	{
 		return static_cast<T>((A * (1.0 - Alpha)) + (B * Alpha));
 	}
 
+    /**
+ *	Checks if a floating point number is nearly zero.
+ *	@param Value			Number to compare
+ *	@param ErrorTolerance	Maximum allowed difference for considering Value as 'nearly zero'
+ *	@return					true if Value is nearly zero
+ */
+    [[nodiscard]] static FORCEINLINE bool IsNearlyZero(float Value, float ErrorTolerance = UE_SMALL_NUMBER)
+	{
+	    return Abs<float>( Value ) <= ErrorTolerance;
+	}
+    
+    /**
+     * Performs a cubic interpolation
+     *
+     * @param  P - end points
+     * @param  T - tangent directions at end points
+     * @param  A - distance along spline
+     *
+     * @return  Interpolated value
+     */
+    template <
+        typename T,
+        typename U
+    >
+    [[nodiscard]] static constexpr FORCEINLINE T CubicInterp( const T& P0, const T& T0, const T& P1, const T& T1, const U& A )
+	{
+	    const U A2 = A * A;
+	    const U A3 = A2 * A;
+
+	    return T((((2*A3)-(3*A2)+1) * P0) + ((A3-(2*A2)+A) * T0) + ((A3-A2) * T1) + (((-2*A3)+(3*A2)) * P1));
+	}
+
+    /** Interpolate between A and B, applying an ease in function.  Exp controls the degree of the curve. */
+    template< class T >
+    [[nodiscard]] static FORCEINLINE T InterpEaseIn(const T& A, const T& B, float Alpha, float Exp)
+	{
+	    float const ModifiedAlpha = Pow(Alpha, Exp);
+	    return Lerp<T>(A, B, ModifiedAlpha);
+	}
+
+    /** Interpolate between A and B, applying an ease out function.  Exp controls the degree of the curve. */
+    template< class T >
+    [[nodiscard]] static FORCEINLINE T InterpEaseOut(const T& A, const T& B, float Alpha, float Exp)
+	{
+	    float const ModifiedAlpha = 1.f - Pow(1.f - Alpha, Exp);
+	    return Lerp<T>(A, B, ModifiedAlpha);
+	}
+    
+    /** Interpolate between A and B, applying an ease in/out function.  Exp controls the degree of the curve. */
+    template< class T > 
+    [[nodiscard]] static FORCEINLINE T InterpEaseInOut( const T& A, const T& B, float Alpha, float Exp )
+	{
+	    return Lerp<T>(A, B, (Alpha < 0.5f) ?
+            InterpEaseIn(0.f, 1.f, Alpha * 2.f, Exp) * 0.5f :
+            InterpEaseOut(0.f, 1.f, Alpha * 2.f - 1.f, Exp) * 0.5f + 0.5f);
+	}
+    
     /** Interpolate float from Current to Target. Scaled by distance to Target, so it has a strong start speed and ease out. */
     template<typename T1, typename T2 = T1, typename T3 = T2, typename T4 = T3>
     [[nodiscard]] static auto FInterpTo( T1  Current, T2 Target, T3 DeltaTime, T4 InterpSpeed )

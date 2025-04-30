@@ -14,17 +14,17 @@
     </Type>-->
 
     <!-- FName Visualizer -->
-	<Type Name="FName">
+    <Type Name="FName">
         <Intrinsic Name="GetDisplayName" Expression="GDebugNamePool.DisplayPool.ContainerPrivate">
             <Parameter Name="Hash" Type="int" />
         </Intrinsic>
-		<DisplayString Condition="DisplayIndex == 0">"None"</DisplayString>
-		<DisplayString Condition="DisplayIndex != 0">{*ToString()}</DisplayString>
-		<Expand>
-			<Item Name="DisplayIndex">DisplayIndex</Item>
-			<Item Name="ComparisonIndex">ComparisonIndex</Item>
-		</Expand>
-	</Type>
+        <DisplayString Condition="DisplayIndex == 0">"None"</DisplayString>
+        <DisplayString Condition="DisplayIndex != 0">{*ToString()}</DisplayString>
+        <Expand>
+            <Item Name="DisplayIndex">DisplayIndex</Item>
+            <Item Name="ComparisonIndex">ComparisonIndex</Item>
+        </Expand>
+    </Type>
 
     <!-- TArray Visualizer -->
     <Type Name="TArray&lt;*,*&gt;">

@@ -146,13 +146,11 @@ void UEditorEngine::BindEssentialObjects()
     }
     
     //무조건 PIE들어갈때 만들어주기
-    if (ActiveWorld->GetPlayerController() == nullptr)
-    {
-        APlayerController* PlayerController = ActiveWorld->SpawnActor<APlayerController>();
-        PlayerController->SetActorLabel(TEXT("OBJ_PLAYER_CONTROLLER"));
-        PlayerController->SetActorTickInEditor(false);
-        ActiveWorld->SetPlayerController(PlayerController);
-    }
+    APlayerController* PlayerController = ActiveWorld->SpawnActor<APlayerController>();
+    PlayerController->SetActorLabel(TEXT("OBJ_PLAYER_CONTROLLER"));
+    PlayerController->SetActorTickInEditor(false);
+    ActiveWorld->SetPlayerController(PlayerController);
+
     
     ActiveWorld->GetPlayerController()->Possess(ActiveWorld->GetMainPlayer());
 }

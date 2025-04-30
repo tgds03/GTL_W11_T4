@@ -713,8 +713,8 @@ FVector FViewportCamera::GetForwardVector() const
 FVector FViewportCamera::GetRightVector() const
 {
     FVector Right = FVector(0.f, 1.f, 0.0f);
-	Right = JungleMath::FVectorRotate(Right, ViewRotation);
-	return Right;
+    Right = JungleMath::FVectorRotate(Right, ViewRotation);
+    return Right;
 }
 
 FVector FViewportCamera::GetUpVector() const

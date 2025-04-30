@@ -26,6 +26,7 @@ public:
 
     void SetLocationWithFInterpTo(FVector& ToLocation);
     void SetFInterpToSpeed(float InSpeed);
+    void SetLookTarget(FVector& Location);
 
     FVector GetLocationWithFInterpTo() const { return FInterpTargetLocation; }
 
@@ -34,12 +35,12 @@ public:
 
     void SetFollowCustomTarget(const FVector& InLocation);
     void ResetFollowToPlayer();
-
     void GetCameraView(float DeltaTime, FMinimalViewInfo& DesiredView);
 
 private:
     void ProceedFInterp(float DeltaTime);
     
     FVector FInterpTargetLocation = FVector::ZeroVector;
+    FVector LookTarget = FVector::ZeroVector;
     float FInterpToSpeed = 0.8f;
 };

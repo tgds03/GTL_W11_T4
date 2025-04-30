@@ -9,11 +9,11 @@ using namespace DirectX;
 
 FVector4 JungleMath::ConvertV3ToV4(FVector vec3)
 {
-	FVector4 newVec4;
-	newVec4.X = vec3.X;
-	newVec4.Y = vec3.Y;
-	newVec4.Z = vec3.Z;
-	return newVec4;
+    FVector4 newVec4;
+    newVec4.X = vec3.X;
+    newVec4.Y = vec3.Y;
+    newVec4.Z = vec3.Z;
+    return newVec4;
 }
 
 FMatrix JungleMath::CreateModelMatrix(FVector translation, FVector rotation, FVector scale)

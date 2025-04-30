@@ -62,6 +62,27 @@ void APlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
     UnPossess();
 }
 
+void APlayerController::ClientSetViewTarget(class AActor* A, struct FViewTargetTransitionParams TransitionParams)
+{
+    if (PlayerCameraManager)
+    {
+        if( A == nullptr || A == this )
+        {
+            return;
+        }
+        
+        SetViewTarget(A, TransitionParams);
+    }
+}
+
+void APlayerController::SetViewTarget(class AActor* NewViewTarget, struct FViewTargetTransitionParams TransitionParams)
+{
+    if (PlayerCameraManager)
+    {
+        PlayerCameraManager->SetViewTarget(NewViewTarget, TransitionParams);
+    }
+}
+
 void APlayerController::Possess(AActor* InActor)
 {
     PossessedActor = InActor;

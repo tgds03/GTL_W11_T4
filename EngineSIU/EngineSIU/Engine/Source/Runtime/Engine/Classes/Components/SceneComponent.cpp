@@ -71,7 +71,7 @@ void USceneComponent::InitializeComponent()
 
 void USceneComponent::TickComponent(float DeltaTime)
 {
-	Super::TickComponent(DeltaTime);
+    Super::TickComponent(DeltaTime);
 }
 
 
@@ -132,41 +132,41 @@ void USceneComponent::DestroyComponent(bool bPromoteChildren)
 
 FVector USceneComponent::GetForwardVector() const
 {
-	FVector Forward = FVector::ForwardVector;
-	Forward = JungleMath::FVectorRotate(Forward, GetWorldRotation());
-	return Forward;
+    FVector Forward = FVector::ForwardVector;
+    Forward = JungleMath::FVectorRotate(Forward, GetWorldRotation());
+    return Forward;
 }
 
 FVector USceneComponent::GetRightVector() const
 {
-	FVector Right = FVector::RightVector;
-	Right = JungleMath::FVectorRotate(Right, GetWorldRotation());
-	return Right;
+    FVector Right = FVector::RightVector;
+    Right = JungleMath::FVectorRotate(Right, GetWorldRotation());
+    return Right;
 }
 
 FVector USceneComponent::GetUpVector() const
 {
-	FVector Up = FVector::UpVector;
-	Up = JungleMath::FVectorRotate(Up, GetWorldRotation());
-	return Up;
+    FVector Up = FVector::UpVector;
+    Up = JungleMath::FVectorRotate(Up, GetWorldRotation());
+    return Up;
 }
 
 
 void USceneComponent::AddLocation(const FVector& InAddValue)
 {
-	RelativeLocation = RelativeLocation + InAddValue;
+    RelativeLocation = RelativeLocation + InAddValue;
 
 }
 
 void USceneComponent::AddRotation(const FRotator& InAddValue)
 {
-	RelativeRotation = RelativeRotation + InAddValue;
+    RelativeRotation = RelativeRotation + InAddValue;
     RelativeRotation.Normalize();
 }
 
 void USceneComponent::AddScale(const FVector& InAddValue)
 {
-	RelativeScale3D = RelativeScale3D + InAddValue;
+    RelativeScale3D = RelativeScale3D + InAddValue;
 }
 
 void USceneComponent::AttachToComponent(USceneComponent* InParent)

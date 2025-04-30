@@ -12,8 +12,8 @@ bool UCameraModifier::ModifyCamera(float DeltaTime, FMinimalViewInfo& InOutPOV)
 
     /* 예제
         if (Alpha > 0.0f)
-	    {
-		    InOutPOV.FOV -= 20.f * Alpha; // 알파 비율로 줌 효과 주기
+        {
+            InOutPOV.FOV -= 20.f * Alpha; // 알파 비율로 줌 효과 주기
 	    }
      *
      */
