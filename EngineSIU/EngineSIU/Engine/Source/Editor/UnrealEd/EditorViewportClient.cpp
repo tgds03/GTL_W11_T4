@@ -373,7 +373,7 @@ void FEditorViewportClient::GetViewInfo(FMinimalViewInfo& OutViewInfo) const
 
     if (!bGotViewInfo)
     {
-        // TODO: 기본 FMinimalViewInfo 사용하기.
+        OutViewInfo = FMinimalViewInfo();
     }
 }
 
