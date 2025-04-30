@@ -91,4 +91,9 @@ protected:
 
     virtual bool MoveComponentImpl(const FVector& Delta, const FQuat& NewRotation, bool bSweep, FHitResult* OutHit = nullptr);
 
+public:
+    bool IsUsingAbsoluteRotation() const;
+    void SetUsingAbsoluteRotation(const bool bInAbsoluteRotation);
+protected:
+    uint8 bAbsoluteRotation : 1;
 };

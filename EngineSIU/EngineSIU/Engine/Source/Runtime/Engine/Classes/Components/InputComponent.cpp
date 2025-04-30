@@ -56,7 +56,7 @@ void UInputComponent::ClearBindDelegate()
     {
         Handler->OnKeyDownDelegate.Remove(DelegateHandle);
     }
-
+     
     for (FDelegateHandle DelegateHandle : BindKeyUpDelegateHandles)
     {
         Handler->OnKeyUpDelegate.Remove(DelegateHandle);

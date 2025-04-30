@@ -68,6 +68,13 @@ APlayerCameraManager::APlayerCameraManager()
 void APlayerCameraManager::InitializeFor(APlayerController* PC)
 {
     PCOwner = PC;
+    VignetteColor = FLinearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    VignetteCenter = FVector2D(0.5f, 0.5f);
+    VignetteRadius = 0.5f;
+    VignetteSmoothness = 0.5f;
+    VignetteIntensity = 0.0f;
+    LetterBoxWidth = 2.35f;
+    LetterBoxHeight = 1.0f;
 }
 
 AActor* APlayerCameraManager::GetViewTarget() const
@@ -81,6 +88,7 @@ void APlayerCameraManager::UpdateCamera(float DeltaTime)
     {
         DoUpdateCamera(DeltaTime);
     }
+
 }
 
 /**
@@ -218,6 +226,24 @@ void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
         }
     }
 
+    
+    if (bAnimateVignette)
+    {
+        VignetteTimeRemaining = FMath::Max(VignetteTimeRemaining - DeltaTime, 0.0f);
+        if (VignetteTime > 0.0f)
+        {
+            VignetteIntensity = VignetteStartIntensity + ((1.f - VignetteTimeRemaining / VignetteTime) * (VignetteTargetIntensity - VignetteStartIntensity));
+
+            SetCameraVignette(VignetteIntensity, 0.8f, 0.8f);
+        }
+
+        if (VignetteTimeRemaining <= 0.0f)
+        {
+            VignetteIntensity = VignetteTargetIntensity;
+            bAnimateVignette = false;
+        }
+    }
+    
     LastFrameViewTarget.POV = NewPOV;
 }
 
@@ -273,6 +299,18 @@ void APlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime
 	ApplyCameraModifiers(DeltaTime, OutVT.POV);
 }
 
+void APlayerCameraManager::SetCameraVignette(float InIntensity, float InRadius, float InSmoothness)
+{
+    VignetteIntensity = InIntensity;
+    VignetteRadius = InRadius;
+    VignetteSmoothness = InSmoothness;
+}
+
+void APlayerCameraManager::SetCameraVignetteColor(FLinearColor InColor)
+{
+    VignetteColor = InColor;
+}
+
 /* A로부터 B로의 ViewTarget Blend 수행
  * 실제 언리얼 코드에선 사용하지 않음
  */
@@ -301,4 +339,18 @@ void APlayerCameraManager::AssignViewTarget(AActor* NewTarget, FTViewTarget& VT,
     // Use default FOV and aspect ratio.
     VT.POV.FOV = DefaultFOV;
 
+}
+
+void APlayerCameraManager::StartVignetteAnimation(float FromIntensity, float ToIntensity, float Duration)
+{
+    bAnimateVignette = true;
+    VignetteStartIntensity = FromIntensity;
+    VignetteTargetIntensity = ToIntensity;
+    VignetteTime = Duration;
+    VignetteTimeRemaining = Duration;
+}
+
+float APlayerCameraManager::GetLetterBoxRatio()
+{
+    return LetterBoxWidth / LetterBoxHeight;
 }

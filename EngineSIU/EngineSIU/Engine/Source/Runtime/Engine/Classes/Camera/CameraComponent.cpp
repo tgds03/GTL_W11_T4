@@ -1,5 +1,6 @@
 #include "CameraComponent.h"
 #include "Engine/Engine.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "UObject/Casts.h"
 #include "World/World.h"
 
@@ -52,20 +53,30 @@ void UCameraComponent::FollowMainPlayer()
 
 void UCameraComponent::ProceedFInterp(float DeltaTime)
 {
-    FVector FromLocation = GetWorldLocation();
+    /* SpringArmComponent가 부모일 경우 부모 트랜스폼 따라가도록 함 */
+    if (USpringArmComponent* SpringArmComp = Cast<USpringArmComponent>(GetAttachParent()))
+    {
 
-    //카메라 위치
-    FVector MoveLocation = FMath::FInterpTo(FromLocation, FInterpTargetLocation, DeltaTime, FInterpToSpeed);
+    }    
+    else
+    {
+        FVector FromLocation = GetWorldLocation();
 
-    FVector Lookat = LookTarget;
+        //카메라 위치
+        FVector MoveLocation = FMath::FInterpTo(FromLocation, FInterpTargetLocation, DeltaTime, FInterpToSpeed);
+
+        FVector Lookat = LookTarget;
     
-    CurrentCameraZ = FMath::FInterpTo(CurrentCameraZ, CameraZ, DeltaTime, 0.05f);
-    Lookat.Z = CurrentCameraZ + CameraZOffset;
+        CurrentCameraZ = FMath::FInterpTo(CurrentCameraZ, CameraZ, DeltaTime, 0.05f);
+        Lookat.Z = CurrentCameraZ + CameraZOffset;
     
-    FRotator TargetRotation = FRotator::MakeLookAtRotation(MoveLocation, Lookat);
+        FRotator TargetRotation = FRotator::MakeLookAtRotation(MoveLocation, Lookat);
     
-    SetWorldLocation(MoveLocation);
-    SetWorldRotation(TargetRotation);
+        SetWorldLocation(MoveLocation);
+        SetWorldRotation(TargetRotation);
+    }
+   
+   
 }
 
 void UCameraComponent::SetLocationWithFInterpTo(FVector& ToLocation) //LerpSpeed = 0은 안움직이고 1은 바로이동

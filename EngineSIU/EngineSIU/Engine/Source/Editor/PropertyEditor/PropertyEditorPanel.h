@@ -9,6 +9,7 @@
 #include "Math/Rotator.h"
 #include "UObject/Casts.h"
 
+class USpringArmComponent;
 class UShapeComponent;
 class UAmbientLightComponent;
 class UDirectionalLightComponent;
@@ -78,6 +79,7 @@ private:
     void RenderForExponentialHeightFogComponent(UHeightFogComponent* FogComponent) const;
 
     void RenderForShapeComponent(UShapeComponent* ShapeComponent) const;
+    void RenderForSpringArmComponent(USpringArmComponent* SpringArmComponent) const;
     
     template<typename T>
         requires std::derived_from<T, UActorComponent>

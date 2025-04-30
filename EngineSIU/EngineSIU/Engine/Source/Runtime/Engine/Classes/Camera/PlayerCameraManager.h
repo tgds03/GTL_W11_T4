@@ -87,21 +87,6 @@ public:
     }
 };
 
-struct FCameraCacheEntry
-{
-public:
-
-    /** World time this entry was created. */
-    float TimeStamp;
-
-    /** Camera POV to cache. */
-    FMinimalViewInfo POV;
-
-    FCameraCacheEntry()
-        : TimeStamp(0.f)
-    {}
-};
-
 class APlayerCameraManager : public AActor
 {
     DECLARE_CLASS(APlayerCameraManager, AActor)
@@ -128,6 +113,11 @@ public:
     
     void SetViewTarget(class AActor* NewTarget, struct FViewTargetTransitionParams TransitionParams);
     
+    void SetCameraVignette(float InIntensity, float InRadius, float InSmoothness);
+    void SetCameraVignetteColor(FLinearColor InColor);
+    void StartVignetteAnimation(float FromIntensity, float ToIntensity, float Duration);
+    
+    float GetLetterBoxRatio();
 protected:
     virtual void DoUpdateCamera(float DeltaTime);
 
@@ -183,7 +173,32 @@ public:
     /** Maximum view roll, in degrees. */
     float ViewRollMax;
     
+    // [TEMP] Vignette factor
+    FVector2D VignetteCenter;
+
+    FLinearColor VignetteColor;
+
+    float VignetteRadius;
+
+    float VignetteIntensity;
+
+    float VignetteSmoothness;
+
+    float VignetteTime;
+
+    float VignetteTimeRemaining;
+
+    float VignetteStartIntensity;
+
+    float VignetteTargetIntensity;
+
+    // [TEMP] LetterBox factor;
+    float LetterBoxWidth;
+
+    float LetterBoxHeight;
+
     uint32 bEnableFading : 1;
+    uint32 bAnimateVignette : 1;
     uint32 bHoldFadeWhenFinished : 1; /* true일 경우 페이드 종료 상태 유지 */
 };
 

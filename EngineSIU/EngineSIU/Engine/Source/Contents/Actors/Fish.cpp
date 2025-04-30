@@ -10,6 +10,7 @@
 #include "Engine/FObjLoader.h"
 #include "SoundManager.h"
 #include "GameFramework/GameMode.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "World/World.h"
 
 AFish::AFish()
@@ -38,6 +39,12 @@ void AFish::PostSpawnInitialize()
     
     FishTail = AddComponent<UFishTailComponent>(FName("FishTailComponent_0"));
     FishTail->SetupAttachment(FishBody);
+
+    USpringArmComponent* SpringArmComp = AddComponent<USpringArmComponent>(FName("SpringArmComponent_0"));
+    SpringArmComp->SetupAttachment(SphereComponent);
+
+    UCameraComponent* CameraComp = AddComponent<UCameraComponent>(FName("CameraComponent_0"));
+    CameraComp->SetupAttachment(SpringArmComp);
 }
 
 UObject* AFish::Duplicate(UObject* InOuter)
@@ -203,7 +210,7 @@ void AFish::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
         /* DEPRECATED
         if (GetWorld() && GetWorld()->GetMainCamera())
         {
-            GetWorld()->GetMainCamera()->CameraZ = GetActorLocation().Z;
+            //GetWorld()->GetMainCamera()->CameraZ = GetActorLocation().Z;
         }
         */
     }
