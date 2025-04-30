@@ -22,6 +22,9 @@ public:
 
     FVector BlendLocations(const FVector& DesiredArmLocation, const FVector& TraceHitLocation, bool bHitSomething, float DeltaTime);
 
+    static bool RaySweepBox(const FVector& Start, const FVector& Dir, float MaxDist, const FMatrix& BoxMatrix,
+                            const FVector& BoxExtents, float ProbeRadius, float& OutT);
+
 public:
     FRotator GetDesiredRotation() const;
     FRotator GetTargetRotation() const;

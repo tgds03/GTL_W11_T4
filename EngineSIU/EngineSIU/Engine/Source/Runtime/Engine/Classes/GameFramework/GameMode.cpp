@@ -112,10 +112,10 @@ void AGameMode::StartMatch()
     Params.BlendTime = 5.0f;
     Params.BlendFunction = VTBlend_Linear;
 
-    AActor* TargetActor = GEngine->ActiveWorld->SpawnActor<AActor>();
-    TargetActor->SetActorLocation(FVector(5.f, 100.f, 15.f));
-    
-    GEngine->ActiveWorld->GetPlayerController()->SetViewTarget(TargetActor, Params);
+    // AActor* TargetActor = GEngine->ActiveWorld->SpawnActor<AActor>();
+    // TargetActor->SetActorLocation(FVector(5.f, 100.f, 15.f));
+    //
+    // GEngine->ActiveWorld->GetPlayerController()->SetViewTarget(TargetActor, Params);
     
     FSoundManager::GetInstance().PlaySound("fishdream");
     OnGameStart.Broadcast();

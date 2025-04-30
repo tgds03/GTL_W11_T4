@@ -2,9 +2,16 @@
 
 #include "Actor.h"
 #include "HAL/PlatformType.h"
+#include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
+#include "Engine/OverlapResult.h"
+#include "UObject/UObjectIterator.h"
+#include "World/World.h"
 
 USpringArmComponent::USpringArmComponent()
 {
+    SetRelativeRotation(FRotator(FVector(-3, -14, -5)));
+
     TargetArmLength = 5.f;
     TargetOffset = FVector(-13.f, 0.f, 4.f); // 부모에 대한 상대 위치
 
@@ -16,7 +23,7 @@ USpringArmComponent::USpringArmComponent()
     bEnableCameraRotationLag = true;
     bUseCameraLagSubstepping = true;
 
-    ProbeSize = 12.0f;
+    ProbeSize = 0.3f;
     CameraLagSpeed = 10.f;
     CameraRotationLagSpeed = 10.f;
     CameraLagMaxTimeStep = 1.f / 60.f;
@@ -155,13 +162,64 @@ void USpringArmComponent::UpdateDesiredArmLocation(bool bDoTrace, bool bDoLocati
     /* 충돌 검사 및 암 길이 줄일지 여부 결정 : bDoTrace */
     if (bDoTrace)
     {
-        //ResultLoc = BlendLocations(DesiredLoc, ArmOrigin, false, DeltaTime);
+        FVector RayStart = GetOwner()->GetActorLocation() + FVector(0,0, TargetOffset.Z);
+        FVector RayEnd = ArmOrigin + FVector(0, 0, TargetOffset.Z);
+        FVector RayDelta = RayEnd - RayStart;
+        float RayLen = RayDelta.Length();
+
+        if (RayLen < KINDA_SMALL_NUMBER)
+        {
+            ResultLoc = DesiredLoc;
+        }
+        else
+        {
+            FVector RayDir = RayDelta / RayLen;
+            UE_LOG(LogLevel::Error, "Ray direction : %.2f %.2f %.2f", RayDir.X, RayDir.Y, RayDir.Z);
+            bool bHitSomething = false;
+            float ClosestT = 1.f;               // 가중치 (0: 시작점, 1: 끝점)
+            FVector BestHitWorld = DesiredLoc;
+
+            for (UBoxComponent* BoxComp : TObjectRange<UBoxComponent>())
+            {
+                if (BoxComp->GetOwner() == GetOwner()) { continue; }
+
+                float t;
+                if (RaySweepBox(
+                    RayStart,
+                    RayDir,
+                    RayLen,
+                    BoxComp->GetWorldMatrix(),
+                    BoxComp->GetBoxExtent(),
+                    ProbeSize,
+                    t))
+                {
+                    if (t < ClosestT)
+                    {
+                        ClosestT = t;
+                        bHitSomething = true;
+                        BestHitWorld = RayStart + RayDir * (t * RayLen - ProbeSize);
+                        // 실제 충돌 지점으로 BestHitWorld 위치 조정
+                    }
+                }
+            }
+
+            if (bHitSomething)
+            {
+                ResultLoc = BlendLocations(DesiredLoc, BestHitWorld, bHitSomething, DeltaTime);
+            }
+            else
+            {
+                ResultLoc = DesiredLoc;
+            }
+
+        }
     }
     else
     {
         ResultLoc = DesiredLoc;
     }
 
+    UE_LOG(LogLevel::Display, TEXT("Result Location : %.2f %.2f %.2f"), ResultLoc.X, ResultLoc.Y, ResultLoc.Z);
     SetWorldLocation(ResultLoc);
     //SetWorldRotation(DesiredRot);
 }
@@ -171,3 +229,46 @@ FVector USpringArmComponent::BlendLocations(const FVector& DesiredArmLocation, c
     return bHitSomething ? TraceHitLocation : DesiredArmLocation;
 }
 
+
+bool USpringArmComponent::RaySweepBox(const FVector& Start, const FVector& Dir,
+                                      float MaxDist, const FMatrix& BoxMatrix,
+                                      const FVector& BoxExtents, float ProbeRadius, float& OutT)       // 0~1
+{
+    // 1) OBB 를 Probe만큼 확장한 AABB 로 변환
+    FVector Extents = BoxExtents + FVector(ProbeRadius);
+
+    // 2) 월드→박스 로컬
+    FMatrix InvBox = FMatrix::Inverse(BoxMatrix);
+    FVector LocalStart = InvBox.TransformPosition(Start);
+    FVector LocalDir = FMatrix::TransformVector(Dir, InvBox);
+
+    // 3) 슬랩(slab) Ray‐AABB
+    float tMin = 0.f, tMax = MaxDist;
+    for (int i = 0;i < 3;++i)
+    {
+        float origin = LocalStart[i];
+        float dir = LocalDir[i];
+        float e = Extents[i];
+        if (FMath::Abs(dir) < UE_SMALL_NUMBER)
+        {
+            if (origin < -e || origin > e)
+                return false;
+        }
+        else
+        {
+            float invD = 1.f / dir;
+            float t1 = (-e - origin) * invD;
+            float t2 = (e - origin) * invD;
+            if (t1 > t2) std::swap(t1, t2);
+            tMin = FMath::Max(tMin, t1);
+            tMax = FMath::Min(tMax, t2);
+            if (tMin > tMax) return false;
+        }
+    }
+
+    if (tMin < 0.f || tMin > MaxDist)
+        return false;
+
+    OutT = tMin / MaxDist;
+    return true;
+}
