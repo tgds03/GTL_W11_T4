@@ -17,7 +17,8 @@ struct FMinimalViewInfo
     FVector Location;
     FRotator Rotation;
     float FOV;
-    FVector CameraToViewTarget;
+    float PerspectiveNearClip;
+    float PerspectiveFarClip;
     /*float OrthoWidth;
     float OrthoNearClipPlane;
     float OrthoFarClipPlane;
@@ -26,7 +27,6 @@ struct FMinimalViewInfo
         : Location(0.0f, 0.0f, 0.0f)
         , Rotation(0.0f, 0.0f, 0.0f)
         , FOV(90.0f)
-        , CameraToViewTarget(0.f, 0.f, 0.f)
         /*, OrthoWidth(512.0f)
         , OrthoNearClipPlane(1.0f)
         , OrthoFarClipPlane(10000.0f)

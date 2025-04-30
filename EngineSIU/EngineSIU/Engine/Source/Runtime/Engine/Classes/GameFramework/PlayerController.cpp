@@ -8,19 +8,25 @@
 
 APlayerController::APlayerController()
 {
-    SetupInputComponent();
-    SetupPlayerCameraManager();
 }
 
 
 APlayerController::~APlayerController()
 {
+    UnPossess();
+
+    if (InputComponent)
+    {
+        delete InputComponent;
+        InputComponent = nullptr;
+    }
 }
 
 void APlayerController::PostSpawnInitialize()
 {
     AActor::PostSpawnInitialize();
 
+    SetupInputComponent();
     SpawnPlayerCameraManager();
 }
 
@@ -54,10 +60,12 @@ void APlayerController::ProcessInput(float DeltaTime) const
 
 void APlayerController::Destroyed()
 {
+    UnPossess();
 }
 
 void APlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+    UnPossess();
 }
 
 void APlayerController::Possess(AActor* InActor)
@@ -88,25 +96,6 @@ void APlayerController::SetupInputComponent()
     if (InputComponent == nullptr)
     {
         InputComponent = AddComponent<UInputComponent>();
-    }
-}
-
-void APlayerController::SetupPlayerCameraManager()
-{
-    if (PlayerCameraManager == nullptr)
-    {
-        // controller가 없었으면 얘도 없는데 혹시나 방어코드
-        for (const auto iter: TObjectRange<APlayerCameraManager>())
-        {
-            if (GEngine->ActiveWorld == GetWorld())
-            {
-                PlayerCameraManager = iter;
-                break;
-            }
-        }
-        
-        PlayerCameraManager = GEngine->ActiveWorld->SpawnActor<APlayerCameraManager>();
-        PlayerCameraManager->InitializeFor(this);
     }
 }
 

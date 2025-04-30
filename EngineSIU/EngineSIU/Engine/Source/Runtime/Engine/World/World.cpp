@@ -147,21 +147,21 @@ void UWorld::BeginPlay()
                 Target.X -= 20.0f;
             
                 MainTextComponent->SetText(L"Press Space to start");
-                GetMainCamera()->SetFInterpToSpeed(3.0f);
-                GetMainCamera()->SetFollowCustomTarget(Target);
+                //GetMainCamera()->SetFInterpToSpeed(3.0f);
+                //GetMainCamera()->SetFollowCustomTarget(Target);
             }
         });
 
         GameMode->OnGameStart.AddLambda([this]() {
-            GetMainCamera()->SetFInterpToSpeed(0.8f);
-            GetMainCamera()->ResetFollowToPlayer();
+            //GetMainCamera()->SetFInterpToSpeed(0.8f);
+            //GetMainCamera()->ResetFollowToPlayer();
             });
 
         GameMode->OnGameEnd.AddLambda([this](bool bIsWin) {
             if (MainTextComponent) {
-                FVector Target = MainTextComponent->GetWorldLocation();
-                Target.X -= 20.0f;
-                Target.Z -= GetMainCamera()->CameraHeight;
+                //FVector Target = MainTextComponent->GetWorldLocation();
+                //Target.X -= 20.0f;
+                //Target.Z -= GetMainCamera()->CameraHeight;
 
                 if (bIsWin)
                 {
@@ -170,12 +170,12 @@ void UWorld::BeginPlay()
                     FString Message = FString::Printf(TEXT("Earned Coin %d"), Fish->GetScore());
                     MainTextComponent->SetText(Message.ToWideString());
                     //MainCamera->CameraZOffset = 0.0f;
-                    GetMainCamera()->SetFollowCustomTarget(Target);
+                    //GetMainCamera()->SetFollowCustomTarget(Target);
                 } else
                 {
                     MainTextComponent->SetText(L"Fish roasted");
                     //MainCamera->CameraZOffset = 0.0f;
-                    GetMainCamera()->SetFollowCustomTarget(Target);
+                    //GetMainCamera()->SetFollowCustomTarget(Target);
                     
                     AFish* Fish = Cast<AFish>(GEngine->ActiveWorld->GetMainPlayer());
                     Fish->SetActorLocation(FVector(-110.0f, 0.0f, -4.0f));
@@ -283,16 +283,6 @@ bool UWorld::DestroyActor(AActor* ThisActor)
 UWorld* UWorld::GetWorld() const
 {
     return const_cast<UWorld*>(this);
-}
-
-UCameraComponent* UWorld::GetMainCamera() const
-{
-    if (UCameraComponent* CameraComponent = PlayerController->PlayerCameraManager->TargetCamera)
-    {
-        return CameraComponent;
-    }
-
-    return nullptr;
 }
 
 APlayer* UWorld::GetMainPlayer() const
