@@ -20,7 +20,6 @@ float FWaveOscillator::Update(float DeltaTime, float AmplitudeMultiplier, float 
 
 UWaveOscillatorCameraShakePattern::UWaveOscillatorCameraShakePattern()
 {
-    LocationAmplitudeMultiplier = 0.f;
 }
 
 void UWaveOscillatorCameraShakePattern::StartShakePatternImpl()

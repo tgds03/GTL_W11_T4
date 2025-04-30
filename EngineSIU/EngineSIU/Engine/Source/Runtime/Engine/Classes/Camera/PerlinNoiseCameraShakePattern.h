@@ -20,7 +20,7 @@ struct FPerlinNoiseShaker
     float Update(float DeltaTime, float AmplitudeMultiplier, float FrequencyMultiplier, float& InOutCurrentOffset) const;
 };
 
-class UPerlinNoiseCameraShakePattern : USimpleCameraShakePattern
+class UPerlinNoiseCameraShakePattern : public USimpleCameraShakePattern
 {
     DECLARE_CLASS(UPerlinNoiseCameraShakePattern, USimpleCameraShakePattern)
 

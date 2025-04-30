@@ -45,7 +45,7 @@ void UPerlinNoiseCameraShakePattern::UpdateShakePatternImpl(const FCameraShakePa
 {
     UpdatePerlinNoise(Params.DeltaTime, OutResult);
 
-    //const float BlendWeight = State.Update(Params.DeltaTime);
+    const float BlendWeight = State.Update(Params.DeltaTime);
     //OutResult.ApplyScale(BlendWeight);
 }
 
