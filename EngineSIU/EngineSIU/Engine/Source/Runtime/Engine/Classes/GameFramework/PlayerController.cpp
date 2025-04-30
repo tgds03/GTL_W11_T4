@@ -9,6 +9,7 @@
 APlayerController::APlayerController()
 {
     SetupInputComponent();
+    SetupPlayerCameraManager();
 }
 
 
@@ -88,7 +89,10 @@ void APlayerController::SetupInputComponent()
     {
         InputComponent = AddComponent<UInputComponent>();
     }
+}
 
+void APlayerController::SetupPlayerCameraManager()
+{
     if (PlayerCameraManager == nullptr)
     {
         // controller가 없었으면 얘도 없는데 혹시나 방어코드
@@ -102,6 +106,7 @@ void APlayerController::SetupInputComponent()
         }
         
         PlayerCameraManager = GEngine->ActiveWorld->SpawnActor<APlayerCameraManager>();
+        PlayerCameraManager->InitializeFor(this);
     }
 }
 
