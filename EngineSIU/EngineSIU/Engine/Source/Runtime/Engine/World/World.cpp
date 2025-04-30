@@ -151,6 +151,7 @@ void UWorld::BeginPlay()
                 MainTextComponent->SetText(L"Press Space to start");
                 //GetMainCamera()->SetFInterpToSpeed(3.0f);
                 //GetMainCamera()->SetFollowCustomTarget(Target);
+                GetPlayerController()->PlayerCameraManager->StartCameraFade(1.0f, 0.0f, 4.0f, FLinearColor(.0f, .0f, .0f, 1.0f));
             }
         });
 

@@ -209,7 +209,8 @@ void AFish::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
         }
 
         SetHealth(GetHealth() - 1);
-
+        GetWorld()->GetPlayerController()->PlayerCameraManager->VignetteColor = FLinearColor(1.0f, 0.0f, 0.0f, 1.0f);
+        GetWorld()->GetPlayerController()->PlayerCameraManager->StartVignetteAnimation(1.0f, 0.0f, 0.3f);
         /* DEPRECATED
         if (GetWorld() && GetWorld()->GetMainCamera())
         {
