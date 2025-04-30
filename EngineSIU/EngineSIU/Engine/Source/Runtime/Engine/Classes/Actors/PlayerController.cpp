@@ -1,6 +1,9 @@
 #include "PlayerController.h"
 
+#include "Camera/PlayerCameraManager.h"
 #include "UObject/UObjectIterator.h"
+
+
 
 APlayerController::APlayerController()
 {
@@ -24,6 +27,12 @@ void APlayerController::Tick(float DeltaTime)
     {
         ProcessInput(DeltaTime);
     }
+
+    if (PlayerCameraManager)
+    {
+        PlayerCameraManager->UpdateCamera(DeltaTime);
+    }
+
 }
 
 void APlayerController::ProcessInput(float DeltaTime) const
@@ -78,4 +87,11 @@ void APlayerController::BindAction(const FString& Key, const std::function<void(
     {
         InputComponent->BindAction(Key, Callback);
     }
+}
+
+AActor* APlayerController::GetViewTarget() const
+{
+    AActor* CameraManagerViewTarget = PlayerCameraManager ? PlayerCameraManager->GetViewTarget() : nullptr;
+
+    return CameraManagerViewTarget ? CameraManagerViewTarget : const_cast<APlayerController*>(this);
 }

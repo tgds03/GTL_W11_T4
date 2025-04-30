@@ -2,6 +2,8 @@
 #include "GameFramework/Actor.h" 
 #include "Classes/Components/InputComponent.h"
 
+class APlayerCameraManager;
+
 class APlayerController : public AActor
 {
     DECLARE_CLASS(APlayerController, AActor)
@@ -25,6 +27,15 @@ public:
     virtual void UnPossess();
     
     virtual void BindAction(const FString& Key, const std::function<void(float)>& Callback);
+
+    // 카메라 관련 함수
+public:
+    void FOV(float NewFOV);
+    AActor* GetViewTarget() const;
+
+public:
+    APlayerCameraManager* PlayerCameraManager;
+
 protected:
     UPROPERTY
     (UInputComponent*, InputComponent, = nullptr)

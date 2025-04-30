@@ -10,7 +10,7 @@ class UCameraModifier;
 struct FTViewTarget
 {
     AActor* Target;
-
+    FPOV POV;
 public:
 
     void SetNewTarget(AActor* NewTarget);
@@ -22,7 +22,6 @@ public:
     {
     }
 
-    /** Make sure ViewTarget is valid */
     void CheckViewTarget(APlayerController* OwningController);
 };
 
@@ -34,25 +33,43 @@ class APlayerCameraManager : public AActor
 public:
     APlayerCameraManager();
 
+    AActor* GetViewTarget() const;
+    
+    void UpdateCamera(float DeltaTime);
+
+    /* Fade IN / OUT */
+    void StartCameraFade(float FromAlpha, float ToAlpha, float Duration, FLinearColor Color, bool bHoldWhenFinished = false);
+    void StopCameraFade();
+protected:
+
+
+    FPOV BlendViewTargets(const FTViewTarget& A, const FTViewTarget& B, float Alpha);
+
 protected:
     TArray<UCameraModifier*> ModifierList;
 
-private:
+public:
+    FTViewTarget ViewTarget;
+
+    FTViewTarget PendingViewTarget;
+
+    float BlendTimeToGo;
+
+    // FViewTargetTransitionParams BlendParams;
+    
     FLinearColor FadeColor;
+
     float FadeAmount;
 
-    /** Current camera fade alpha range, where X = starting alpha and Y = final alpha (when bEnableFading == true) */
     FVector2D FadeAlpha;
 
-    /** Total duration of the camera fade (when bEnableFading == true) */
     float FadeTime;
 
-    /** Time remaining in camera fade (when bEnableFading == true) */
     float FadeTimeRemaining;
 
     FName CameraStyle;
 
-    FTViewTarget ViewTarget;
-
+    uint32 bEnableFading : 1;
+    uint32 bHoldFadeWhenFinished : 1; /* true일 경우 페이드 종료 상태 유지 */
 };
 

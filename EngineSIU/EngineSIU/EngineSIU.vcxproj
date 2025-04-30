@@ -490,6 +490,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\PointLightActor.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\SphereActor.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\SpotLightActor.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraTypes.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\ActorComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\BillboardComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\BoxComponent.h" />

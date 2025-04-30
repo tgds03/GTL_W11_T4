@@ -1,5 +1,7 @@
-﻿#pragma once
+#pragma once
 #include "Core/HAL/PlatformType.h"
+#include "Math/Rotator.h"
+#include "Math/Vector.h"
 
 namespace EEndPlayReason
 {
@@ -13,3 +15,27 @@ enum Type : uint8
     Quit,
 };
 }
+
+
+struct FPOV
+{
+    FVector Location;
+    FRotator Rotation;
+    float FOV;
+
+    FPOV()
+        : Location(), Rotation(), FOV(90.0f)
+    {
+    }
+
+    FPOV(FVector InLocation, FRotator InRotation, float InFOV)
+        : Location(InLocation), Rotation(InRotation), FOV(InFOV)
+    {
+    }
+
+    // Serializer.
+    friend FArchive& operator<<(FArchive& Ar, FPOV& POV)
+    {
+        return Ar << POV.Location << POV.Rotation << POV.FOV;
+    }
+};

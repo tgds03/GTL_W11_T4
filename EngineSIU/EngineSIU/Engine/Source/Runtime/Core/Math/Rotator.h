@@ -1,5 +1,6 @@
-﻿#pragma once
+#pragma once
 #include "Container/String.h"
+#include "Serialization/Archive.h"
 
 struct FVector;
 struct FQuat;
@@ -71,3 +72,9 @@ struct FRotator
     static float NormalizeAxis(float Angle);
     static FRotator MakeLookAtRotation(const FVector& From, const FVector& To);
 };
+
+inline FArchive& operator<<(FArchive& Ar, FRotator& R)
+{
+    Ar << R.Pitch << R.Yaw << R.Roll;
+    return Ar;
+}

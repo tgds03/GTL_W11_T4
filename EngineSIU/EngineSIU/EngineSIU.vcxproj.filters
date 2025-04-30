@@ -919,6 +919,7 @@
     <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui_curve.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\PlayerCameraManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraModifier.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraTypes.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />
