@@ -81,6 +81,7 @@ void APlayerController::Possess(AActor* InActor)
 
 void APlayerController::UnPossess()
 {
+   
     PossessedActor = nullptr;
     bHasPossessed = false;
 

@@ -40,7 +40,7 @@ public:
 
     virtual void SpawnPlayerCameraManager();
 
-    APlayerCameraManager* PlayerCameraManager;
+    APlayerCameraManager* PlayerCameraManager = nullptr;
     
 protected:
     UPROPERTY

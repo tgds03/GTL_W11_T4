@@ -3,8 +3,31 @@
 #include "CameraModifier.h"
 #include "GameFramework/PlayerController.h"
 
+bool FTViewTarget::Equal(const FTViewTarget& OtherTarget) const
+{
+    //@TODO: Should I compare Controller too?
+    return (Target == OtherTarget.Target) && POV.Equals(OtherTarget.POV);
+}
+
 void FTViewTarget::CheckViewTarget(APlayerController* OwningController)
 {
+    if (Target == nullptr)
+    {
+        Target = OwningController;
+    }
+    
+    if (Target != nullptr)
+    {
+        // PossessActor가 있을때
+        if (OwningController->GetPossessedActor() && !OwningController->GetPossessedActor()->IsActorBeingDestroyed() )
+        {
+            OwningController->PlayerCameraManager->AssignViewTarget(OwningController->GetPossessedActor(), *this);
+        }
+        else
+        {
+            OwningController->PlayerCameraManager->AssignViewTarget(OwningController, *this);
+        }
+    }
 }
 
 void FTViewTarget::SetNewTarget(AActor* NewTarget)
@@ -29,6 +52,16 @@ AActor* FTViewTarget::GetTargetActor() const
 
 APlayerCameraManager::APlayerCameraManager()
 {
+    DefaultFOV = 90.0f;
+    DefaultAspectRatio = 1.33333f;
+    bDefaultConstrainAspectRatio = false;
+
+    ViewPitchMin = -89.9f;
+    ViewPitchMax = 89.9f;
+    ViewYawMin = 0.f;
+    ViewYawMax = 359.999f;
+    ViewRollMin = -89.9f;
+    ViewRollMax = 89.9f;
 }
 
 void APlayerCameraManager::InitializeFor(APlayerController* PC)
@@ -104,14 +137,23 @@ void APlayerCameraManager::ApplyCameraModifiers(float DeltaTime, FMinimalViewInf
 
 void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
 {
-    if (PendingViewTarget.Target == nullptr)
+    bool bIsProgressCameraTransition = PendingViewTarget.Target;
+
+    //Progress가 진행중이 아니면
+    if (bIsProgressCameraTransition == false)
     {
+        ViewTarget.CheckViewTarget(PCOwner);
         UpdateViewTarget(ViewTarget, DeltaTime);
     }
     
-    // 만일 PendingViewTarget이 존재한다면 그로의 Transition 수행
-    if (PendingViewTarget.Target != nullptr)
+    if (bIsProgressCameraTransition)
     {
+        //PendingViewTarget은 움직여야할 목표가 아니라 얘를 움직여야함.
+        //그래서 얘를 ViewTarget으로 설정해줌
+        PendingViewTarget.CheckViewTarget(PCOwner);
+        UpdateViewTarget(PendingViewTarget, DeltaTime);
+        
+        // 만일 PendingViewTarget이 존재한다면 그로의 Transition 수행
         /* Blend 관련 switch case 분기 및 인자 설정 .. */
 
         /* Note) 언리얼 코드에선 BlendViewTargets 호출 X
@@ -120,7 +162,7 @@ void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
          * NewPOV.BlendViewInfo(PendingViewTarget.POV, BlendPct);
          */
     }
-
+    
     // Fade Enabled 되었다면 Fade 처리 수행
     if (bEnableFading)
     {
@@ -140,12 +182,33 @@ void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
 
 void APlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
 {
-    FMinimalViewInfo OrigPOV = OutVT.POV;
+    // Don't update outgoing viewtarget during an interpolation 
+	if (PendingViewTarget.Target != nullptr && OutVT.Equal(ViewTarget))
+	{
+		return;
+	}
 
-    // TODO: 새로운 기본 POV 생성 후 OutVT에 지정
+	// Store previous POV, in case we need it later
+	FMinimalViewInfo OrigPOV = OutVT.POV;
+
+	// Reset the view target POV fully
+	static const FMinimalViewInfo DefaultViewInfo;
+	OutVT.POV = DefaultViewInfo;
+	OutVT.POV.FOV = DefaultFOV;
+
+	bool bDoNotApplyModifiers = false;
+
+    //카메라가 없으면 액터 자기위치와 자기 로테이션 반영
+    OutVT.POV.Location = OutVT.Target->GetActorLocation() + OutVT.Target->GetActorForwardVector() * 2;
+    OutVT.POV.Rotation = OutVT.Target->GetActorRotation();
     
-
-    ApplyCameraModifiers(DeltaTime, OutVT.POV);
+	if (UCameraComponent* CamComp = OutVT.Target->GetComponentByClass<UCameraComponent>())
+	{
+		// Viewing through a camera actor.
+		CamComp->GetCameraView(DeltaTime, OutVT.POV);
+	}
+    
+	ApplyCameraModifiers(DeltaTime, OutVT.POV);
 }
 
 /* A로부터 B로의 ViewTarget Blend 수행
@@ -161,4 +224,30 @@ FMinimalViewInfo APlayerCameraManager::BlendViewTargets(const FTViewTarget& A, c
     POV.Rotation = A.POV.Rotation + DeltaAng * Alpha;
 
     return POV;
+}
+
+void APlayerCameraManager::AssignViewTarget(AActor* NewTarget, FTViewTarget& VT/*, struct FViewTargetTransitionParams TransitionParams*/)
+{
+    if (!NewTarget || NewTarget == VT.Target)
+    {
+        return;
+    }
+    
+    // AActor* OldViewTarget = VT.Target;
+    VT.Target = NewTarget;
+
+    // Use default FOV and aspect ratio.
+    VT.POV.FOV = DefaultFOV;
+
+    // EndViewTarget시 행동을 해야하면 정의 후 부르기
+    // if (OldViewTarget)
+    // {
+    //     OldViewTarget->EndViewTarget(PCOwner);
+    // }
+
+    // ViewTarget 세팅됐을때 행동을 해야하면 정의 후 부르기
+    // VT.Target->BecomeViewTarget(PCOwner);
+    
+    // ViewTarget바뀔때 Delegate필요하면 호출
+    // FGameDelegates::Get().GetViewTargetChangedDelegate().Broadcast(PCOwner, OldViewTarget, NewTarget);
 }

@@ -51,6 +51,7 @@ public:
 
     void ApplyCameraModifiers(float DeltaTime, FMinimalViewInfo& InOutPOV);
     
+    void AssignViewTarget(AActor* NewTarget, FTViewTarget& VT);
 protected:
     virtual void DoUpdateCamera(float DeltaTime);
 
@@ -82,6 +83,23 @@ public:
 
     FName CameraStyle;
 
+    float DefaultFOV;
+    float DefaultAspectRatio;
+    uint32 bDefaultConstrainAspectRatio : 1;
+
+  	/** Minimum view pitch, in degrees. */
+    float ViewPitchMin;
+    /** Maximum view pitch, in degrees. */
+    float ViewPitchMax;
+    /** Minimum view yaw, in degrees. */
+    float ViewYawMin;
+    /** Maximum view yaw, in degrees. */
+    float ViewYawMax;
+    /** Minimum view roll, in degrees. */
+    float ViewRollMin;
+    /** Maximum view roll, in degrees. */
+    float ViewRollMax;
+    
     uint32 bEnableFading : 1;
     uint32 bHoldFadeWhenFinished : 1; /* true일 경우 페이드 종료 상태 유지 */
 };
