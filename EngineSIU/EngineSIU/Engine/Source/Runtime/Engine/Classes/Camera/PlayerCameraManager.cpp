@@ -291,6 +291,11 @@ void APlayerCameraManager::SetViewTarget(class AActor* NewTarget, struct FViewTa
 		NewTarget = PCOwner;
 	}
 
+    if (PendingViewTarget.Target)
+    {
+        return;
+    }
+    
 	if (TransitionParams.BlendTime > 0)
 	{
 
