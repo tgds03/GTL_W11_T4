@@ -9,6 +9,7 @@
 #include "Contents/Components/FishBodyComponent.h"
 #include "Engine/FObjLoader.h"
 #include "SoundManager.h"
+#include "TriggerBox.h"
 #include "Contents/Objects/DamageCameraShake.h"
 #include "GameFramework/GameMode.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -231,5 +232,30 @@ void AFish::ActorBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
             bShouldApplyGravity = false;
             GameMode->EndMatch(true);
         }
+    }else if (OtherActor->IsA<ATriggerBox>())
+    {
+        
+        // /** Camera does a simple linear interpolation. */
+        // VTBlend_Linear
+        // /** Camera has a slight ease in and ease out, but amount of ease cannot be tweaked. */
+        // VTBlend_Cubic
+        // /** Camera immediately accelerates, but smoothly decelerates into the target.  Ease amount controlled by BlendExp. */
+        // VTBlend_EaseIn
+        // /** Camera smoothly accelerates, but does not decelerate into the target.  Ease amount controlled by BlendExp. */
+        // VTBlend_EaseOut
+        // /** Camera smoothly accelerates and decelerates.  Ease amount controlled by BlendExp. */
+        // VTBlend_EaseInOut
+
+        FViewTargetTransitionParams Params;
+        Params.BlendTime = 5.0f;
+        Params.BlendFunction = VTBlend_EaseIn;
+        Params.BlendExp = 3.f;
+
+        FVector TargetLoc = OtherActor->GetActorLocation() + FVector(50, 0, 0);
+        
+        AActor* TargetActor = GEngine->ActiveWorld->SpawnActor<AActor>();
+        TargetActor->SetActorLocation(TargetLoc);
+        TargetActor->SetActorRotation(FRotator(90.f, 0.f, 0.f));
+        GEngine->ActiveWorld->GetPlayerController()->SetViewTarget(TargetActor, Params);
     }
 }

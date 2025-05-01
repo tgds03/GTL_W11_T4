@@ -15,7 +15,7 @@ USpringArmComponent::USpringArmComponent()
     TargetArmLength = 5.f;
     TargetOffset = FVector(-13.f, 0.f, 4.f); // 부모에 대한 상대 위치
 
-    bUsePawnControlRotation = false;
+    bUsePawnControlRotation = true;
     bDoCollisionTest = false;
 
     bInheritPitch = bInheritYaw = bInheritRoll = true;
@@ -174,7 +174,7 @@ void USpringArmComponent::UpdateDesiredArmLocation(bool bDoTrace, bool bDoLocati
         else
         {
             FVector RayDir = RayDelta / RayLen;
-            UE_LOG(LogLevel::Error, "Ray direction : %.2f %.2f %.2f", RayDir.X, RayDir.Y, RayDir.Z);
+            //UE_LOG(LogLevel::Error, "Ray direction : %.2f %.2f %.2f", RayDir.X, RayDir.Y, RayDir.Z);
             bool bHitSomething = false;
             float ClosestT = 1.f;               // 가중치 (0: 시작점, 1: 끝점)
             FVector BestHitWorld = DesiredLoc;
@@ -219,7 +219,7 @@ void USpringArmComponent::UpdateDesiredArmLocation(bool bDoTrace, bool bDoLocati
         ResultLoc = DesiredLoc;
     }
 
-    UE_LOG(LogLevel::Display, TEXT("Result Location : %.2f %.2f %.2f"), ResultLoc.X, ResultLoc.Y, ResultLoc.Z);
+    //UE_LOG(LogLevel::Display, TEXT("Result Location : %.2f %.2f %.2f"), ResultLoc.X, ResultLoc.Y, ResultLoc.Z);
     SetWorldLocation(ResultLoc);
     SetWorldRotation(DesiredRot);
 }

@@ -194,7 +194,8 @@ void APlayerCameraManager::DoUpdateCamera(float DeltaTime)
     {        
         BlendTimeToGo -= DeltaTime;
 
-        UpdateViewTarget(ViewTarget, DeltaTime);
+        // UpdateViewTarget(ViewTarget, DeltaTime);
+        // PendingViewTarget.CheckViewTarget(PCOwner);
         UpdateViewTarget(PendingViewTarget, DeltaTime);
 
         if (BlendTimeToGo > 0)
@@ -290,6 +291,11 @@ void APlayerCameraManager::SetViewTarget(class AActor* NewTarget, struct FViewTa
 		NewTarget = PCOwner;
 	}
 
+    if (PendingViewTarget.Target)
+    {
+        return;
+    }
+    
 	if (TransitionParams.BlendTime > 0)
 	{
 
@@ -318,7 +324,6 @@ void APlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime
 	static const FMinimalViewInfo DefaultViewInfo;
 	OutVT.POV = DefaultViewInfo;
 	OutVT.POV.FOV = DefaultFOV;
-    OutVT.POV.PostProcessBlendWeight = 1.0f;
 
 	bool bDoNotApplyModifiers = false;
 

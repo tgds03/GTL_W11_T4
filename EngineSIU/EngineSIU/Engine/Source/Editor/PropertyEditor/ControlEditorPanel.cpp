@@ -39,6 +39,7 @@
 #include "Contents/Actors/ItemActor.h"
 #include "Contents/Actors/PlatformActor.h"
 #include "Contents/Actors/GoalPlatformActor.h"
+#include "Contents/Actors/TriggerBox.h"
 #include "Renderer/CompositingPass.h"
 
 void ControlEditorPanel::Render()
@@ -325,6 +326,7 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
             {.Label = "Platform", .OBJ = OBJ_PLATFORM},
             {.Label = "GoalPlatform", .OBJ = OBJ_GOALPLATFORM},
             {.Label = "Coin", .OBJ = OBJ_COIN},
+            {.Label = "TriggerBox", .OBJ = OBJ_TRIGGERBOX},
         };
 
         for (const auto& primitive : primitives)
@@ -448,6 +450,10 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
                 case OBJ_COIN:
                     SpawnedActor = World->SpawnActor<AItemActor>();
                     SpawnedActor->SetActorLabel(TEXT("OBJ_COIN"));
+                    break;
+                case OBJ_TRIGGERBOX:
+                    SpawnedActor = World->SpawnActor<ATriggerBox>();
+                    SpawnedActor->SetActorLabel(TEXT("OBJ_TRIGGERBOX"));
                     break;
                 case OBJ_CAMERA:
                 case OBJ_PLAYER:

@@ -24,7 +24,6 @@ struct FMinimalViewInfo
     float FOV;
     float PerspectiveNearClip;
     float PerspectiveFarClip;
-    float PostProcessBlendWeight;
 
     /*float OrthoWidth;
     float OrthoNearClipPlane;
@@ -36,7 +35,6 @@ struct FMinimalViewInfo
         , FOV(90.0f)
         , PerspectiveNearClip(0.1f)
         , PerspectiveFarClip(1000.f)
-    	, PostProcessBlendWeight(0.0f)
         /*, OrthoWidth(512.0f)
         , OrthoNearClipPlane(1.0f)
         , OrthoFarClipPlane(10000.0f)
@@ -55,8 +53,7 @@ inline bool FMinimalViewInfo::Equals(const FMinimalViewInfo& Other) const
         Rotation == Other.Rotation &&
         FOV == Other.FOV &&
         PerspectiveNearClip == Other.PerspectiveNearClip &&
-        PerspectiveFarClip == Other.PerspectiveFarClip &&
-        PostProcessBlendWeight == Other.PostProcessBlendWeight;
+        PerspectiveFarClip == Other.PerspectiveFarClip;
 }
 
 inline void FMinimalViewInfo::BlendViewInfo(FMinimalViewInfo& OtherInfo, float OtherWeight)
