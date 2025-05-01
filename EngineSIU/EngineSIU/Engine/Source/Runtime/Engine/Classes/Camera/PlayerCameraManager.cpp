@@ -324,6 +324,7 @@ void APlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime
 
     OutVT.POV.Location = OutVT.Target->GetActorLocation();
     OutVT.POV.Rotation = OutVT.Target->GetActorRotation();
+    OutVT.POV.Rotation.Roll = 0.0f;
     
 	if (UCameraComponent* CamComp = OutVT.Target->GetComponentByClass<UCameraComponent>())
 	{

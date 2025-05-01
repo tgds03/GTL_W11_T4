@@ -219,9 +219,11 @@ void UCameraShakeBase::ApplyResult(float Scale, const FCameraShakePatternUpdateR
     InOutPOV.FOV += InResult.FOV * Scale;
 
     FRotator ScaledDeltaRotator = InResult.Rotation;
+    /*
     ScaledDeltaRotator.Pitch *= Scale;
     ScaledDeltaRotator.Yaw *= Scale;
     ScaledDeltaRotator.Roll *= Scale;
+    */
     
     FQuat CurrentRotation = InOutPOV.Rotation.ToQuaternion();
     FQuat DeltaRotation = ScaledDeltaRotator.ToQuaternion();
