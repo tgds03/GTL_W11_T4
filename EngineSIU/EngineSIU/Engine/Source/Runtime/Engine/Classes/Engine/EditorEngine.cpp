@@ -9,6 +9,8 @@
 #include "Components/Light/DirectionalLightComponent.h"
 #include "UObject/UObjectIterator.h"
 
+#include <fbxsdk.h>
+
 namespace PrivateEditorSelection
 {
     static AActor* GActorSelected = nullptr;
@@ -41,6 +43,16 @@ void UEditorEngine::Init()
         AssetManager->InitAssetManager();
     }
     LoadLevel("Saved/AutoSaves.scene");
+
+    // FbxManager* manager = FbxManager::Create();
+    // FbxScene* scene = FbxScene::Create(manager, "Scene");
+    // FbxImporter* importer = FbxImporter::Create(manager, "");
+    // if (importer->Initialize("model.fbx", -1, manager->GetIOSettings())) {
+    //     importer->Import(scene);
+    // }
+    // importer->Destroy();
+    // manager->Destroy();
+    
 }
 
 void UEditorEngine::Release()
