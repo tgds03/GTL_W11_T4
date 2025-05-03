@@ -1,6 +1,5 @@
 #include "SkeletalMesh.h"
-#include "Engine/Source/Runtime/Launch/SkeletalDefine.h"
-#include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/SkeletalMeshAsset.h"
+
 #include "Engine/FObjLoader.h"
 
 

@@ -4,6 +4,8 @@
 #include "UObject/ObjectMacros.h"
 #include "Engine/Source/Runtime/Core/Container/Array.h"
 #include "Components/Material/Material.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/SkeletalMeshAsset.h"
+#include "Engine/Source/Runtime/Launch/SkeletalDefine.h"
 
 struct FSkeletalMeshRenderData;
 
@@ -13,6 +15,9 @@ class USkeletalMesh : public UObject
 
 public:
     USkeletalMesh() = default;
+
+    virtual UObject* Duplicate(UObject* InOuter) override;
+
     /** Internal skeleton data */
     FSkeleton Skeleton;
 
@@ -31,8 +36,6 @@ public:
      * Skin all source vertices and return their skinned positions.
      */
     TArray<FVector> SkinVertices() const;
-
-    virtual UObject* Duplicate(UObject* InOuter) override;
 
     const TArray<FStaticMaterial*>& GetMaterials() const { return materials; }
     uint32 GetMaterialIndex(FName MaterialSlotName) const;

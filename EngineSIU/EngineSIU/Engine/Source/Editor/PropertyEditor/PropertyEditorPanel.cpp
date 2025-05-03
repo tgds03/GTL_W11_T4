@@ -15,6 +15,7 @@
 #include "Components/Light/DirectionalLightComponent.h"
 #include "Components/Light/AmbientLightComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMesh/SkeletalMeshComponent.h"
 #include "Components/TextComponent.h"
 #include "Engine/EditorEngine.h"
 #include "Engine/FObjLoader.h"
@@ -121,6 +122,10 @@ void PropertyEditorPanel::Render()
     {
         RenderForStaticMesh(StaticMeshComponent);
         RenderForMaterial(StaticMeshComponent);
+    }
+    if (USkeletalMeshComponent* SkeletalMeshComponent = GetTargetComponent<USkeletalMeshComponent>(SelectedActor, SelectedComponent))
+    {
+        RenderForSkeletalMesh(SkeletalMeshComponent);
     }
     if (UHeightFogComponent* FogComponent = GetTargetComponent<UHeightFogComponent>(SelectedActor, SelectedComponent))
     {
@@ -392,6 +397,28 @@ void PropertyEditorPanel::RenderForStaticMesh(UStaticMeshComponent* StaticMeshCo
                 }
             }
             ImGui::EndCombo();
+        }
+
+        ImGui::TreePop();
+    }
+    ImGui::PopStyleColor();
+}
+
+void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* SkeletalMeshComp) const
+{
+    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+    if (ImGui::TreeNodeEx("Skeletal Mesh", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
+    {
+        ImGui::Text("SkeletalMesh");
+        
+        if (ImGui::Button("GenerateSampleData", ImVec2(64, 64))) 
+        {
+            SkeletalMeshComp->GenerateSampleData();
+        }
+
+        if (ImGui::Button("TestSkeletalMesh", ImVec2(64, 64)))
+        {
+            SkeletalMeshComp->TestSkeletalMesh();
         }
 
         ImGui::TreePop();

@@ -21,6 +21,7 @@ class UTextComponent;
 class UHeightFogComponent;
 class AEditorPlayer;
 class UStaticMeshComponent;
+class USkeletalMeshComponent;
 
 // 헬퍼 함수 예시
 template<typename Getter, typename Setter>
@@ -59,6 +60,9 @@ private:
     
     /* Static Mesh Settings */
     void RenderForStaticMesh(UStaticMeshComponent* StaticMeshComp) const;
+
+    void RenderForSkeletalMesh(USkeletalMeshComponent* SkeletalMeshComp) const;
+
 
     void RenderForAmbientLightComponent(UAmbientLightComponent* AmbientLightComponent) const;
     void RenderForDirectionalLightComponent(UDirectionalLightComponent* DirectionalLightComponent) const;

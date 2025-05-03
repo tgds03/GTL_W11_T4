@@ -17,4 +17,9 @@ public:
 
     // 현재는 USkeletalMeshComponent에서 SkinnedMeshComponent에 비해 더 해주는 것이 없음
     // 이후에 애니메이션 쪽 구현이 들어갈 때 추가된다고 GPT 가 말하긴 함
+
+    // OBJ 파일을 통한 Sample Skeletal Mesh 구현
+    void GenerateSampleData();
+    // 각도 변화 주기
+    void TestSkeletalMesh();
 };

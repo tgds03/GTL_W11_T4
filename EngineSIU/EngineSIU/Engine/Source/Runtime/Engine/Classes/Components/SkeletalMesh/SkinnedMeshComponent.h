@@ -17,29 +17,22 @@ public:
     USkinnedMeshComponent();
     ~USkinnedMeshComponent() = default;
 
-    /**
-     * Assign the skeletal mesh asset to this component.
-     */
+    //TODO 아래 요소 채우기
+    /*virtual UObject* Duplicate(UObject* InOuter) override;
+    void GetProperties(TMap<FString, FString>& OutProperties) const override;
+    void SetProperties(const TMap<FString, FString>& InProperties) override;*/
+
+#pragma region Skeletal
     void SetSkeletalMesh(USkeletalMesh* InMesh);
-
     USkeletalMesh* GetSkeletalMesh() { return SkeletalMesh; }
-
-    /**
-     * Recalculate bone transforms and skin vertices. Call once per frame.
-     */
     void UpdateAnimation();
-
-    virtual void TickComponent(float DeltaTime) override;
-
-    /**
-     * Retrieve the most recently skinned vertex positions.
-     */
     const TArray<FVector>& GetSkinnedVertices() const;
+#pragma endregion
 
     void SetselectedSubMeshIndex(const int& value) { selectedSubMeshIndex = value; }
     int GetselectedSubMeshIndex() const { return selectedSubMeshIndex; }
 
-private:
+protected:
     /** Skeletal mesh asset containing FSkeleton and source vertices */
     USkeletalMesh* SkeletalMesh;
 
