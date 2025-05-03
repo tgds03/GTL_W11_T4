@@ -48,14 +48,6 @@ public:
 
 protected:
 
-    /*
-    ID3D11VertexShader* VertexShader;
-    ID3D11InputLayout* InputLayout;
-
-    ID3D11PixelShader* PixelShader;
-    ID3D11PixelShader* DebugDepthShader;
-    ID3D11PixelShader* DebugWorldNormalShader;
-    */
 
     FDXDBufferManager* BufferManager;
     FGraphicsDevice* Graphics;
