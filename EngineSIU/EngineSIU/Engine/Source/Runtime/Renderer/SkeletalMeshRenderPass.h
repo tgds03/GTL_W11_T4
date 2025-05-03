@@ -6,14 +6,14 @@
 #include "Define.h"
 #include "Components/Light/PointLightComponent.h"
 
-struct FSkeletalMeshRenderData; // TODO 해당 구조체 구현 필요    만약 Static으로 해도 문제가 없으면 바꿔서 쓰기
+struct FSkeletalMeshRenderData;
 class FShadowManager;
 class FDXDShaderManager;
 class UWorld;
 class UMaterial;
 class FEditorViewportClient;
-class USkeletalMeshComponent;    // TODO 해당 클래스 구현 필요   만약 Static으로 해도 문제가 없으면 바꿔서 쓰기
-struct FSkeletalMaterial;   // TODO 해당 구조체 구현 필요    만약 Static으로 해도 문제가 없으면 바꿔서 쓰기
+class USkeletalMeshComponent;
+struct FStaticMaterial;   // TODO 해당 구조체 구현 필요    만약 Static으로 해도 문제가 없으면 바꿔서 쓰기
 class FShadowRenderPass;
 
 
@@ -33,7 +33,7 @@ public:
 
     virtual void RenderAllSkeletalMeshes(const std::shared_ptr<FEditorViewportClient>& Viewport);
 
-    void RenderPrimitive(FSkeletalMeshRenderData* RenderData, TArray<FSkeletalMaterial*> Materials, TArray<UMaterial*> OverrideMaterials, int SelectedSubMeshIndex) const;
+    void RenderPrimitive(FSkeletalMeshRenderData* RenderData, TArray<FStaticMaterial*> Materials, TArray<UMaterial*> OverrideMaterials, int SelectedSubMeshIndex) const;
 
     void RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices) const override;
 

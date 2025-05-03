@@ -436,6 +436,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh\SkeletalMesh.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh\SkeletalMeshComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh\SkinnedMeshComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Asset\SkeletalMeshAsset.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\CameraEffectRenderPass.h" />
     <ClInclude Include="Engine\Source\Contents\Objects\DamageCameraShake.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraModifier.h" />

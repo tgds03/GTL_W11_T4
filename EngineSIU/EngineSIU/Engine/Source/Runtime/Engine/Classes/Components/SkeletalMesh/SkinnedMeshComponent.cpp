@@ -28,6 +28,9 @@ void USkinnedMeshComponent::UpdateAnimation()
 
 void USkinnedMeshComponent::TickComponent(float DeltaTime)
 {
+    // TODO UpdateAnimation의 위치 변경
+    // 일단 매 프레임마다 UpdateAnimation을 걸어주긴 하지만
+    // 추후 관절이 움직일 때만 UpdateAnimation을 해주어야함
     UpdateAnimation();
 
 }

@@ -2,8 +2,10 @@
 
 #include "UObject/Object.h"
 #include "UObject/ObjectMacros.h"
-#include "Engine/Source/Runtime/Launch/SkeletalDefine.h"
 #include "Engine/Source/Runtime/Core/Container/Array.h"
+#include "Components/Material/Material.h"
+
+struct FSkeletalMeshRenderData;
 
 class USkeletalMesh : public UObject
 {
@@ -29,4 +31,20 @@ public:
      * Skin all source vertices and return their skinned positions.
      */
     TArray<FVector> SkinVertices() const;
+
+    virtual UObject* Duplicate(UObject* InOuter) override;
+
+    const TArray<FStaticMaterial*>& GetMaterials() const { return materials; }
+    uint32 GetMaterialIndex(FName MaterialSlotName) const;
+    void GetUsedMaterials(TArray<UMaterial*>& OutMaterial) const;
+    FSkeletalMeshRenderData* GetRenderData() const { return RenderData; }
+
+    //ObjectName은 경로까지 포함
+    FWString GetOjbectName() const;
+
+    void SetData(FSkeletalMeshRenderData* InRenderData);
+
+private:
+    FSkeletalMeshRenderData* RenderData = nullptr;
+    TArray<FStaticMaterial*> materials;
 };

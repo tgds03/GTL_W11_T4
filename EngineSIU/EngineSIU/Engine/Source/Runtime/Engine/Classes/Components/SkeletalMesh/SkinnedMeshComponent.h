@@ -22,6 +22,8 @@ public:
      */
     void SetSkeletalMesh(USkeletalMesh* InMesh);
 
+    USkeletalMesh* GetSkeletalMesh() { return SkeletalMesh; }
+
     /**
      * Recalculate bone transforms and skin vertices. Call once per frame.
      */
@@ -34,10 +36,15 @@ public:
      */
     const TArray<FVector>& GetSkinnedVertices() const;
 
+    void SetselectedSubMeshIndex(const int& value) { selectedSubMeshIndex = value; }
+    int GetselectedSubMeshIndex() const { return selectedSubMeshIndex; }
+
 private:
     /** Skeletal mesh asset containing FSkeleton and source vertices */
     USkeletalMesh* SkeletalMesh;
 
     /** Cached skinned positions after UpdateAnimation */
     TArray<FVector> SkinnedPositions;
+
+    int selectedSubMeshIndex = -1;
 };
