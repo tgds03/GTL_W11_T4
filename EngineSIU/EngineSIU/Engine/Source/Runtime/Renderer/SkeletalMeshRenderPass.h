@@ -6,49 +6,50 @@
 #include "Define.h"
 #include "Components/Light/PointLightComponent.h"
 
-struct FStaticMeshRenderData;
+struct FSkeletalMeshRenderData; // TODO 해당 구조체 구현 필요    만약 Static으로 해도 문제가 없으면 바꿔서 쓰기
 class FShadowManager;
 class FDXDShaderManager;
 class UWorld;
 class UMaterial;
 class FEditorViewportClient;
-class UStaticMeshComponent;
-struct FStaticMaterial;
+class USkeletalMeshComponent;    // TODO 해당 클래스 구현 필요   만약 Static으로 해도 문제가 없으면 바꿔서 쓰기
+struct FSkeletalMaterial;   // TODO 해당 구조체 구현 필요    만약 Static으로 해도 문제가 없으면 바꿔서 쓰기
 class FShadowRenderPass;
 
-class FStaticMeshRenderPass : public FMeshRenderPassBase
+
+class FSkeletalMeshRenderPass : public FMeshRenderPassBase
 {
 public:
-    FStaticMeshRenderPass();
-    
-    virtual ~FStaticMeshRenderPass();
-    
+    FSkeletalMeshRenderPass();
+
+    virtual ~FSkeletalMeshRenderPass();
+
     virtual void PrepareRenderArr() override;
 
     virtual void Render(const std::shared_ptr<FEditorViewportClient>& Viewport) override;
 
     virtual void ClearRenderArr() override;
-    void RenderAllStaticMeshesForPointLight(const std::shared_ptr<FEditorViewportClient>& Viewport, UPointLightComponent*& PointLight);
+    void RenderAllSkeletalMeshesForPointLight(const std::shared_ptr<FEditorViewportClient>& Viewport, UPointLightComponent*& PointLight);
 
-    virtual void RenderAllStaticMeshes(const std::shared_ptr<FEditorViewportClient>& Viewport);
+    virtual void RenderAllSkeletalMeshes(const std::shared_ptr<FEditorViewportClient>& Viewport);
 
-    void RenderPrimitive(FStaticMeshRenderData* RenderData, TArray<FStaticMaterial*> Materials, TArray<UMaterial*> OverrideMaterials, int SelectedSubMeshIndex) const;
-    
+    void RenderPrimitive(FSkeletalMeshRenderData* RenderData, TArray<FSkeletalMaterial*> Materials, TArray<UMaterial*> OverrideMaterials, int SelectedSubMeshIndex) const;
+
     void RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices) const override;
 
     void RenderPrimitive(ID3D11Buffer* pVertexBuffer, UINT numVertices, ID3D11Buffer* pIndexBuffer, UINT numIndices) const override;
 
     // Shader 관련 함수 (생성/해제 등) // FMeshRenderPass에서 구현했습니다.
-    
+
 protected:
 
 
-    TArray<UStaticMeshComponent*> StaticMeshComponents;
+    TArray<USkeletalMeshComponent*> SkeletalMeshComponents;
 
     /*
     ID3D11VertexShader* VertexShader;
     ID3D11InputLayout* InputLayout;
-    
+
     ID3D11PixelShader* PixelShader;
     ID3D11PixelShader* DebugDepthShader;
     ID3D11PixelShader* DebugWorldNormalShader;
