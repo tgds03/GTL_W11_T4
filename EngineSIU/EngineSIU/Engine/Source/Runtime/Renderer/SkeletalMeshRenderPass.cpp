@@ -188,8 +188,13 @@ void FSkeletalMeshRenderPass::RenderPrimitive(FSkeletalMeshRenderData* RenderDat
     UINT Stride = sizeof(FStaticMeshVertex);
     UINT Offset = 0;
 
+    FString KeyName(RenderData->ObjectName.c_str());
     FVertexInfo VertexInfo;
-    BufferManager->CreateVertexBuffer(RenderData->ObjectName, RenderData->Vertices, VertexInfo);
+    // 아래 코드 내부적으로 
+    BufferManager->CreateDynamicVertexBuffer(KeyName, RenderData->Vertices, VertexInfo);
+
+    // 2) 매 프레임 데이터 업데이트  
+    BufferManager->UpdateDynamicVertexBuffer(KeyName, RenderData->Vertices);
 
     Graphics->DeviceContext->IASetVertexBuffers(0, 1, &VertexInfo.VertexBuffer, &Stride, &Offset);
 
