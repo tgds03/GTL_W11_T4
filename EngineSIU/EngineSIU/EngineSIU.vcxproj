@@ -304,10 +304,12 @@
     <ClCompile Include="Engine\Source\Runtime\Renderer\GizmoRenderPass.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\LightHeatMapRenderPass.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\LineRenderPass.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Renderer\MeshRenderPass.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\PostProcessCompositingPass.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\Renderer.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\ShadowManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\ShadowRenderPass.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Renderer\SkeletalMeshRenderPass.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\SlateRenderPass.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\StaticMeshRenderPass.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\StaticMeshRenderPassBase.cpp" />
@@ -585,6 +587,7 @@
     <ClInclude Include="Engine\Source\Runtime\Renderer\IRenderPass.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\LightHeatMapRenderPass.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\LineRenderPass.h" />
+    <ClInclude Include="Engine\Source\Runtime\Renderer\MeshRenderPass.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\PostProcessCompositingPass.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\Renderer.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\RendererHelpers.h" />
@@ -592,6 +595,7 @@
     <ClInclude Include="Engine\Source\Runtime\Renderer\ShaderConstants.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\ShadowManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\ShadowRenderPass.h" />
+    <ClInclude Include="Engine\Source\Runtime\Renderer\SkeletalMeshRenderPass.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\SlateRenderPass.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\StaticMeshRenderPass.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\StaticMeshRenderPassBase.h" />
