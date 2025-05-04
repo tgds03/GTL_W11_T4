@@ -4,9 +4,12 @@
 
 #include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/SkeletalMeshAsset.h"
 
-// 임시로 StaticMesh를 활용하면서 참고하게 된 코드 이후 수정 필요
+// 임시로 StaticMesh를 활용하면서 참고하게 된 코드 이후 제거 필요
 #include "Engine/Source/Runtime/Engine/Classes/Components/Mesh/StaticMeshRenderData.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/StaticMeshAsset.h"
+
+// FBX 테스트를 위해 넣은 코드 이후 제거 필요
+#include "Engine/Source/Runtime/Engine/Classes/Engine/FbxLoader.h"
 
 USkeletalMeshComponent::USkeletalMeshComponent()
     :USkinnedMeshComponent()
@@ -138,5 +141,22 @@ void USkeletalMeshComponent::TestSkeletalMesh()
     }
 
     // 3) 변경된 본 트랜스폼을 바탕으로 애니메이션 업데이트
+    UpdateAnimation();
+}
+
+void USkeletalMeshComponent::TestFBXSkeletalMesh()
+{
+    // 1) FBX로부터 USkeletalMesh 생성
+    FString FbxPath(TEXT("Contents/FbxTest/TheBossBIN.fbx"));
+    USkeletalMesh* LoadedMesh = FFbxLoader::LoadFBXSkeletalMeshAsset(FbxPath);
+    if (!LoadedMesh)
+    {
+        UE_LOG(LogLevel::Warning, TEXT("FBX 로드 실패: %s"), *FbxPath);
+        return;
+    }
+
+    // 2) SkeletalMeshComponent에 세팅
+    SetSkeletalMesh(LoadedMesh);
+
     UpdateAnimation();
 }

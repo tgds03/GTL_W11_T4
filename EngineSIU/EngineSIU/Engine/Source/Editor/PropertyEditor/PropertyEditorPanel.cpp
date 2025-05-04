@@ -421,6 +421,11 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
             SkeletalMeshComp->TestSkeletalMesh();
         }
 
+        if (ImGui::Button("TestFBX", ImVec2(64, 64)))
+        {
+            SkeletalMeshComp->TestFBXSkeletalMesh();
+        }
+
         ImGui::TreePop();
     }
     ImGui::PopStyleColor();

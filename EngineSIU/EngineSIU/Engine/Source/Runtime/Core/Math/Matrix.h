@@ -1,5 +1,6 @@
-﻿#pragma once
+#pragma once
 #include "Serialization/Archive.h"
+#include <fbxsdk.h>
 
 struct FVector;
 struct FVector4;
@@ -44,6 +45,8 @@ public:
     static FMatrix GetTranslationMatrix(const FVector& InPosition);
     static FMatrix GetRotationMatrix(const FRotator& InRotation);
     static FMatrix GetRotationMatrix(const FQuat& InRotation);
+
+    static FMatrix FromFbxMatrix(const fbxsdk::FbxAMatrix& InFbxAMatrix);
 
     FQuat ToQuat() const;
 

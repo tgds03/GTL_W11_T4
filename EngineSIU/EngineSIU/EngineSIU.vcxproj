@@ -181,6 +181,7 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh\SkeletalMesh.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh\SkeletalMeshComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh\SkinnedMeshComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\FbxLoader.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\CameraEffectRenderPass.cpp" />
     <ClCompile Include="Engine\Source\Contents\Objects\DamageCameraShake.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraModifier.cpp" />
@@ -437,6 +438,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh\SkeletalMeshComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh\SkinnedMeshComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Asset\SkeletalMeshAsset.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\FbxLoader.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\CameraEffectRenderPass.h" />
     <ClInclude Include="Engine\Source\Contents\Objects\DamageCameraShake.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraModifier.h" />

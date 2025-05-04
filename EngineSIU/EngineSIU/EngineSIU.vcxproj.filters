@@ -727,7 +727,6 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\HeightFogComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\FogRenderPass.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\LightActor.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Core\Math\Matrix.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\ProjectileMovementComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Cube.cpp">
       <Filter>Engine\Source\Runtime\Engine\Classes\Actors</Filter>
@@ -827,6 +826,13 @@
     </ClCompile>
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh\SkinnedMeshComponent.cpp">
       <Filter>Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh\SkeletalMesh.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Renderer\MeshRenderPass.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Renderer\SkeletalMeshRenderPass.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\FbxLoader.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Core\Math\Matrix.cpp">
+      <Filter>Engine\Source\Runtime\Core\Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -954,6 +960,11 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh\SkinnedMeshComponent.h">
       <Filter>Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh</Filter>
     </ClInclude>
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh\SkeletalMesh.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Asset\SkeletalMeshAsset.h" />
+    <ClInclude Include="Engine\Source\Runtime\Renderer\MeshRenderPass.h" />
+    <ClInclude Include="Engine\Source\Runtime\Renderer\SkeletalMeshRenderPass.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\FbxLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />

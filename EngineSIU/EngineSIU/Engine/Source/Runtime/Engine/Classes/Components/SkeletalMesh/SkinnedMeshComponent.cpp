@@ -1,7 +1,7 @@
 #include "SkinnedMeshComponent.h"
 
 USkinnedMeshComponent::USkinnedMeshComponent()
-    : SkeletalMesh(nullptr)
+    : Super(), SkeletalMesh(nullptr)
 {
 
 }

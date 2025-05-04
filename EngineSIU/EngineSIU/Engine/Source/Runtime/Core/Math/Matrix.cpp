@@ -1,4 +1,4 @@
-﻿#include "Matrix.h"
+#include "Matrix.h"
 
 #include "MathSSE.h"
 #include "MathUtility.h"
@@ -8,7 +8,6 @@
 #include "Rotator.h"
 #include "HAL/PlatformType.h"
 #include <cmath>
-
 
 // 단위 행렬 정의
 const FMatrix FMatrix::Identity = { {
@@ -328,6 +327,21 @@ FMatrix FMatrix::GetRotationMatrix(const FQuat& InRotation)
     Result.M[3][2] = 0.0f;
     Result.M[3][3] = 1.0f; // 4x4 행렬이므로 마지막 값은 1
 
+    return Result;
+}
+
+FMatrix FMatrix::FromFbxMatrix(const fbxsdk::FbxAMatrix& InFbxAMatrix)
+{
+    FMatrix Result;
+    // FBX SDK 의 FbxAMatrix 는 Get(row,col) 으로 double 값을 꺼낼 수 있습니다.
+    for (int Row = 0; Row < 4; ++Row)
+    {
+        for (int Col = 0; Col < 4; ++Col)
+        {
+            // double → float 캐스팅
+            Result.M[Row][Col] = static_cast<float>(InFbxAMatrix.Get(Row, Col));
+        }
+    }
     return Result;
 }
 
