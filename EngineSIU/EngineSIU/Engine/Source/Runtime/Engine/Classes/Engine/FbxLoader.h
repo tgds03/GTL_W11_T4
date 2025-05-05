@@ -12,6 +12,8 @@ public:
 
     static USkeletalMesh* GetSkeletalMesh(const FWString& name);
 
+    static bool CreateTextureFromFile(const FWString& Filename, bool bIsSRGB = true);
+
 private:
     inline static TMap<FWString, USkeletalMesh*> SkeletalMeshMap;
 };

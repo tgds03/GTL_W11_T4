@@ -4,6 +4,7 @@
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
 #include <filesystem>
 #include "Engine/Source/Runtime/Core/Math/Matrix.h"
+#include "Engine/Source/Runtime/Launch/Define.h"
 
 using namespace fbxsdk;
 
@@ -92,6 +93,11 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                     int indexStart = rd->Indices.Num();
                     int vertexStart = rd->Vertices.Num();
 
+                    // FBX 파일 디렉터리 추출
+                    std::wstring ws = filePathName.ToWideString();
+                    size_t slashPos = ws.find_last_of(L"\\/");
+                    FWString fbxDir = (slashPos != std::wstring::npos) ? ws.substr(0, slashPos + 1) : ws;
+
                     // (3) 머티리얼 슬롯 추가 (이 메시의 머티리얼만)
                     int matCount = node->GetMaterialCount();
                     int baseMatIndex = rd->Materials.Num();
@@ -99,6 +105,42 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                     {
                         FObjMaterialInfo mi{};
                         mi.MaterialName = node->GetMaterial(m)->GetName();
+
+                        constexpr uint32 TexturesNum = static_cast<uint32>(EMaterialTextureSlots::MTS_MAX);
+                        mi.TextureInfos.SetNum(TexturesNum);
+
+                        const uint32 SlotIdx = static_cast<uint32>(EMaterialTextureSlots::MTS_Diffuse);
+
+                        // FBX 머티리얼 객체
+                        FbxSurfaceMaterial* fbxMat = node->GetMaterial(m);
+
+                        // Diffuse 채널에 연결된 파일 텍스처 검색
+                        FbxProperty prop = fbxMat->FindProperty(FbxSurfaceMaterial::sDiffuse);
+                        int texCount = prop.GetSrcObjectCount<FbxFileTexture>();
+                        if (texCount > 0)
+                        {
+                            // 첫 번째 텍스처만 사용 (필요에 따라 루프)
+                            FbxFileTexture* fbxTex = prop.GetSrcObject<FbxFileTexture>(0);
+                            if (fbxTex)
+                            {
+                                // FBX SDK가 리턴하는 파일명 (char*) 을 UE FString 으로 변환
+                                FString texName = fbxTex->GetFileName(); // ex: "Clothes_Diffuse.png"
+                                //FWString texturePath = fbxDir + texName.ToWideString();
+                                FWString texturePath = texName.ToWideString();
+
+                                if (CreateTextureFromFile(texturePath))
+                                {
+                                    mi.TextureInfos[SlotIdx].TexturePath = texturePath;
+                                    mi.TextureInfos[SlotIdx].bIsSRGB = true;
+                                    mi.TextureFlag |= static_cast<uint16>(EMaterialTextureFlags::MTF_Diffuse);
+                                }
+                                else
+                                {
+                                    UE_LOG(LogLevel::Warning, TEXT("텍스처 로드 실패: %s"), *texName);
+                                }
+                            }
+                        }
+
                         rd->Materials.Add(mi);
                     }
                     if (matCount == 0)
@@ -246,4 +288,21 @@ USkeletalMesh* FFbxLoader::GetSkeletalMesh(const FWString& name)
     if (USkeletalMesh** found = SkeletalMeshMap.Find(name))
         return *found;
     return nullptr;
+}
+
+bool FFbxLoader::CreateTextureFromFile(const FWString& Filename, bool bIsSRGB)
+{
+    if (FEngineLoop::ResourceManager.GetTexture(Filename))
+    {
+        return true;
+    }
+
+    HRESULT hr = FEngineLoop::ResourceManager.LoadTextureFromFile(FEngineLoop::GraphicDevice.Device, Filename.c_str(), bIsSRGB);
+
+    if (FAILED(hr))
+    {
+        return false;
+    }
+
+    return true;
 }
