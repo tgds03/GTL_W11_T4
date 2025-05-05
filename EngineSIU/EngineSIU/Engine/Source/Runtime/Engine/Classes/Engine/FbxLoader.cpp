@@ -194,67 +194,123 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                     const char* uvSetName = uvElem ? uvElem->GetName() : nullptr;
 
                     int polyCount = mesh->GetPolygonCount();
+                    // 최대 폴리곤 수 × 3으로 리저브해두면 충분합니다.
                     rd->Vertices.Reserve(rd->Vertices.Num() + polyCount * 3);
                     rd->Indices.Reserve(rd->Indices.Num() + polyCount * 3);
                     skelMesh->SourceVertices.Reserve(skelMesh->SourceVertices.Num() + polyCount * 3);
 
                     for (int p = 0; p < polyCount; ++p)
                     {
-                        for (int v = 0; v < 3; ++v)
+                        const int vertsInPoly = mesh->GetPolygonSize(p);
+
+                        // 3각형
+                        if (vertsInPoly == 3)
                         {
-                            int cpIdx = mesh->GetPolygonVertex(p, v);
-                            FbxVector4 pos;
-                            pos = mesh->GetControlPointAt(cpIdx);
-
-                            FbxVector4 nrm;
-                            mesh->GetPolygonVertexNormal(p, v, nrm);
-
-                            FbxVector2 uv;
-                            bool unmapped = false;
-                            if (uvSetName)
-                                mesh->GetPolygonVertexUV(p, v, uvSetName, uv, unmapped);
-
-                            // --- FSkeletalMeshVertex ---
-                            FSkeletalMeshVertex outV{};
-                            outV.X = (float)pos[0]; outV.Y = (float)pos[1]; outV.Z = (float)pos[2];
-                            outV.R = outV.G = outV.B = outV.A = 1.f;
-                            outV.NormalX = (float)nrm[0]; outV.NormalY = (float)nrm[1]; outV.NormalZ = (float)nrm[2];
-                            outV.TangentX = outV.TangentY = outV.TangentZ = 0.f; outV.TangentW = 1.f;
-                            outV.U = (float)uv[0];
-                            outV.V = 1.f - (float)uv[1];
-                            // 이 메시 전체에 걸쳐 머티리얼 인덱스 0 (추후 머티리얼 서브셋에서 구분)
-                            outV.MaterialIndex = baseMatIndex;
-
-                            int newVIdx = rd->Vertices.Num();
-                            rd->Vertices.Add(outV);
-                            rd->Indices.Add(newVIdx);
-
-                            // --- FVertexSkeletal (CPU 스키닝용) ---
-                            FVertexSkeletal srcV{};
-                            srcV.Position = FVector(outV.X, outV.Y, outV.Z);
-
-                            // cpWeights[cpIdx] 에서 상위 4개 추려 배분
-                            auto& wlist = cpWeights[cpIdx];
-                            std::sort(wlist.begin(), wlist.end(),
-                                [](auto& A, auto& B) { return A.second > B.second; });
-                            float totalW = 0.f;
-                            int useN = FMath::Min((int)wlist.size(), 4);
-                            for (int k = 0; k < useN; ++k)
+                            for (int v = 0; v < 3; ++v)
                             {
-                                srcV.BoneIndices[k] = wlist[k].first;
-                                srcV.BoneWeights[k] = (float)wlist[k].second;
-                                totalW += srcV.BoneWeights[k];
-                            }
-                            for (int k = useN; k < 4; ++k)
-                            {
-                                srcV.BoneIndices[k] = INDEX_NONE;
-                                srcV.BoneWeights[k] = 0.f;
-                            }
-                            if (totalW > 0.f)
+                                int cpIdx = mesh->GetPolygonVertex(p, v);
+                                // 이하 기존 처리 로직 그대로…
+                                FbxVector4 pos = mesh->GetControlPointAt(cpIdx);
+                                FbxVector4 nrm; mesh->GetPolygonVertexNormal(p, v, nrm);
+                                FbxVector2 uv; bool unmapped = false;
+                                if (uvSetName)
+                                    mesh->GetPolygonVertexUV(p, v, uvSetName, uv, unmapped);
+
+                                // --- FSkeletalMeshVertex ---
+                                FSkeletalMeshVertex outV{};
+                                outV.X = (float)pos[0]; outV.Y = (float)pos[1]; outV.Z = (float)pos[2];
+                                outV.R = outV.G = outV.B = outV.A = 1.f;
+                                outV.NormalX = (float)nrm[0]; outV.NormalY = (float)nrm[1]; outV.NormalZ = (float)nrm[2];
+                                outV.TangentX = outV.TangentY = outV.TangentZ = 0.f; outV.TangentW = 1.f;
+                                outV.U = (float)uv[0]; outV.V = 1.f - (float)uv[1];
+                                outV.MaterialIndex = baseMatIndex;
+
+                                int newVIdx = rd->Vertices.Num();
+                                rd->Vertices.Add(outV);
+                                rd->Indices.Add(newVIdx);
+
+                                // --- FVertexSkeletal (CPU 스키닝용) ---
+                                FVertexSkeletal srcV{};
+                                srcV.Position = FVector(outV.X, outV.Y, outV.Z);
+                                // cpWeights[cpIdx] 에서 상위 4개 추려 배분
+                                auto& wlist = cpWeights[cpIdx];
+                                std::sort(wlist.begin(), wlist.end(),
+                                    [](auto& A, auto& B) { return A.second > B.second; });
+                                float totalW = 0.f;
+                                int useN = FMath::Min((int)wlist.size(), 4);
                                 for (int k = 0; k < useN; ++k)
-                                    srcV.BoneWeights[k] /= totalW;
+                                {
+                                    srcV.BoneIndices[k] = wlist[k].first;
+                                    srcV.BoneWeights[k] = (float)wlist[k].second;
+                                    totalW += srcV.BoneWeights[k];
+                                }
+                                for (int k = useN; k < 4; ++k)
+                                {
+                                    srcV.BoneIndices[k] = INDEX_NONE;
+                                    srcV.BoneWeights[k] = 0.f;
+                                }
+                                if (totalW > 0.f)
+                                    for (int k = 0; k < useN; ++k)
+                                        srcV.BoneWeights[k] /= totalW;
 
-                            skelMesh->SourceVertices.Add(srcV);
+                                skelMesh->SourceVertices.Add(srcV);
+                            }
+                        }
+                        // 4각형이면 (0,2,1)과 (0,3,2) 두 개의 삼각형으로 분할
+                        else if (vertsInPoly == 4)
+                        {
+                            static const int quadTriidx[2][3] = { {0,1,2}, {0,2,3} };
+                            for (int tri = 0; tri < 2; ++tri)
+                            {
+                                for (int vi = 0; vi < 3; ++vi)
+                                {
+                                    int v = quadTriidx[tri][vi];
+                                    int cpIdx = mesh->GetPolygonVertex(p, v);
+                                    FbxVector4 pos = mesh->GetControlPointAt(cpIdx);
+                                    FbxVector4 nrm; mesh->GetPolygonVertexNormal(p, v, nrm);
+                                    FbxVector2 uv; bool unmapped = false;
+                                    if (uvSetName)
+                                        mesh->GetPolygonVertexUV(p, v, uvSetName, uv, unmapped);
+
+                                    // --- FSkeletalMeshVertex ---
+                                    FSkeletalMeshVertex outV{};
+                                    outV.X = (float)pos[0]; outV.Y = (float)pos[1]; outV.Z = (float)pos[2];
+                                    outV.R = outV.G = outV.B = outV.A = 1.f;
+                                    outV.NormalX = (float)nrm[0]; outV.NormalY = (float)nrm[1]; outV.NormalZ = (float)nrm[2];
+                                    outV.TangentX = outV.TangentY = outV.TangentZ = 0.f; outV.TangentW = 1.f;
+                                    outV.U = (float)uv[0]; outV.V = 1.f - (float)uv[1];
+                                    outV.MaterialIndex = baseMatIndex;
+
+                                    int newVIdx = rd->Vertices.Num();
+                                    rd->Vertices.Add(outV);
+                                    rd->Indices.Add(newVIdx);
+
+                                    // --- FVertexSkeletal (CPU 스키닝용) ---
+                                    FVertexSkeletal srcV{};
+                                    srcV.Position = FVector(outV.X, outV.Y, outV.Z);
+                                    auto& wlist = cpWeights[cpIdx];
+                                    std::sort(wlist.begin(), wlist.end(),
+                                        [](auto& A, auto& B) { return A.second > B.second; });
+                                    float totalW = 0.f;
+                                    int useN = FMath::Min((int)wlist.size(), 4);
+                                    for (int k = 0; k < useN; ++k)
+                                    {
+                                        srcV.BoneIndices[k] = wlist[k].first;
+                                        srcV.BoneWeights[k] = (float)wlist[k].second;
+                                        totalW += srcV.BoneWeights[k];
+                                    }
+                                    for (int k = useN; k < 4; ++k)
+                                    {
+                                        srcV.BoneIndices[k] = INDEX_NONE;
+                                        srcV.BoneWeights[k] = 0.f;
+                                    }
+                                    if (totalW > 0.f)
+                                        for (int k = 0; k < useN; ++k)
+                                            srcV.BoneWeights[k] /= totalW;
+
+                                    skelMesh->SourceVertices.Add(srcV);
+                                }
+                            }
                         }
                     }
 
