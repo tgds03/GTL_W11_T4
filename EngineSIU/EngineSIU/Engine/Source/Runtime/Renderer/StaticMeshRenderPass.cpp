@@ -61,8 +61,7 @@ void FStaticMeshRenderPass::Render(const std::shared_ptr<FEditorViewportClient>&
 
     PrepareRenderState(Viewport);
 
-    RenderAllStaticMeshes(Viewport);
-
+    RenderAllStaticMeshes(Viewport); 
     // 렌더 타겟 해제
     Graphics->DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
     ID3D11ShaderResourceView* nullSRV = nullptr;

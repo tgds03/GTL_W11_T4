@@ -2,8 +2,6 @@
 
 #include "Engine/FObjLoader.h"
 
-
-
 void USkeletalMesh::InitializeSkeleton(TArray<FBone>& BoneData)
 {
     Skeleton.Bones = BoneData;

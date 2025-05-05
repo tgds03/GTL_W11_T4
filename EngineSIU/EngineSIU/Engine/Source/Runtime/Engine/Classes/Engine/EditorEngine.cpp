@@ -190,6 +190,14 @@ void UEditorEngine::EndPIE()
     ActiveWorld = EditorWorld;
 }
 
+void UEditorEngine::StartSkeletalMeshEditMode()
+{
+}
+
+void UEditorEngine::EndSkeletalMeshEditMode()
+{
+}
+
 FWorldContext& UEditorEngine::GetEditorWorldContext(/*bool bEnsureIsGWorld*/)
 {
     for (FWorldContext* WorldContext : WorldList)
