@@ -7,8 +7,6 @@
 #include "Engine/Source/Runtime/Engine/Classes/Components/SkeletalMesh/SkeletalMesh.h"
 #include "Engine/Source/Runtime/Engine/Classes/Components/MeshComponent.h"
 
-
-
 class USkinnedMeshComponent : public UMeshComponent 
 {
     DECLARE_CLASS(USkinnedMeshComponent, UMeshComponent)

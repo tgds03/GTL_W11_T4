@@ -30,6 +30,9 @@ struct FBone
     /** 글로벌 트랜스폼 캐시 (ComputeGlobalTransforms() 호출 시 계산) */
     FMatrix GlobalTransform = FMatrix::Identity;
 
+    /** 본의 바인드 트랜스폼의 역행렬 (스켈레톤의 원본 위치) */
+    FMatrix InvBindTransform = FMatrix::Identity;
+
     FBone() = default;
     FBone(const FName& InName, int32 InParentIndex, const FMatrix& InLocalTransform)
         : Name(InName), ParentIndex(InParentIndex), LocalTransform(InLocalTransform)
@@ -71,6 +74,15 @@ public:
             {
                 ComputeGlobalTransformRecursive(i, FMatrix::Identity);
             }
+        }
+    }
+
+    void SetInvBindTransforms()
+    {
+        for (FBone& Bone : Bones)
+        {
+            // 본의 글로벌 트랜스폼을 역행렬로 설정
+            Bone.InvBindTransform = FMatrix::Inverse(Bone.GlobalTransform);
         }
     }
 
@@ -119,8 +131,10 @@ struct FVertexSkeletal
 
             if (Weight > 0.f && Skeleton.Bones.IsValidIndex(BoneIndex))
             {
+                FBone CurrentBone = Skeleton.Bones[BoneIndex];
                 // 본의 글로벌 트랜스폼 사용
-                const FMatrix& SkinMat = Skeleton.Bones[BoneIndex].GlobalTransform;
+                const FMatrix& SkinMat = CurrentBone.InvBindTransform * CurrentBone.GlobalTransform;
+                //const FMatrix& SkinMat = FMatrix::Identity;
                 FVector Transformed = SkinMat.TransformPosition(Position);
                 Result += Transformed * Weight;
             }

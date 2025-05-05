@@ -29,6 +29,9 @@ void USkeletalMesh::SetBoneLocalTransform(int boneIndex, const FMatrix& localTra
     {
         Skeleton.Bones[boneIndex].LocalTransform = localTransform;
     }
+
+    Skeleton.ComputeGlobalTransforms();
+    Skeleton.SetInvBindTransforms();
 }
 
 void USkeletalMesh::UpdateGlobalTransforms()
