@@ -129,11 +129,12 @@ void USkeletalMeshComponent::TestSkeletalMesh()
     {
         FBonePose& localTransform = SkelMesh->Skeleton.Bones[BoneIndex].LocalTransform;
 
-        localTransform.Rotation = localTransform.Rotation * FQuat(FVector(0, 1, 0), FMath::DegreesToRadians(10.0f));
-        //localTransform.Rotation 
+        //localTransform.Rotation = localTransform.Rotation * FQuat(FVector(0, 1, 0), FMath::DegreesToRadians(10.0f));
+
+        localTransform.Rotation = FQuat::CreateRotation(0, 10, 0) * localTransform.Rotation;
 
         // 적용
-        SkelMesh->SetBoneLocalTransform(BoneIndex, localTransform);
+        //SkelMesh->SetBoneLocalTransform(BoneIndex, localTransform);
     }
 
     // 3) 변경된 본 트랜스폼을 바탕으로 애니메이션 업데이트

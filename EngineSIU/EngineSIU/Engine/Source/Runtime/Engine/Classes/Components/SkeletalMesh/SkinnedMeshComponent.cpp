@@ -39,9 +39,9 @@ void USkinnedMeshComponent::UpdateAnimation()
     if (rd)
     {
         int32 NumRenderVerts = rd->Vertices.Num();
-        int32 NumSkinned = SkinnedPositions.Num();
-        int32 Count = FMath::Min(NumRenderVerts, NumSkinned);
-
+        //int32 NumSkinned = SkinnedPositions.Num();
+        //int32 Count = FMath::Min(NumRenderVerts, NumSkinned);
+        int32 Count = NumRenderVerts;
         for (int32 i = 0; i < Count; ++i)
         {
             // FSkeletalMeshVertex 와 FVector 의 대응
