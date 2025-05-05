@@ -27,7 +27,7 @@ public:
     void InitializeSkeleton(TArray<FBone>& BoneData);
 
     /** Set the local transform for a specific bone by index */
-    void SetBoneLocalTransform(int boneIndex, const FMatrix& localTransform);
+    void SetBoneLocalTransform(int boneIndex, const FBonePose& localTransform);
 
     /** Recompute global transforms for all bones */
     void UpdateGlobalTransforms();

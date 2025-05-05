@@ -36,8 +36,9 @@ void USkeletalMeshComponent::GenerateSampleData()
         Bone.Name = FName(*FString::Printf(TEXT("Bone_%d"), i));
         Bone.ParentIndex = (i == 0 ? INDEX_NONE : i - 1);
         // 로컬 트랜스폼: Z축으로 0.1 위로 구성
-        FVector Translation(0, 0, 0.1f);
-        Bone.LocalTransform = FMatrix::CreateTranslationMatrix(Translation);
+        FBonePose localTransform;
+        localTransform.Location.Z = 0.1f;
+        Bone.LocalTransform = localTransform;
         Bones.Add(Bone);
     }
     skelMesh->InitializeSkeleton(Bones);
@@ -126,18 +127,12 @@ void USkeletalMeshComponent::TestSkeletalMesh()
     const int32 BoneCount = SkelMesh->Skeleton.Bones.Num();
     for (int32 BoneIndex = 1; BoneIndex < BoneCount; ++BoneIndex)
     {
-        // 기존 로컬 트랜스폼 가져오기
-        const FMatrix& OldLocal = SkelMesh->Skeleton.Bones[BoneIndex].LocalTransform;
+        FBonePose& localTransform = SkelMesh->Skeleton.Bones[BoneIndex].LocalTransform;
 
-        // Y축 기준 10도 회전 매트릭스 생성 (roll, pitch, yaw 순서: 여기서는 pitch=yaw?)
-        // CreateRotationMatrix(roll, pitch(deg), yaw)
-        FMatrix RotY = FMatrix::CreateRotationMatrix(0.0f, 10.0f, 0.0f);
-
-        // 기존 변환에 회전을 곱해 새로운 로컬 트랜스폼 구성
-        FMatrix NewLocal = RotY * OldLocal;
+        localTransform.Rotation = localTransform.Rotation * FQuat(FVector(0, 1, 0), 10.0f);
 
         // 적용
-        SkelMesh->SetBoneLocalTransform(BoneIndex, NewLocal);
+        SkelMesh->SetBoneLocalTransform(BoneIndex, localTransform);
     }
 
     // 3) 변경된 본 트랜스폼을 바탕으로 애니메이션 업데이트

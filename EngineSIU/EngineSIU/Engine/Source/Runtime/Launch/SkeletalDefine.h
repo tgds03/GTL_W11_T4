@@ -7,9 +7,42 @@
 
 #include "Engine/Source/Runtime/CoreUObject/UObject/NameTypes.h"
 #include "Engine/Source/Runtime/Core/Container/Array.h"
+#include "Engine/Source/Runtime/Core/Math/Quat.h"
+#include "Engine/Source/Runtime/Core/Math/JungleMath.h"
 
 #define INDEX_NONE -1
 
+struct FBonePose 
+{
+    FQuat Rotation;
+    FVector Location;
+    FVector Scale;
+
+public:
+    FBonePose() 
+        :Rotation(FQuat()), Location(FVector::ZeroVector), Scale(FVector(1.0f, 1.0f, 1.0f))
+    {
+    }
+
+    FBonePose(const FMatrix& M)
+    {
+        // 1) 위치 추출
+        Location = M.GetTranslationVector();
+
+        // 2) 스케일 추출
+        Scale = M.GetScaleVector();
+
+        // 3) 스케일을 제거한 순수 회전 행렬 얻기
+        FMatrix RotOnly = M.GetMatrixWithoutScale();
+
+        // 4) 회전 행렬을 쿼터니언으로 변환
+        Rotation = RotOnly.ToQuat();
+    }
+
+    FMatrix ToMatrix() {
+        return JungleMath::CreateModelMatrix(Location, Rotation, Scale);
+    }
+};
 
 
 // FBone: 트리(스켈레톤)상의 노드로 동작
@@ -25,7 +58,7 @@ struct FBone
     TArray<int32> Children;
 
     /** 로컬 트랜스폼 (SRT 또는 4x4 매트릭스) */
-    FMatrix LocalTransform = FMatrix::Identity;
+    FBonePose LocalTransform;
 
     /** 글로벌 트랜스폼 캐시 (ComputeGlobalTransforms() 호출 시 계산) */
     FMatrix GlobalTransform = FMatrix::Identity;
@@ -34,7 +67,7 @@ struct FBone
     FMatrix InvBindTransform = FMatrix::Identity;
 
     FBone() = default;
-    FBone(const FName& InName, int32 InParentIndex, const FMatrix& InLocalTransform)
+    FBone(const FName& InName, int32 InParentIndex, const FBonePose& InLocalTransform)
         : Name(InName), ParentIndex(InParentIndex), LocalTransform(InLocalTransform)
     {
     }
@@ -54,7 +87,7 @@ public:
     TArray<FBone> Bones;
 
     /** 본을 추가하고, 부모-자식 관계를 자동으로 연결 */
-    int32 AddBone(const FName& BoneName, int32 ParentIndex, const FMatrix& LocalTransform)
+    int32 AddBone(const FName& BoneName, int32 ParentIndex, const FBonePose& LocalTransform)
     {
         int32 NewIndex = Bones.Add(FBone(BoneName, ParentIndex, LocalTransform));
         if (ParentIndex != INDEX_NONE && Bones.IsValidIndex(ParentIndex))
@@ -91,7 +124,7 @@ private:
     void ComputeGlobalTransformRecursive(int32 BoneIndex, const FMatrix& ParentGlobal)
     {
         FBone& Bone = Bones[BoneIndex];
-        Bone.GlobalTransform = Bone.LocalTransform * ParentGlobal;
+        Bone.GlobalTransform = Bone.LocalTransform.ToMatrix() * ParentGlobal;
 
         for (int32 ChildIdx : Bone.Children)
         {

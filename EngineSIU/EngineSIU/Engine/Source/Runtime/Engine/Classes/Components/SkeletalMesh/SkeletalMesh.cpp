@@ -4,12 +4,14 @@
 
 void USkeletalMesh::InitializeSkeleton(TArray<FBone>& BoneData)
 {
-    Skeleton.Bones = BoneData;
     // Clear previous child lists
     for (auto& Bone : Skeleton.Bones)
     {
         Bone.Children.Empty();
     }
+
+    Skeleton.Bones = BoneData;
+    
     // Rebuild parent-child links
     for (int i = 0; i < (int)Skeleton.Bones.Num(); ++i)
     {
@@ -19,17 +21,18 @@ void USkeletalMesh::InitializeSkeleton(TArray<FBone>& BoneData)
             Skeleton.Bones[parent].AddChild(i);
         }
     }
+    Skeleton.ComputeGlobalTransforms();
+    Skeleton.SetInvBindTransforms();    // Inv는 기본포즈에서의 Global의 역행렬
 }
 
-void USkeletalMesh::SetBoneLocalTransform(int boneIndex, const FMatrix& localTransform)
+void USkeletalMesh::SetBoneLocalTransform(int boneIndex, const FBonePose& localTransform)
 {
     if (boneIndex >= 0 && boneIndex < (int)Skeleton.Bones.Num())
     {
         Skeleton.Bones[boneIndex].LocalTransform = localTransform;
     }
 
-    Skeleton.ComputeGlobalTransforms();
-    Skeleton.SetInvBindTransforms();
+    // GlobalTransform 갱신은 Render 찍기 전에만 딱 한번 하도록 하기!
 }
 
 void USkeletalMesh::UpdateGlobalTransforms()
