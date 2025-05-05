@@ -28,6 +28,8 @@ struct FSkeletalMeshRenderData
     TArray<FObjMaterialInfo> Materials;
     TArray<FMaterialSubset> MaterialSubsets;
 
+    //FSkeleton Skeleton;
+
     FVector BoundingBoxMin;
     FVector BoundingBoxMax;
 };

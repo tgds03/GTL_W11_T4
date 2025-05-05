@@ -55,10 +55,9 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                     
                     FbxTime evalTime = FBXSDK_TIME_INFINITE;
 
-                    const FbxAMatrix local = node->EvaluateLocalTransform(FBXSDK_TIME_INFINITE);
+                    //const FbxAMatrix local = node->EvaluateLocalTransform(FBXSDK_TIME_INFINITE);
 
-
-                    /*FbxVector4 FbxLocation = node->EvaluateLocalTranslation(evalTime);
+                    FbxVector4 FbxLocation = node->EvaluateLocalTranslation(evalTime);
                     FbxVector4 FbxRotation = node->EvaluateLocalRotation(evalTime);
                     FbxVector4 FbxScale = node->EvaluateLocalScaling(evalTime);
 
@@ -67,11 +66,11 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                     FBonePose local;
                     local.Location = FVector((float)FbxLocation[0], (float)FbxLocation[1], (float)FbxLocation[2]);
                     local.Rotation = JungleMath::EulerToQuaternion(Rotation);
-                    local.Scale = FVector((float)FbxScale[0], (float)FbxScale[1], (float)FbxScale[2]);*/
+                    local.Scale = FVector((float)FbxScale[0], (float)FbxScale[1], (float)FbxScale[2]);
 
-                    FBonePose temp = FBonePose(FMatrix::FromFbxMatrix(local));
+                    //FBonePose temp = FBonePose(FMatrix::FromFbxMatrix(local));
                     
-                    b.LocalTransform = temp;
+                    b.LocalTransform = local;
 
                     int myIndex = bones.Num();
                     bones.Add(b);

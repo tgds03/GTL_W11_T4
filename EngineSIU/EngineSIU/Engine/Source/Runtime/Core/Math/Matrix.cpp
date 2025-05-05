@@ -385,22 +385,40 @@ FMatrix FMatrix::GetMatrixWithoutScale(float Tolerance) const
 
 void FMatrix::RemoveScaling(float Tolerance)
 {
-    const float SquareSum0 = (M[0][0] * M[0][0]) + (M[0][1] * M[0][1]) + (M[0][2] * M[0][2]);
-    const float SquareSum1 = (M[1][0] * M[1][0]) + (M[1][1] * M[1][1]) + (M[1][2] * M[1][2]);
-    const float SquareSum2 = (M[2][0] * M[2][0]) + (M[2][1] * M[2][1]) + (M[2][2] * M[2][2]);
-    const float Scale0 = (SquareSum0 - Tolerance) >= 0.f ? FMath::InvSqrt(SquareSum0) : 1.f;
-    const float Scale1 = (SquareSum1 - Tolerance) >= 0.f ? FMath::InvSqrt(SquareSum1) : 1.f;
-    const float Scale2 = (SquareSum2 - Tolerance) >= 0.f ? FMath::InvSqrt(SquareSum2) : 1.f;
-    M[0][0] *= Scale0;
-    M[0][1] *= Scale0;
-    M[0][2] *= Scale0;
-    M[1][0] *= Scale1;
-    M[1][1] *= Scale1;
-    M[1][2] *= Scale1;
-    M[2][0] *= Scale2;
-    M[2][1] *= Scale2;
-    M[2][2] *= Scale2;
+    FVector XAxis(M[0][0], M[0][1], M[0][2]);
+    FVector YAxis(M[1][0], M[1][1], M[1][2]);
+    FVector ZAxis(M[2][0], M[2][1], M[2][2]);
+
+    if (XAxis.SizeSquared() > Tolerance)
+        XAxis.Normalize();
+    if (YAxis.SizeSquared() > Tolerance)
+        YAxis.Normalize();
+    if (ZAxis.SizeSquared() > Tolerance)
+        ZAxis.Normalize();
+
+    M[0][0] = XAxis.X; M[0][1] = XAxis.Y; M[0][2] = XAxis.Z;
+    M[1][0] = YAxis.X; M[1][1] = YAxis.Y; M[1][2] = YAxis.Z;
+    M[2][0] = ZAxis.X; M[2][1] = ZAxis.Y; M[2][2] = ZAxis.Z;
 }
+
+//void FMatrix::RemoveScaling(float Tolerance)
+//{
+//    const float SquareSum0 = (M[0][0] * M[0][0]) + (M[0][1] * M[0][1]) + (M[0][2] * M[0][2]);
+//    const float SquareSum1 = (M[1][0] * M[1][0]) + (M[1][1] * M[1][1]) + (M[1][2] * M[1][2]);
+//    const float SquareSum2 = (M[2][0] * M[2][0]) + (M[2][1] * M[2][1]) + (M[2][2] * M[2][2]);
+//    const float Scale0 = (SquareSum0 - Tolerance) >= 0.f ? FMath::InvSqrt(SquareSum0) : 1.f;
+//    const float Scale1 = (SquareSum1 - Tolerance) >= 0.f ? FMath::InvSqrt(SquareSum1) : 1.f;
+//    const float Scale2 = (SquareSum2 - Tolerance) >= 0.f ? FMath::InvSqrt(SquareSum2) : 1.f;
+//    M[0][0] *= Scale0;
+//    M[0][1] *= Scale0;
+//    M[0][2] *= Scale0;
+//    M[1][0] *= Scale1;
+//    M[1][1] *= Scale1;
+//    M[1][2] *= Scale1;
+//    M[2][0] *= Scale2;
+//    M[2][1] *= Scale2;
+//    M[2][2] *= Scale2;
+//}
 
 bool FMatrix::Equals(const FMatrix& Other, float Tolerance) const
 {
