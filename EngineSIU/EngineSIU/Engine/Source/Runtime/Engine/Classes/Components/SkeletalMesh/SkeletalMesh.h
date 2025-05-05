@@ -18,11 +18,6 @@ public:
 
     virtual UObject* Duplicate(UObject* InOuter) override;
 
-    /** Internal skeleton data */
-    FSkeleton Skeleton;
-
-    /** Mesh vertex array (pre-skinning) */
-    TArray<FVertexSkeletal> SourceVertices;
 
     void InitializeSkeleton(TArray<FBone>& BoneData);
 
@@ -32,20 +27,25 @@ public:
     /** Recompute global transforms for all bones */
     void UpdateGlobalTransforms();
 
-    /**
-     * Skin all source vertices and return their skinned positions.
-     */
-    TArray<FVector> SkinVertices() const;
-
     const TArray<FStaticMaterial*>& GetMaterials() const { return materials; }
     uint32 GetMaterialIndex(FName MaterialSlotName) const;
     void GetUsedMaterials(TArray<UMaterial*>& OutMaterial) const;
     FSkeletalMeshRenderData* GetRenderData() const { return RenderData; }
 
+    void SetData(FSkeletalMeshRenderData* InRenderData);
+
+public:
     //ObjectName은 경로까지 포함
     FWString GetOjbectName() const;
 
-    void SetData(FSkeletalMeshRenderData* InRenderData);
+    /** Skin all source vertices and return their skinned positions. */
+    TArray<FVector> SkinVertices() const;
+
+    /** Internal skeleton data */
+    FSkeleton Skeleton;
+
+    /** Mesh vertex array (pre-skinning) */
+    TArray<FVertexSkeletal> SourceVertices;
 
 private:
     FSkeletalMeshRenderData* RenderData = nullptr;

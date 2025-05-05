@@ -24,6 +24,11 @@ public:
     {
     }
 
+    FBonePose(const FQuat& R, const FVector& L, const FVector& S)
+        : Rotation(R), Location(L), Scale(S)
+    {
+    }
+
     FBonePose(const FMatrix& M)
     {
         // 1) 위치 추출
