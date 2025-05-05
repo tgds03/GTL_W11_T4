@@ -27,7 +27,7 @@ void USkeletalMesh::InitializeSkeleton(TArray<FBone>& BoneData)
     Skeleton.SetInvBindTransforms();    // Inv는 기본포즈에서의 Global의 역행렬
 }
 
-void USkeletalMesh::SetBoneLocalTransform(int boneIndex, const FMatrix& localTransform)
+void USkeletalMesh::SetBoneLocalTransform(int boneIndex, const FBonePose& localTransform)
 {
     if (boneIndex >= 0 && boneIndex < (int)Skeleton.Bones.Num())
     {
