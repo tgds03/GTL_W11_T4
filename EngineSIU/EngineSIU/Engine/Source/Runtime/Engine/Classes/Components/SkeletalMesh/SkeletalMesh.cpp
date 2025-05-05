@@ -1,35 +1,35 @@
 #include "SkeletalMesh.h"
-
+#include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/SkeletalMeshAsset.h"
 #include "Engine/FObjLoader.h"
 
-void USkeletalMesh::InitializeSkeleton(TArray<FBone>& BoneData)
-{
-    // Clear previous child lists
-    for (auto& Bone : Skeleton.Bones)
-    {
-        Bone.Children.Empty();
-    }
-
-    Skeleton.Bones = BoneData;
-    
-    // Rebuild parent-child links
-    for (int i = 0; i < (int)Skeleton.Bones.Num(); ++i)
-    {
-        int parent = Skeleton.Bones[i].ParentIndex;
-        if (parent >= 0 && parent < (int)Skeleton.Bones.Num())
-        {
-            Skeleton.Bones[parent].AddChild(i);
-        }
-    }
-    Skeleton.ComputeGlobalTransforms();
-    Skeleton.SetInvBindTransforms();    // Inv는 기본포즈에서의 Global의 역행렬
-}
+//void USkeletalMesh::InitializeSkeleton(TArray<FBone>& BoneData)
+//{
+//    // Clear previous child lists
+//    for (auto& Bone : Skeleton.Bones)
+//    {
+//        Bone.Children.Empty();
+//    }
+//
+//    Skeleton.Bones = BoneData;
+//    
+//    // Rebuild parent-child links
+//    for (int i = 0; i < (int)Skeleton.Bones.Num(); ++i)
+//    {
+//        int parent = Skeleton.Bones[i].ParentIndex;
+//        if (parent >= 0 && parent < (int)Skeleton.Bones.Num())
+//        {
+//            Skeleton.Bones[parent].AddChild(i);
+//        }
+//    }
+//    Skeleton.ComputeGlobalTransforms();
+//    //Skeleton.SetInvBindTransforms();    // Inv는 기본포즈에서의 Global의 역행렬
+//}
 
 void USkeletalMesh::SetBoneLocalTransform(int boneIndex, const FBonePose& localTransform)
 {
-    if (boneIndex >= 0 && boneIndex < (int)Skeleton.Bones.Num())
+    if (boneIndex >= 0 && boneIndex < RenderData->Skeleton.BoneCount)
     {
-        Skeleton.Bones[boneIndex].LocalTransform = localTransform;
+        RenderData->Skeleton.Bones[boneIndex].LocalTransform = localTransform;
     }
 
     // GlobalTransform 갱신은 Render 찍기 전에만 딱 한번 하도록 하기!
@@ -37,7 +37,7 @@ void USkeletalMesh::SetBoneLocalTransform(int boneIndex, const FBonePose& localT
 
 void USkeletalMesh::UpdateGlobalTransforms()
 {
-    Skeleton.ComputeGlobalTransforms();
+    RenderData->Skeleton.ComputeGlobalTransforms();
 }
 
 TArray<FVector> USkeletalMesh::SkinVertices() const
@@ -45,7 +45,7 @@ TArray<FVector> USkeletalMesh::SkinVertices() const
     TArray<FVector> SkinnedPositions;
     for (const auto& Vertex : SourceVertices)
     {
-        SkinnedPositions.Add(Vertex.SkinVertexPosition(Skeleton));
+        SkinnedPositions.Add(Vertex.SkinVertexPosition(RenderData->Skeleton));
     }
     return SkinnedPositions;
 }
@@ -73,6 +73,11 @@ void USkeletalMesh::GetUsedMaterials(TArray<UMaterial*>& OutMaterial) const
     {
         OutMaterial.Emplace(Material->Material);
     }
+}
+
+FSkeleton* USkeletalMesh::GetSkeleton() const
+{
+    return &(RenderData->Skeleton);
 }
 
 FWString USkeletalMesh::GetOjbectName() const

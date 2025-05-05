@@ -41,7 +41,8 @@ void USkeletalMeshComponent::GenerateSampleData()
         Bone.LocalTransform = localTransform;
         Bones.Add(Bone);
     }
-    skelMesh->InitializeSkeleton(Bones);
+    //skelMesh->InitializeSkeleton(Bones);
+    FSkeleton ParsedSkeleton(Bones);
 
     // 4) StaticMesh 정점 → SkeletalVertex 바인딩
     FStaticMeshRenderData* rd = staticMesh->GetRenderData();
@@ -70,6 +71,7 @@ void USkeletalMeshComponent::GenerateSampleData()
     dstRD->DisplayName = srcRD->DisplayName;
     dstRD->Materials = srcRD->Materials;
     dstRD->MaterialSubsets = srcRD->MaterialSubsets;
+    dstRD->Skeleton = ParsedSkeleton;
 
 
     // 복제하긴 하지만 실제로 사용되는 건 SkeletalMesh의 SkeletalVertex를 사용해야함
@@ -124,12 +126,10 @@ void USkeletalMeshComponent::TestSkeletalMesh()
     }
 
     // 2) 루트(0)를 제외한 모든 본에 대해 LocalTransform을 Y축으로 10도 기울이기
-    const int32 BoneCount = SkelMesh->Skeleton.Bones.Num();
+    const int32 BoneCount = SkelMesh->GetSkeleton()->BoneCount;
     for (int32 BoneIndex = 1; BoneIndex < BoneCount; ++BoneIndex)
     {
-        FBonePose& localTransform = SkelMesh->Skeleton.Bones[BoneIndex].LocalTransform;
-
-        //localTransform.Rotation = localTransform.Rotation * FQuat(FVector(0, 1, 0), FMath::DegreesToRadians(10.0f));
+        FBonePose& localTransform = SkelMesh->GetSkeleton()->Bones[BoneIndex].LocalTransform;
 
         localTransform.Rotation = FQuat::CreateRotation(0, 10, 0) * localTransform.Rotation;
 

@@ -2,6 +2,8 @@
 #include "UObject/ObjectFactory.h"
 #include "Engine/Source/Runtime/Launch/SkeletalDefine.h"
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/SkeletalMeshAsset.h"
+#include "Engine/Source/Runtime/Engine/Classes/Components/SkeletalMesh/SkeletalMesh.h"
 #include <filesystem>
 #include "Engine/Source/Runtime/Core/Math/Matrix.h"
 #include "Engine/Source/Runtime/Launch/Define.h"
@@ -39,8 +41,8 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
     USkeletalMesh* skelMesh = FObjectFactory::ConstructObject<USkeletalMesh>(nullptr);
 
     // 4) 본 계층 파싱 (예: 재귀 순회로 FBone 배열 구성)
+    TArray<FBone> bones;
     {
-        TArray<FBone> bones;
         bones.Reserve(64);
 
         std::function<void(FbxNode*, int)> recurse = [&](FbxNode* node, int parentIndex)
@@ -70,8 +72,9 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
             };
 
         recurse(scene->GetRootNode(), -1);
-        skelMesh->InitializeSkeleton(bones);
+        //skelMesh->InitializeSkeleton(bones);
     }
+    FSkeleton ParsedSkeleton(bones);
 
     // 5) Mesh + Skin 데이터 파싱 (여러 메시 처리)
     {
@@ -84,6 +87,7 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
         rd->MaterialSubsets.Empty();
         rd->Vertices.Empty();
         rd->Indices.Empty();
+        rd->Skeleton = ParsedSkeleton;
 
         // 재귀 함수: 노드 트리를 돌며 모든 FbxMesh 를 파싱
         std::function<void(FbxNode*)> recurse = [&](FbxNode* node)
@@ -171,8 +175,8 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                             // boneNode 이름 → skeleton 에서 인덱스 찾기
                             FName boneName = FName(boneNode->GetName());
                             int boneIndex = INDEX_NONE;
-                            for (int b = 0; b < skelMesh->Skeleton.Bones.Num(); ++b)
-                                if (skelMesh->Skeleton.Bones[b].Name == boneName)
+                            for (int b = 0; b < rd->Skeleton.BoneCount; ++b)
+                                if (rd->Skeleton.Bones[b].Name == boneName)
                                 {
                                     boneIndex = b;
                                     break;
@@ -337,6 +341,8 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
         // TODO (7) 바운딩 박스 계산은 이후에 추가 필요 
 
         // (8) 렌더 데이터 & 소스 정점 세팅
+        
+        
         skelMesh->SetData(rd);
     }
 

@@ -4,7 +4,7 @@
 #include "UObject/ObjectMacros.h"
 #include "Engine/Source/Runtime/Core/Container/Array.h"
 #include "Components/Material/Material.h"
-#include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/SkeletalMeshAsset.h"
+//#include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/SkeletalMeshAsset.h"
 #include "Engine/Source/Runtime/Launch/SkeletalDefine.h"
 
 struct FSkeletalMeshRenderData;
@@ -18,8 +18,7 @@ public:
 
     virtual UObject* Duplicate(UObject* InOuter) override;
 
-
-    void InitializeSkeleton(TArray<FBone>& BoneData);
+    //void InitializeSkeleton(TArray<FBone>& BoneData);
 
     /** Set the local transform for a specific bone by index */
     void SetBoneLocalTransform(int boneIndex, const FBonePose& localTransform);
@@ -31,6 +30,7 @@ public:
     uint32 GetMaterialIndex(FName MaterialSlotName) const;
     void GetUsedMaterials(TArray<UMaterial*>& OutMaterial) const;
     FSkeletalMeshRenderData* GetRenderData() const { return RenderData; }
+    FSkeleton* GetSkeleton() const;
 
     void SetData(FSkeletalMeshRenderData* InRenderData);
 
@@ -42,7 +42,7 @@ public:
     TArray<FVector> SkinVertices() const;
 
     /** Internal skeleton data */
-    FSkeleton Skeleton;
+    //FSkeleton Skeleton;
 
     /** Mesh vertex array (pre-skinning) */
     TArray<FVertexSkeletal> SourceVertices;

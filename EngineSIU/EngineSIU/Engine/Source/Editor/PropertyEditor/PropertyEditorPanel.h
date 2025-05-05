@@ -22,6 +22,7 @@ class UHeightFogComponent;
 class AEditorPlayer;
 class UStaticMeshComponent;
 class USkeletalMeshComponent;
+class UMaterial;
 
 // 헬퍼 함수 예시
 template<typename Getter, typename Setter>

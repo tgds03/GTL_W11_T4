@@ -4,8 +4,9 @@
 #include "UObject/ObjectMacros.h"
 #include "Engine/Source/Runtime/Launch/SkeletalDefine.h"
 #include "Engine/Source/Runtime/Core/Container/Array.h"
-#include "Engine/Source/Runtime/Engine/Classes/Components/SkeletalMesh/SkeletalMesh.h"
 #include "Engine/Source/Runtime/Engine/Classes/Components/MeshComponent.h"
+
+class USkeletalMesh;
 
 class USkinnedMeshComponent : public UMeshComponent 
 {

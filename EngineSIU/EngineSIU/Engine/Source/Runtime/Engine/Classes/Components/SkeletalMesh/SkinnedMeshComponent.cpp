@@ -1,4 +1,6 @@
 #include "SkinnedMeshComponent.h"
+#include "Engine/Source/Runtime/Engine/Classes/Components/SkeletalMesh/SkeletalMesh.h"
+#include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/SkeletalMeshAsset.h"
 
 USkinnedMeshComponent::USkinnedMeshComponent()
     : Super(), SkeletalMesh(nullptr)

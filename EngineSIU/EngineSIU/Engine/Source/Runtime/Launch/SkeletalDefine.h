@@ -90,6 +90,31 @@ class FSkeleton
 public:
     /** 본 배열 */
     TArray<FBone> Bones;
+    int32 BoneCount;
+
+public:
+    FSkeleton() = default;
+    FSkeleton(TArray<FBone> InBones) : Bones(InBones)
+    {
+        BoneCount = (int32)Bones.Num();
+
+        for (auto& Bone : Bones)
+        {
+            Bone.Children.Empty();
+        }
+
+        for (int i = 0; i < BoneCount; ++i)
+        {
+            int parent = Bones[i].ParentIndex;
+            if (parent >= 0 && parent < BoneCount)
+            {
+                Bones[parent].AddChild(i);
+            }
+        }
+
+        ComputeGlobalTransforms();
+        SetInvBindTransforms();    // Inv는 기본포즈에서의 Global의 역행렬
+    }
 
     /** 본을 추가하고, 부모-자식 관계를 자동으로 연결 */
     int32 AddBone(const FName& BoneName, int32 ParentIndex, const FBonePose& LocalTransform)
@@ -115,15 +140,6 @@ public:
         }
     }
 
-    void SetInvBindTransforms()
-    {
-        for (FBone& Bone : Bones)
-        {
-            // 본의 글로벌 트랜스폼을 역행렬로 설정
-            Bone.InvBindTransform = FMatrix::Inverse(Bone.GlobalTransform);
-        }
-    }
-
 private:
     /** 본 인덱스와 부모의 글로벌 트랜스폼을 받아 재귀 계산 */
     void ComputeGlobalTransformRecursive(int32 BoneIndex, const FMatrix& ParentGlobal)
@@ -134,6 +150,15 @@ private:
         for (int32 ChildIdx : Bone.Children)
         {
             ComputeGlobalTransformRecursive(ChildIdx, Bone.GlobalTransform);
+        }
+    }
+
+    void SetInvBindTransforms()
+    {
+        for (FBone& Bone : Bones)
+        {
+            // 본의 글로벌 트랜스폼을 역행렬로 설정
+            Bone.InvBindTransform = FMatrix::Inverse(Bone.GlobalTransform);
         }
     }
 };
