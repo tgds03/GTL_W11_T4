@@ -123,12 +123,27 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
 
                         // Diffuse Color
                         FbxProperty DiffuseProp = fbxMat->FindProperty(FbxSurfaceMaterial::sDiffuse);
+                        if (DiffuseProp.IsValid()) 
+                        {
+                            FbxDouble3 Diffuse = DiffuseProp.Get<FbxDouble3>();
+                            mi.DiffuseColor = FVector(Diffuse[0], Diffuse[1], Diffuse[2]);
+                        }
 
                         // Specular Color
                         FbxProperty SpecularProp = fbxMat->FindProperty(FbxSurfaceMaterial::sSpecular);
+                        if (SpecularProp.IsValid())
+                        {
+                            FbxDouble3 Specular = SpecularProp.Get<FbxDouble3>();
+                            mi.SpecularColor = FVector(Specular[0], Specular[1], Specular[2]);
+                        }
 
                         // Shininess
-                        FbxProperty ShininessProp = fbxMat->FindProperty(FbxSurfaceMaterial::sShininess);
+                        /*FbxProperty ShininessProp = fbxMat->FindProperty(FbxSurfaceMaterial::sShininess);
+                        if (ShininessProp.IsValid())
+                        {
+                            mi.
+                        }*/
+
 
                         // Diffuse Texture
                         // Diffuse 채널에 연결된 파일 텍스처 검색
@@ -159,7 +174,33 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                         }
 
                         // Specular Texture
-                        
+                        int SpecularTexCount = SpecularProp.GetSrcObjectCount<FbxTexture>();
+
+                        if (SpecularTexCount > 0) 
+                        {
+                            // 첫 번째 텍스처만 사용 (필요에 따라 루프)
+                            FbxFileTexture* fbxTex = SpecularProp.GetSrcObject<FbxFileTexture>(0);
+                            if (fbxTex)
+                            {
+                                FString texName = fbxTex->GetFileName();
+                                FWString texturePath = texName.ToWideString();
+
+                                if (CreateTextureFromFile(texturePath))
+                                {
+                                    SlotIdx = static_cast<uint32>(EMaterialTextureSlots::MTS_Specular);
+
+                                    mi.TextureInfos[SlotIdx].TexturePath = texturePath;
+                                    mi.TextureInfos[SlotIdx].bIsSRGB = true;
+                                    mi.TextureFlag |= static_cast<uint16>(EMaterialTextureFlags::MTF_Specular);
+                                }
+                                else
+                                {
+                                    UE_LOG(LogLevel::Warning, TEXT("텍스처 로드 실패: %s"), *texName);
+                                }
+                            }
+                        }
+
+
                         // Normal Texture
                         FbxProperty BumpProp = fbxMat->FindProperty(FbxSurfaceMaterial::sNormalMap);
                         // Normal Map 이 없는 경우 Bump Map이라도 사용해보기
