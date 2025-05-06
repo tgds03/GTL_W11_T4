@@ -138,11 +138,11 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                         }
 
                         // Shininess
-                        /*FbxProperty ShininessProp = fbxMat->FindProperty(FbxSurfaceMaterial::sShininess);
+                        FbxProperty ShininessProp = fbxMat->FindProperty(FbxSurfaceMaterial::sShininess);
                         if (ShininessProp.IsValid())
                         {
-                            mi.
-                        }*/
+                            mi.Shininess = (float)ShininessProp.Get<FbxDouble>();
+                        }
 
 
                         // Diffuse Texture
