@@ -10,7 +10,7 @@
 
 using namespace fbxsdk;
 
-USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
+USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName, FSkeletalMeshRenderData*& OutSkeletalMeshRenderData)
 {
     FWString key = filePathName.ToWideString();
 
@@ -292,7 +292,7 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                     // 최대 폴리곤 수 × 3으로 리저브해두면 충분합니다.
                     rd->Vertices.Reserve(rd->Vertices.Num() + polyCount * 3);
                     rd->Indices.Reserve(rd->Indices.Num() + polyCount * 3);
-                    skelMesh->SourceVertices.Reserve(skelMesh->SourceVertices.Num() + polyCount * 3);
+                    rd->SourceVertices.Reserve(rd->SourceVertices.Num() + polyCount * 3);
 
                     for (int p = 0; p < polyCount; ++p)
                     {
@@ -361,7 +361,7 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                                     for (int k = 0; k < useN; ++k)
                                         srcV.BoneWeights[k] /= totalW;
 
-                                skelMesh->SourceVertices.Add(srcV);
+                                rd->SourceVertices.Add(srcV);
                             }
 
                             int VerticeNum = rd->Vertices.Num();
@@ -442,7 +442,7 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                                         for (int k = 0; k < useN; ++k)
                                             srcV.BoneWeights[k] /= totalW;
 
-                                    skelMesh->SourceVertices.Add(srcV);
+                                    rd->SourceVertices.Add(srcV);
                                 }
 
                                 int VerticeNum = rd->Vertices.Num();
@@ -481,6 +481,8 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
 
         // (8) 렌더 데이터 & 소스 정점 세팅
         
+        
+        OutSkeletalMeshRenderData = rd;
         
         skelMesh->SetData(rd);
     }

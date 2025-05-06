@@ -18,9 +18,9 @@ USkeletalMeshComponent::USkeletalMeshComponent()
 
 void USkeletalMeshComponent::GenerateSampleData()
 {
-    FObjManager::CreateStaticMesh("Contents/Reference/Reference.obj");
+    FResourceManager::CreateStaticMesh("Contents/Reference/Reference.obj");
 
-    UStaticMesh* staticMesh = FObjManager::GetStaticMesh(L"Contents/Reference/Reference.obj");
+    UStaticMesh* staticMesh = FResourceManager::GetStaticMesh(L"Contents/Reference/Reference.obj");
     if (!staticMesh) return;
 
     // 2) 새 SkeletalMesh 생성
@@ -59,7 +59,7 @@ void USkeletalMeshComponent::GenerateSampleData()
             sv.BoneIndices[j] = INDEX_NONE;
             sv.BoneWeights[j] = 0.f;
         }
-        skelMesh->SourceVertices.Add(sv);
+        skelMesh->GetRenderData()->SourceVertices.Add(sv);
     }
 
     // 5) 렌더 데이터 복제
@@ -145,7 +145,7 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
 {
     // 1) FBX로부터 USkeletalMesh 생성
     FString FbxPath(TEXT("Contents/FbxTest/TheBossBIN.fbx"));
-    USkeletalMesh* LoadedMesh = FFbxLoader::LoadFBXSkeletalMeshAsset(FbxPath);
+    USkeletalMesh* LoadedMesh = FResourceManager::LoadSkeletalMesh(FbxPath);
     if (!LoadedMesh)
     {
         UE_LOG(LogLevel::Warning, TEXT("FBX 로드 실패: %s"), *FbxPath);

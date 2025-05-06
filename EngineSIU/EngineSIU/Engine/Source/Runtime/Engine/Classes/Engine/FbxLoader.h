@@ -5,13 +5,13 @@
 #include "UObject/Object.h"
 #include "Components/SkeletalMesh/SkeletalMesh.h"
 
-
+struct FSkeletalMeshRenderData;
 struct FSkeletalMeshVertex;
 
 struct FFbxLoader 
 {
 public:
-    static USkeletalMesh* LoadFBXSkeletalMeshAsset(const FString& filePathName);
+    static USkeletalMesh* LoadFBXSkeletalMeshAsset(const FString& filePathName, FSkeletalMeshRenderData*& OutSkeletalMeshRenderData);
 
     static USkeletalMesh* GetSkeletalMesh(const FWString& name);
 

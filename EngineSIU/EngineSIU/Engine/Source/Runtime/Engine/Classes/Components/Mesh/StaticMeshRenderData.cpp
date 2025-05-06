@@ -42,7 +42,7 @@ void UStaticMesh::SetData(FStaticMeshRenderData* InRenderData)
     for (int materialIndex = 0; materialIndex < RenderData->Materials.Num(); materialIndex++)
     {
         FStaticMaterial* newMaterialSlot = new FStaticMaterial();
-        UMaterial* newMaterial = FObjManager::CreateMaterial(RenderData->Materials[materialIndex]);
+        UMaterial* newMaterial = FResourceManager::CreateMaterial(RenderData->Materials[materialIndex]);
 
         newMaterialSlot->Material = newMaterial;
         newMaterialSlot->MaterialSlotName = RenderData->Materials[materialIndex].MaterialName;

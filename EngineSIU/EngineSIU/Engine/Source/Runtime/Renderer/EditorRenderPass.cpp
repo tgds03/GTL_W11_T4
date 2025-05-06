@@ -340,7 +340,7 @@ void FEditorRenderPass::ClearRenderArr()
 void FEditorRenderPass::LazyLoad()
 {
     // Resourcemanager에서 로드된 texture의 포인터를 가져옴
-    // FResourceMgr::Initialize에 이미 추가되어 있어야 함
+    // FResourceManager::Initialize에 이미 추가되어 있어야 함
     Resources.IconTextures[IconType::DirectionalLight] = FEngineLoop::ResourceManager.GetTexture(L"Assets/Editor/Icon/DirectionalLight_64x.png");
     Resources.IconTextures[IconType::PointLight] = FEngineLoop::ResourceManager.GetTexture(L"Assets/Editor/Icon/PointLight_64x.png");
     Resources.IconTextures[IconType::SpotLight] = FEngineLoop::ResourceManager.GetTexture(L"Assets/Editor/Icon/SpotLight_64x.png");
@@ -349,7 +349,7 @@ void FEditorRenderPass::LazyLoad()
     Resources.IconTextures[IconType::AtmosphericFog] = FEngineLoop::ResourceManager.GetTexture(L"Assets/Editor/Icon/AtmosphericFog_64.png");
 
     // Gizmo arrow 로드
-    FStaticMeshRenderData* RenderData = FObjManager::GetStaticMesh(L"Assets/GizmoTranslationZ.obj")->GetRenderData();
+    FStaticMeshRenderData* RenderData = FResourceManager::GetStaticMesh(L"Assets/GizmoTranslationZ.obj")->GetRenderData();
 
     FVertexInfo VertexInfo;
     BufferManager->CreateVertexBuffer(RenderData->ObjectName, RenderData->Vertices, VertexInfo);

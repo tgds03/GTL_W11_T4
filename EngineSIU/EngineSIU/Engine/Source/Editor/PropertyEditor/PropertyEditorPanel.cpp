@@ -389,7 +389,7 @@ void PropertyEditorPanel::RenderForStaticMesh(UStaticMeshComponent* StaticMeshCo
                 if (ImGui::Selectable(GetData(Asset.Value.AssetName.ToString()), false))
                 {
                     FString MeshName = Asset.Value.PackagePath.ToString() + "/" + Asset.Value.AssetName.ToString();
-                    UStaticMesh* StaticMesh = FObjManager::GetStaticMesh(MeshName.ToWideString());
+                    UStaticMesh* StaticMesh = FResourceManager::GetStaticMesh(MeshName.ToWideString());
                     if (StaticMesh)
                     {
                         StaticMeshComp->SetStaticMesh(StaticMesh);
@@ -1113,7 +1113,7 @@ void PropertyEditorPanel::RenderMaterialView(UMaterial* Material)
     ImGui::SetNextItemWidth(160);
     // 메테리얼 이름 목록을 const char* 배열로 변환
     std::vector<const char*> MaterialChars;
-    for (const auto& Material : FObjManager::GetMaterials()) {
+    for (const auto& Material : FResourceManager::GetMaterials()) {
         MaterialChars.push_back(*Material.Value->GetMaterialInfo().MaterialName);
     }
 
@@ -1121,8 +1121,8 @@ void PropertyEditorPanel::RenderMaterialView(UMaterial* Material)
     //if (currentMaterialIndex >= FManagerGetMaterialNum())
     //    currentMaterialIndex = 0;
 
-    if (ImGui::Combo("##MaterialDropdown", &CurMaterialIndex, MaterialChars.data(), FObjManager::GetMaterialNum())) {
-        UMaterial* Material = FObjManager::GetMaterial(MaterialChars[CurMaterialIndex]);
+    if (ImGui::Combo("##MaterialDropdown", &CurMaterialIndex, MaterialChars.data(), FResourceManager::GetMaterialNum())) {
+        UMaterial* Material = FResourceManager::GetMaterial(MaterialChars[CurMaterialIndex]);
         SelectedStaticMeshComp->SetMaterial(SelectedMaterialIndex, Material);
     }
 
@@ -1218,7 +1218,7 @@ void PropertyEditorPanel::RenderCreateMaterialView()
 
     ImGui::NewLine();
     if (ImGui::Button("Create Material")) {
-        FObjManager::CreateMaterial(tempMaterialInfo);
+        FResourceManager::CreateMaterial(tempMaterialInfo);
     }
 
     ImGui::NewLine();
