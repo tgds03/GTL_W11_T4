@@ -26,10 +26,10 @@ public:
     /** Recompute global transforms for all bones */
     void UpdateGlobalTransforms();
 
+    FSkeletalMeshRenderData* GetRenderData() const { return RenderData; }
     const TArray<FStaticMaterial*>& GetMaterials() const { return materials; }
     uint32 GetMaterialIndex(FName MaterialSlotName) const;
     void GetUsedMaterials(TArray<UMaterial*>& OutMaterial) const;
-    FSkeletalMeshRenderData* GetRenderData() const { return RenderData; }
     FSkeleton* GetSkeleton() const;
 
     void SetData(FSkeletalMeshRenderData* InRenderData);

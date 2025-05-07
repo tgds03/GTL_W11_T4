@@ -62,7 +62,7 @@ void AEditorPlayer::Input()
         }
     }
     else
-    {
+    { 
         if (bLeftMouseDown)
         {
             bLeftMouseDown = false;

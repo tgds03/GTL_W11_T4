@@ -131,7 +131,7 @@ void USkeletalMeshComponent::TestSkeletalMesh()
     {
         FBonePose& localTransform = SkelMesh->GetSkeleton()->Bones[BoneIndex].LocalTransform;
 
-        localTransform.Rotation = FQuat::CreateRotation(0, 10, 0) * localTransform.Rotation;
+        localTransform.Rotation = localTransform.Rotation * FQuat::CreateRotation(0, 10, 0);
 
         // 적용
         //SkelMesh->SetBoneLocalTransform(BoneIndex, localTransform);
@@ -145,6 +145,7 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
 {
     // 1) FBX로부터 USkeletalMesh 생성
     FString FbxPath(TEXT("Contents/FbxTest/TheBossBIN.fbx"));
+    //FString FbxPath(TEXT("Contents/FbxTest/nathan3.fbx"));
     USkeletalMesh* LoadedMesh = FFbxLoader::LoadFBXSkeletalMeshAsset(FbxPath);
     if (!LoadedMesh)
     {

@@ -834,6 +834,7 @@
     <ClCompile Include="Engine\Source\Runtime\Core\Math\Matrix.cpp">
       <Filter>Engine\Source\Runtime\Core\Math</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Source\Editor\PropertyEditor\SkeletonMeshEditorPanel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="EngineSIU.natvis" />
@@ -965,6 +966,7 @@
     <ClInclude Include="Engine\Source\Runtime\Renderer\MeshRenderPass.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\SkeletalMeshRenderPass.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\FbxLoader.h" />
+    <ClInclude Include="Engine\Source\Editor\PropertyEditor\SkeletonMeshEditorPanel.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />

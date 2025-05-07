@@ -1,5 +1,7 @@
 #pragma once
 
+#include "World/WorldType.h" 
+
 #ifndef __ICON_FONT_INDEX__
 
 #define __ICON_FONT_INDEX__
@@ -12,6 +14,15 @@ class UEditorPanel
 {
 public:
     virtual ~UEditorPanel() = default;
+
     virtual void Render() = 0;
     virtual void OnResize(HWND hWnd) = 0;
+
+    void SetVisibleInWorldType(EWorldType InWorldType)
+    {
+        VisibleInWorldType = InWorldType;
+    }
+
+public:
+    EWorldType VisibleInWorldType = EWorldType::None;
 };

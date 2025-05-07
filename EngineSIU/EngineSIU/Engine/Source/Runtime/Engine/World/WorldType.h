@@ -6,6 +6,7 @@ enum class EWorldType
     Game,
     Editor,
     PIE,
+    SkeletalMeshEditor,
     EditorPreview,
     GamePreview,
     GameRPC,

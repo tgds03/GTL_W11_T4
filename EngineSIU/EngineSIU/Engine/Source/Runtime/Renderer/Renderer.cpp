@@ -450,7 +450,8 @@ void FRenderer::RenderEditorOverlay(const std::shared_ptr<FEditorViewportClient>
     const uint64 ShowFlag = Viewport->GetShowFlag();
     const EViewModeIndex ViewMode = Viewport->GetViewMode();
     
-    if (GEngine->ActiveWorld->WorldType != EWorldType::Editor)
+    if (GEngine->ActiveWorld->WorldType != EWorldType::Editor &&
+        GEngine->ActiveWorld->WorldType != EWorldType::SkeletalMeshEditor)
     {
         return;
     }

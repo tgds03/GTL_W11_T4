@@ -9,6 +9,9 @@
 #include "Components/Light/DirectionalLightComponent.h"
 #include "UObject/UObjectIterator.h"
 
+#include "Components/SkeletalMesh/SkeletalMesh.h"
+#include "Components/SkeletalMesh/SkeletalMeshComponent.h"
+
 #include <fbxsdk.h>
 
 namespace PrivateEditorSelection
@@ -90,6 +93,26 @@ void UEditorEngine::Tick(float DeltaTime)
             if (UWorld* World = WorldContext->World())
             {
                 World->Tick(DeltaTime);
+                ULevel* Level = World->GetActiveLevel();
+                TArray CachedActors = Level->Actors;
+                if (Level)
+                {
+                    for (AActor* Actor : CachedActors)
+                    {
+                        if (Actor)
+                        {
+                            Actor->Tick(DeltaTime);
+                        }
+                    }
+                }
+            }
+        }
+        else if (WorldContext->WorldType == EWorldType::SkeletalMeshEditor)
+        {
+            if (UWorld* World = WorldContext->World())
+            {
+                World->Tick(DeltaTime);
+                EditorPlayer->Tick(DeltaTime);
                 ULevel* Level = World->GetActiveLevel();
                 TArray CachedActors = Level->Actors;
                 if (Level)
@@ -192,10 +215,53 @@ void UEditorEngine::EndPIE()
 
 void UEditorEngine::StartSkeletalMeshEditMode()
 {
+    if (SkeletalMeshEditWorld)
+        return;
+
+    FWorldContext& SkeletalMeshEditorWorldContext = CreateNewWorldContext(EWorldType::SkeletalMeshEditor);
+
+    SkeletalMeshEditWorld = UWorld::CreateWorld(this, EWorldType::SkeletalMeshEditor, TEXT("SkeletalMeshEditWorld"));
+
+    SkeletalMeshEditorWorldContext.SetCurrentWorld(SkeletalMeshEditWorld);
+
+    ActiveWorld = SkeletalMeshEditWorld;
+}
+
+void UEditorEngine::StartSkeletalMeshEditMode(USkeletalMesh* InMesh)
+{
+    if (SkeletalMeshEditWorld)
+        return;
+
+    EditingMesh = InMesh;
+
+    StartSkeletalMeshEditMode();
+
+    AActor* PreviewActor = ActiveWorld->SpawnActor<AActor>();
+    PreviewActor->SetActorLabel(FString(InMesh->GetOjbectName()));
+
+    USkeletalMeshComponent* SkelMeshComp = PreviewActor->AddComponent<USkeletalMeshComponent>();
+    SkelMeshComp->SetSkeletalMesh(EditingMesh);
+    SkelMeshComp->UpdateAnimation();
 }
 
 void UEditorEngine::EndSkeletalMeshEditMode()
 {
+    if (!SkeletalMeshEditWorld)
+        return;
+
+    // Context 제거
+    if (FWorldContext* ctx = GetSkeletalMeshEditWorldContext())
+    {
+        WorldList.Remove(ctx);
+    }
+
+    // World 정리
+    SkeletalMeshEditWorld->Release();
+    GUObjectArray.MarkRemoveObject(SkeletalMeshEditWorld);
+    SkeletalMeshEditWorld = nullptr;
+
+    // 원래 EditorWorld 로 복귀
+    ActiveWorld = EditorWorld;
 }
 
 FWorldContext& UEditorEngine::GetEditorWorldContext(/*bool bEnsureIsGWorld*/)
@@ -215,6 +281,18 @@ FWorldContext* UEditorEngine::GetPIEWorldContext(/*int32 WorldPIEInstance*/)
     for (FWorldContext* WorldContext : WorldList)
     {
         if (WorldContext->WorldType == EWorldType::PIE)
+        {
+            return WorldContext;
+        }
+    }
+    return nullptr;
+}
+
+FWorldContext* UEditorEngine::GetSkeletalMeshEditWorldContext()
+{
+    for (FWorldContext* WorldContext : WorldList)
+    {
+        if (WorldContext->WorldType == EWorldType::SkeletalMeshEditor)
         {
             return WorldContext;
         }

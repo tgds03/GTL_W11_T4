@@ -1,27 +1,37 @@
-﻿#include "UnrealEd.h"
+#include "UnrealEd.h"
 #include "EditorPanel.h"
 
 #include "PropertyEditor/ControlEditorPanel.h"
 #include "PropertyEditor/OutlinerEditorPanel.h"
 #include "PropertyEditor/PropertyEditorPanel.h"
 
+#include "Engine/EditorEngine.h"
+#include "Engine/World/World.h"
+
 void UnrealEd::Initialize()
 {
     auto ControlPanel = std::make_shared<ControlEditorPanel>();
+    ControlPanel->SetVisibleInWorldType(EWorldType::Editor);
     Panels["ControlPanel"] = ControlPanel;
     
     auto OutlinerPanel = std::make_shared<OutlinerEditorPanel>();
+    OutlinerPanel->SetVisibleInWorldType(EWorldType::Editor);
     Panels["OutlinerPanel"] = OutlinerPanel;
     
     auto PropertyPanel = std::make_shared<PropertyEditorPanel>();
+    PropertyPanel->SetVisibleInWorldType(EWorldType::Editor);
     Panels["PropertyPanel"] = PropertyPanel;
 }
 
 void UnrealEd::Render() const
 {
+    UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
+    EWorldType ActiveWorldType = Engine->ActiveWorld->WorldType;
     for (const auto& Panel : Panels)
     {
-        Panel.Value->Render();
+        // TODO : Panel을 새로 만들지 Render할때 Type을 넣어서 분기 할지 고민
+        if (ActiveWorldType == Panel.Value->VisibleInWorldType)
+            Panel.Value->Render();
     }
 }
 
@@ -39,6 +49,6 @@ void UnrealEd::OnResize(HWND hWnd) const
 }
 
 std::shared_ptr<UEditorPanel> UnrealEd::GetEditorPanel(const FString& PanelId)
-{
+{  
     return Panels[PanelId];
 }

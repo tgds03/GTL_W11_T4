@@ -10,6 +10,7 @@
 
 class AActor;
 class USceneComponent;
+class USkeletalMesh;
 
 class UEditorEngine : public UEngine
 {
@@ -24,17 +25,20 @@ public:
 
     UWorld* PIEWorld = nullptr;
     UWorld* EditorWorld = nullptr;
+    UWorld* SkeletalMeshEditWorld = nullptr;
 
     void StartPIE();
     void BindEssentialObjects();
     void EndPIE();
 
     void StartSkeletalMeshEditMode();
+    void StartSkeletalMeshEditMode(USkeletalMesh* InMesh);
     void EndSkeletalMeshEditMode();
 
     // 주석은 UE에서 사용하던 매개변수.
     FWorldContext& GetEditorWorldContext(/*bool bEnsureIsGWorld = false*/);
     FWorldContext* GetPIEWorldContext(/*int32 WorldPIEInstance = 0*/);
+    FWorldContext* GetSkeletalMeshEditWorldContext();
 
 public:
     void SelectActor(AActor* InActor);
@@ -48,7 +52,6 @@ public:
 
     void HoverActor(AActor* InActor);
 
-    
     void NewLevel();
 
     void SelectComponent(USceneComponent* InComponent) const;
@@ -67,6 +70,8 @@ public:
     
 private:
     AEditorPlayer* EditorPlayer = nullptr;
+
+    USkeletalMesh* EditingMesh = nullptr;
 
 };
 
