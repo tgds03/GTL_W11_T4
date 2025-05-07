@@ -19,6 +19,8 @@ class FDXDBufferManager;
 class FDXDShaderManager;
 class FGraphicsDevice;
 class ULightComponentBase;
+class UStaticMeshComponent;
+class USkeletalMeshComponent;
 
 class FShadowRenderPass : public IRenderPass
 {
@@ -43,6 +45,7 @@ public:
     virtual void ClearRenderArr() override;
 
     void RenderPrimitive(FStaticMeshRenderData* render_data, const TArray<FStaticMaterial*> array, TArray<UMaterial*> materials, int32 SelectedSubMeshIndex);
+    void RenderPrimitive(FSkeletalMeshRenderData* RenderData, const TArray<FStaticMaterial*> Materials, TArray<UMaterial*> OverrideMaterials, int32 SelectedSubMeshIndex);
     virtual void RenderAllStaticMeshes(const std::shared_ptr<FEditorViewportClient>& Viewport);
     void RenderAllStaticMeshesForCSM(const std::shared_ptr<FEditorViewportClient>& Viewport,
                                      FCascadeConstantBuffer FCasCadeData);
@@ -56,7 +59,8 @@ public:
 private:
 
     
-    TArray<class UStaticMeshComponent*> StaticMeshComponents;
+    TArray<UStaticMeshComponent*> StaticMeshComponents;
+    TArray<USkeletalMeshComponent*> SkeletalMeshComponents;
     TArray<UPointLightComponent*> PointLights;
     TArray<USpotLightComponent*> SpotLights;
     
