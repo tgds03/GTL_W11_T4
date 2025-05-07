@@ -78,12 +78,8 @@ void SkeletonMeshEditorPanel::Render()
             EditingPose.Scale = FVector(scl[0], scl[1], scl[2]);
         }
 
-        // Apply 버튼
-        if (ImGui::Button("Apply to Bone"))
-        {
-            Bone.LocalTransform = EditingPose;
-            SkelMesh->UpdateGlobalTransforms();
-        }
+        Bone.LocalTransform = EditingPose;
+        SkelMesh->UpdateGlobalTransforms();
     }
     else
     {
