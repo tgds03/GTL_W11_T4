@@ -253,7 +253,7 @@ void UEditorEngine::StartSkeletalMeshEditMode(USkeletalMesh* InMesh)
     PreviewActor->SetActorLabel(FString(InMesh->GetOjbectName()));
 
     USkeletalMeshComponent* SkelMeshComp = PreviewActor->AddComponent<USkeletalMeshComponent>();
-    SkelMeshComp->SetSkeletalMesh(SkelEditorController->EditingMesh);
+    SkelMeshComp->SetSkeletalMesh(SkelEditorController->OriginalMesh);
     SkelMeshComp->UpdateAnimation();
 }
 
