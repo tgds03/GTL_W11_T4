@@ -12,14 +12,6 @@ using namespace fbxsdk;
 
 USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName, FSkeletalMeshRenderData*& OutSkeletalMeshRenderData)
 {
-    FWString key = filePathName.ToWideString();
-
-    // 1) 캐시된 메시가 있으면 바로 반환
-    if (USkeletalMesh** cached = SkeletalMeshMap.Find(key))
-    {
-        return *cached;
-    }
-
     // 2) FBX SDK 초기화
     FbxManager* manager = FbxManager::Create();
     FbxIOSettings* ios = FbxIOSettings::Create(manager, IOSROOT);
@@ -480,13 +472,6 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName,
     }
 
     return skelMesh;
-}
-
-USkeletalMesh* FFbxLoader::GetSkeletalMesh(const FWString& name)
-{
-    if (USkeletalMesh** found = SkeletalMeshMap.Find(name))
-        return *found;
-    return nullptr;
 }
 
 bool FFbxLoader::CreateTextureFromFile(const FWString& Filename, bool bIsSRGB)
