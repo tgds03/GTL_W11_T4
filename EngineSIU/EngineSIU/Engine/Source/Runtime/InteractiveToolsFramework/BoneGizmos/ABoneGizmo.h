@@ -17,16 +17,26 @@ public:
     void Initialize(FEditorViewportClient* InViewport);
 
     FBone* GetPose() const { return TargetBone; }
-    void SetPose(FBone* InPose);
+    void SetPose(FBone* InPose, TArray<FBone>& Bones);
+
+    void UpdatePose();
 
     UGizmoJointComponent* GetJointComponent() const { return Joint; }
     UGizmoFrameComponent* GetFrameComponent() const { return Frame; }
 
+    void SetSelected(bool b) { bIsSelected = b; }
+    bool IsSelected() const { return bIsSelected; }
+    void ToggleSelected() { bIsSelected = !bIsSelected; }
+    void Deselect() { bIsSelected = false; }
+
 private:
+    bool bIsSelected = false;
+
     UGizmoJointComponent* Joint = nullptr;
     UGizmoFrameComponent* Frame = nullptr;
 
     FBone* TargetBone;
+    TArray<FBone>* TargetBones;
     FEditorViewportClient* AttachedViewport;
 };
 

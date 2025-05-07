@@ -240,10 +240,10 @@ void UEditorEngine::StartSkeletalMeshEditMode(USkeletalMesh* InMesh)
     if (SkeletalMeshEditWorld)
         return;
 
+    StartSkeletalMeshEditMode();
+
     SkelEditorController = std::make_shared<SkeletalMeshEditorController>();
     SkelEditorController->Initialize(InMesh, GEngineLoop.GetLevelEditor()->GetViewports()->get());
-
-    StartSkeletalMeshEditMode();
 
     FEditorViewportClient* ActiveViewport = GEngineLoop.GetLevelEditor()->GetActiveViewportClient().get();
 
