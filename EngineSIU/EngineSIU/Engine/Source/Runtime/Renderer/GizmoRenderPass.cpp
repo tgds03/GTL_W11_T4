@@ -176,8 +176,8 @@ void FGizmoRenderPass::Render(const std::shared_ptr<FEditorViewportClient>& View
             auto Frame = Actor->GetFrameComponent();
             //RenderGizmoComponent(dynamic_cast<UGizmoBaseComponent*>(Joint), Viewport);
             //RenderGizmoComponent(Frame, Viewport);
-            RenderGizmoComponent(Cast<UGizmoBaseComponent>(Joint), Viewport);
-            RenderGizmoComponent(Cast<UGizmoBaseComponent>(Frame), Viewport);
+            RenderGizmoComponent(Cast<UGizmoBaseComponent>(Joint), Viewport, true);
+            RenderGizmoComponent(Cast<UGizmoBaseComponent>(Frame), Viewport, true);
         }
     }
     
@@ -199,7 +199,7 @@ void FGizmoRenderPass::UpdateObjectConstant(const FMatrix& WorldMatrix, const FV
     BufferManager->UpdateConstantBuffer(TEXT("FObjectConstantBuffer"), ObjectData);
 }
 
-void FGizmoRenderPass::RenderGizmoComponent(UGizmoBaseComponent* GizmoComp, const std::shared_ptr<FEditorViewportClient>& Viewport)
+void FGizmoRenderPass::RenderGizmoComponent(UGizmoBaseComponent* GizmoComp, const std::shared_ptr<FEditorViewportClient>& Viewport, bool CanRenderUnSelect)
 {
     UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
     if (!Engine)
@@ -209,9 +209,12 @@ void FGizmoRenderPass::RenderGizmoComponent(UGizmoBaseComponent* GizmoComp, cons
 
     USceneComponent* SelectedComponent = Engine->GetSelectedComponent();
     AActor* SelectedActor = Engine->GetSelectedActor();
-    if (SelectedComponent == nullptr && SelectedActor == nullptr)
+    if (!CanRenderUnSelect)
     {
-        return;
+        if (SelectedComponent == nullptr && SelectedActor == nullptr)
+        {
+            return;
+        }
     }
     
     if (!GizmoComp->GetStaticMesh())

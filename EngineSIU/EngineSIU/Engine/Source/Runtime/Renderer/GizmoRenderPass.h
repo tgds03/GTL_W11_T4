@@ -30,7 +30,7 @@ public:
     void UpdateObjectConstant(const FMatrix& WorldMatrix, const FVector4& UUIDColor, bool bIsSelected) const;
     
     // Gizmo 한 개 렌더링 함수
-    void RenderGizmoComponent(UGizmoBaseComponent* GizmoComp, const std::shared_ptr<FEditorViewportClient>& Viewport);
+    void RenderGizmoComponent(UGizmoBaseComponent* GizmoComp, const std::shared_ptr<FEditorViewportClient>& Viewport, bool CanRenderUnSelect = false);
 
     void CreateShader();
     void UpdateShader();

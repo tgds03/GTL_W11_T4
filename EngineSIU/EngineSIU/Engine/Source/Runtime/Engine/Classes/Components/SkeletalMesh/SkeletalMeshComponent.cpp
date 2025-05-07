@@ -133,7 +133,7 @@ void USkeletalMeshComponent::TestSkeletalMesh()
     {
         FBonePose& localTransform = SkelMesh->GetSkeleton()->Bones[BoneIndex].LocalTransform;
 
-        localTransform.Rotation = localTransform.Rotation * FQuat::CreateRotation(0, 10, 0);
+        localTransform.Rotation = localTransform.Rotation * FQuat::CreateRotation(0, 0, 10);
 
         // 적용
         //SkelMesh->SetBoneLocalTransform(BoneIndex, localTransform);

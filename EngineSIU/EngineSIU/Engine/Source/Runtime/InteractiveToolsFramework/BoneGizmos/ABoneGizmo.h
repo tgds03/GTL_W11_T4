@@ -16,7 +16,7 @@ public:
     virtual void Tick(float DeltaTime) override;
     void Initialize(FEditorViewportClient* InViewport);
 
-    FBone* GetPose() const { return TargetPose; }
+    FBone* GetPose() const { return TargetBone; }
     void SetPose(FBone* InPose);
 
     UGizmoJointComponent* GetJointComponent() const { return Joint; }
@@ -26,7 +26,7 @@ private:
     UGizmoJointComponent* Joint = nullptr;
     UGizmoFrameComponent* Frame = nullptr;
 
-    FBone* TargetPose;
+    FBone* TargetBone;
     FEditorViewportClient* AttachedViewport;
 };
 

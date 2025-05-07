@@ -31,12 +31,12 @@ void ABoneGizmo::Initialize(FEditorViewportClient* InViewport)
     AttachedViewport = InViewport;
 }
 
-void ABoneGizmo::SetPose(FBone* InPose)
+void ABoneGizmo::SetPose(FBone* InBone)
 {
-    TargetPose = InPose;
-    if (TargetPose)
+    TargetBone = InBone;
+    if (TargetBone)
     {
-        SetActorLocation(TargetPose->GlobalTransform.GetTranslationVector()); // TODO : GlobalLocation으로 변경
-        SetActorRotation(TargetPose->LocalTransform.Rotation.Rotator());
+        SetActorLocation(TargetBone->GlobalTransform.GetTranslationVector()); // TODO : GlobalLocation으로 변경
+        SetActorRotation(TargetBone->LocalTransform.Rotation.Rotator());
     }
 }
