@@ -23,8 +23,8 @@ public:
     UGizmoFrameComponent* GetFrameComponent() const { return Frame; }
 
 private:
-    UGizmoJointComponent* Joint;
-    UGizmoFrameComponent* Frame;
+    UGizmoJointComponent* Joint = nullptr;
+    UGizmoFrameComponent* Frame = nullptr;
 
     FBone* TargetPose;
     FEditorViewportClient* AttachedViewport;

@@ -174,8 +174,10 @@ void FGizmoRenderPass::Render(const std::shared_ptr<FEditorViewportClient>& View
         {
             auto Joint = Actor->GetJointComponent();
             auto Frame = Actor->GetFrameComponent();
-            RenderGizmoComponent(dynamic_cast<UGizmoBaseComponent*>(Joint), Viewport);
-            RenderGizmoComponent(Frame, Viewport);
+            //RenderGizmoComponent(dynamic_cast<UGizmoBaseComponent*>(Joint), Viewport);
+            //RenderGizmoComponent(Frame, Viewport);
+            RenderGizmoComponent(Cast<UGizmoBaseComponent>(Joint), Viewport);
+            RenderGizmoComponent(Cast<UGizmoBaseComponent>(Frame), Viewport);
         }
     }
     
