@@ -65,10 +65,11 @@ void SkeletonMeshEditorPanel::Render()
 
         // 회전 (Euler → Quaternion)
         FRotator rot = EditingPose.Rotation.Rotator();
-        float eul[3] = { rot.Pitch, rot.Yaw, rot.Roll };
-        if (ImGui::DragFloat3("Rotation (P,Y,R)", eul, 0.5f))
+        float originEul[3] = { rot.Pitch, rot.Yaw, rot.Roll };
+        float nextEul[3] = { rot.Pitch, rot.Yaw, rot.Roll };
+        if (ImGui::DragFloat3("Rotation (P,Y,R)", nextEul, 0.5f))
         {
-            EditingPose.Rotation = JungleMath::EulerToQuaternion(FVector(eul[0], eul[1], eul[2]));
+            EditingPose.Rotation = EditingPose.Rotation * JungleMath::EulerToQuaternion(FVector(nextEul[0] - originEul[0], nextEul[1] - originEul[1], nextEul[2] - originEul[2]));
         }
 
         // 스케일
