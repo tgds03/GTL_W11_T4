@@ -46,6 +46,10 @@ void SkeletonMeshEditorPanel::Render()
 
     ImGui::Separator();
 
+
+    UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
+    SelectedBoneIndex = Engine->GetSkeletalMeshEditorController()->GetSelectedBoneIndex();
+
     // 선택된 본의 FBonePose 편집
     if (SelectedBoneIndex != INDEX_NONE)
     {
