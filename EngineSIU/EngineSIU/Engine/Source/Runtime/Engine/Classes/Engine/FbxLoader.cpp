@@ -10,7 +10,7 @@
 
 using namespace fbxsdk;
 
-USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
+USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName, FSkeletalMeshRenderData*& OutSkeletalMeshRenderData)
 {
     FWString key = filePathName.ToWideString();
 
@@ -111,33 +111,57 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                     int baseMatIndex = rd->Materials.Num();
                     for (int m = 0; m < matCount; ++m)
                     {
+                        // FBX 머티리얼 객체
+                        FbxSurfaceMaterial* fbxMat = node->GetMaterial(m);
                         FObjMaterialInfo mi{};
-                        mi.MaterialName = node->GetMaterial(m)->GetName();
+                        mi.MaterialName = fbxMat->GetName();
 
                         constexpr uint32 TexturesNum = static_cast<uint32>(EMaterialTextureSlots::MTS_MAX);
                         mi.TextureInfos.SetNum(TexturesNum);
 
-                        const uint32 SlotIdx = static_cast<uint32>(EMaterialTextureSlots::MTS_Diffuse);
+                        uint32 SlotIdx = 0;
 
-                        // FBX 머티리얼 객체
-                        FbxSurfaceMaterial* fbxMat = node->GetMaterial(m);
+                        // Diffuse Color
+                        FbxProperty DiffuseProp = fbxMat->FindProperty(FbxSurfaceMaterial::sDiffuse);
+                        if (DiffuseProp.IsValid()) 
+                        {
+                            FbxDouble3 Diffuse = DiffuseProp.Get<FbxDouble3>();
+                            mi.DiffuseColor = FVector(Diffuse[0], Diffuse[1], Diffuse[2]);
+                        }
 
+                        // Specular Color
+                        FbxProperty SpecularProp = fbxMat->FindProperty(FbxSurfaceMaterial::sSpecular);
+                        if (SpecularProp.IsValid())
+                        {
+                            FbxDouble3 Specular = SpecularProp.Get<FbxDouble3>();
+                            mi.SpecularColor = FVector(Specular[0], Specular[1], Specular[2]);
+                        }
+
+                        // Shininess
+                        FbxProperty ShininessProp = fbxMat->FindProperty(FbxSurfaceMaterial::sShininess);
+                        if (ShininessProp.IsValid())
+                        {
+                            mi.Shininess = (float)ShininessProp.Get<FbxDouble>();
+                        }
+
+
+                        // Diffuse Texture
                         // Diffuse 채널에 연결된 파일 텍스처 검색
-                        FbxProperty prop = fbxMat->FindProperty(FbxSurfaceMaterial::sDiffuse);
-                        int texCount = prop.GetSrcObjectCount<FbxFileTexture>();
-                        if (texCount > 0)
+                        int DiffuseTexCount = DiffuseProp.GetSrcObjectCount<FbxFileTexture>();
+
+                        if (DiffuseTexCount > 0)
                         {
                             // 첫 번째 텍스처만 사용 (필요에 따라 루프)
-                            FbxFileTexture* fbxTex = prop.GetSrcObject<FbxFileTexture>(0);
+                            FbxFileTexture* fbxTex = DiffuseProp.GetSrcObject<FbxFileTexture>(0);
                             if (fbxTex)
                             {
-                                // FBX SDK가 리턴하는 파일명 (char*) 을 UE FString 으로 변환
-                                FString texName = fbxTex->GetFileName(); // ex: "Clothes_Diffuse.png"
-                                //FWString texturePath = fbxDir + texName.ToWideString();
+                                FString texName = fbxTex->GetFileName(); 
                                 FWString texturePath = texName.ToWideString();
 
                                 if (CreateTextureFromFile(texturePath))
                                 {
+                                    SlotIdx = static_cast<uint32>(EMaterialTextureSlots::MTS_Diffuse);
+
                                     mi.TextureInfos[SlotIdx].TexturePath = texturePath;
                                     mi.TextureInfos[SlotIdx].bIsSRGB = true;
                                     mi.TextureFlag |= static_cast<uint16>(EMaterialTextureFlags::MTF_Diffuse);
@@ -148,6 +172,68 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                                 }
                             }
                         }
+
+                        // Specular Texture
+                        int SpecularTexCount = SpecularProp.GetSrcObjectCount<FbxTexture>();
+
+                        if (SpecularTexCount > 0) 
+                        {
+                            // 첫 번째 텍스처만 사용 (필요에 따라 루프)
+                            FbxFileTexture* fbxTex = SpecularProp.GetSrcObject<FbxFileTexture>(0);
+                            if (fbxTex)
+                            {
+                                FString texName = fbxTex->GetFileName();
+                                FWString texturePath = texName.ToWideString();
+
+                                if (CreateTextureFromFile(texturePath))
+                                {
+                                    SlotIdx = static_cast<uint32>(EMaterialTextureSlots::MTS_Specular);
+
+                                    mi.TextureInfos[SlotIdx].TexturePath = texturePath;
+                                    mi.TextureInfos[SlotIdx].bIsSRGB = true;
+                                    mi.TextureFlag |= static_cast<uint16>(EMaterialTextureFlags::MTF_Specular);
+                                }
+                                else
+                                {
+                                    UE_LOG(LogLevel::Warning, TEXT("텍스처 로드 실패: %s"), *texName);
+                                }
+                            }
+                        }
+
+
+                        // Normal Texture
+                        FbxProperty BumpProp = fbxMat->FindProperty(FbxSurfaceMaterial::sNormalMap);
+                        // Normal Map 이 없는 경우 Bump Map이라도 사용해보기
+                        if (!BumpProp.IsValid()) 
+                        {
+                            BumpProp = fbxMat->FindProperty(FbxSurfaceMaterial::sBump);
+                        }
+                        int NormTexCount = BumpProp.GetSrcObjectCount<FbxTexture>();
+                        if (NormTexCount > 0) 
+                        {
+                            // 첫 번째 텍스처만 사용 (필요에 따라 루프)
+                            FbxFileTexture* fbxTex = BumpProp.GetSrcObject<FbxFileTexture>(0);
+                            if (fbxTex)
+                            {
+                                FString texName = fbxTex->GetFileName(); 
+                                FWString texturePath = texName.ToWideString();
+
+                                if (CreateTextureFromFile(texturePath))
+                                {
+                                    SlotIdx = static_cast<uint32>(EMaterialTextureSlots::MTS_Normal);
+
+                                    mi.TextureInfos[SlotIdx].TexturePath = texturePath;
+                                    mi.TextureInfos[SlotIdx].bIsSRGB = true;
+                                    mi.TextureFlag |= static_cast<uint16>(EMaterialTextureFlags::MTF_Normal);
+                                }
+                                else
+                                {
+                                    UE_LOG(LogLevel::Warning, TEXT("텍스처 로드 실패: %s"), *texName);
+                                }
+                            }
+                        }
+
+
 
                         rd->Materials.Add(mi);
                     }
@@ -199,13 +285,14 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                     // (5) 폴리곤(삼각형) 순회 → 정점·인덱스·스켈레탈 버텍스 생성
                     const FbxVector4* controlPoints = mesh->GetControlPoints();
                     auto* uvElem = mesh->GetElementUV();
+                    FbxGeometryElementNormal* normalElem = mesh->GetElementNormal();
                     const char* uvSetName = uvElem ? uvElem->GetName() : nullptr;
 
                     int polyCount = mesh->GetPolygonCount();
                     // 최대 폴리곤 수 × 3으로 리저브해두면 충분합니다.
                     rd->Vertices.Reserve(rd->Vertices.Num() + polyCount * 3);
                     rd->Indices.Reserve(rd->Indices.Num() + polyCount * 3);
-                    skelMesh->SourceVertices.Reserve(skelMesh->SourceVertices.Num() + polyCount * 3);
+                    rd->SourceVertices.Reserve(rd->SourceVertices.Num() + polyCount * 3);
 
                     for (int p = 0; p < polyCount; ++p)
                     {
@@ -228,8 +315,21 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                                 FSkeletalMeshVertex outV{};
                                 outV.X = (float)pos[0]; outV.Y = (float)pos[1]; outV.Z = (float)pos[2];
                                 outV.R = outV.G = outV.B = outV.A = 1.f;
-                                outV.NormalX = (float)nrm[0]; outV.NormalY = (float)nrm[1]; outV.NormalZ = (float)nrm[2];
-                                outV.TangentX = outV.TangentY = outV.TangentZ = 0.f; outV.TangentW = 1.f;
+                                
+                                FbxVector4 normal;
+                                
+                                if (normalElem)
+                                {
+                                    normal = GetNormalMappingVector(normalElem, mesh, p, v);
+                                }
+                                else 
+                                {
+                                    normal = nrm;
+                                }
+                                
+                                
+                                outV.NormalX = (float)normal[0]; outV.NormalY = (float)normal[1]; outV.NormalZ = (float)normal[2];
+                                
                                 outV.U = (float)uv[0]; outV.V = 1.f - (float)uv[1];
                                 outV.MaterialIndex = baseMatIndex;
 
@@ -261,7 +361,20 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                                     for (int k = 0; k < useN; ++k)
                                         srcV.BoneWeights[k] /= totalW;
 
-                                skelMesh->SourceVertices.Add(srcV);
+                                rd->SourceVertices.Add(srcV);
+                            }
+
+                            int VerticeNum = rd->Vertices.Num();
+
+                            if (VerticeNum >= 3) 
+                            {
+                                FSkeletalMeshVertex& Vertex0 = rd->Vertices[VerticeNum - 3];
+                                FSkeletalMeshVertex& Vertex1 = rd->Vertices[VerticeNum - 2];
+                                FSkeletalMeshVertex& Vertex2 = rd->Vertices[VerticeNum - 1];
+
+                                CalculateTangent(Vertex0, Vertex1, Vertex2);
+                                CalculateTangent(Vertex1, Vertex2, Vertex0);
+                                CalculateTangent(Vertex2, Vertex0, Vertex1);
                             }
                         }
                         // 4각형이면 (0,2,1)과 (0,3,2) 두 개의 삼각형으로 분할
@@ -284,8 +397,21 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                                     FSkeletalMeshVertex outV{};
                                     outV.X = (float)pos[0]; outV.Y = (float)pos[1]; outV.Z = (float)pos[2];
                                     outV.R = outV.G = outV.B = outV.A = 1.f;
-                                    outV.NormalX = (float)nrm[0]; outV.NormalY = (float)nrm[1]; outV.NormalZ = (float)nrm[2];
-                                    outV.TangentX = outV.TangentY = outV.TangentZ = 0.f; outV.TangentW = 1.f;
+                                    
+                                    FbxVector4 normal;
+
+                                    if (normalElem)
+                                    {
+                                        normal = GetNormalMappingVector(normalElem, mesh, p, v);
+                                    }
+                                    else
+                                    {
+                                        normal = nrm;
+                                    }
+
+
+                                    outV.NormalX = (float)normal[0]; outV.NormalY = (float)normal[1]; outV.NormalZ = (float)normal[2];
+                                    
                                     outV.U = (float)uv[0]; outV.V = 1.f - (float)uv[1];
                                     outV.MaterialIndex = baseMatIndex;
 
@@ -316,7 +442,20 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
                                         for (int k = 0; k < useN; ++k)
                                             srcV.BoneWeights[k] /= totalW;
 
-                                    skelMesh->SourceVertices.Add(srcV);
+                                    rd->SourceVertices.Add(srcV);
+                                }
+
+                                int VerticeNum = rd->Vertices.Num();
+
+                                if (VerticeNum >= 3)
+                                {
+                                    FSkeletalMeshVertex& Vertex0 = rd->Vertices[VerticeNum - 3];
+                                    FSkeletalMeshVertex& Vertex1 = rd->Vertices[VerticeNum - 2];
+                                    FSkeletalMeshVertex& Vertex2 = rd->Vertices[VerticeNum - 1];
+
+                                    CalculateTangent(Vertex0, Vertex1, Vertex2);
+                                    CalculateTangent(Vertex1, Vertex2, Vertex0);
+                                    CalculateTangent(Vertex2, Vertex0, Vertex1);
                                 }
                             }
                         }
@@ -342,6 +481,8 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
 
         // (8) 렌더 데이터 & 소스 정점 세팅
         
+        
+        OutSkeletalMeshRenderData = rd;
         
         skelMesh->SetData(rd);
     }
@@ -371,4 +512,120 @@ bool FFbxLoader::CreateTextureFromFile(const FWString& Filename, bool bIsSRGB)
     }
 
     return true;
+}
+
+void FFbxLoader::CalculateTangent(FSkeletalMeshVertex& PivotVertex, const FSkeletalMeshVertex& Vertex1, const FSkeletalMeshVertex& Vertex2)
+{
+    const float s1 = Vertex1.U - PivotVertex.U;
+    const float t1 = Vertex1.V - PivotVertex.V;
+    const float s2 = Vertex2.U - PivotVertex.U;
+    const float t2 = Vertex2.V - PivotVertex.V;
+    const float E1x = Vertex1.X - PivotVertex.X;
+    const float E1y = Vertex1.Y - PivotVertex.Y;
+    const float E1z = Vertex1.Z - PivotVertex.Z;
+    const float E2x = Vertex2.X - PivotVertex.X;
+    const float E2y = Vertex2.Y - PivotVertex.Y;
+    const float E2z = Vertex2.Z - PivotVertex.Z;
+
+    const float Denominator = s1 * t2 - s2 * t1;
+    FVector Tangent(1, 0, 0);
+    FVector BiTangent(0, 1, 0);
+    FVector Normal(PivotVertex.NormalX, PivotVertex.NormalY, PivotVertex.NormalZ);
+
+    if (FMath::Abs(Denominator) > SMALL_NUMBER)
+    {
+        // 정상적인 계산 진행
+        const float f = 1.f / Denominator;
+
+        const float Tx = f * (t2 * E1x - t1 * E2x);
+        const float Ty = f * (t2 * E1y - t1 * E2y);
+        const float Tz = f * (t2 * E1z - t1 * E2z);
+        Tangent = FVector(Tx, Ty, Tz).GetSafeNormal();
+
+        const float Bx = f * (-s2 * E1x + s1 * E2x);
+        const float By = f * (-s2 * E1y + s1 * E2y);
+        const float Bz = f * (-s2 * E1z + s1 * E2z);
+        BiTangent = FVector(Bx, By, Bz).GetSafeNormal();
+    }
+    else
+    {
+        // 대체 탄젠트 계산 방법
+        // 방법 1: 다른 방향에서 탄젠트 계산 시도
+        FVector Edge1(E1x, E1y, E1z);
+        FVector Edge2(E2x, E2y, E2z);
+
+        // 기하학적 접근: 두 에지 사이의 각도 이등분선 사용
+        Tangent = (Edge1.GetSafeNormal() + Edge2.GetSafeNormal()).GetSafeNormal();
+
+        // 만약 두 에지가 평행하거나 반대 방향이면 다른 방법 사용
+        if (Tangent.IsNearlyZero())
+        {
+            // TODO: 기본 축 방향 중 하나 선택 (메시의 주 방향에 따라 선택)
+            Tangent = FVector(1.0f, 0.0f, 0.0f);
+        }
+    }
+
+    Tangent = (Tangent - Normal * FVector::DotProduct(Normal, Tangent)).GetSafeNormal();
+
+    const float Sign = (FVector::DotProduct(FVector::CrossProduct(Normal, Tangent), BiTangent) < 0.f) ? -1.f : 1.f;
+
+    PivotVertex.TangentX = Tangent.X;
+    PivotVertex.TangentY = Tangent.Y;
+    PivotVertex.TangentZ = Tangent.Z;
+    PivotVertex.TangentW = Sign;
+}
+
+
+FbxVector4 FFbxLoader::GetNormalMappingVector(FbxGeometryElementNormal* normalElem, FbxMesh* mesh, int polygonIndex, int vertIndex)
+{
+    switch (normalElem->GetMappingMode())
+    {
+    case FbxGeometryElement::eByControlPoint:
+    {
+        int cpIndex = mesh->GetPolygonVertex(polygonIndex, vertIndex);
+        int dataIndex = 0;
+
+        if (normalElem->GetReferenceMode() == FbxGeometryElement::eDirect)
+        {
+            dataIndex = cpIndex;
+        }
+        else
+        {
+            dataIndex = normalElem->GetIndexArray().GetAt(cpIndex);
+        }
+
+        return normalElem->GetDirectArray().GetAt(dataIndex);
+    }
+    break;
+
+    case FbxGeometryElement::eByPolygonVertex:
+    {
+        int lIndex = mesh->GetPolygonVertexIndex(polygonIndex);
+        int dataIndex = 0;
+
+        if (normalElem->GetReferenceMode() == FbxGeometryElement::eDirect)
+        {
+            dataIndex = lIndex;
+        }
+        else // eIndexToDirect
+        {
+            dataIndex = normalElem->GetIndexArray().GetAt(lIndex);
+        }
+
+        return normalElem->GetDirectArray().GetAt(dataIndex);
+    }
+    break;
+
+    case FbxGeometryElement::eAllSame:
+    {
+        return normalElem->GetDirectArray().GetAt(0);
+    }
+    break;
+
+    default:
+        // eByPolygon, eByEdge 등
+        break;
+    }
+
+    return FbxVector4();
 }

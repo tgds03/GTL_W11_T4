@@ -58,7 +58,7 @@ void UStaticMeshComponent::SetProperties(const TMap<FString, FString>& InPropert
         {
             // 경로 문자열로 UStaticMesh 에셋 로드 시도
            
-            if (UStaticMesh* MeshToSet = FObjManager::CreateStaticMesh(*TempStr))
+            if (UStaticMesh* MeshToSet = FResourceManager::CreateStaticMesh(*TempStr))
             {
                 SetStaticMesh(MeshToSet); // 성공 시 메시 설정
                 UE_LOG(LogLevel::Display, TEXT("Set StaticMesh '%s' for %s"), **TempStr, *GetName());

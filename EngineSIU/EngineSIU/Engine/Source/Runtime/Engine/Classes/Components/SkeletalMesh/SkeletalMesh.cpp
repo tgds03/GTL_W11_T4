@@ -43,7 +43,7 @@ void USkeletalMesh::UpdateGlobalTransforms()
 TArray<FVector> USkeletalMesh::SkinVertices() const
 {
     TArray<FVector> SkinnedPositions;
-    for (const auto& Vertex : SourceVertices)
+    for (const auto& Vertex : RenderData->SourceVertices)
     {
         SkinnedPositions.Add(Vertex.SkinVertexPosition(RenderData->Skeleton));
     }
@@ -93,7 +93,7 @@ void USkeletalMesh::SetData(FSkeletalMeshRenderData* InRenderData)
     {
         FStaticMaterial* newMaterialSlot = new FStaticMaterial();
         
-        UMaterial* newMaterial = FObjManager::CreateMaterial(RenderData->Materials[materialIndex]);
+        UMaterial* newMaterial = FResourceManager::CreateMaterial(RenderData->Materials[materialIndex]);
 
         newMaterialSlot->Material = newMaterial;
         newMaterialSlot->MaterialSlotName = RenderData->Materials[materialIndex].MaterialName;

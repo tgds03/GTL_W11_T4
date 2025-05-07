@@ -44,9 +44,6 @@ public:
     /** Internal skeleton data */
     //FSkeleton Skeleton;
 
-    /** Mesh vertex array (pre-skinning) */
-    TArray<FVertexSkeletal> SourceVertices;
-
 private:
     FSkeletalMeshRenderData* RenderData = nullptr;
     TArray<FStaticMaterial*> materials;

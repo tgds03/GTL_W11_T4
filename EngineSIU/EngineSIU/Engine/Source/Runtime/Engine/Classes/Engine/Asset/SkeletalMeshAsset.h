@@ -32,4 +32,6 @@ struct FSkeletalMeshRenderData
 
     FVector BoundingBoxMin;
     FVector BoundingBoxMax;
+
+    TArray<FVertexSkeletal> SourceVertices;
 };
