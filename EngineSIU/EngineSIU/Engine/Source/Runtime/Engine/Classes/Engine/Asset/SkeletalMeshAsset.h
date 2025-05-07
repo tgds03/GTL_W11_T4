@@ -20,6 +20,19 @@ struct FSkeletalMeshVertex
     uint32 MaterialIndex;
     int BoneIndices[4];
     float BoneWeights[4];
+
+    FVector GetSkinnedPosition(FSkeleton* InSkeleton)
+    {
+        FVector WeightPosition = FVector::ZeroVector;
+
+        for (int i = 0; i < 4; i++) {
+            if (BoneIndices[i] < 0) continue;
+            FMatrix SkinMat = InSkeleton->Bones[BoneIndices[i]].InvBindTransform * InSkeleton->Bones[BoneIndices[i]].GlobalTransform;
+            WeightPosition += SkinMat.TransformPosition(FVector(X, Y, Z));
+        }
+
+        return WeightPosition;
+    }
 };
 
 struct FSkeletalMeshRenderData
