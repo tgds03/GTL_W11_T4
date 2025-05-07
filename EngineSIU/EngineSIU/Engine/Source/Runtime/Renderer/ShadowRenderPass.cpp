@@ -10,16 +10,18 @@
 #include "Components/Light/DirectionalLightComponent.h"
 #include "Components/Light/PointLightComponent.h"
 #include "Components/Light/SpotLightComponent.h"
+#include "Components/SkeletalMesh/SkeletalMesh.h"
 #include "Engine/EditorEngine.h"
 #include "Engine/Engine.h"
 #include "UnrealEd/EditorViewportClient.h"
 #include "UObject/Casts.h"
 #include "UObject/UObjectIterator.h"
 #include "Editor/PropertyEditor/ShowFlags.h"
+#include "UnrealEd/EditorViewportClient.h"
+#include "Components/SkeletalMesh/SkeletalMeshComponent.h"
+#include "Engine/Asset/SkeletalMeshAsset.h"
 
 class UEditorEngine;
-class UStaticMeshComponent;
-#include "UnrealEd/EditorViewportClient.h"
 
 FShadowRenderPass::FShadowRenderPass()
 {
@@ -96,6 +98,14 @@ void FShadowRenderPass::PrepareRenderArr()
             {
                 StaticMeshComponents.Add(iter);
             }
+        }
+    }
+    
+    for (const auto iter : TObjectRange<USkeletalMeshComponent>())
+    {
+        if (iter->GetOwner() && !iter->GetOwner()->IsHidden())
+        {
+            SkeletalMeshComponents.Add(iter);
         }
     }
 }
@@ -184,12 +194,59 @@ void FShadowRenderPass::Render(const std::shared_ptr<FEditorViewportClient>& Vie
 void FShadowRenderPass::ClearRenderArr()
 {
     StaticMeshComponents.Empty();
+    SkeletalMeshComponents.Empty();
 }
 
 void FShadowRenderPass::SetLightData(const TArray<class UPointLightComponent*>& InPointLights, const TArray<class USpotLightComponent*>& InSpotLights)
 {
     PointLights = InPointLights;
     SpotLights = InSpotLights;
+}
+
+void FShadowRenderPass::RenderPrimitive(FSkeletalMeshRenderData* RenderData, const TArray<FStaticMaterial*> Materials, TArray<UMaterial*> OverrideMaterials, int32 SelectedSubMeshIndex)
+{
+    UINT Stride = sizeof(FSkeletalMeshVertex);
+    UINT Offset = 0;
+
+    FVertexInfo VertexInfo;
+    BufferManager->CreateVertexBuffer(RenderData->ObjectName, RenderData->Vertices, VertexInfo);
+    
+    Graphics->DeviceContext->IASetVertexBuffers(0, 1, &VertexInfo.VertexBuffer, &Stride, &Offset);
+
+    FIndexInfo IndexInfo;
+    BufferManager->CreateIndexBuffer(RenderData->ObjectName, RenderData->Indices, IndexInfo);
+    if (IndexInfo.IndexBuffer)
+    {
+        Graphics->DeviceContext->IASetIndexBuffer(IndexInfo.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+    }
+
+    if (RenderData->MaterialSubsets.Num() == 0)
+    {
+        Graphics->DeviceContext->DrawIndexed(RenderData->Indices.Num(), 0, 0);
+        return;
+    }
+
+    for (int SubMeshIndex = 0; SubMeshIndex < RenderData->MaterialSubsets.Num(); SubMeshIndex++)
+    {
+        uint32 MaterialIndex = RenderData->MaterialSubsets[SubMeshIndex].MaterialIndex;
+
+        FSubMeshConstants SubMeshData = (SubMeshIndex == SelectedSubMeshIndex) ? FSubMeshConstants(true) : FSubMeshConstants(false);
+
+        BufferManager->UpdateConstantBuffer(TEXT("FSubMeshConstants"), SubMeshData);
+
+        if (OverrideMaterials[MaterialIndex] != nullptr)
+        {
+            MaterialUtils::UpdateMaterial(BufferManager, Graphics, OverrideMaterials[MaterialIndex]->GetMaterialInfo());
+        }
+        else
+        {
+            MaterialUtils::UpdateMaterial(BufferManager, Graphics, Materials[MaterialIndex]->Material->GetMaterialInfo());
+        }
+
+        uint32 StartIndex = RenderData->MaterialSubsets[SubMeshIndex].IndexStart;
+        uint32 IndexCount = RenderData->MaterialSubsets[SubMeshIndex].IndexCount;
+        Graphics->DeviceContext->DrawIndexed(IndexCount, StartIndex, 0);
+    }
 }
 
 void FShadowRenderPass::RenderPrimitive(FStaticMeshRenderData* RenderData, const TArray<FStaticMaterial*> Materials, TArray<UMaterial*> OverrideMaterials, int32 SelectedSubMeshIndex)
@@ -264,6 +321,31 @@ void FShadowRenderPass::RenderAllStaticMeshes(const std::shared_ptr<FEditorViewp
         RenderPrimitive(RenderData, Comp->GetStaticMesh()->GetMaterials(), Comp->GetOverrideMaterials(), Comp->GetselectedSubMeshIndex());
         
     }
+
+    for (USkeletalMeshComponent* Comp : SkeletalMeshComponents)
+    {
+        if (!Comp || !Comp->GetSkeletalMesh())
+        {
+            continue;
+        }
+
+        FSkeletalMeshRenderData* RenderData = Comp->GetSkeletalMesh()->GetRenderData();
+        if (RenderData == nullptr)
+        {
+            continue;
+        }
+
+        UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
+
+        FMatrix WorldMatrix = Comp->GetWorldMatrix();
+        FVector4 UUIDColor = Comp->EncodeUUID() / 255.0f;
+        const bool bIsSelected = (Engine && Engine->GetSelectedActor() == Comp->GetOwner());
+
+        UpdateObjectConstant(WorldMatrix, UUIDColor, bIsSelected);
+
+        RenderPrimitive(RenderData, Comp->GetSkeletalMesh()->GetMaterials(), Comp->GetOverrideMaterials(), Comp->GetselectedSubMeshIndex());
+        
+    }
 }
 
 void FShadowRenderPass::RenderAllStaticMeshesForCSM(const std::shared_ptr<FEditorViewportClient>& Viewport, FCascadeConstantBuffer FCasCadeData)
@@ -288,6 +370,28 @@ void FShadowRenderPass::RenderAllStaticMeshesForCSM(const std::shared_ptr<FEdito
 
         RenderPrimitive(RenderData, Comp->GetStaticMesh()->GetMaterials(), Comp->GetOverrideMaterials(), Comp->GetselectedSubMeshIndex());
 
+    }
+
+    for (USkeletalMeshComponent* Comp : SkeletalMeshComponents)
+    {
+        if (!Comp || !Comp->GetSkeletalMesh())
+        {
+            continue;
+        }
+
+        FSkeletalMeshRenderData* RenderData = Comp->GetSkeletalMesh()->GetRenderData();
+        if (RenderData == nullptr)
+        {
+            continue;
+        }
+
+        UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
+        FMatrix WorldMatrix = Comp->GetWorldMatrix();
+        FCasCadeData.World = WorldMatrix;
+        BufferManager->UpdateConstantBuffer(TEXT("FCascadeConstantBuffer"), FCasCadeData);
+
+        RenderPrimitive(RenderData, Comp->GetSkeletalMesh()->GetMaterials(), Comp->GetOverrideMaterials(), Comp->GetselectedSubMeshIndex());
+        
     }
 }
 
@@ -328,6 +432,22 @@ void FShadowRenderPass::RenderAllStaticMeshesForPointLight(const std::shared_ptr
         UpdateCubeMapConstantBuffer(PointLight, WorldMatrix);
 
         RenderPrimitive(RenderData, Comp->GetStaticMesh()->GetMaterials(), Comp->GetOverrideMaterials(), Comp->GetselectedSubMeshIndex());
+    }
+
+    for (USkeletalMeshComponent* Comp : SkeletalMeshComponents)
+    {
+        if (!Comp || !Comp->GetSkeletalMesh()) { continue; }
+
+        FSkeletalMeshRenderData* RenderData = Comp->GetSkeletalMesh()->GetRenderData();
+        if (RenderData == nullptr) { continue; }
+
+        UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
+
+        FMatrix WorldMatrix = Comp->GetWorldMatrix();
+
+        UpdateCubeMapConstantBuffer(PointLight, WorldMatrix);
+
+        RenderPrimitive(RenderData, Comp->GetSkeletalMesh()->GetMaterials(), Comp->GetOverrideMaterials(), Comp->GetselectedSubMeshIndex());
     }
 }
 
