@@ -30,7 +30,7 @@ public:
 
     virtual void ClearRenderArr() = 0;
 
-    virtual void PrepareRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport);
+    virtual void PrepareRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport) = 0;
 
     void UpdateObjectConstant(const FMatrix& WorldMatrix, const FVector4& UUIDColor, bool bIsSelected) const;
 
@@ -44,7 +44,7 @@ public:
     void CreateShader();
     void ReleaseShader();
 
-    void ChangeViewMode(EViewModeIndex ViewMode);
+    virtual void ChangeViewMode(EViewModeIndex ViewMode) = 0;
 
 protected:
 

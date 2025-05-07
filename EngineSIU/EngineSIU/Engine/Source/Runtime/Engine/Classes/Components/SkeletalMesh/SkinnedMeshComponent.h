@@ -25,7 +25,6 @@ public:
     void SetSkeletalMesh(USkeletalMesh* InMesh);
     USkeletalMesh* GetSkeletalMesh() { return SkeletalMesh; }
     void UpdateAnimation();
-    const TArray<FVector>& GetSkinnedVertices() const;
 #pragma endregion
 
     void SetselectedSubMeshIndex(const int& value) { selectedSubMeshIndex = value; }
@@ -34,9 +33,6 @@ public:
 protected:
     /** Skeletal mesh asset containing FSkeleton and source vertices */
     USkeletalMesh* SkeletalMesh;
-
-    /** Cached skinned positions after UpdateAnimation */
-    TArray<FVector> SkinnedPositions;
 
     int selectedSubMeshIndex = -1;
 };

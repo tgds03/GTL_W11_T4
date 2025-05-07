@@ -53,40 +53,6 @@ void FMeshRenderPassBase::InitializeShadowManager(FShadowManager* InShadowManage
 }
 
 
-void FMeshRenderPassBase::PrepareRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport)
-{
-    const EViewModeIndex ViewMode = Viewport->GetViewMode();
-
-    ChangeViewMode(ViewMode);
-
-    Graphics->DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-    TArray<FString> PSBufferKeys = {
-        TEXT("FLightInfoBuffer"),
-        TEXT("FMaterialConstants"),
-        TEXT("FLitUnlitConstants"),
-        TEXT("FSubMeshConstants"),
-        TEXT("FTextureConstants"),
-    };
-
-    BufferManager->BindConstantBuffers(PSBufferKeys, 0, EShaderStage::Pixel);
-    BufferManager->BindConstantBuffer(TEXT("FDiffuseMultiplier"), 6, EShaderStage::Pixel);
-
-    BufferManager->BindConstantBuffer(TEXT("FLightInfoBuffer"), 0, EShaderStage::Vertex);
-    BufferManager->BindConstantBuffer(TEXT("FMaterialConstants"), 1, EShaderStage::Vertex);
-    BufferManager->BindConstantBuffer(TEXT("FObjectConstantBuffer"), 12, EShaderStage::Vertex);
-
-
-    Graphics->DeviceContext->RSSetViewports(1, &Viewport->GetViewportResource()->GetD3DViewport());
-
-    const EResourceType ResourceType = EResourceType::ERT_Scene;
-    FViewportResource* ViewportResource = Viewport->GetViewportResource();
-    FRenderTargetRHI* RenderTargetRHI = ViewportResource->GetRenderTarget(ResourceType);
-    FDepthStencilRHI* DepthStencilRHI = ViewportResource->GetDepthStencil(ResourceType);
-
-    Graphics->DeviceContext->OMSetRenderTargets(1, &RenderTargetRHI->RTV, DepthStencilRHI->DSV);
-}
-
 void FMeshRenderPassBase::UpdateObjectConstant(const FMatrix& WorldMatrix, const FVector4& UUIDColor, bool bIsSelected) const
 {
     FObjectConstantBuffer ObjectData = {};

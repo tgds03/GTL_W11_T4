@@ -38,11 +38,6 @@ public:
     //ObjectName은 경로까지 포함
     FWString GetOjbectName() const;
 
-    /** Skin all source vertices and return their skinned positions. */
-    TArray<FVector> SkinVertices() const;
-
-    /** Internal skeleton data */
-    //FSkeleton Skeleton;
 
 private:
     FSkeletalMeshRenderData* RenderData = nullptr;

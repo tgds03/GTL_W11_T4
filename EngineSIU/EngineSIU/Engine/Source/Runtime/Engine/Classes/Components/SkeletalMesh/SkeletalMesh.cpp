@@ -40,15 +40,6 @@ void USkeletalMesh::UpdateGlobalTransforms()
     RenderData->Skeleton.ComputeGlobalTransforms();
 }
 
-TArray<FVector> USkeletalMesh::SkinVertices() const
-{
-    TArray<FVector> SkinnedPositions;
-    for (const auto& Vertex : RenderData->SourceVertices)
-    {
-        SkinnedPositions.Add(Vertex.SkinVertexPosition(RenderData->Skeleton));
-    }
-    return SkinnedPositions;
-}
 
 UObject* USkeletalMesh::Duplicate(UObject* InOuter)
 {

@@ -28,6 +28,9 @@ public:
     virtual void Render(const std::shared_ptr<FEditorViewportClient>& Viewport) override;
 
     virtual void ClearRenderArr() override;
+
+    virtual void PrepareRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport) override;
+
     void RenderAllStaticMeshesForPointLight(const std::shared_ptr<FEditorViewportClient>& Viewport, UPointLightComponent*& PointLight);
 
     virtual void RenderAllStaticMeshes(const std::shared_ptr<FEditorViewportClient>& Viewport);
@@ -40,6 +43,8 @@ public:
 
     // Shader 관련 함수 (생성/해제 등) // FMeshRenderPass에서 구현했습니다.
     
+    virtual void ChangeViewMode(EViewModeIndex ViewMode) override;
+
 protected:
 
 

@@ -29,6 +29,11 @@ public:
     virtual void Render(const std::shared_ptr<FEditorViewportClient>& Viewport) override;
 
     virtual void ClearRenderArr() override;
+
+    virtual void PrepareRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport) override;
+
+    void UpdateBoneConstant(FSkeletalMeshRenderData*& RenderData) const;
+
     void RenderAllSkeletalMeshesForPointLight(const std::shared_ptr<FEditorViewportClient>& Viewport, UPointLightComponent*& PointLight);
 
     virtual void RenderAllSkeletalMeshes(const std::shared_ptr<FEditorViewportClient>& Viewport);
@@ -40,6 +45,9 @@ public:
     void RenderPrimitive(ID3D11Buffer* pVertexBuffer, UINT numVertices, ID3D11Buffer* pIndexBuffer, UINT numIndices) const override;
 
     // Shader 관련 함수 (생성/해제 등) // FMeshRenderPass에서 구현했습니다.
+
+
+    virtual void ChangeViewMode(EViewModeIndex ViewMode) override;
 
 protected:
 
