@@ -27,55 +27,55 @@ ATransformGizmo::ATransformGizmo()
     );
 
     UGizmoArrowComponent* locationX = AddComponent<UGizmoArrowComponent>();
-    locationX->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/GizmoTranslationX.obj"));
+    locationX->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/Gizmo/GizmoTranslationX.obj"));
     locationX->SetupAttachment(RootComponent);
     locationX->SetGizmoType(UGizmoBaseComponent::ArrowX);
     ArrowArr.Add(locationX);
 
     UGizmoArrowComponent* locationY = AddComponent<UGizmoArrowComponent>();
-    locationY->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/GizmoTranslationY.obj"));
+    locationY->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/Gizmo/GizmoTranslationY.obj"));
     locationY->SetupAttachment(RootComponent);
     locationY->SetGizmoType(UGizmoBaseComponent::ArrowY);
     ArrowArr.Add(locationY);
 
     UGizmoArrowComponent* locationZ = AddComponent<UGizmoArrowComponent>();
-    locationZ->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/GizmoTranslationZ.obj"));
+    locationZ->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/Gizmo/GizmoTranslationZ.obj"));
     locationZ->SetupAttachment(RootComponent);
     locationZ->SetGizmoType(UGizmoBaseComponent::ArrowZ);
     ArrowArr.Add(locationZ);
 
     UGizmoRectangleComponent* ScaleX = AddComponent<UGizmoRectangleComponent>();
-    ScaleX->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/GizmoScaleX.obj"));
+    ScaleX->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/Gizmo/GizmoScaleX.obj"));
     ScaleX->SetupAttachment(RootComponent);
     ScaleX->SetGizmoType(UGizmoBaseComponent::ScaleX);
     RectangleArr.Add(ScaleX);
 
     UGizmoRectangleComponent* ScaleY = AddComponent<UGizmoRectangleComponent>();
-    ScaleY->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/GizmoScaleY.obj"));
+    ScaleY->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/Gizmo/GizmoScaleY.obj"));
     ScaleY->SetupAttachment(RootComponent);
     ScaleY->SetGizmoType(UGizmoBaseComponent::ScaleY);
     RectangleArr.Add(ScaleY);
 
     UGizmoRectangleComponent* ScaleZ = AddComponent<UGizmoRectangleComponent>();
-    ScaleZ->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/GizmoScaleZ.obj"));
+    ScaleZ->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/Gizmo/GizmoScaleZ.obj"));
     ScaleZ->SetupAttachment(RootComponent);
     ScaleZ->SetGizmoType(UGizmoBaseComponent::ScaleZ);
     RectangleArr.Add(ScaleZ);
 
     UGizmoCircleComponent* CircleX = AddComponent<UGizmoCircleComponent>();
-    CircleX->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/GizmoRotationX.obj"));
+    CircleX->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/Gizmo/GizmoRotationX.obj"));
     CircleX->SetupAttachment(RootComponent);
     CircleX->SetGizmoType(UGizmoBaseComponent::CircleX);
     CircleArr.Add(CircleX);
 
     UGizmoCircleComponent* CircleY = AddComponent<UGizmoCircleComponent>();
-    CircleY->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/GizmoRotationY.obj"));
+    CircleY->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/Gizmo/GizmoRotationY.obj"));
     CircleY->SetupAttachment(RootComponent);
     CircleY->SetGizmoType(UGizmoBaseComponent::CircleY);
     CircleArr.Add(CircleY);
 
     UGizmoCircleComponent* CircleZ = AddComponent<UGizmoCircleComponent>();
-    CircleZ->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/GizmoRotationZ.obj"));
+    CircleZ->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/Gizmo/GizmoRotationZ.obj"));
     CircleZ->SetupAttachment(RootComponent);
     CircleZ->SetGizmoType(UGizmoBaseComponent::CircleZ);
     CircleArr.Add(CircleZ);
