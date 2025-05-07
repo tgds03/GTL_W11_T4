@@ -9,6 +9,10 @@
 #include "Components/Light/DirectionalLightComponent.h"
 #include "UObject/UObjectIterator.h"
 
+#include "Engine/Source/Runtime/Launch/EngineLoop.h"
+#include "Engine/Source/Editor/LevelEditor/SLevelEditor.h"
+#include "Engine/Source/Editor/UnrealEd/EditorViewportClient.h"
+
 #include "Components/SkeletalMesh/SkeletalMesh.h"
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
 #include "SkeletalMeshEditorController.h"
@@ -240,6 +244,10 @@ void UEditorEngine::StartSkeletalMeshEditMode(USkeletalMesh* InMesh)
     SkelEditorController->Initialize(InMesh, GEngineLoop.GetLevelEditor()->GetViewports()->get());
 
     StartSkeletalMeshEditMode();
+
+    FEditorViewportClient* ActiveViewport = GEngineLoop.GetLevelEditor()->GetActiveViewportClient().get();
+
+    ActiveViewport->SetViewMode(EViewModeIndex::VMI_Unlit);
 
     AActor* PreviewActor = ActiveWorld->SpawnActor<AActor>();
     PreviewActor->SetActorLabel(FString(InMesh->GetOjbectName()));

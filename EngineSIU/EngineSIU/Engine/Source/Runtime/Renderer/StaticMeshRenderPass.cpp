@@ -72,28 +72,28 @@ void FStaticMeshRenderPass::Render(const std::shared_ptr<FEditorViewportClient>&
     // 머티리얼 리소스 해제
     constexpr UINT NumViews = static_cast<UINT>(EMaterialTextureSlots::MTS_MAX);
 
-    ID3D11ShaderResourceView* NullSRVs[NumViews] = { nullptr };
-    ID3D11SamplerState* NullSamplers[NumViews] = { nullptr };
+    ID3D11ShaderResourceView* NullSRVs[NumViews] = { nullptr, };
+    ID3D11SamplerState* NullSamplers[NumViews] = { nullptr, };
 
     Graphics->DeviceContext->PSSetShaderResources(0, NumViews, NullSRVs);
     Graphics->DeviceContext->PSSetSamplers(0, NumViews, NullSamplers);
 
     // for Gouraud shading
-    ID3D11ShaderResourceView* NullSRV[1] = { nullptr };
-    ID3D11SamplerState* NullSampler[1] = { nullptr };
+    ID3D11ShaderResourceView* NullSRV[1] = { nullptr, };
+    ID3D11SamplerState* NullSampler[1] = { nullptr, };
     Graphics->DeviceContext->VSSetShaderResources(0, 1, NullSRV);
     Graphics->DeviceContext->VSSetSamplers(0, 1, NullSampler);
 
     // @todo 리소스 언바인딩 필요한가? - 답변: 네.
     // SRV 해제
-    ID3D11ShaderResourceView* NullSRVs2[14] = { nullptr };
-    Graphics->DeviceContext->PSSetShaderResources(0, 14, NullSRVs2);
+    // ID3D11ShaderResourceView* NullSRVs2[14] = { nullptr, };
+    // Graphics->DeviceContext->PSSetShaderResources(0, 14, NullSRVs2);
 
     // 상수버퍼 해제
-    ID3D11Buffer* NullPSBuffer[9] = { nullptr };
+    ID3D11Buffer* NullPSBuffer[9] = { nullptr, };
     Graphics->DeviceContext->PSSetConstantBuffers(0, 9, NullPSBuffer);
-    ID3D11Buffer* NullVSBuffer[2] = { nullptr };
-    Graphics->DeviceContext->VSSetConstantBuffers(0, 2, NullVSBuffer);
+    ID3D11Buffer* NullVSBuffer[3] = { nullptr, };
+    Graphics->DeviceContext->VSSetConstantBuffers(0, 3, NullVSBuffer);
 }
 
 

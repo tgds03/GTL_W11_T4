@@ -461,8 +461,8 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName,
 
         recurse(scene->GetRootNode());
 
-        // TODO (7) 바운딩 박스 계산은 이후에 추가 필요 
-
+        // 바운딩 계산 작업
+        ComputeBoundingBox(rd->Vertices, rd->BoundingBoxMin, rd->BoundingBoxMax);
         // (8) 렌더 데이터 & 소스 정점 세팅
         
         
@@ -605,4 +605,24 @@ FbxVector4 FFbxLoader::GetNormalMappingVector(FbxGeometryElementNormal* normalEl
     }
 
     return FbxVector4();
+}
+
+void FFbxLoader::ComputeBoundingBox(const TArray<FSkeletalMeshVertex>& InVertices, FVector& OutMinVector, FVector& OutMaxVector)
+{
+    FVector MinVector = { FLT_MAX, FLT_MAX, FLT_MAX };
+    FVector MaxVector = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
+
+    for (int32 i = 0; i < InVertices.Num(); i++)
+    {
+        MinVector.X = std::min(MinVector.X, InVertices[i].X);
+        MinVector.Y = std::min(MinVector.Y, InVertices[i].Y);
+        MinVector.Z = std::min(MinVector.Z, InVertices[i].Z);
+
+        MaxVector.X = std::max(MaxVector.X, InVertices[i].X);
+        MaxVector.Y = std::max(MaxVector.Y, InVertices[i].Y);
+        MaxVector.Z = std::max(MaxVector.Z, InVertices[i].Z);
+    }
+
+    OutMinVector = MinVector;
+    OutMaxVector = MaxVector;
 }

@@ -19,4 +19,5 @@ public:
 
     static FbxVector4 GetNormalMappingVector(FbxGeometryElementNormal* normalElem, FbxMesh* mesh, int polygonIndex, int vertIndex);
 
+    static void ComputeBoundingBox(const TArray<FSkeletalMeshVertex>& InVertices, FVector& OutMinVector, FVector& OutMaxVector);
 };

@@ -2,6 +2,9 @@
 #include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/SkeletalMeshAsset.h"
 #include "Engine/FObjLoader.h"
 
+#include "UObject/Casts.h"
+#include "Engine/Source/Runtime/CoreUObject/UObject/ObjectFactory.h"
+
 //void USkeletalMesh::InitializeSkeleton(TArray<FBone>& BoneData)
 //{
 //    // Clear previous child lists
@@ -43,9 +46,32 @@ void USkeletalMesh::UpdateGlobalTransforms()
 
 UObject* USkeletalMesh::Duplicate(UObject* InOuter)
 {
-    // TODO: Context->CopyResource를 사용해서 Buffer복사
-    // ThisClass* NewComponent = Cast<ThisClass>(Super::Duplicate());
+    ThisClass* NewSkeletalMesh = Cast<ThisClass>(Super::Duplicate(InOuter));
+
+    NewSkeletalMesh->RenderData = this->RenderData->Duplicate();
+    NewSkeletalMesh->materials.Reserve(this->materials.Num());
+
+    for (const auto& M : this->materials)
+    {
+        NewSkeletalMesh->materials.Emplace(M);
+    }
+
     return nullptr;
+}
+
+USkeletalMesh* USkeletalMesh::DuplicateSkeletalMesh()
+{
+    ThisClass* NewSkeletalMesh = FObjectFactory::ConstructObject<USkeletalMesh>(nullptr);
+
+    NewSkeletalMesh->RenderData = this->RenderData->Duplicate();
+    NewSkeletalMesh->materials.Reserve(this->materials.Num());
+
+    for (const auto& M : this->materials)
+    {
+        NewSkeletalMesh->materials.Emplace(M);
+    }
+
+    return NewSkeletalMesh;
 }
 
 uint32 USkeletalMesh::GetMaterialIndex(FName MaterialSlotName) const
