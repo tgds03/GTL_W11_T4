@@ -16,14 +16,13 @@ public:
     USkinnedMeshComponent();
     ~USkinnedMeshComponent() = default;
 
-    //TODO 아래 요소 채우기
-    /*virtual UObject* Duplicate(UObject* InOuter) override;
+    virtual UObject* Duplicate(UObject* InOuter) override;
     void GetProperties(TMap<FString, FString>& OutProperties) const override;
-    void SetProperties(const TMap<FString, FString>& InProperties) override;*/
+    void SetProperties(const TMap<FString, FString>& InProperties) override;
 
 #pragma region Skeletal
     void SetSkeletalMesh(USkeletalMesh* InMesh);
-    USkeletalMesh* GetSkeletalMesh() { return SkeletalMesh; }
+    USkeletalMesh* GetSkeletalMesh() const { return SkeletalMesh; }
     void UpdateAnimation();
 #pragma endregion
 
