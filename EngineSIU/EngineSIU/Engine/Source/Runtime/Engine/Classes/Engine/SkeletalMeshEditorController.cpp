@@ -42,3 +42,32 @@ void SkeletalMeshEditorController::SetBoneGizmo(FSkeleton* InSkeleton)
         BoneGizmos.Add(BoneGizmo);
     }
 }
+
+int SkeletalMeshEditorController::GetBoneIndex(ABoneGizmo* InBoneGizmo)
+{
+    for (int i = 0; i < BoneGizmos.Num(); i++) 
+    {
+        if (BoneGizmos[i] == InBoneGizmo) 
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int SkeletalMeshEditorController::GetSelectedBoneIndex()
+{
+    return GetBoneIndex(SelectedGizmo);
+}
+
+void SkeletalMeshEditorController::SetSelectedBoneIndex(int index)
+{
+    if (index >= BoneGizmos.Num()) 
+    {
+        SelectedGizmo = BoneGizmos[index];
+        return;
+    }
+
+    SelectedGizmo = nullptr;
+}
+

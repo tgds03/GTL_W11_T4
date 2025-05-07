@@ -136,9 +136,23 @@ bool AEditorPlayer::PickGizmo(FVector& pickPosition, FEditorViewportClient* InAc
                 UStaticMeshComponent* joint = Cast<UStaticMeshComponent>(GizmoActor->GetJointComponent());
                 ProcessGizmoIntersection(joint, pickPosition, InActiveViewport, isPickedGizmo);
 
+                if (isPickedGizmo) 
+                {
+                    Engine->GetSkeletalMeshEditorController()->SelectedGizmo = GizmoActor;
+                    return isPickedGizmo;
+                }
+
                 UStaticMeshComponent* frame = Cast<UStaticMeshComponent>(GizmoActor->GetFrameComponent());
                 ProcessGizmoIntersection(frame, pickPosition, InActiveViewport, isPickedGizmo);
+
+                if (isPickedGizmo)
+                {
+                    Engine->GetSkeletalMeshEditorController()->SelectedGizmo = GizmoActor;
+                    return isPickedGizmo;
+                }
             }
+
+            Engine->GetSkeletalMeshEditorController()->SelectedGizmo = nullptr;
         }
     }
     return isPickedGizmo;

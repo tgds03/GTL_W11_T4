@@ -54,6 +54,10 @@ void SkeletonMeshEditorPanel::Render()
 
     ImGui::Separator();
 
+
+    UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
+    SelectedBoneIndex = Engine->GetSkeletalMeshEditorController()->GetSelectedBoneIndex();
+
     // 선택된 본의 FBonePose 편집
     if (SelectedBoneIndex != INDEX_NONE)
     {
@@ -109,7 +113,6 @@ void SkeletonMeshEditorPanel::RenderBoneTree(int32 BoneIndex)
         | ImGuiTreeNodeFlags_SpanAvailWidth
         | ((SelectedBoneIndex == BoneIndex) ? ImGuiTreeNodeFlags_Selected : 0);
 
-    // 포인터 대신 unique ID로 노드 구분
     bool opened = ImGui::TreeNodeEx(
         (void*)(intptr_t)BoneIndex,
         flags,
@@ -117,10 +120,14 @@ void SkeletonMeshEditorPanel::RenderBoneTree(int32 BoneIndex)
         *Bones[BoneIndex].Name.ToString()
     );
 
+    // 클릭 시 에디터 컨트롤러에 선택 인덱스 설정
     if (ImGui::IsItemClicked())
     {
-        SelectedBoneIndex = BoneIndex;
+        UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
+        Engine->GetSkeletalMeshEditorController()->SetSelectedBoneIndex(BoneIndex);
+        SelectedBoneIndex = BoneIndex;  // 로컬 변수에도 저장해두면 Render() 쪽에서 즉시 반영됩니다.
     }
+
     if (opened)
     {
         for (int32 ChildIdx : Bones[BoneIndex].Children)

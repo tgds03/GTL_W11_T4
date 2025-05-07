@@ -13,8 +13,13 @@ public:
 
     TArray<ABoneGizmo*> GetBoneGizmos() { return BoneGizmos; }
 
-private:
     void SetBoneGizmo(FSkeleton* InSkeleton);
+
+    int GetBoneIndex(ABoneGizmo* InBoneGizmo);
+
+    int GetSelectedBoneIndex();
+
+    void SetSelectedBoneIndex(int index);
       
 public:
     USkeletalMesh* OriginalMesh = nullptr;
@@ -23,4 +28,6 @@ public:
     TArray<ABoneGizmo*> BoneGizmos;
 
     FEditorViewportClient* AttachedViewport = nullptr;
+
+    ABoneGizmo* SelectedGizmo = nullptr;
 };
