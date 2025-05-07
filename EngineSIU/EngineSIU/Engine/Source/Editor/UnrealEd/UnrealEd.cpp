@@ -4,6 +4,7 @@
 #include "PropertyEditor/ControlEditorPanel.h"
 #include "PropertyEditor/OutlinerEditorPanel.h"
 #include "PropertyEditor/PropertyEditorPanel.h"
+#include "PropertyEditor/SkeletonMeshEditorPanel.h"
 
 #include "Engine/EditorEngine.h"
 #include "Engine/World/World.h"
@@ -21,6 +22,10 @@ void UnrealEd::Initialize()
     auto PropertyPanel = std::make_shared<PropertyEditorPanel>();
     PropertyPanel->SetVisibleInWorldType(EWorldType::Editor);
     Panels["PropertyPanel"] = PropertyPanel;
+
+    auto SkeletonPanel = std::make_shared<SkeletonMeshEditorPanel>();
+    SkeletonPanel->SetVisibleInWorldType(EWorldType::SkeletalMeshEditor);
+    Panels["SkeletonPanel"] = SkeletonPanel;
 }
 
 void UnrealEd::Render() const
