@@ -60,3 +60,14 @@ int SkeletalMeshEditorController::GetSelectedBoneIndex()
     return GetBoneIndex(SelectedGizmo);
 }
 
+void SkeletalMeshEditorController::SetSelectedBoneIndex(int index)
+{
+    if (index >= BoneGizmos.Num()) 
+    {
+        SelectedGizmo = BoneGizmos[index];
+        return;
+    }
+
+    SelectedGizmo = nullptr;
+}
+

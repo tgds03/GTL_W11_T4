@@ -18,6 +18,8 @@ public:
     int GetBoneIndex(ABoneGizmo* InBoneGizmo);
 
     int GetSelectedBoneIndex();
+
+    void SetSelectedBoneIndex(int index);
       
 public:
     USkeletalMesh* OriginalMesh = nullptr;
