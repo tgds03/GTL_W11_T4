@@ -3,6 +3,9 @@
 #include "Define.h"
 #include "Hal/PlatformType.h"
 #include "Container/Array.h"
+#include "Engine/Source/Runtime/Launch/SkeletalDefine.h"
+
+#define MAX_BONE_NUM 256
 
 // 현재는 StaticMeshAsset과 동일한 내용
 // 하지만 이후에 변경 가능하기에 분리해두었습니다.
@@ -15,6 +18,8 @@ struct FSkeletalMeshVertex
     float TangentX, TangentY, TangentZ, TangentW;
     float U = 0, V = 0;
     uint32 MaterialIndex;
+    int BoneIndices[4];
+    float BoneWeights[4];
 };
 
 struct FSkeletalMeshRenderData
@@ -32,6 +37,9 @@ struct FSkeletalMeshRenderData
 
     FVector BoundingBoxMin;
     FVector BoundingBoxMax;
+};
 
-    TArray<FVertexSkeletal> SourceVertices;
+struct FBoneWeightConstants
+{
+    FMatrix BoneTransform[MAX_BONE_NUM];
 };

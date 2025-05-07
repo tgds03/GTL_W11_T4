@@ -49,8 +49,10 @@ void USkeletalMeshComponent::GenerateSampleData()
 
     for (const FStaticMeshVertex& v : rd->Vertices)
     {
-        FVertexSkeletal sv;
-        sv.Position = FVector(v.X, v.Y, v.Z);
+        FSkeletalMeshVertex sv;
+        sv.X = v.X;
+        sv.Y = v.Y;
+        sv.Z = v.Z;
         int32 idx = FMath::Clamp(int32(v.Z / 0.2f), 0, BoneCount - 1);
         sv.BoneIndices[0] = idx;
         sv.BoneWeights[0] = 1.f;
@@ -59,7 +61,7 @@ void USkeletalMeshComponent::GenerateSampleData()
             sv.BoneIndices[j] = INDEX_NONE;
             sv.BoneWeights[j] = 0.f;
         }
-        skelMesh->GetRenderData()->SourceVertices.Add(sv);
+        skelMesh->GetRenderData()->Vertices.Add(sv);
     }
 
     // 5) 렌더 데이터 복제

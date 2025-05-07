@@ -12,14 +12,6 @@ using namespace fbxsdk;
 
 USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName, FSkeletalMeshRenderData*& OutSkeletalMeshRenderData)
 {
-    FWString key = filePathName.ToWideString();
-
-    // 1) 캐시된 메시가 있으면 바로 반환
-    if (USkeletalMesh** cached = SkeletalMeshMap.Find(key))
-    {
-        return *cached;
-    }
-
     // 2) FBX SDK 초기화
     FbxManager* manager = FbxManager::Create();
     FbxIOSettings* ios = FbxIOSettings::Create(manager, IOSROOT);
@@ -292,7 +284,6 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName,
                     // 최대 폴리곤 수 × 3으로 리저브해두면 충분합니다.
                     rd->Vertices.Reserve(rd->Vertices.Num() + polyCount * 3);
                     rd->Indices.Reserve(rd->Indices.Num() + polyCount * 3);
-                    rd->SourceVertices.Reserve(rd->SourceVertices.Num() + polyCount * 3);
 
                     for (int p = 0; p < polyCount; ++p)
                     {
@@ -333,14 +324,8 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName,
                                 outV.U = (float)uv[0]; outV.V = 1.f - (float)uv[1];
                                 outV.MaterialIndex = baseMatIndex;
 
-                                int newVIdx = rd->Vertices.Num();
-                                rd->Vertices.Add(outV);
-                                rd->Indices.Add(newVIdx);
 
-                                // --- FVertexSkeletal (CPU 스키닝용) ---
-                                FVertexSkeletal srcV{};
-                                srcV.Position = FVector(outV.X, outV.Y, outV.Z);
-                                // cpWeights[cpIdx] 에서 상위 4개 추려 배분
+                                // --- 스키닝 GPU Shader에서 하기
                                 auto& wlist = cpWeights[cpIdx];
                                 std::sort(wlist.begin(), wlist.end(),
                                     [](auto& A, auto& B) { return A.second > B.second; });
@@ -348,20 +333,22 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName,
                                 int useN = FMath::Min((int)wlist.size(), 4);
                                 for (int k = 0; k < useN; ++k)
                                 {
-                                    srcV.BoneIndices[k] = wlist[k].first;
-                                    srcV.BoneWeights[k] = (float)wlist[k].second;
-                                    totalW += srcV.BoneWeights[k];
+                                    outV.BoneIndices[k] = wlist[k].first;
+                                    outV.BoneWeights[k] = (float)wlist[k].second;
+                                    totalW += outV.BoneWeights[k];
                                 }
                                 for (int k = useN; k < 4; ++k)
                                 {
-                                    srcV.BoneIndices[k] = INDEX_NONE;
-                                    srcV.BoneWeights[k] = 0.f;
+                                    outV.BoneIndices[k] = INDEX_NONE;
+                                    outV.BoneWeights[k] = 0.f;
                                 }
                                 if (totalW > 0.f)
                                     for (int k = 0; k < useN; ++k)
-                                        srcV.BoneWeights[k] /= totalW;
+                                        outV.BoneWeights[k] /= totalW;
 
-                                rd->SourceVertices.Add(srcV);
+                                int newVIdx = rd->Vertices.Num();
+                                rd->Vertices.Add(outV);
+                                rd->Indices.Add(newVIdx);
                             }
 
                             int VerticeNum = rd->Vertices.Num();
@@ -415,13 +402,8 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName,
                                     outV.U = (float)uv[0]; outV.V = 1.f - (float)uv[1];
                                     outV.MaterialIndex = baseMatIndex;
 
-                                    int newVIdx = rd->Vertices.Num();
-                                    rd->Vertices.Add(outV);
-                                    rd->Indices.Add(newVIdx);
-
-                                    // --- FVertexSkeletal (CPU 스키닝용) ---
-                                    FVertexSkeletal srcV{};
-                                    srcV.Position = FVector(outV.X, outV.Y, outV.Z);
+                                    
+                                    // --- 스키닝 GPU Shader에서 하기
                                     auto& wlist = cpWeights[cpIdx];
                                     std::sort(wlist.begin(), wlist.end(),
                                         [](auto& A, auto& B) { return A.second > B.second; });
@@ -429,20 +411,22 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName,
                                     int useN = FMath::Min((int)wlist.size(), 4);
                                     for (int k = 0; k < useN; ++k)
                                     {
-                                        srcV.BoneIndices[k] = wlist[k].first;
-                                        srcV.BoneWeights[k] = (float)wlist[k].second;
-                                        totalW += srcV.BoneWeights[k];
+                                        outV.BoneIndices[k] = wlist[k].first;
+                                        outV.BoneWeights[k] = (float)wlist[k].second;
+                                        totalW += outV.BoneWeights[k];
                                     }
                                     for (int k = useN; k < 4; ++k)
                                     {
-                                        srcV.BoneIndices[k] = INDEX_NONE;
-                                        srcV.BoneWeights[k] = 0.f;
+                                        outV.BoneIndices[k] = INDEX_NONE;
+                                        outV.BoneWeights[k] = 0.f;
                                     }
                                     if (totalW > 0.f)
                                         for (int k = 0; k < useN; ++k)
-                                            srcV.BoneWeights[k] /= totalW;
+                                            outV.BoneWeights[k] /= totalW;
 
-                                    rd->SourceVertices.Add(srcV);
+                                    int newVIdx = rd->Vertices.Num();
+                                    rd->Vertices.Add(outV);
+                                    rd->Indices.Add(newVIdx);
                                 }
 
                                 int VerticeNum = rd->Vertices.Num();
@@ -488,13 +472,6 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName,
     }
 
     return skelMesh;
-}
-
-USkeletalMesh* FFbxLoader::GetSkeletalMesh(const FWString& name)
-{
-    if (USkeletalMesh** found = SkeletalMeshMap.Find(name))
-        return *found;
-    return nullptr;
 }
 
 bool FFbxLoader::CreateTextureFromFile(const FWString& Filename, bool bIsSRGB)
