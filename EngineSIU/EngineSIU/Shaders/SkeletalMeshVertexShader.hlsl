@@ -18,19 +18,19 @@ PS_INPUT_StaticMesh mainVS(VS_INPUT_SkeletalMesh Input)
 
     if (Input.BoneIndices.x >= 0)
     {
-        WeightedPosition += Input.BoneWeights.x * mul(BoneTransform[Input.BoneIndices.x], float4(Input.Position, 1.0f));
+        WeightedPosition += Input.BoneWeights.x * mul(float4(Input.Position, 1.0f), BoneTransform[Input.BoneIndices.x]);
     }
     if (Input.BoneIndices.y >= 0)
     {
-        WeightedPosition += Input.BoneWeights.y * mul(BoneTransform[Input.BoneIndices.y], float4(Input.Position, 1.0f));
+        WeightedPosition += Input.BoneWeights.y * mul(float4(Input.Position, 1.0f), BoneTransform[Input.BoneIndices.y]);
     }
     if (Input.BoneIndices.z >= 0)
     {
-        WeightedPosition += Input.BoneWeights.z * mul(BoneTransform[Input.BoneIndices.z], float4(Input.Position, 1.0f));
+        WeightedPosition += Input.BoneWeights.z * mul(float4(Input.Position, 1.0f), BoneTransform[Input.BoneIndices.z]);
     }
     if (Input.BoneIndices.w >= 0)
     {
-        WeightedPosition += Input.BoneWeights.w * mul(BoneTransform[Input.BoneIndices.w], float4(Input.Position, 1.0f));
+        WeightedPosition += Input.BoneWeights.w * mul(float4(Input.Position, 1.0f), BoneTransform[Input.BoneIndices.w]);
     }
     
     
