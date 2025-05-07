@@ -30,7 +30,7 @@ public:
     void Deselect() { bIsSelected = false; }
 
 private:
-    bool bIsSelected = false;
+    bool bIsSelected = false;  
 
     UGizmoJointComponent* Joint = nullptr;
     UGizmoFrameComponent* Frame = nullptr;

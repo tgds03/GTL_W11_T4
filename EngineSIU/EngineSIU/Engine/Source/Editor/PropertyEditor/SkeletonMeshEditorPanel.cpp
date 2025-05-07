@@ -37,6 +37,14 @@ void SkeletonMeshEditorPanel::Render()
         }
     }
 
+    if (ImGui::Button("Exit Edit Mode"))
+    {
+        if (UEditorEngine* Engine = Cast<UEditorEngine>(GEngine))
+        {
+            Engine->EndSkeletalMeshEditMode();
+        }
+    }
+
     if (RootIdx != INDEX_NONE)
     {
         ImGui::Text("Bone Hierarchy:");
