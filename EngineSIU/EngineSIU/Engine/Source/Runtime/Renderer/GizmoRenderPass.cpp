@@ -32,7 +32,6 @@
 #include "Engine/SkeletalMeshEditorController.h"
 #include "BoneGizmos/ABoneGizmo.h"
 
-
 FGizmoRenderPass::FGizmoRenderPass()
     : BufferManager(nullptr)
     , Graphics(nullptr)
@@ -235,7 +234,27 @@ void FGizmoRenderPass::RenderGizmoComponent(UGizmoBaseComponent* GizmoComp, cons
     // 오브젝트 버퍼 업데이트
     FMatrix WorldMatrix = GizmoComp->GetWorldMatrix();
     FVector4 UUIDColor = GizmoComp->EncodeUUID() / 255.0f;
-    bool bIsSelected = (GizmoComp == Viewport->GetPickedGizmoComponent());
+    bool bIsSelected = false;
+
+    USceneComponent* PickedComp = Viewport->GetPickedGizmoComponent();
+
+    // BoneGizmo 액터인지 검사
+    if (ABoneGizmo* BoneActor = Cast<ABoneGizmo>(GizmoComp->GetOwner()))
+    {
+        // Joint/Frame 컴포넌트를 얻어서 둘 중 하나라도 PickedComp와 같으면 선택 상태로 간주
+        auto JointComp = Cast<UGizmoBaseComponent>(BoneActor->GetJointComponent());
+        auto FrameComp = Cast<UGizmoBaseComponent>(BoneActor->GetFrameComponent());
+        if (PickedComp == JointComp || PickedComp == FrameComp)
+        {
+            bIsSelected = true;
+        }
+    }
+    else
+    {
+        // 일반 기즈모는 기존 로직 유지
+        bIsSelected = (GizmoComp == PickedComp);
+    }
+
     UpdateObjectConstant(WorldMatrix, UUIDColor, bIsSelected);
 
     UINT Stride = sizeof(FStaticMeshVertex);

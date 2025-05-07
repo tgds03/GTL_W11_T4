@@ -14,6 +14,8 @@
 #include "UObject/UObjectIterator.h"
 #include "Engine/EditorEngine.h"
 
+#include "Engine/SkeletalMeshEditorController.h"
+#include "BoneGizmos/ABoneGizmo.h"
 
 void AEditorPlayer::Tick(float DeltaTime)
 {
@@ -124,6 +126,18 @@ bool AEditorPlayer::PickGizmo(FVector& pickPosition, FEditorViewportClient* InAc
             for (UStaticMeshComponent* iter : InActiveViewport->GetGizmoActor()->GetScaleArr())
             {
                 ProcessGizmoIntersection(iter, pickPosition, InActiveViewport, isPickedGizmo);
+            }
+        }
+
+        if (Engine->ActiveWorld->WorldType == EWorldType::SkeletalMeshEditor)
+        {
+            for (ABoneGizmo* GizmoActor : Engine->GetSkeletalMeshEditorController()->GetBoneGizmos())
+            {
+                UStaticMeshComponent* joint = Cast<UStaticMeshComponent>(GizmoActor->GetJointComponent());
+                ProcessGizmoIntersection(joint, pickPosition, InActiveViewport, isPickedGizmo);
+
+                UStaticMeshComponent* frame = Cast<UStaticMeshComponent>(GizmoActor->GetFrameComponent());
+                ProcessGizmoIntersection(frame, pickPosition, InActiveViewport, isPickedGizmo);
             }
         }
     }
