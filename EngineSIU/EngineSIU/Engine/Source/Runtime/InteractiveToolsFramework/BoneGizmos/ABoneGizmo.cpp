@@ -10,12 +10,12 @@ ABoneGizmo::ABoneGizmo()
 
     SetRootComponent(AddComponent<USceneComponent>());
 
-    UGizmoJointComponent* Joint = AddComponent<UGizmoJointComponent>();
+    Joint = AddComponent<UGizmoJointComponent>();
     Joint->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/Gizmo/BoneJoint.obj"));
     Joint->SetupAttachment(RootComponent);
     Joint->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
     
-    UGizmoFrameComponent* Frame = AddComponent<UGizmoFrameComponent>();
+    Frame = AddComponent<UGizmoFrameComponent>();
     Frame->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/Gizmo/BoneFrame.obj"));
     Frame->SetupAttachment(RootComponent);
     Frame->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
