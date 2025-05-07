@@ -18,6 +18,8 @@ public:
 
     virtual UObject* Duplicate(UObject* InOuter) override;
 
+    USkeletalMesh* DuplicateSkeletalMesh();
+
     //void InitializeSkeleton(TArray<FBone>& BoneData);
 
     /** Set the local transform for a specific bone by index */

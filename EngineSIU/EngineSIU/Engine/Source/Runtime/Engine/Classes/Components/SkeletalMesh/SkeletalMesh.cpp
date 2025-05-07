@@ -3,6 +3,7 @@
 #include "Engine/FObjLoader.h"
 
 #include "UObject/Casts.h"
+#include "Engine/Source/Runtime/CoreUObject/UObject/ObjectFactory.h"
 
 //void USkeletalMesh::InitializeSkeleton(TArray<FBone>& BoneData)
 //{
@@ -56,6 +57,21 @@ UObject* USkeletalMesh::Duplicate(UObject* InOuter)
     }
 
     return nullptr;
+}
+
+USkeletalMesh* USkeletalMesh::DuplicateSkeletalMesh()
+{
+    ThisClass* NewSkeletalMesh = FObjectFactory::ConstructObject<USkeletalMesh>(nullptr);
+
+    NewSkeletalMesh->RenderData = this->RenderData->Duplicate();
+    NewSkeletalMesh->materials.Reserve(this->materials.Num());
+
+    for (const auto& M : this->materials)
+    {
+        NewSkeletalMesh->materials.Emplace(M);
+    }
+
+    return NewSkeletalMesh;
 }
 
 uint32 USkeletalMesh::GetMaterialIndex(FName MaterialSlotName) const

@@ -6,7 +6,7 @@
 void SkeletalMeshEditorController::Initialize(USkeletalMesh* InMesh, FEditorViewportClient* InViewport)
 {
     OriginalMesh = InMesh;
-    //EditingMesh =
+    EditingMesh = OriginalMesh->DuplicateSkeletalMesh();
     AttachedViewport = InViewport;
 
     SetBoneGizmo(OriginalMesh->GetSkeleton());
