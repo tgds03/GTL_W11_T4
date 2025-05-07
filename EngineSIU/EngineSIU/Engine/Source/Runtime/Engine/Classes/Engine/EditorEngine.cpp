@@ -11,6 +11,10 @@
 
 #include "Components/SkeletalMesh/SkeletalMesh.h"
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
+#include "SkeletalMeshEditorController.h"
+
+#include "Launch/EngineLoop.h"
+#include "LevelEditor/SLevelEditor.h"
 
 #include <fbxsdk.h>
 
@@ -232,7 +236,8 @@ void UEditorEngine::StartSkeletalMeshEditMode(USkeletalMesh* InMesh)
     if (SkeletalMeshEditWorld)
         return;
 
-    EditingMesh = InMesh;
+    SkelEditorController = std::make_shared<SkeletalMeshEditorController>();
+    SkelEditorController->Initialize(InMesh, GEngineLoop.GetLevelEditor()->GetViewports()->get());
 
     StartSkeletalMeshEditMode();
 
@@ -240,7 +245,7 @@ void UEditorEngine::StartSkeletalMeshEditMode(USkeletalMesh* InMesh)
     PreviewActor->SetActorLabel(FString(InMesh->GetOjbectName()));
 
     USkeletalMeshComponent* SkelMeshComp = PreviewActor->AddComponent<USkeletalMeshComponent>();
-    SkelMeshComp->SetSkeletalMesh(EditingMesh);
+    SkelMeshComp->SetSkeletalMesh(SkelEditorController->EditingMesh);
     SkelMeshComp->UpdateAnimation();
 }
 

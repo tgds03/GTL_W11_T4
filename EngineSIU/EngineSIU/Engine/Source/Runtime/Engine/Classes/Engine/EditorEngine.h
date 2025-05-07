@@ -11,6 +11,7 @@
 class AActor;
 class USceneComponent;
 class USkeletalMesh;
+class SkeletalMeshEditorController;
 
 class UEditorEngine : public UEngine
 {
@@ -71,9 +72,5 @@ public:
 private:
     AEditorPlayer* EditorPlayer = nullptr;
 
-    USkeletalMesh* EditingMesh = nullptr;
-
+    std::shared_ptr<SkeletalMeshEditorController> SkelEditorController = nullptr;
 };
-
-
-

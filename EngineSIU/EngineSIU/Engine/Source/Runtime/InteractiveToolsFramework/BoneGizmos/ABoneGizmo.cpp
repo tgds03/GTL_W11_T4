@@ -1,1 +1,42 @@
 #include "ABoneGizmo.h"
+#include "Launch/SkeletalDefine.h"
+#include "BoneGizmos/UGizmoJointComponent.h"
+#include "BoneGizmos/UGizmoFrameComponent.h"
+
+ABoneGizmo::ABoneGizmo()
+{
+    FResourceManager::CreateStaticMesh("Assets/Gizmo/BoneFrame.obj");
+    FResourceManager::CreateStaticMesh("Assets/Gizmo/BoneJoint.obj");
+
+    SetRootComponent(AddComponent<USceneComponent>());
+
+    UGizmoJointComponent* Joint = AddComponent<UGizmoJointComponent>();
+    Joint->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/Gizmo/BoneJoint.obj"));
+    Joint->SetupAttachment(RootComponent);
+    Joint->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+    
+    UGizmoFrameComponent* Frame = AddComponent<UGizmoFrameComponent>();
+    Frame->SetStaticMesh(FResourceManager::GetStaticMesh(L"Assets/Gizmo/BoneFrame.obj"));
+    Frame->SetupAttachment(RootComponent);
+    Frame->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
+}
+
+void ABoneGizmo::Tick(float DeltaTime)
+{
+    //
+}
+
+void ABoneGizmo::Initialize(FEditorViewportClient* InViewport)
+{
+    AttachedViewport = InViewport;
+}
+
+void ABoneGizmo::SetPose(FBone* InPose)
+{
+    TargetPose = InPose;
+    if (TargetPose)
+    {
+        SetActorLocation(TargetPose->GlobalTransform.GetTranslationVector()); // TODO : GlobalLocation으로 변경
+        SetActorRotation(TargetPose->LocalTransform.Rotation.Rotator());
+    }
+}
