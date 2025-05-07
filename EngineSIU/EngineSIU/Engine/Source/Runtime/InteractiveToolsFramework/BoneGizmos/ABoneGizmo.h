@@ -19,6 +19,9 @@ public:
     FBone* GetPose() const { return TargetPose; }
     void SetPose(FBone* InPose);
 
+    UGizmoJointComponent* GetJointComponent() const { return Joint; }
+    UGizmoFrameComponent* GetFrameComponent() const { return Frame; }
+
 private:
     UGizmoJointComponent* Joint;
     UGizmoFrameComponent* Frame;

@@ -21,14 +21,14 @@ void SkeletalMeshEditorController::SetBoneGizmo(FSkeleton* InSkeleton)
     if (InSkeleton == nullptr)
         return;
 
-    for (ABoneGizmo* OldGizmo : BoneGizmos)
-    {
-        if (OldGizmo)
-        {
-            OldGizmo->Destroy();
-        }
-    }
-    BoneGizmos.Empty();
+    //for (ABoneGizmo* OldGizmo : BoneGizmos)
+    //{
+    //    if (OldGizmo)
+    //    {
+    //        OldGizmo->Destroy();
+    //    }
+    //}
+    //BoneGizmos.Empty();
 
     for (int i = 0; i < InSkeleton->BoneCount; ++i)
     {

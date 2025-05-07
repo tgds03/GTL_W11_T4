@@ -29,6 +29,8 @@
 
 #include "Components/StaticMeshComponent.h"
 #include "Engine/EditorEngine.h"
+#include "Engine/SkeletalMeshEditorController.h"
+#include "BoneGizmos/ABoneGizmo.h"
 
 
 FGizmoRenderPass::FGizmoRenderPass()
@@ -163,6 +165,17 @@ void FGizmoRenderPass::Render(const std::shared_ptr<FEditorViewportClient>& View
         {
             UGizmoBaseComponent* GizmoComp = Cast<UGizmoBaseComponent>(StaticMeshComp);
             RenderGizmoComponent(GizmoComp, Viewport);
+        }
+    }
+
+    if (Engine->ActiveWorld->WorldType == EWorldType::SkeletalMeshEditor)
+    {
+        for (ABoneGizmo* Actor : Engine->GetSkeletalMeshEditorController()->GetBoneGizmos())
+        {
+            auto Joint = Actor->GetJointComponent();
+            auto Frame = Actor->GetFrameComponent();
+            RenderGizmoComponent(dynamic_cast<UGizmoBaseComponent*>(Joint), Viewport);
+            RenderGizmoComponent(Frame, Viewport);
         }
     }
     
