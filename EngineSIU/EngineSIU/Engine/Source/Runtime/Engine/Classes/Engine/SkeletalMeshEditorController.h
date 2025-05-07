@@ -1,0 +1,6 @@
+#pragma onece
+
+class SkeletalMeshEditorController
+{
+
+}

@@ -1,7 +1,6 @@
 #pragma once
 #include "Components/StaticMeshComponent.h"
 
-
 class UGizmoBaseComponent : public UStaticMeshComponent
 {
     DECLARE_CLASS(UGizmoBaseComponent, UStaticMeshComponent)
@@ -17,7 +16,9 @@ public:
         CircleZ,
         ScaleX,
         ScaleY,
-        ScaleZ
+        ScaleZ,
+        BoneJoint,
+        BoneFrame,
     };
     
 public:
