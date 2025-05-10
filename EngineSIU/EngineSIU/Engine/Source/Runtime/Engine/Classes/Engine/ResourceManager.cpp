@@ -11,6 +11,7 @@
 #include "DirectXTK/Include/DDSTextureLoader.h"
 #include "Engine/FObjLoader.h"
 #include "UObject/ObjectFactory.h"
+#include <Animation/UAnimDataModel.h>
 
 #pragma region Texture
 void FResourceManager::Initialize(FRenderer* renderer, FGraphicsDevice* device)
@@ -560,7 +561,6 @@ USkeletalMesh* FResourceManager::GetSkeletalMesh(const FWString& FilePath)
     return SkeletalMeshMap[FilePath];
 }
 
-#pragma endregion
 #pragma region Material
 
 UMaterial* FResourceManager::CreateMaterial(FObjMaterialInfo materialInfo)

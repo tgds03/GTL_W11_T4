@@ -16,6 +16,15 @@ USkeletalMeshComponent::USkeletalMeshComponent()
 {
 }
 
+void USkeletalMeshComponent::InitializeAnimInstance()
+{
+    if (!AnimInstance)
+    {
+        AnimInstance = FObjectFactory::ConstructObject<UAnimInstance>(nullptr);
+        AnimInstance->Initialize(this);
+    }
+}
+
 void USkeletalMeshComponent::GenerateSampleData()
 {
     FResourceManager::CreateStaticMesh("Contents/Reference/Reference.obj");

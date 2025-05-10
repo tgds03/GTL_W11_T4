@@ -41,7 +41,7 @@ public:
 
     // 현재 애니메이션 접근자
     UAnimSequence* GetCurrentAnimation() const { return CurrentSequence; }
-
+    void SetAnimationSequence(UAnimSequence* AnimSeq) { CurrentSequence = AnimSeq; }
     // 현재 포즈 접근자
    // const TArray<FTransform>& GetCurrentPose() const { return CurrentPose; }
 

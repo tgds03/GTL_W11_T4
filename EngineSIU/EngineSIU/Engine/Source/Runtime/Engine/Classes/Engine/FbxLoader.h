@@ -8,6 +8,8 @@
 struct FSkeletalMeshRenderData;
 struct FSkeletalMeshVertex;
 
+class UAnimDataModel;
+
 struct FFbxLoader 
 {
 public:
@@ -20,4 +22,8 @@ public:
     static FbxVector4 GetNormalMappingVector(FbxGeometryElementNormal* normalElem, FbxMesh* mesh, int polygonIndex, int vertIndex);
 
     static void ComputeBoundingBox(const TArray<FSkeletalMeshVertex>& InVertices, FVector& OutMinVector, FVector& OutMaxVector);
+
+    static void CollectSkeletonNodesRecursive(FbxNode* Node, TArray<FbxNode*>& OutBoneNodes);
+
+    static bool LoadFBXAnimationAsset(const FString& filePathName, UAnimDataModel* OutAnimDataModel);
 };

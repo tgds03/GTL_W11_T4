@@ -30,10 +30,6 @@ public:
 
     // 특정 시간에 포즈 계산
     //void GetAnimationPose(float Time, TArray<FTransform>& OutBoneTransforms) const;
-
-    // FBX 파일에서 애니메이션 임포트
-    bool ImportFromFBX(const FString& FilePath);
-
     // 메타데이터 접근
     int32 GetNumberOfFrames() const;
     FFrameRate GetFrameRate() const;
