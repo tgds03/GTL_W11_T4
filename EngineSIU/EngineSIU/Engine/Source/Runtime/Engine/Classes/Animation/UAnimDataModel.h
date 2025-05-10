@@ -4,9 +4,7 @@
 
 class UAnimDataModel : public UObject
 {
-
 private:
-
     TArray<FBoneAnimationTrack> BoneAnimationTracks;
 
     float PlayLength;
