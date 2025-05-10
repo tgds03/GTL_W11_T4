@@ -10,6 +10,7 @@
 #define  MIN_ORTHOZOOM (1.0)  // 2D ortho viewport zoom >= MIN_ORTHOZOOM
 #define MAX_ORTHOZOOM (1e25)
 
+
 struct FPointerEvent;
 enum class EViewScreenLocation : uint8;
 class FViewportResource;
@@ -97,6 +98,8 @@ public:
     void InputKey(const FKeyEvent& InKeyEvent);
     void MouseMove(const FPointerEvent& InMouseEvent);
     void ResizeViewport(FRect Top, FRect Bottom, FRect Left, FRect Right);
+
+    
 
     bool IsSelected(const FVector2D& InPoint) const;
 
