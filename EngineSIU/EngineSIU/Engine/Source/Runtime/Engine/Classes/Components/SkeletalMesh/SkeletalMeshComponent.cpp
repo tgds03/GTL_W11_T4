@@ -146,7 +146,7 @@ void USkeletalMeshComponent::TestSkeletalMesh()
 void USkeletalMeshComponent::TestFBXSkeletalMesh()
 {
     // 1) FBX로부터 USkeletalMesh 생성
-    FString FbxPath(TEXT("Contents/FbxTest/TheBossBIN.fbx"));
+    FString FbxPath(TEXT("Assets/fbx/Macarena.fbx"));
     //FString FbxPath(TEXT("Contents/FbxTest/nathan3.fbx"));
     USkeletalMesh* LoadedMesh = FResourceManager::LoadSkeletalMesh(FbxPath);
     if (!LoadedMesh)
