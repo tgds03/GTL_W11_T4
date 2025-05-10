@@ -1,9 +1,10 @@
 #pragma once
 #include "Animation/AnimTypes.h"
 #include "Runtime/CoreUObject/UObject/Object.h"
-
+#include "UObject/ObjectMacros.h"
 class UAnimDataModel : public UObject
 {
+    DECLARE_CLASS(UAnimDataModel, UObject);
 private:
     TArray<FBoneAnimationTrack> BoneAnimationTracks;
 

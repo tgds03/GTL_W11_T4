@@ -71,11 +71,14 @@ private:
 
 #pragma endregion
 
-  
-    // 애니메이션 시퀀스 맵 (경로 -> 애니메이션 시퀀스)
+
+#pragma region Animation
+public:
+    static UAnimSequence* LoadAnimationSequence(const FString& FilePath);
+    static UAnimSequence* GetAnimationSequence(const FWString& AnimationKey);
+private:
     inline static TMap<FWString, UAnimSequence*> AnimSequenceMap;
 #pragma endregion
-
 
 #pragma region Material
 public:

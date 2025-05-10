@@ -6,6 +6,7 @@
 // UAnimSequence 클래스 정의
 class UAnimSequence : public UAnimSequenceBase
 {
+    DECLARE_CLASS(UAnimSequence, UAnimSequenceBase);
 private:
     // 루프 애니메이션 여부
     bool bLoopAnimation;

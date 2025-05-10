@@ -5,6 +5,8 @@
 
 class UAnimSequenceBase : public UAnimationAsset
 {
+    DECLARE_CLASS(UAnimSequenceBase, UAnimationAsset);
+
     TArray<FAnimNotifyEvent> Notifies;
 
     float RateScale;
@@ -15,7 +17,8 @@ public:
     virtual ~UAnimSequenceBase() = default;
 
 
-    UAnimDataModel* GetDataMode() const { return AnimDataModel; }
+    UAnimDataModel* GetDataModel() const { return AnimDataModel; }
+    void SetDataModel(UAnimDataModel* AnimDataModel) { this->AnimDataModel = AnimDataModel; }
 
     // 노티파이 접근자
     const TArray<FAnimNotifyEvent>& GetNotifies() const { return Notifies; }
