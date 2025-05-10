@@ -12,7 +12,7 @@ class USkeletalMeshComponent : public USkinnedMeshComponent
 {
     DECLARE_CLASS(USkeletalMeshComponent, USkinnedMeshComponent)
 
-    UAnimInstance* AnimInstance;
+    UAnimInstance* AnimInstance = nullptr;
 
 public:
     USkeletalMeshComponent();
