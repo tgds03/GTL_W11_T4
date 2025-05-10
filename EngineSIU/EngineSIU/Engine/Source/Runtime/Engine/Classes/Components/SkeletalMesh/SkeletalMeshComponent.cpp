@@ -124,7 +124,7 @@ void USkeletalMeshComponent::TestSkeletalMesh()
     USkeletalMesh* SkelMesh = GetSkeletalMesh();
     if (!SkelMesh)
     {
-        return;
+        return; 
     }
 
     // 2) 루트(0)를 제외한 모든 본에 대해 LocalTransform을 Y축으로 10도 기울이기
@@ -146,8 +146,9 @@ void USkeletalMeshComponent::TestSkeletalMesh()
 void USkeletalMeshComponent::TestFBXSkeletalMesh()
 {
     // 1) FBX로부터 USkeletalMesh 생성
-    FString FbxPath(TEXT("Contents/FbxTest/TheBossBIN.fbx"));
-    //FString FbxPath(TEXT("Contents/FbxTest/nathan3.fbx"));
+    //FString FbxPath(TEXT("Contents/FbxTest/TheBossBIN.fbx"));
+    //FString FbxPath(TEXT("Assets/fbx/nathan3.fbx"));
+    FString FbxPath(TEXT("Assets/fbx/XBot.fbx"));
     USkeletalMesh* LoadedMesh = FResourceManager::LoadSkeletalMesh(FbxPath);
     if (!LoadedMesh)
     {
