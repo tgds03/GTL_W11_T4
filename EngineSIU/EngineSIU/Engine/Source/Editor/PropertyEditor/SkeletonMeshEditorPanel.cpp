@@ -2,7 +2,7 @@
 #include "UnrealEd/ImGuiWidget.h"
 #include "Engine/EditorEngine.h"
 #include "Components/SkeletalMesh/SkeletalMesh.h"
-#include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/SkeletalMeshAsset.h"
+#include "Engine/Source/Runtime/Engine/Classes/Asset/SkeletalMeshAsset.h"
 #include "Math/Quat.h"
 #include "Math/Rotator.h"
 #include "Math/Vector.h"

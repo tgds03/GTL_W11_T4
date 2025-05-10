@@ -36,7 +36,7 @@
 #include "Stats/Stats.h"
 #include "Stats/GPUTimingManager.h"
 
-#include "Engine/Asset/SkeletalMeshAsset.h"
+#include "Asset/SkeletalMeshAsset.h"
 
 //------------------------------------------------------------------------------
 // 초기화 및 해제 관련 함수

@@ -2,7 +2,7 @@
 #include "UObject/ObjectFactory.h"
 #include "Engine/Source/Runtime/Launch/SkeletalDefine.h"
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
-#include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/SkeletalMeshAsset.h"
+#include "Engine/Source/Runtime/Engine/Classes/Asset/SkeletalMeshAsset.h"
 #include "Engine/Source/Runtime/Engine/Classes/Components/SkeletalMesh/SkeletalMesh.h"
 #include <filesystem>
 #include "Engine/Source/Runtime/Core/Math/Matrix.h"

@@ -2,11 +2,11 @@
 #include "Engine/FObjLoader.h"
 #include "Engine/Source/Runtime/CoreUObject/UObject/ObjectFactory.h"
 
-#include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/SkeletalMeshAsset.h"
+#include "Engine/Source/Runtime/Engine/Classes/Asset/SkeletalMeshAsset.h"
 
 // 임시로 StaticMesh를 활용하면서 참고하게 된 코드 이후 제거 필요
 #include "Engine/Source/Runtime/Engine/Classes/Components/Mesh/StaticMeshRenderData.h"
-#include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/StaticMeshAsset.h"
+#include "Engine/Source/Runtime/Engine/Classes/Asset/StaticMeshAsset.h"
 
 // FBX 테스트를 위해 넣은 코드 이후 제거 필요
 #include "Engine/Source/Runtime/Engine/Classes/Engine/FbxLoader.h"
@@ -146,14 +146,11 @@ void USkeletalMeshComponent::TestSkeletalMesh()
 void USkeletalMeshComponent::TestFBXSkeletalMesh()
 {
     // 1) FBX로부터 USkeletalMesh 생성
-<<<<<<< HEAD
-    //FString FbxPath(TEXT("Contents/FbxTest/TheBossBIN.fbx"));
-    //FString FbxPath(TEXT("Assets/fbx/nathan3.fbx"));
-    FString FbxPath(TEXT("Assets/fbx/XBot.fbx"));
-=======
-    FString FbxPath(TEXT("Assets/fbx/Macarena.fbx"));
-    //FString FbxPath(TEXT("Contents/FbxTest/nathan3.fbx"));
->>>>>>> origin/Feat/Animation-Data-Parsing
+
+    FString FbxPath(TEXT("Assets/FBX/XBot.fbx"));
+    //FString FbxPath(TEXT("Assets/FBX/Macarena.fbx"));
+    //FString FbxPath(TEXT("Assets/FBX/nathan3.fbx"));
+
     USkeletalMesh* LoadedMesh = FResourceManager::LoadSkeletalMesh(FbxPath);
     if (!LoadedMesh)
     {

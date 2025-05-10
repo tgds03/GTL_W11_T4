@@ -3,7 +3,7 @@
 #include "UObject/Casts.h"
 #include "UObject/ObjectFactory.h"
 
-#include "Engine/Asset/StaticMeshAsset.h"
+#include "Asset/StaticMeshAsset.h"
 
 UObject* UStaticMesh::Duplicate(UObject* InOuter)
 {

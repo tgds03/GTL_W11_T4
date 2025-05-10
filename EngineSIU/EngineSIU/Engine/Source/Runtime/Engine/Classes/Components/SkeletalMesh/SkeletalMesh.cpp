@@ -1,32 +1,9 @@
 #include "SkeletalMesh.h"
-#include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/SkeletalMeshAsset.h"
+#include "Engine/Source/Runtime/Engine/Classes/Asset/SkeletalMeshAsset.h"
 #include "Engine/FObjLoader.h"
 
 #include "UObject/Casts.h"
 #include "Engine/Source/Runtime/CoreUObject/UObject/ObjectFactory.h"
-
-//void USkeletalMesh::InitializeSkeleton(TArray<FBone>& BoneData)
-//{
-//    // Clear previous child lists
-//    for (auto& Bone : Skeleton.Bones)
-//    {
-//        Bone.Children.Empty();
-//    }
-//
-//    Skeleton.Bones = BoneData;
-//    
-//    // Rebuild parent-child links
-//    for (int i = 0; i < (int)Skeleton.Bones.Num(); ++i)
-//    {
-//        int parent = Skeleton.Bones[i].ParentIndex;
-//        if (parent >= 0 && parent < (int)Skeleton.Bones.Num())
-//        {
-//            Skeleton.Bones[parent].AddChild(i);
-//        }
-//    }
-//    Skeleton.ComputeGlobalTransforms();
-//    //Skeleton.SetInvBindTransforms();    // Inv는 기본포즈에서의 Global의 역행렬
-//}
 
 void USkeletalMesh::SetBoneLocalTransform(int boneIndex, const FBonePose& localTransform)
 {
@@ -42,7 +19,6 @@ void USkeletalMesh::UpdateGlobalTransforms()
 {
     RenderData->Skeleton.ComputeGlobalTransforms();
 }
-
 
 UObject* USkeletalMesh::Duplicate(UObject* InOuter)
 {

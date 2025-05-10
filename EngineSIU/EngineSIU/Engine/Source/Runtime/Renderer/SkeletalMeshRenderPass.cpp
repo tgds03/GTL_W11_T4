@@ -19,7 +19,7 @@
 #include "D3D11RHI/DXDShaderManager.h"
 
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
-#include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/SkeletalMeshAsset.h"
+#include "Engine/Source/Runtime/Engine/Classes/Asset/SkeletalMeshAsset.h"
 #include "Engine/Source/Runtime/Engine/Classes/Components/SkeletalMesh/SkeletalMesh.h"
 
 

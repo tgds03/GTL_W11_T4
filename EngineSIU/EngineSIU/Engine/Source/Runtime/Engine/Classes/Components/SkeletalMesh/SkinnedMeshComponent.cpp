@@ -1,6 +1,6 @@
 #include "SkinnedMeshComponent.h"
 #include "Engine/Source/Runtime/Engine/Classes/Components/SkeletalMesh/SkeletalMesh.h"
-#include "Engine/Source/Runtime/Engine/Classes/Engine/Asset/SkeletalMeshAsset.h"
+#include "Engine/Source/Runtime/Engine/Classes/Asset/SkeletalMeshAsset.h"
 #include "UObject/Casts.h"
 #include "UObject/ObjectFactory.h"
 
