@@ -3,6 +3,9 @@
 #include "Vector.h"
 #include "Matrix.h"
 
+const FQuat FQuat::Identity = FQuat(1.0f, 0.0f, 0.0f, 0.0f);
+
+
 FQuat::FQuat(const FVector& Axis, float Angle)
 {
     float HalfAngle = Angle * 0.5f;
@@ -190,4 +193,51 @@ FRotator FQuat::Rotator() const
     FRotator RotatorFromQuat = FRotator(Pitch, Yaw, Roll);
 
     return RotatorFromQuat;
+}
+
+FQuat FQuat::Slerp(const FQuat& A, const FQuat& B, float Alpha)
+{
+    // 코사인 각도 계산
+    float Dot = A.W * B.W + A.X * B.X + A.Y * B.Y + A.Z * B.Z;
+
+    // 방향이 반대면 -B로 반전해서 더 짧은 경로로 보간
+    FQuat Target = B;
+    if (Dot < 0.0f)
+    {
+        Dot = -Dot;
+        Target.W = -B.W;
+        Target.X = -B.X;
+        Target.Y = -B.Y;
+        Target.Z = -B.Z;
+    }
+
+    const float THRESHOLD = 0.9995f;
+    if (Dot > THRESHOLD)
+    {
+        // 거의 같을 경우 선형 보간 후 정규화 (수치적 안정성)
+        FQuat Result = FQuat(
+            A.W + Alpha * (Target.W - A.W),
+            A.X + Alpha * (Target.X - A.X),
+            A.Y + Alpha * (Target.Y - A.Y),
+            A.Z + Alpha * (Target.Z - A.Z)
+        );
+        Result.Normalize();
+        return Result;
+    }
+
+    // 진짜 Slerp 수행
+    float Theta = acosf(Dot);
+    float SinTheta = sinf(Theta);
+    float InvSinTheta = 1.0f / SinTheta;
+
+    float ScaleA = sinf((1.0f - Alpha) * Theta) * InvSinTheta;
+    float ScaleB = sinf(Alpha * Theta) * InvSinTheta;
+
+    FQuat Result = FQuat(
+        ScaleA * A.W + ScaleB * Target.W,
+        ScaleA * A.X + ScaleB * Target.X,
+        ScaleA * A.Y + ScaleB * Target.Y,
+        ScaleA * A.Z + ScaleB * Target.Z
+    );
+    return Result;
 }

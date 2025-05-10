@@ -42,8 +42,8 @@ public:
     void ResumeAnimation();
 
     // 현재 애니메이션 접근자
-    UAnimSequence* GetCurrentAnimation() const { return CurrentSequence; }
-    void SetAnimationSequence(UAnimSequence* AnimSeq) { CurrentSequence = AnimSeq; }
+    UAnimSequence* GetCurrentAnimSequence() const { return CurrentSequence; }
+    void SetAnimaSequence(UAnimSequence* AnimSeq) { CurrentSequence = AnimSeq; }
     // 현재 포즈 접근자
    // const TArray<FTransform>& GetCurrentPose() const { return CurrentPose; }
 
@@ -55,6 +55,8 @@ public:
     // 재생 속도 설정
     void SetPlayRate(float InRate) { PlayRate = FMath::Max(0.01f, InRate); }
     float GetPlayRate() const { return PlayRate; }
+
+    void GetBoneTransforms(TArray<FTransform>& OutTransforms);
 
 protected:
     // 애니메이션 노티파이 처리

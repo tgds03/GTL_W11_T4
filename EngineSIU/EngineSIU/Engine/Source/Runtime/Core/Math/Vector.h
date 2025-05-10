@@ -1,8 +1,8 @@
-﻿#pragma once
+#pragma once
 #include <cassert>
 #include "MathUtility.h"
 #include "Serialization/Archive.h"
-
+#include "Quat.h"
 #include "Rotator.h"
 
 struct FVector2D
@@ -454,3 +454,32 @@ inline FArchive& operator<<(FArchive& Ar, FVector& V)
 }
 
 
+struct FTransform
+{
+    FQuat Rotation;     // 회전 (쿼터니언)
+    FVector Translation; // 위치
+    FVector Scale;       // 크기
+
+    FTransform operator*(const FTransform& Other) const
+    {
+        FTransform Result;
+
+        // 1. Scale
+        Result.Scale = Scale * Other.Scale;
+
+        // 2. Rotation
+        Result.Rotation = Rotation * Other.Rotation;
+
+        // 3. Translation
+        FVector ScaledTranslation = Other.Translation * Scale;
+        FVector RotatedTranslation = Rotation.RotateVector(ScaledTranslation);
+        Result.Translation = RotatedTranslation + Translation;
+
+        return Result;
+    }
+
+    // Getter 함수들
+    const FQuat& GetRotation() const { return Rotation; }
+    const FVector& GetTranslation() const { return Translation; }
+    const FVector& GetScale() const { return Scale; }
+};

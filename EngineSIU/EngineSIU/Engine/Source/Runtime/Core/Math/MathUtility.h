@@ -15,6 +15,11 @@
 
 struct FMath
 {
+    static inline int32 FloorToInt(float Value)
+    {
+        return static_cast<int32>(std::floor(Value));
+    }
+
     /** A와 B중에 더 작은 값을 반환합니다. */
     template <typename T>
     [[nodiscard]] static FORCEINLINE constexpr T Min(const T A, const T B)

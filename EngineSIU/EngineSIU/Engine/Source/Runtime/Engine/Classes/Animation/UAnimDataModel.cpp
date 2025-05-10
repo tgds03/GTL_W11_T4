@@ -9,11 +9,6 @@ UAnimDataModel::UAnimDataModel()
 {
 }
 
-const TArray<FBoneAnimationTrack>& UAnimDataModel::GetBoneAnimationTracks() const
-{
-    return BoneAnimationTracks;
-}
-
 void UAnimDataModel::AddBoneTrack(const FBoneAnimationTrack& Track)
 {
     BoneAnimationTracks.Add(Track);
@@ -32,19 +27,9 @@ const FBoneAnimationTrack* UAnimDataModel::FindBoneTrack(const FName& BoneName) 
     return nullptr;
 }
 
-float UAnimDataModel::GetPlayLength() const
-{
-    return PlayLength;
-}
-
 void UAnimDataModel::SetPlayLength(float InLength)
 {
     PlayLength = InLength;
-}
-
-FFrameRate UAnimDataModel::GetFrameRate() const
-{
-    return FrameRate;
 }
 
 void UAnimDataModel::SetFrameRate(const FFrameRate& InRate)
@@ -52,20 +37,11 @@ void UAnimDataModel::SetFrameRate(const FFrameRate& InRate)
     FrameRate = InRate;
 }
 
-int32 UAnimDataModel::GetNumberOfFrames() const
-{
-    return NumberOfFrames;
-}
-
 void UAnimDataModel::SetNumberOfFrames(int32 InFrames)
 {
     NumberOfFrames = InFrames;
 }
 
-int32 UAnimDataModel::GetNumberOfKeys() const
-{
-    return NumberOfKeys;
-}
 
 void UAnimDataModel::SetNumberOfKeys(int32 InKeys)
 {

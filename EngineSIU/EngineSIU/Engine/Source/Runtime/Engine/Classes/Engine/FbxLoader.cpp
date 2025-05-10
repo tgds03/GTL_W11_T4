@@ -763,18 +763,22 @@ bool FFbxLoader::LoadFBXAnimationAsset(const FString& filePathName, UAnimDataMod
             FbxVector4 Scale = LocalTransform.GetS();
 
             // 언리얼 엔진 형식으로 변환 (Y와 Z축 변환 포함)
+          // 올바른 위치 변환
             FVector Position(
-                (float)Translation[0],
-                (float)Translation[2],  // Y와 Z 교환
-                (float)Translation[1]
+                (float)Translation[0],     // X - 그대로 유지
+                (float)-Translation[2],    // Y - Z에서 매핑하고 부호 반전 
+                (float)Translation[1]      // Z - Y에서 매핑
             );
 
             FQuat RotQuat(
-                (float)Rotation[0],
-                (float)Rotation[2],  // Y와 Z 교환
-                (float)Rotation[1],
-                (float)Rotation[3]
+                (float)Rotation[3],    // W - FBX에서는 마지막 성분
+                (float)Rotation[0],    // X - 그대로 유지
+                (float)-Rotation[2],   // Y - Z에서 매핑하고 부호 반전
+                (float)Rotation[1]     // Z - Y에서 매핑
             );
+
+            // 정규화 추가 (필수!)
+            RotQuat.Normalize();
 
             FVector ScaleVec(
                 (float)Scale[0],
@@ -795,6 +799,8 @@ bool FFbxLoader::LoadFBXAnimationAsset(const FString& filePathName, UAnimDataMod
     // FBX 객체 정리
     scene->Destroy();
     manager->Destroy();
+
+
 
     return OutAnimDataModel->GetBoneAnimationTracks().Num() > 0;
 }
