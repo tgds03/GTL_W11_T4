@@ -350,6 +350,7 @@
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoFrameComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoJointComponent.cpp" />
+    <ClCompile Include="UAnimDataModel.cpp" />
     <None Include="Shaders\CompositingShader.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -674,6 +675,7 @@
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoFrameComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoJointComponent.h" />
+    <ClInclude Include="UAnimDataModel.h" />
     <None Include="Shaders\EditorShaderConstants.hlsli">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>

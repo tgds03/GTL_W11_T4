@@ -836,6 +836,7 @@
     <ClCompile Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\ABoneGizmo.cpp" />
     <ClCompile Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoJointComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoFrameComponent.cpp" />
+    <ClCompile Include="UAnimDataModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="EngineSIU.natvis" />
@@ -976,6 +977,7 @@
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoJointComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoFrameComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Animation\AnimTypes.h" />
+    <ClInclude Include="UAnimDataModel.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />
