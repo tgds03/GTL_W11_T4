@@ -5,11 +5,14 @@
 #include "Engine/Source/Runtime/Launch/SkeletalDefine.h"
 #include "Engine/Source/Runtime/Core/Container/Array.h"
 #include "Engine/Source/Runtime/Engine/Classes/Components/SkeletalMesh/SkinnedMeshComponent.h"
+#include <Animation/UAnimInstance.h>
 
 
 class USkeletalMeshComponent : public USkinnedMeshComponent
 {
     DECLARE_CLASS(USkeletalMeshComponent, USkinnedMeshComponent)
+
+    UAnimInstance* AnimInstance;
 
 public:
     USkeletalMeshComponent();

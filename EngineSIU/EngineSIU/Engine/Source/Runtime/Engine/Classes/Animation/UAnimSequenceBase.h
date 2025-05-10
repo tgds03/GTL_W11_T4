@@ -1,6 +1,7 @@
 #pragma once
 #include "Animation/UAnimationAsset.h"
 #include "Animation/AnimTypes.h"
+#include "UAnimDataModel.h"
 
 class UAnimSequenceBase : public UAnimationAsset
 {
@@ -8,8 +9,13 @@ class UAnimSequenceBase : public UAnimationAsset
 
     float RateScale;
 
+    UAnimDataModel* AnimDataModel;
+
 public:
     virtual ~UAnimSequenceBase() = default;
+
+
+    UAnimDataModel* GetDataMode() const { return AnimDataModel; }
 
     // 노티파이 접근자
     const TArray<FAnimNotifyEvent>& GetNotifies() const { return Notifies; }

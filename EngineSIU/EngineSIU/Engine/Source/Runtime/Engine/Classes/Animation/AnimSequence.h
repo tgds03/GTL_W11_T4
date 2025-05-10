@@ -7,9 +7,6 @@
 class UAnimSequence : public UAnimSequenceBase
 {
 private:
-    // 애니메이션 데이터 모델 - 실제 키프레임 데이터 저장
-    UAnimDataModel* DataModel;
-
     // 루프 애니메이션 여부
     bool bLoopAnimation;
 
@@ -19,10 +16,6 @@ private:
 public:
     UAnimSequence();
     virtual ~UAnimSequence() = default;
-
-    // 데이터 모델 접근자
-    UAnimDataModel* GetDataModel() const { return DataModel; }
-    void SetDataModel(UAnimDataModel* InModel) { DataModel = InModel; }
 
     // 루프 설정 접근자
     bool IsLooping() const { return bLoopAnimation; }

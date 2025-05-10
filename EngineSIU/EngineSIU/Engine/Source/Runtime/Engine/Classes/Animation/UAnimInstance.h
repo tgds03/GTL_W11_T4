@@ -1,8 +1,10 @@
 #pragma once
 
 #include "UAnimDataModel.h"
-#include "AnimSequence.h"
-#include <Components/SkeletalMesh/SkeletalMeshComponent.h>
+
+
+class USkeletalMeshComponent;
+class UAnimSequence;
 
 class UAnimInstance : public UObject
 {
