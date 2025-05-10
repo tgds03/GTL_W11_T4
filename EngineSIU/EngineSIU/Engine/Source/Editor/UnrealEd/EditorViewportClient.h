@@ -10,9 +10,6 @@
 #define  MIN_ORTHOZOOM (1.0)  // 2D ortho viewport zoom >= MIN_ORTHOZOOM
 #define MAX_ORTHOZOOM (1e25)
 
-#define int 인트
-
-인트 a = 3;
 
 struct FPointerEvent;
 enum class EViewScreenLocation : uint8;
