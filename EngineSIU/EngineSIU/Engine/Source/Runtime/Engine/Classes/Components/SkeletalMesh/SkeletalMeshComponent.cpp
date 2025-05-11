@@ -10,10 +10,21 @@
 
 // FBX 테스트를 위해 넣은 코드 이후 제거 필요
 #include "Engine/Source/Runtime/Engine/Classes/Engine/FbxLoader.h"
+#include "Animation/AnimSequence.h"
 
 USkeletalMeshComponent::USkeletalMeshComponent()
     :USkinnedMeshComponent()
 {
+}
+
+
+void USkeletalMeshComponent::InitializeAnimInstance()
+{
+    if (!AnimInstance)
+    {
+        AnimInstance = std::make_shared<UAnimInstance>();
+        AnimInstance->Initialize(this);
+    }
 }
 
 void USkeletalMeshComponent::GenerateSampleData()
@@ -39,17 +50,16 @@ void USkeletalMeshComponent::TestSkeletalMesh()
     }
 
     // 3) 변경된 본 트랜스폼을 바탕으로 애니메이션 업데이트
-    UpdateAnimation();
+    UpdateSkinnedPositions();
 }
 
 void USkeletalMeshComponent::TestFBXSkeletalMesh()
 {
     // 1) FBX로부터 USkeletalMesh 생성
 
-    FString FbxPath(TEXT("Assets/FBX/XBot.fbx"));
-    //FString FbxPath(TEXT("Assets/FBX/Macarena.fbx"));
-    //FString FbxPath(TEXT("Assets/FBX/nathan3.fbx"));
-
+    FString FbxPath(TEXT("Assets/fbx/Twerk.fbx"));
+    //FString FbxPath(TEXT("Contents/FbxTest/nathan3.fbx"));
+    
     USkeletalMesh* LoadedMesh = FResourceManager::LoadSkeletalMesh(FbxPath);
     if (!LoadedMesh)
     {
@@ -57,8 +67,47 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
         return;
     }
 
+    UAnimSequence* AnimSequence = FResourceManager::LoadAnimationSequence(FbxPath);
+
+    if (!AnimSequence)
+    {
+        UE_LOG(LogLevel::Warning, TEXT("애니메이션 로드 실패, 스켈레톤만 표시합니다."));
+        UpdateSkinnedPositions();
+        return;
+    }
+
+    InitializeAnimInstance();
     // 2) SkeletalMeshComponent에 세팅
     SetSkeletalMesh(LoadedMesh);
 
-    UpdateAnimation();
+    // 5) AnimInstance에 애니메이션 시퀀스 설정
+    AnimInstance->SetAnimSequence(AnimSequence);
+
+
+    UpdateSkinnedPositions();
+}
+
+void USkeletalMeshComponent::UpdateAnimation(float DeltaTime)
+{
+    if (!SkeletalMesh || !AnimInstance)
+    {
+        return;
+    }
+    // AnimInstance 업데이트 (시간 진행 등)
+    AnimInstance->Update(DeltaTime);
+
+    // 현재 애니메이션 프레임의 본 트랜스폼 계산
+    TArray<FTransform> BoneTransforms;
+    AnimInstance->GetBoneTransforms(BoneTransforms);
+
+    // 계산된 트랜스폼을 스켈레탈 메시에 적용 (예: 내부 함수)
+    SkeletalMesh->SetBoneTransforms(BoneTransforms);
+
+    // 스키닝된 버텍스 위치 계산
+    SkelPosition.Empty();
+    TArray<FSkeletalMeshVertex> SkelVertices = SkeletalMesh->GetRenderData()->Vertices;
+    for (int i = 0; i < SkelVertices.Num(); i++)
+    {
+       // SkelPosition.Add(SkelVertices[i].GetSkinnedPosition(SkeletalMesh->GetSkeleton()));
+    }
 }

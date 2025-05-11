@@ -254,7 +254,7 @@ void UEditorEngine::StartSkeletalMeshEditMode(USkeletalMesh* InMesh)
 
     USkeletalMeshComponent* SkelMeshComp = PreviewActor->AddComponent<USkeletalMeshComponent>();
     SkelMeshComp->SetSkeletalMesh(SkelEditorController->OriginalMesh);
-    SkelMeshComp->UpdateAnimation();
+    SkelMeshComp->UpdateSkinnedPositions();
 }
 
 void UEditorEngine::EndSkeletalMeshEditMode()

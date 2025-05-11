@@ -16,6 +16,9 @@ class FRenderer;
 class FGraphicsDevice;
 class USkeletalMesh;
 
+class UAnimSequence;
+
+
 class FResourceManager
 {
 #pragma region Texture
@@ -66,6 +69,15 @@ public:
 private:
     inline static TMap<FWString, USkeletalMesh*> SkeletalMeshMap;
 
+#pragma endregion
+
+
+#pragma region Animation
+public:
+    static UAnimSequence* LoadAnimationSequence(const FString& FilePath);
+    static UAnimSequence* GetAnimationSequence(const FWString& AnimationKey);
+private:
+    inline static TMap<FWString, UAnimSequence*> AnimSequenceMap;
 #pragma endregion
 
 #pragma region Material

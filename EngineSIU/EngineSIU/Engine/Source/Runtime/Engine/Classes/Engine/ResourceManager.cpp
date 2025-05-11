@@ -11,6 +11,8 @@
 #include "DirectXTK/Include/DDSTextureLoader.h"
 #include "Engine/FObjLoader.h"
 #include "UObject/ObjectFactory.h"
+#include <Animation/UAnimDataModel.h>
+#include <Animation/AnimSequence.h>
 
 #pragma region Texture
 void FResourceManager::Initialize(FRenderer* renderer, FGraphicsDevice* device)
@@ -550,8 +552,48 @@ USkeletalMesh* FResourceManager::GetSkeletalMesh(const FWString& FilePath)
     return SkeletalMeshMap[FilePath];
 }
 
-#pragma endregion
 #pragma region Material
+
+#pragma region Animation
+UAnimSequence* FResourceManager::LoadAnimationSequence(const FString& FilePath)
+{
+    FWString WideFilePath = FilePath.ToWideString();
+
+    // 이미 로드된 애니메이션이 있는지 확인
+    if (AnimSequenceMap.Contains(WideFilePath))
+    {
+        return AnimSequenceMap[WideFilePath];
+    }
+
+    // AnimDataModel 생성
+    UAnimDataModel* AnimDataModel = FObjectFactory::ConstructObject<UAnimDataModel>(nullptr);
+
+    // FBX에서 애니메이션 데이터 로드
+    bool bSuccess = FFbxLoader::LoadFBXAnimationAsset(FilePath, AnimDataModel);
+    if (!bSuccess || AnimDataModel->GetBoneAnimationTracks().Num() == 0)
+    {
+        UE_LOG(LogLevel::Warning, TEXT("애니메이션 데이터 로드 실패: %s"), *FilePath);
+        return nullptr;
+    }
+
+    // UAnimSequence 생성 및 설정
+    UAnimSequence* AnimSequence = FObjectFactory::ConstructObject<UAnimSequence>(nullptr);
+
+    // AnimSequence에 AnimDataModel 설정
+    AnimSequence->SetDataModel(AnimDataModel);
+   // AnimSequence->SetName(FilePath);
+
+    // 맵에 추가
+    AnimSequenceMap.Add(WideFilePath, AnimSequence);
+
+    return AnimSequence;
+}
+
+UAnimSequence* FResourceManager::GetAnimationSequence(const FWString& AnimationKey)
+{
+    return AnimSequenceMap.Contains(AnimationKey) ? AnimSequenceMap[AnimationKey] : nullptr;
+}
+#pragma endregion
 
 UMaterial* FResourceManager::CreateMaterial(FObjMaterialInfo materialInfo)
 {

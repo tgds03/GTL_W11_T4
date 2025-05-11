@@ -16,6 +16,9 @@
 # 모든 .obj 및 .iobj 파일 무시
 .obj
 .iobj
+.ini
+.fbx
+AutoSaves.scene
 
 # Assets 폴더 아래의 .obj 파일은 다시 포함
 !Assets/**/*.obj

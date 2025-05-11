@@ -83,6 +83,45 @@ void USkeletalMesh::UpdateGlobalTransforms()
 }
 
 void USkeletalMesh::SetData(FSkeletalMeshRenderData* InRenderData, FSkeletonPose InSkeletonPose)
+
+void USkeletalMesh::SetBoneTransforms(const TArray<FTransform>& InBoneTransforms)
+{
+    if (!RenderData || !RenderData->Skeleton.BoneCount)
+        return;
+
+    // 스켈레톤의 본 개수와 입력 트랜스폼 배열의 크기 확인
+    const int32 BoneCount = RenderData->Skeleton.BoneCount;
+    if (InBoneTransforms.Num() != BoneCount)
+    {
+        // 개수가 맞지 않으면 오류 메시지 출력 및 반환
+        UE_LOG(LogLevel::Error, TEXT("SetBoneTransforms: 본 트랜스폼 개수 불일치 (스켈레톤: %d, 입력: %d)"),
+            BoneCount, InBoneTransforms.Num());
+        return;
+    }
+
+    // 모든 본의 로컬 트랜스폼 설정
+    for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
+    {
+        // 트랜스폼에서 회전, 위치, 크기 추출
+        FQuat Rotation = InBoneTransforms[BoneIndex].GetRotation().GetNormalized();
+        FVector Location = InBoneTransforms[BoneIndex].GetTranslation();
+        FVector Scale = InBoneTransforms[BoneIndex].GetScale();
+
+        // BonePose 생성
+        FBonePose LocalTransform;
+        LocalTransform.Rotation = Rotation;
+        LocalTransform.Location = Location;
+        LocalTransform.Scale = Scale;
+
+        // 개별 본 로컬 트랜스폼 설정
+        SetBoneLocalTransform(BoneIndex, LocalTransform);
+    }
+
+    // 글로벌 트랜스폼 업데이트
+    UpdateGlobalTransforms();
+}
+
+void USkeletalMesh::SetData(FSkeletalMeshRenderData* InRenderData)
 {
     RenderData = InRenderData;
     SkeletonPose = InSkeletonPose;
