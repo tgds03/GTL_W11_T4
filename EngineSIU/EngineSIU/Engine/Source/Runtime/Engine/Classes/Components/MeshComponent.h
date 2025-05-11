@@ -8,6 +8,8 @@ class UMeshComponent : public UPrimitiveComponent
 public:
     UMeshComponent() = default;
 
+    virtual void TickComponent(float DeltaTime) override;
+    
     virtual UObject* Duplicate(UObject* InOuter) override;
 
     virtual void GetProperties(TMap<FString, FString>& OutProperties) const override;

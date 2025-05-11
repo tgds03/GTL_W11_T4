@@ -188,9 +188,6 @@ void FSkeletalMeshRenderPass::RenderAllSkeletalMeshes(const std::shared_ptr<FEdi
             continue;
         }
 
-        Comp->UpdateAnimation(1/60.f);
-
-
         FSkeletalMeshRenderData* RenderData = Comp->GetSkeletalMesh()->GetRenderData();
         if (RenderData == nullptr)
         {

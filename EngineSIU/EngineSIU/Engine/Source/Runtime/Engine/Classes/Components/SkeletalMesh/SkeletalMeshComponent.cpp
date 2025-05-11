@@ -111,7 +111,19 @@ void USkeletalMeshComponent::PerformCPUSkinning()
     RenderData->bIsCPUSkinnedValid = true;
 }
 
-void USkeletalMeshComponent::UpdateAnimation(float DeltaTime)
+void USkeletalMeshComponent::TickComponent(float DeltaTime)
+{
+    USkinnedMeshComponent::TickComponent(DeltaTime);
+}
+
+void USkeletalMeshComponent::TickPose(float DeltaTime)
+{
+    USkinnedMeshComponent::TickPose(DeltaTime);
+
+    TickAnimation(DeltaTime);
+}
+
+void USkeletalMeshComponent::TickAnimation(float DeltaTime)
 {
     if (!SkeletalMesh || !AnimInstance)
     {
@@ -129,3 +141,4 @@ void USkeletalMeshComponent::UpdateAnimation(float DeltaTime)
 
     PerformCPUSkinning();
 }
+

@@ -18,10 +18,12 @@ public:
     USkeletalMeshComponent();
     ~USkeletalMeshComponent() = default;
 
+    virtual void TickComponent(float DeltaTime) override;
+    virtual void TickPose(float DeltaTime) override;
+    void TickAnimation(float DeltaTime);
+    
     // 현재는 USkeletalMeshComponent에서 SkinnedMeshComponent에 비해 더 해주는 것이 없음
     // 이후에 애니메이션 쪽 구현이 들어갈 때 추가된다고 GPT 가 말하긴 함
-
-    void UpdateAnimation(float deltatime);
 
     void InitializeAnimInstance();
 

@@ -4,6 +4,11 @@
 #include "UObject/Casts.h"
 
 
+void UMeshComponent::TickComponent(float DeltaTime)
+{
+    UPrimitiveComponent::TickComponent(DeltaTime);
+}
+
 UObject* UMeshComponent::Duplicate(UObject* InOuter)
 {
     ThisClass* NewComponent = Cast<ThisClass>(Super::Duplicate(InOuter));
