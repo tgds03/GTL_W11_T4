@@ -375,6 +375,14 @@ void Console::ExecuteCommand(const std::string& Command)
     {
         Overlay.ToggleStat(Command);
     }
+    else if (Command =="skinning mode cpu")
+    {
+        FEngineLoop::SetUseGPUSkinning(false);
+    }
+    else if (Command == "skinning mode gpu")
+    {
+        FEngineLoop::SetUseGPUSkinning(true);
+    }
     else
     {
         AddLog(LogLevel::Error, "Unknown command: %s", Command.c_str());

@@ -45,6 +45,8 @@ public:
     static FResourceManager ResourceManager;
     static uint32 TotalAllocationBytes;
     static uint32 TotalAllocationCount;
+    inline static bool bUseGPUSkinning = false;
+
 
     HWND AppWnd;
 
@@ -69,4 +71,7 @@ public:
     UnrealEd* GetUnrealEditor() const { return UnrealEditor; }
 
     FSlateAppMessageHandler* GetAppMessageHandler() const { return AppMessageHandler.get(); }
+
+    static bool IsGPUSkinningEnabled();
+    static void SetUseGPUSkinning(bool bInUseGPUSkinning);
 };
