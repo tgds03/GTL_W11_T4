@@ -24,11 +24,23 @@ struct FSkeletalMeshVertex
     FVector GetSkinnedPosition(FSkeletonPose* SkeletonPose)
     {
         FVector WeightPosition = FVector::ZeroVector;
+        float TotalWeight = 0.0f;
 
         for (int i = 0; i < 4; i++) {
-            if (BoneIndices[i] < 0) continue;
+            // 유효한 본과 의미 있는 가중치만 처리
+            if (BoneIndices[i] < 0 || BoneWeights[i] < 0.001f)
+                continue;
+
             FMatrix SkinMat = SkeletonPose->GetSkinningMatrix(BoneIndices[i]);
-            WeightPosition += SkinMat.TransformPosition(FVector(X, Y, Z));
+
+            // 가중치 적용!
+            WeightPosition += SkinMat.TransformPosition(FVector(X, Y, Z)) * BoneWeights[i];
+            TotalWeight += BoneWeights[i];
+        }
+
+        // 가중치 합이 0이 아니고 1과 크게 차이나면 정규화
+        if (TotalWeight > 0.0f && FMath::Abs(TotalWeight - 1.0f) > 0.01f) {
+            WeightPosition /= TotalWeight;
         }
 
         return WeightPosition;
@@ -49,53 +61,8 @@ struct FSkeletalMeshRenderData
     FVector BoundingBoxMin;
     FVector BoundingBoxMax;
 
-    //FSkeletalMeshRenderData* Duplicate() const
-    //{
-    //    auto* Dst = new FSkeletalMeshRenderData();
-
-    //    // 이름 복사
-    //    Dst->ObjectName = ObjectName;
-    //    Dst->DisplayName = DisplayName;
-
-    //    // 배열 복사: Emplace를 이용해 각 요소를 깊은 복사
-    //    Dst->Vertices.Reserve(Vertices.Num());
-    //    for (const auto& V : Vertices)
-    //    {
-    //        Dst->Vertices.Emplace(V);
-    //    }
-
-    //    Dst->Indices.Reserve(Indices.Num());
-    //    for (const auto& I : Indices)
-    //    {
-    //        Dst->Indices.Emplace(I);
-    //    }
-
-    //    Dst->Materials.Reserve(Materials.Num());
-    //    for (const auto& M : Materials)
-    //    {
-    //        Dst->Materials.Emplace(M);
-    //    }
-
-    //    Dst->MaterialSubsets.Reserve(MaterialSubsets.Num());
-    //    for (const auto& S : MaterialSubsets)
-    //    {
-    //        Dst->MaterialSubsets.Emplace(S);
-    //    }
-
-    //    // 스켈레톤 복사 (FSkeleton에 operator=가 구현되어 있다고 가정)
-    //    Dst->Skeleton.BoneCount = Skeleton.BoneCount;
-    //    Dst->Skeleton.Bones.Reserve(Skeleton.BoneCount);
-    //    for (const auto& S : Skeleton.Bones)
-    //    {
-    //        Dst->Skeleton.Bones.Emplace(S);
-    //    }
-
-    //    // 바운딩 박스 복사
-    //    Dst->BoundingBoxMin = BoundingBoxMin;
-    //    Dst->BoundingBoxMax = BoundingBoxMax;
-
-    //    return Dst;
-    //}
+    TArray<FSkeletalMeshVertex> CPUSkinnedVertices;
+    bool bIsCPUSkinnedValid = false;
 };
 
 struct FBoneWeightConstants
