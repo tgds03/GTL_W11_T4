@@ -102,13 +102,18 @@ int USkinnedMeshComponent::CheckRayIntersection(const FVector& InRayOrigin, cons
 
     int IntersectionNum = 0;
 
-    const int32 VertexNum = SkelPosition.Num();
+  
+    FSkeletalMeshRenderData* RenderData = SkeletalMesh->GetRenderData();
+
+    const int32 VertexNum = RenderData->CPUSkinnedVertices.Num();
+    TArray<FSkeletalMeshVertex> CPUSkinnedVertices= RenderData->CPUSkinnedVertices;
+
     if (VertexNum == 0)
     {
         return 0;
     }
     
-    const TArray<UINT>& Indices = SkeletalMesh->GetRenderData()->Indices;
+    const TArray<UINT>& Indices = RenderData->Indices;
     const int32 IndexNum = Indices.Num();
     const bool bHasIndices = (IndexNum > 0);
 
@@ -127,9 +132,9 @@ int USkinnedMeshComponent::CheckRayIntersection(const FVector& InRayOrigin, cons
         }
 
         // 각 삼각형의 버텍스 위치를 FVector로 불러옵니다.
-        FVector v0 = FVector(SkelPosition[Idx0].X, SkelPosition[Idx0].Y, SkelPosition[Idx0].Z);
-        FVector v1 = FVector(SkelPosition[Idx1].X, SkelPosition[Idx1].Y, SkelPosition[Idx1].Z);
-        FVector v2 = FVector(SkelPosition[Idx2].X, SkelPosition[Idx2].Y, SkelPosition[Idx2].Z);
+        FVector v0 = FVector(CPUSkinnedVertices[Idx0].X, CPUSkinnedVertices[Idx0].Y, CPUSkinnedVertices[Idx0].Z);
+        FVector v1 = FVector(CPUSkinnedVertices[Idx1].X, CPUSkinnedVertices[Idx1].Y, CPUSkinnedVertices[Idx1].Z);
+        FVector v2 = FVector(CPUSkinnedVertices[Idx2].X, CPUSkinnedVertices[Idx2].Y, CPUSkinnedVertices[Idx2].Z);
 
         float HitDistance = FLT_MAX;
         if (IntersectRayTriangle(InRayOrigin, InRayDirection, v0, v1, v2, HitDistance))
@@ -164,17 +169,8 @@ void USkinnedMeshComponent::UpdateSkinnedPositions()
     {
         return;
     }
-
     // 1. Update skeletal hierarchy global transforms
     SkeletalMesh->UpdateGlobalTransforms();
-
-    SkelPosition.Empty();
-
-    TArray<FSkeletalMeshVertex> SkelVertices = SkeletalMesh->GetRenderData()->Vertices;
-    for (int i = 0; i < SkelVertices.Num(); i++) 
-    {
-        SkelPosition.Add(SkelVertices[i].GetSkinnedPosition(SkeletalMesh->GetSkeletonPose()));
-    }
 }
 
 

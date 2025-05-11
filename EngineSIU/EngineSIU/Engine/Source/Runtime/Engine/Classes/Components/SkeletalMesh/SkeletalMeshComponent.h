@@ -31,4 +31,5 @@ public:
     void TestSkeletalMesh();
 
     void TestFBXSkeletalMesh();
+    void PerformCPUSkinning();
 };

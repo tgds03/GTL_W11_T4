@@ -82,8 +82,33 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
     // 5) AnimInstance에 애니메이션 시퀀스 설정
     AnimInstance->SetAnimSequence(AnimSequence);
 
-
     UpdateSkinnedPositions();
+}
+
+void USkeletalMeshComponent::PerformCPUSkinning()
+{
+    FSkeletalMeshRenderData* RenderData = SkeletalMesh->GetRenderData();
+
+    // 필요하면 배열 초기화
+    if (RenderData->CPUSkinnedVertices.Num() != RenderData->Vertices.Num())
+    {
+        RenderData->CPUSkinnedVertices = RenderData->Vertices; // 원본 복사
+    }
+
+    // CPU 스키닝 수행 - 원본은 유지하고 복사본만 수정
+    for (int32 i = 0; i < RenderData->Vertices.Num(); i++)
+    {
+        // 중요: 원본 Vertices에서 계산하지만 CPUSkinnedVertices에 저장
+        FVector SkinnedPos = RenderData->Vertices[i].GetSkinnedPosition(SkeletalMesh->GetSkeletonPose());
+
+        // 계산된 위치를 CPU 스키닝 결과 배열에 저장
+        RenderData->CPUSkinnedVertices[i].X = SkinnedPos.X;
+        RenderData->CPUSkinnedVertices[i].Y = SkinnedPos.Y;
+        RenderData->CPUSkinnedVertices[i].Z = SkinnedPos.Z;
+    }
+
+    // CPU 스키닝 결과가 유효함을 표시
+    RenderData->bIsCPUSkinnedValid = true;
 }
 
 void USkeletalMeshComponent::UpdateAnimation(float DeltaTime)
@@ -102,11 +127,5 @@ void USkeletalMeshComponent::UpdateAnimation(float DeltaTime)
     // 계산된 트랜스폼을 스켈레탈 메시에 적용 (예: 내부 함수)
     SkeletalMesh->SetBoneTransforms(BoneTransforms);
 
-    // 스키닝된 버텍스 위치 계산
-    SkelPosition.Empty();
-    TArray<FSkeletalMeshVertex> SkelVertices = SkeletalMesh->GetRenderData()->Vertices;
-    for (int i = 0; i < SkelVertices.Num(); i++)
-    {
-       // SkelPosition.Add(SkelVertices[i].GetSkinnedPosition(SkeletalMesh->GetSkeleton()));
-    }
+    PerformCPUSkinning();
 }
