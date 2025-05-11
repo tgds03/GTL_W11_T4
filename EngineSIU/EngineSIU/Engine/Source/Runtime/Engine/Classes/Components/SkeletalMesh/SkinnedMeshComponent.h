@@ -35,7 +35,7 @@
         /** Skeletal mesh asset containing FSkeleton and source vertices */
         USkeletalMesh* SkeletalMesh;
 
-        TArray<FVector> SkelPosition;   // RayIntersection 용도
+  
 
         int selectedSubMeshIndex = -1;
     };

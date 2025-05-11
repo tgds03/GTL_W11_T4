@@ -29,8 +29,6 @@ void UAnimInstance::Update(float DeltaTime)
     // 1. 애니메이션 시간 업데이트
     CurrentTime += DeltaTime * PlayRate;
 
-    std::cout << CurrentTime << std::endl;
-
     // 2. 애니메이션 데이터 모델 가져오기
     UAnimDataModel* DataModel = CurrentSequence->GetDataModel();
     if (!DataModel)
@@ -124,19 +122,6 @@ void UAnimInstance::GetBoneTransforms(TArray<FBonePose>& OutTransforms)
         BoneNameToIndexMap.Add(Skeleton->Bones[i].Name, i);
     }
 
-    //std::cout << "== BoneName to TrackName 매핑 ==" << std::endl;
-    //for (const FBoneAnimationTrack& Track : Tracks)
-    //{
-    //    const int32* BoneIndexPtr = BoneNameToIndexMap.Find(Track.Name);
-    //    if (BoneIndexPtr)
-    //    {
-    //        std::cout << "Track: " << (*Track.Name.ToString()) << " -> BoneIndex: " << *BoneIndexPtr << std::endl;
-    //    }
-    //    else
-    //    {
-    //        std::cout << "WARNING: Track: " << (*Track.Name.ToString()) << " 에 해당하는 본이 스켈레톤에 없습니다!" << std::endl;
-    //    }
-    //}
 
     // 각 본 트랙에서 트랜스폼 계산
     for (const FBoneAnimationTrack& Track : Tracks) 

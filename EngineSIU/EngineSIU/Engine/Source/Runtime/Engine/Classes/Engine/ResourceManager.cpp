@@ -570,7 +570,7 @@ UAnimSequence* FResourceManager::LoadAnimationSequence(const FString& FilePath)
 
     // FBX에서 애니메이션 데이터 로드
     bool bSuccess = FFbxLoader::LoadFBXAnimationAsset(FilePath, AnimDataModel);
-    if (!bSuccess || AnimDataModel->GetBoneAnimationTracks().Num() == 0)
+    if (!bSuccess)
     {
         UE_LOG(LogLevel::Warning, TEXT("애니메이션 데이터 로드 실패: %s"), *FilePath);
         return nullptr;

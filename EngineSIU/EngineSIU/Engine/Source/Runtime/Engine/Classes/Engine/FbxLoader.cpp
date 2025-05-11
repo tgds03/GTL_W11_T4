@@ -778,7 +778,5 @@ bool FFbxLoader::LoadFBXAnimationAsset(const FString& filePathName, UAnimDataMod
     scene->Destroy();
     manager->Destroy();
 
-
-
     return OutAnimDataModel->GetBoneAnimationTracks().Num() > 0;
 }
