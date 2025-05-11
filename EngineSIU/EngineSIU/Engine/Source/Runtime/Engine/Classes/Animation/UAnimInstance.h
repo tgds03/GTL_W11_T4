@@ -1,7 +1,7 @@
 #pragma once
 
 #include "UAnimDataModel.h"
-
+#include "Launch/SkeletalDefine.h"
 
 class USkeletalMeshComponent;
 class UAnimSequence;
@@ -56,7 +56,7 @@ public:
     void SetPlayRate(float InRate) { PlayRate = FMath::Max(0.01f, InRate); }
     float GetPlayRate() const { return PlayRate; }
 
-    void GetBoneTransforms(TArray<FTransform>& OutTransforms);
+    void GetBoneTransforms(TArray<FBonePose>& OutTransforms);
 
 protected:
     // 애니메이션 노티파이 처리

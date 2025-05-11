@@ -62,9 +62,24 @@ FSkeleton* USkeletalMesh::GetSkeleton() const
     return SkeletonPose.Skeleton;
 }
 
-FWString USkeletalMesh::GetObjectName() const
+void USkeletalMesh::SetData(FSkeletalMeshRenderData* InRenderData, FSkeletonPose InSkeletonPose)
 {
-    return RenderData->ObjectName;
+    RenderData = InRenderData;
+    SkeletonPose = InSkeletonPose;
+
+    materials.Empty();
+
+    for (int materialIndex = 0; materialIndex < RenderData->Materials.Num(); materialIndex++)
+    {
+        FStaticMaterial* newMaterialSlot = new FStaticMaterial();
+
+        UMaterial* newMaterial = FResourceManager::CreateMaterial(RenderData->Materials[materialIndex]);
+
+        newMaterialSlot->Material = newMaterial;
+        newMaterialSlot->MaterialSlotName = RenderData->Materials[materialIndex].MaterialName;
+
+        materials.Add(newMaterialSlot);
+    }
 }
 
 void USkeletalMesh::SetBoneLocalTransform(int boneIndex, const FBonePose& localTransform)
@@ -82,15 +97,18 @@ void USkeletalMesh::UpdateGlobalTransforms()
     SkeletonPose.ComputeGlobalTransforms();
 }
 
-void USkeletalMesh::SetData(FSkeletalMeshRenderData* InRenderData, FSkeletonPose InSkeletonPose)
-
-void USkeletalMesh::SetBoneTransforms(const TArray<FTransform>& InBoneTransforms)
+FWString USkeletalMesh::GetObjectName() const
 {
-    if (!RenderData || !RenderData->Skeleton.BoneCount)
+    return FWString();
+}
+
+void USkeletalMesh::SetBoneTransforms(const TArray<FBonePose>& InBoneTransforms)
+{
+    if (!RenderData || !SkeletonPose.Skeleton->BoneCount)
         return;
 
     // 스켈레톤의 본 개수와 입력 트랜스폼 배열의 크기 확인
-    const int32 BoneCount = RenderData->Skeleton.BoneCount;
+    const int32 BoneCount = SkeletonPose.Skeleton->BoneCount;
     if (InBoneTransforms.Num() != BoneCount)
     {
         // 개수가 맞지 않으면 오류 메시지 출력 및 반환
@@ -102,43 +120,11 @@ void USkeletalMesh::SetBoneTransforms(const TArray<FTransform>& InBoneTransforms
     // 모든 본의 로컬 트랜스폼 설정
     for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
     {
-        // 트랜스폼에서 회전, 위치, 크기 추출
-        FQuat Rotation = InBoneTransforms[BoneIndex].GetRotation().GetNormalized();
-        FVector Location = InBoneTransforms[BoneIndex].GetTranslation();
-        FVector Scale = InBoneTransforms[BoneIndex].GetScale();
-
-        // BonePose 생성
-        FBonePose LocalTransform;
-        LocalTransform.Rotation = Rotation;
-        LocalTransform.Location = Location;
-        LocalTransform.Scale = Scale;
-
         // 개별 본 로컬 트랜스폼 설정
-        SetBoneLocalTransform(BoneIndex, LocalTransform);
+        SetBoneLocalTransform(BoneIndex, InBoneTransforms[BoneIndex]);
     }
 
     // 글로벌 트랜스폼 업데이트
     UpdateGlobalTransforms();
 }
-
-void USkeletalMesh::SetData(FSkeletalMeshRenderData* InRenderData)
-{
-    RenderData = InRenderData;
-    SkeletonPose = InSkeletonPose;
-
-    materials.Empty();
-
-    for (int materialIndex = 0; materialIndex < RenderData->Materials.Num(); materialIndex++)
-    {
-        FStaticMaterial* newMaterialSlot = new FStaticMaterial();
-        
-        UMaterial* newMaterial = FResourceManager::CreateMaterial(RenderData->Materials[materialIndex]);
-
-        newMaterialSlot->Material = newMaterial;
-        newMaterialSlot->MaterialSlotName = RenderData->Materials[materialIndex].MaterialName;
-
-        materials.Add(newMaterialSlot);
-    }
-}
-
 

@@ -40,8 +40,8 @@ public:
 
 public:
     //ObjectName은 경로까지 포함
-    FWString GetOjbectName() const;
-    void SetBoneTransforms(const TArray<FTransform>& InBoneTransforms);
+    FWString GetObjectName() const;
+    void SetBoneTransforms(const TArray<FBonePose>& InBoneTransforms);
 
 private:
     FSkeletalMeshRenderData* RenderData = nullptr;

@@ -56,7 +56,7 @@ void UAnimInstance::Update(float DeltaTime)
     // 4. 필요한 경우 애니메이션 이벤트(노티파이) 처리
     // (이 부분은 필요에 따라 구현)
 }
-void UAnimInstance::GetBoneTransforms(TArray<FTransform>& OutTransforms)
+void UAnimInstance::GetBoneTransforms(TArray<FBonePose>& OutTransforms)
 {
     if (!OwningComponent || !CurrentSequence)
     {
@@ -83,28 +83,26 @@ void UAnimInstance::GetBoneTransforms(TArray<FTransform>& OutTransforms)
     const FSkeleton* Skeleton = SkeletalMesh->GetSkeleton();
     int32 BoneCount = Skeleton->BoneCount;
 
+    FSkeletonPose* SkeletonPose = SkeletalMesh->GetSkeletonPose();
+
     // 본 트랜스폼 배열 초기화
     OutTransforms.SetNum(BoneCount);
 
-    std::cout << "== 본 계층 구조 출력 ==" << std::endl;
-    for (int32 i = 0; i < BoneCount; ++i)
-    {
-        const FBone Bone = Skeleton->Bones[i];
-        FString ParentName = (Bone.ParentIndex != INDEX_NONE) ? Skeleton->Bones[Bone.ParentIndex].Name.ToString() : TEXT("None");
+    //std::cout << "== 본 계층 구조 출력 ==" << std::endl;
+    //for (int32 i = 0; i < BoneCount; ++i)
+    //{
+    //    const FBone Bone = Skeleton->Bones[i];
+    //    FString ParentName = (Bone.ParentIndex != INDEX_NONE) ? Skeleton->Bones[Bone.ParentIndex].Name.ToString() : TEXT("None");
 
-        std::cout << "[" << i << "] Bone: " << *Bone.Name.ToString()
-            << " → Parent: " << *ParentName
-            << " [" << Bone.ParentIndex << "]" << std::endl;
-    }
+    //    std::cout << "[" << i << "] Bone: " << *Bone.Name.ToString()
+    //        << " → Parent: " << *ParentName
+    //        << " [" << Bone.ParentIndex << "]" << std::endl;
+    //}
 
     // 초기값은 바인드 포즈 트랜스폼
     for (int32 i = 0; i < BoneCount; ++i)
     {
-        OutTransforms[i] = FTransform(
-            Skeleton->Bones[i].LocalTransform.Rotation,
-            Skeleton->Bones[i].LocalTransform.Location,
-            Skeleton->Bones[i].LocalTransform.Scale
-        );
+        OutTransforms[i] = SkeletonPose->LocalTransforms[i];
     }
 
     // 애니메이션 트랙 데이터 가져오기
@@ -126,19 +124,19 @@ void UAnimInstance::GetBoneTransforms(TArray<FTransform>& OutTransforms)
         BoneNameToIndexMap.Add(Skeleton->Bones[i].Name, i);
     }
 
-    std::cout << "== BoneName to TrackName 매핑 ==" << std::endl;
-    for (const FBoneAnimationTrack& Track : Tracks)
-    {
-        const int32* BoneIndexPtr = BoneNameToIndexMap.Find(Track.Name);
-        if (BoneIndexPtr)
-        {
-            std::cout << "Track: " << (*Track.Name.ToString()) << " -> BoneIndex: " << *BoneIndexPtr << std::endl;
-        }
-        else
-        {
-            std::cout << "WARNING: Track: " << (*Track.Name.ToString()) << " 에 해당하는 본이 스켈레톤에 없습니다!" << std::endl;
-        }
-    }
+    //std::cout << "== BoneName to TrackName 매핑 ==" << std::endl;
+    //for (const FBoneAnimationTrack& Track : Tracks)
+    //{
+    //    const int32* BoneIndexPtr = BoneNameToIndexMap.Find(Track.Name);
+    //    if (BoneIndexPtr)
+    //    {
+    //        std::cout << "Track: " << (*Track.Name.ToString()) << " -> BoneIndex: " << *BoneIndexPtr << std::endl;
+    //    }
+    //    else
+    //    {
+    //        std::cout << "WARNING: Track: " << (*Track.Name.ToString()) << " 에 해당하는 본이 스켈레톤에 없습니다!" << std::endl;
+    //    }
+    //}
 
     // 각 본 트랙에서 트랜스폼 계산
     for (const FBoneAnimationTrack& Track : Tracks) 
@@ -203,7 +201,7 @@ void UAnimInstance::GetBoneTransforms(TArray<FTransform>& OutTransforms)
         }
 
         // 로컬 트랜스폼 설정
-        OutTransforms[BoneIndex] = FTransform(Rotation, Position, Scale);
+        OutTransforms[BoneIndex] = FBonePose(Rotation, Position, Scale);
     }
 
 }

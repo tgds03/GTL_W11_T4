@@ -57,8 +57,7 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
 {
     // 1) FBX로부터 USkeletalMesh 생성
 
-    FString FbxPath(TEXT("Assets/fbx/Twerk.fbx"));
-    //FString FbxPath(TEXT("Contents/FbxTest/nathan3.fbx"));
+    FString FbxPath(TEXT("Contents/FBX/Twerkbin.fbx"));
     
     USkeletalMesh* LoadedMesh = FResourceManager::LoadSkeletalMesh(FbxPath);
     if (!LoadedMesh)
@@ -97,7 +96,7 @@ void USkeletalMeshComponent::UpdateAnimation(float DeltaTime)
     AnimInstance->Update(DeltaTime);
 
     // 현재 애니메이션 프레임의 본 트랜스폼 계산
-    TArray<FTransform> BoneTransforms;
+    TArray<FBonePose> BoneTransforms;
     AnimInstance->GetBoneTransforms(BoneTransforms);
 
     // 계산된 트랜스폼을 스켈레탈 메시에 적용 (예: 내부 함수)
