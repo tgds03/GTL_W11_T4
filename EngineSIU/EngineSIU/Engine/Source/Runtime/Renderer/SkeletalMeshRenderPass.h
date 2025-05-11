@@ -7,6 +7,7 @@
 #include "Components/Light/PointLightComponent.h"
 
 struct FSkeletalMeshRenderData;
+class FSkeletonPose;
 class FShadowManager;
 class FDXDShaderManager;
 class UWorld;
@@ -32,13 +33,13 @@ public:
 
     virtual void PrepareRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport) override;
 
-    void UpdateBoneConstant(FSkeletalMeshRenderData*& RenderData) const;
+    void UpdateBoneConstant(FSkeletonPose* SkeletonPose) const;
 
     void RenderAllSkeletalMeshesForPointLight(const std::shared_ptr<FEditorViewportClient>& Viewport, UPointLightComponent*& PointLight);
 
     virtual void RenderAllSkeletalMeshes(const std::shared_ptr<FEditorViewportClient>& Viewport);
 
-    void RenderPrimitive(FSkeletalMeshRenderData* RenderData, TArray<FStaticMaterial*> Materials, TArray<UMaterial*> OverrideMaterials, int SelectedSubMeshIndex) const;
+    void RenderPrimitive(USkeletalMesh* SkeletalMesh, TArray<FStaticMaterial*> Materials, TArray<UMaterial*> OverrideMaterials, int SelectedSubMeshIndex) const;
 
     void RenderPrimitive(ID3D11Buffer* pBuffer, UINT numVertices) const override;
 

@@ -20,28 +20,30 @@ public:
 
     USkeletalMesh* DuplicateSkeletalMesh();
 
-    //void InitializeSkeleton(TArray<FBone>& BoneData);
+    FSkeletalMeshRenderData* GetRenderData() const { return RenderData; }
+    const TArray<FStaticMaterial*>& GetMaterials() const { return materials; }
+    uint32 GetMaterialIndex(FName MaterialSlotName) const;
+    void GetUsedMaterials(TArray<UMaterial*>& OutMaterial) const;
 
     /** Set the local transform for a specific bone by index */
     void SetBoneLocalTransform(int boneIndex, const FBonePose& localTransform);
 
     /** Recompute global transforms for all bones */
     void UpdateGlobalTransforms();
-
-    FSkeletalMeshRenderData* GetRenderData() const { return RenderData; }
-    const TArray<FStaticMaterial*>& GetMaterials() const { return materials; }
-    uint32 GetMaterialIndex(FName MaterialSlotName) const;
-    void GetUsedMaterials(TArray<UMaterial*>& OutMaterial) const;
+      
     FSkeleton* GetSkeleton() const;
+    FSkeletonPose* GetSkeletonPose() { return &SkeletonPose; }
+    TArray<FBonePose>& GetLocalTransforms() { return SkeletonPose.LocalTransforms; }
+    TArray<FMatrix>& GetGlobalTransforms() { return SkeletonPose.GlobalTransforms; }
 
-    void SetData(FSkeletalMeshRenderData* InRenderData);
+    void SetData(FSkeletalMeshRenderData* InRenderData, FSkeletonPose InSkeletonPose);
 
 public:
     //ObjectName은 경로까지 포함
-    FWString GetOjbectName() const;
-
+    FWString GetObjectName() const;
 
 private:
     FSkeletalMeshRenderData* RenderData = nullptr;
+    FSkeletonPose SkeletonPose;
     TArray<FStaticMaterial*> materials;
 };

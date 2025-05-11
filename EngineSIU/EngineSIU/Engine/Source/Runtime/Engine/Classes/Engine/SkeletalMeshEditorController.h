@@ -13,7 +13,7 @@ public:
 
     TArray<ABoneGizmo*> GetBoneGizmos() { return BoneGizmos; }
 
-    void SetBoneGizmo(FSkeleton* InSkeleton);
+    void SetBoneGizmo(USkeletalMesh* InMesh);
 
     int GetBoneIndex(ABoneGizmo* InBoneGizmo);
 

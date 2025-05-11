@@ -21,7 +21,7 @@ void SkeletonMeshEditorPanel::Render()
         return;
     }
 
-    auto& Bones = SkelMesh->GetRenderData()->Skeleton.Bones;
+    auto& Bones = SkelMesh->GetSkeleton()->Bones;
 
     ImGui::Begin("Skeletal Mesh Editor", nullptr,
         ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
@@ -66,7 +66,7 @@ void SkeletonMeshEditorPanel::Render()
         ImGui::Spacing();
 
         // 현재 로컬 포즈 복사
-        FBonePose EditingPose = Bone.LocalTransform;
+        FBonePose EditingPose = SkelMesh->GetLocalTransforms()[SelectedBoneIndex];
 
         // 위치
         float loc[3] = { EditingPose.Location.X, EditingPose.Location.Y, EditingPose.Location.Z };
@@ -91,7 +91,7 @@ void SkeletonMeshEditorPanel::Render()
             EditingPose.Scale = FVector(scl[0], scl[1], scl[2]);
         }
 
-        Bone.LocalTransform = EditingPose;
+        SkelMesh->GetLocalTransforms()[SelectedBoneIndex] = EditingPose;
         SkelMesh->UpdateGlobalTransforms();
     }
     else
@@ -107,7 +107,7 @@ void SkeletonMeshEditorPanel::RenderBoneTree(int32 BoneIndex)
     USkeletalMesh* SkelMesh = Cast<UEditorEngine>(GEngine)
         ->GetSkeletalMeshEditorController()
         ->OriginalMesh;
-    const auto& Bones = SkelMesh->GetRenderData()->Skeleton.Bones;
+    const auto& Bones = SkelMesh->GetSkeleton()->Bones;
 
     ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow
         | ImGuiTreeNodeFlags_SpanAvailWidth

@@ -250,7 +250,7 @@ void UEditorEngine::StartSkeletalMeshEditMode(USkeletalMesh* InMesh)
     ActiveViewport->SetViewMode(EViewModeIndex::VMI_Unlit);
 
     AActor* PreviewActor = ActiveWorld->SpawnActor<AActor>();
-    PreviewActor->SetActorLabel(FString(InMesh->GetOjbectName()));
+    PreviewActor->SetActorLabel(FString(InMesh->GetObjectName()));
 
     USkeletalMeshComponent* SkelMeshComp = PreviewActor->AddComponent<USkeletalMeshComponent>();
     SkelMeshComp->SetSkeletalMesh(SkelEditorController->OriginalMesh);

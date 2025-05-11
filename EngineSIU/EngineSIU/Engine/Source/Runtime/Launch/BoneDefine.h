@@ -1,4 +1,11 @@
 #pragma once
+
+#include "Math/Vector.h"
+#include "Math/Vector4.h"
+#include "Math/Matrix.h"
+#include "Math/Quat.h"
+#include "Math/JungleMath.h"
+
 struct FBonePose
 {
     FQuat Rotation;
@@ -45,23 +52,17 @@ struct FBone
     /** 자식 본들의 인덱스 */
     TArray<int32> Children;
 
-    /** 로컬 트랜스폼 (SRT 또는 4x4 매트릭스) */
-    FBonePose LocalTransform;
-
-    /** 글로벌 트랜스폼 캐시 (ComputeGlobalTransforms() 호출 시 계산) */
-    FMatrix GlobalTransform = FMatrix::Identity;
-
     /** 본의 바인드 트랜스폼의 역행렬 (스켈레톤의 원본 위치) */
     FMatrix InvBindTransform = FMatrix::Identity;
 
     FBone() = default;
-    FBone(const FName& InName, int32 InParentIndex, const FBonePose& InLocalTransform)
-        : Name(InName), ParentIndex(InParentIndex), LocalTransform(InLocalTransform)
+    FBone(const FName& InName, const int32 InParentIndex)
+        : Name(InName), ParentIndex(InParentIndex)
     {
     }
 
     /** 자식 본 추가 */
-    void AddChild(int32 ChildIndex)
+    void AddChildIndex(int32 ChildIndex)
     {
         Children.Add(ChildIndex);
     }

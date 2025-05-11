@@ -2,6 +2,7 @@
 #include "Launch/SkeletalDefine.h"
 #include "BoneGizmos/UGizmoJointComponent.h"
 #include "BoneGizmos/UGizmoFrameComponent.h"
+#include "Components/SkeletalMesh/SkeletalMesh.h"
 
 ABoneGizmo::ABoneGizmo()
 {
@@ -31,28 +32,37 @@ void ABoneGizmo::Initialize(FEditorViewportClient* InViewport)
     AttachedViewport = InViewport;
 }
 
-void ABoneGizmo::SetPose(FBone* InBone, TArray<FBone>& Bones)
+//void ABoneGizmo::SetPose(FBone* InBone, TArray<FBone>& Bones)
+//{
+//    TargetBone = InBone;
+//    TargetBones = &Bones;
+//    UpdatePose();
+//}
+
+void ABoneGizmo::SetPose(USkeletalMesh* InMesh, int32 InBoneIndex)
 {
-    TargetBone = InBone;
-    TargetBones = &Bones;
+    TargetMesh = InMesh;
+    TargetBoneIndex = InBoneIndex;
     UpdatePose();
 }
 
 void ABoneGizmo::UpdatePose()
 {
-    if (TargetBone)
+    if (TargetMesh)
     {
-        SetActorLocation(TargetBone->GlobalTransform.GetTranslationVector());
+        FMatrix TargetBoneGlobalMatrix = TargetMesh->GetGlobalTransforms()[TargetBoneIndex];
+        FBone& TargetBone = TargetMesh->GetSkeleton()->Bones[TargetBoneIndex];
+        SetActorLocation(TargetBoneGlobalMatrix.GetTranslationVector());
 
-        TArray<int32> ChildIndices = TargetBone->Children;
+        TArray<int32> ChildIndices = TargetBone.Children;
         if (ChildIndices.Num() > 0)
         {
             // 첫 번째 자식만 예시로
-            FBone& ChildBone = (*TargetBones)[ChildIndices[0]];
+            FBone& ChildBone = TargetMesh->GetSkeleton()->Bones[TargetBone.Children[0]];
 
             // 월드 공간상의 위치
-            FVector ParentPos = TargetBone->GlobalTransform.GetTranslationVector();
-            FVector ChildPos = ChildBone.GlobalTransform.GetTranslationVector();
+            FVector ParentPos = TargetBoneGlobalMatrix.GetTranslationVector();
+            FVector ChildPos = TargetMesh->GetGlobalTransforms()[TargetBone.Children[0]].GetTranslationVector();
 
             // 2) 방향 벡터 계산
             FVector Dir = (ChildPos - ParentPos).GetSafeNormal();

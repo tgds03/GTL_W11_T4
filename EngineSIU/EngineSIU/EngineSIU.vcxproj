@@ -441,6 +441,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Animation\AnimTypes.h" />
+    <ClInclude Include="Engine\Source\Runtime\Launch\BoneDefine.h" />
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\ABoneGizmo.h" />
     <ClInclude Include="Engine\Source\Contents\Actors\TriggerBox.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh\SkeletalMesh.h" />
@@ -450,6 +451,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\FbxLoader.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\ResourceManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\SkeletalMeshEditorController.h" />
+    <ClInclude Include="Engine\Source\Runtime\Launch\SkeletalDefine.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\CameraEffectRenderPass.h" />
     <ClInclude Include="Engine\Source\Contents\Objects\DamageCameraShake.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraModifier.h" />

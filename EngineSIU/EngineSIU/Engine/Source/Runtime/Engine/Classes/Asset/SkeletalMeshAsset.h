@@ -3,7 +3,7 @@
 #include "Define.h"
 #include "Hal/PlatformType.h"
 #include "Container/Array.h"
-#include "Engine/Source/Runtime/Launch/SkeletalDefine.h"
+#include "Launch/SkeletalDefine.h"
 
 #define MAX_BONE_NUM 256
 
@@ -21,13 +21,13 @@ struct FSkeletalMeshVertex
     int BoneIndices[4];
     float BoneWeights[4];
 
-    FVector GetSkinnedPosition(FSkeleton* InSkeleton)
+    FVector GetSkinnedPosition(FSkeletonPose* SkeletonPose)
     {
         FVector WeightPosition = FVector::ZeroVector;
 
         for (int i = 0; i < 4; i++) {
             if (BoneIndices[i] < 0) continue;
-            FMatrix SkinMat = InSkeleton->Bones[BoneIndices[i]].InvBindTransform * InSkeleton->Bones[BoneIndices[i]].GlobalTransform;
+            FMatrix SkinMat = SkeletonPose->GetSkinningMatrix(BoneIndices[i]);
             WeightPosition += SkinMat.TransformPosition(FVector(X, Y, Z));
         }
 
@@ -46,58 +46,56 @@ struct FSkeletalMeshRenderData
     TArray<FObjMaterialInfo> Materials;
     TArray<FMaterialSubset> MaterialSubsets;
 
-    FSkeleton Skeleton;
-
     FVector BoundingBoxMin;
     FVector BoundingBoxMax;
 
-    FSkeletalMeshRenderData* Duplicate() const
-    {
-        auto* Dst = new FSkeletalMeshRenderData();
+    //FSkeletalMeshRenderData* Duplicate() const
+    //{
+    //    auto* Dst = new FSkeletalMeshRenderData();
 
-        // 이름 복사
-        Dst->ObjectName = ObjectName;
-        Dst->DisplayName = DisplayName;
+    //    // 이름 복사
+    //    Dst->ObjectName = ObjectName;
+    //    Dst->DisplayName = DisplayName;
 
-        // 배열 복사: Emplace를 이용해 각 요소를 깊은 복사
-        Dst->Vertices.Reserve(Vertices.Num());
-        for (const auto& V : Vertices)
-        {
-            Dst->Vertices.Emplace(V);
-        }
+    //    // 배열 복사: Emplace를 이용해 각 요소를 깊은 복사
+    //    Dst->Vertices.Reserve(Vertices.Num());
+    //    for (const auto& V : Vertices)
+    //    {
+    //        Dst->Vertices.Emplace(V);
+    //    }
 
-        Dst->Indices.Reserve(Indices.Num());
-        for (const auto& I : Indices)
-        {
-            Dst->Indices.Emplace(I);
-        }
+    //    Dst->Indices.Reserve(Indices.Num());
+    //    for (const auto& I : Indices)
+    //    {
+    //        Dst->Indices.Emplace(I);
+    //    }
 
-        Dst->Materials.Reserve(Materials.Num());
-        for (const auto& M : Materials)
-        {
-            Dst->Materials.Emplace(M);
-        }
+    //    Dst->Materials.Reserve(Materials.Num());
+    //    for (const auto& M : Materials)
+    //    {
+    //        Dst->Materials.Emplace(M);
+    //    }
 
-        Dst->MaterialSubsets.Reserve(MaterialSubsets.Num());
-        for (const auto& S : MaterialSubsets)
-        {
-            Dst->MaterialSubsets.Emplace(S);
-        }
+    //    Dst->MaterialSubsets.Reserve(MaterialSubsets.Num());
+    //    for (const auto& S : MaterialSubsets)
+    //    {
+    //        Dst->MaterialSubsets.Emplace(S);
+    //    }
 
-        // 스켈레톤 복사 (FSkeleton에 operator=가 구현되어 있다고 가정)
-        Dst->Skeleton.BoneCount = Skeleton.BoneCount;
-        Dst->Skeleton.Bones.Reserve(Skeleton.BoneCount);
-        for (const auto& S : Skeleton.Bones)
-        {
-            Dst->Skeleton.Bones.Emplace(S);
-        }
+    //    // 스켈레톤 복사 (FSkeleton에 operator=가 구현되어 있다고 가정)
+    //    Dst->Skeleton.BoneCount = Skeleton.BoneCount;
+    //    Dst->Skeleton.Bones.Reserve(Skeleton.BoneCount);
+    //    for (const auto& S : Skeleton.Bones)
+    //    {
+    //        Dst->Skeleton.Bones.Emplace(S);
+    //    }
 
-        // 바운딩 박스 복사
-        Dst->BoundingBoxMin = BoundingBoxMin;
-        Dst->BoundingBoxMax = BoundingBoxMax;
+    //    // 바운딩 박스 복사
+    //    Dst->BoundingBoxMin = BoundingBoxMin;
+    //    Dst->BoundingBoxMax = BoundingBoxMax;
 
-        return Dst;
-    }
+    //    return Dst;
+    //}
 };
 
 struct FBoneWeightConstants

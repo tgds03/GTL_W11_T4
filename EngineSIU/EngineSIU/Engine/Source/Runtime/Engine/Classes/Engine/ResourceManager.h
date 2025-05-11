@@ -60,7 +60,7 @@ private:
 public:
 
     static USkeletalMesh* LoadSkeletalMesh(const FString& FilePath);
-    static FSkeletalMeshRenderData* LoadSkeletalMeshAsset(const FString& PathFileName);
+    static USkeletalMesh* LoadSkeletalMeshAsset(const FString& PathFileName);
     static USkeletalMesh* GetSkeletalMesh(const FWString& FilePath);
 
 private:

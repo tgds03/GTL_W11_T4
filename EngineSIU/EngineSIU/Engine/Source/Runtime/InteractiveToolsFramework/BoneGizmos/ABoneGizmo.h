@@ -16,8 +16,9 @@ public:
     virtual void Tick(float DeltaTime) override;
     void Initialize(FEditorViewportClient* InViewport);
 
-    FBone* GetPose() const { return TargetBone; }
-    void SetPose(FBone* InPose, TArray<FBone>& Bones);
+    //FBone* GetPose() const { return TargetBone; }
+    //void SetPose(FBone* InPose, TArray<FBone>& Bones);
+    void SetPose(USkeletalMesh* InMesh, int32 InBoneIndex);
 
     void UpdatePose();
 
@@ -35,8 +36,11 @@ private:
     UGizmoJointComponent* Joint = nullptr;
     UGizmoFrameComponent* Frame = nullptr;
 
-    FBone* TargetBone;
-    TArray<FBone>* TargetBones;
+    USkeletalMesh* TargetMesh = nullptr;
+    int32 TargetBoneIndex = INDEX_NONE;
+
+    //FBone* TargetBone;
+    //TArray<FBone>* TargetBones;
     FEditorViewportClient* AttachedViewport;
 };
 

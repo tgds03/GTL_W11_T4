@@ -11,7 +11,7 @@ struct FSkeletalMeshVertex;
 struct FFbxLoader 
 {
 public:
-    static USkeletalMesh* LoadFBXSkeletalMeshAsset(const FString& filePathName, FSkeletalMeshRenderData*& OutSkeletalMeshRenderData);
+    static USkeletalMesh* LoadFBXSkeletalMeshAsset(const FString& filePathName);
 
     static bool CreateTextureFromFile(const FWString& Filename, bool bIsSRGB = true);
 

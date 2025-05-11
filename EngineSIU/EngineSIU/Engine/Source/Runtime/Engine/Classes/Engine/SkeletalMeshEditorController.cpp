@@ -9,16 +9,16 @@ void SkeletalMeshEditorController::Initialize(USkeletalMesh* InMesh, FEditorView
     EditingMesh = OriginalMesh->DuplicateSkeletalMesh();
     AttachedViewport = InViewport;
 
-    SetBoneGizmo(OriginalMesh->GetSkeleton());
+    SetBoneGizmo(OriginalMesh);
 }
 
 void SkeletalMeshEditorController::Release()
 {
 }
 
-void SkeletalMeshEditorController::SetBoneGizmo(FSkeleton* InSkeleton)
+void SkeletalMeshEditorController::SetBoneGizmo(USkeletalMesh* InMesh)
 {
-    if (InSkeleton == nullptr)
+    if (InMesh == nullptr)
         return;
 
     for (ABoneGizmo* OldGizmo : BoneGizmos)
@@ -30,14 +30,14 @@ void SkeletalMeshEditorController::SetBoneGizmo(FSkeleton* InSkeleton)
     }
     BoneGizmos.Empty();
 
-    for (int i = 0; i < InSkeleton->BoneCount; ++i)
+    for (int i = 0; i < InMesh->GetSkeleton()->BoneCount; ++i)
     {
-        FBone& Bone = InSkeleton->Bones[i];
+        FBone& Bone = InMesh->GetSkeleton()->Bones[i];
 
         ABoneGizmo* BoneGizmo = GEngine->ActiveWorld->SpawnActor<ABoneGizmo>();
         BoneGizmo->Initialize(AttachedViewport);
         BoneGizmo->SetActorLabel(Bone.Name.ToString());
-        BoneGizmo->SetPose(&Bone, InSkeleton->Bones);
+        BoneGizmo->SetPose(InMesh, i);
 
         BoneGizmos.Add(BoneGizmo);
     }

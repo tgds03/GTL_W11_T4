@@ -508,27 +508,18 @@ USkeletalMesh* FResourceManager::LoadSkeletalMesh(const FString& FilePath)
         return SkeletalMeshMap[WideFilePath];
     }
 
-    FSkeletalMeshRenderData* SkeletalMeshData = LoadSkeletalMeshAsset(FilePath);
+    USkeletalMesh* SkeletalMeshData = LoadSkeletalMeshAsset(FilePath);
 
     if (SkeletalMeshData == nullptr) return nullptr;
 
-    SkeletalMeshData->ObjectName = WideFilePath;
+    SkeletalMeshData->GetRenderData()->ObjectName = WideFilePath;
 
-    USkeletalMesh* SkeletalMesh = GetSkeletalMesh(SkeletalMeshData->ObjectName);
-    if (SkeletalMesh != nullptr)
-    {
-        return SkeletalMesh;
-    }
+    SkeletalMeshMap.Add(WideFilePath, SkeletalMeshData);
 
-    SkeletalMesh = FObjectFactory::ConstructObject<USkeletalMesh>(nullptr);
-    SkeletalMesh->SetData(SkeletalMeshData);
-
-    SkeletalMeshMap.Add(WideFilePath, SkeletalMesh);
-
-    return SkeletalMesh;
+    return SkeletalMeshData;
 }
 
-FSkeletalMeshRenderData* FResourceManager::LoadSkeletalMeshAsset(const FString& PathFileName)
+USkeletalMesh* FResourceManager::LoadSkeletalMeshAsset(const FString& PathFileName)
 {
     // FWString BinaryPath = (PathFileName + ".bin").ToWideString();
     // if (std::ifstream(BinaryPath).good())
@@ -539,20 +530,19 @@ FSkeletalMeshRenderData* FResourceManager::LoadSkeletalMeshAsset(const FString& 
     //         return NewStaticMesh;
     //     }
     // }
+    USkeletalMesh* LoadedSkeletalMesh = FFbxLoader::LoadFBXSkeletalMeshAsset(PathFileName);
 
-    FSkeletalMeshRenderData* NewSkeletalMesh = nullptr;
-
-    FFbxLoader::LoadFBXSkeletalMeshAsset(PathFileName, NewSkeletalMesh);
+    FSkeletalMeshRenderData* NewSkeletalMeshRenderData = LoadedSkeletalMesh->GetRenderData();
 
     // Material
-
-    for (auto Material : NewSkeletalMesh->Materials) {
+    for (auto Material : NewSkeletalMeshRenderData->Materials) 
+    {
         CreateMaterial(Material);
     }
 
     // SaveStaticMeshToBinary(BinaryPath, *NewStaticMesh);
 
-    return NewSkeletalMesh;
+    return LoadedSkeletalMesh;
 }
 
 USkeletalMesh* FResourceManager::GetSkeletalMesh(const FWString& FilePath)

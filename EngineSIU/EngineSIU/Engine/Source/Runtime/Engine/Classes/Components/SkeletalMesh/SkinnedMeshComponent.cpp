@@ -29,7 +29,7 @@ void USkinnedMeshComponent::GetProperties(TMap<FString, FString>& OutProperties)
     if (CurrentMesh != nullptr) {
 
         // 1. std::wstring 경로 얻기
-        std::wstring PathWString = CurrentMesh->GetOjbectName(); // 이 함수가 std::wstring 반환 가정
+        std::wstring PathWString = CurrentMesh->GetObjectName(); // 이 함수가 std::wstring 반환 가정
 
         // 2. std::wstring을 FString으로 변환
         FString PathFString(PathWString.c_str()); // c_str()로 const wchar_t* 얻어서 FString 생성
@@ -173,9 +173,11 @@ void USkinnedMeshComponent::UpdateAnimation()
     TArray<FSkeletalMeshVertex> SkelVertices = SkeletalMesh->GetRenderData()->Vertices;
     for (int i = 0; i < SkelVertices.Num(); i++) 
     {
-        SkelPosition.Add(SkelVertices[i].GetSkinnedPosition(SkeletalMesh->GetSkeleton()));
+        SkelPosition.Add(SkelVertices[i].GetSkinnedPosition(SkeletalMesh->GetSkeletonPose()));
     }
 }
+
+
 
 
 

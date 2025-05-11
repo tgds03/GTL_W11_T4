@@ -10,7 +10,7 @@
 
 using namespace fbxsdk;
 
-USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName, FSkeletalMeshRenderData*& OutSkeletalMeshRenderData)
+USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
 {
     // 2) FBX SDK 초기화
     FbxManager* manager = FbxManager::Create();
@@ -34,6 +34,7 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName,
 
     // 4) 본 계층 파싱 (예: 재귀 순회로 FBone 배열 구성)
     TArray<FBone> bones;
+    TArray<FBonePose> boneLocalPoses;
     {
         bones.Reserve(64);
 
@@ -44,6 +45,8 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName,
                 if (attr && attr->GetAttributeType() == FbxNodeAttribute::eSkeleton)
                 {
                     FBone b;
+                    FBonePose LocalTransform;
+
                     b.Name = FName(node->GetName());
                     b.ParentIndex = parentIndex;
                     
@@ -51,10 +54,15 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName,
 
                     const FbxAMatrix localT = node->EvaluateLocalTransform(FBXSDK_TIME_INFINITE);
 
-                    b.LocalTransform = FBonePose(FMatrix::FromFbxMatrix(localT));
+                    //b.LocalTransform = FBonePose(FMatrix::FromFbxMatrix(localT));
+                    LocalTransform = FBonePose(FMatrix::FromFbxMatrix(localT));
 
                     int myIndex = bones.Num();
+
+                    // Bone이랑 LocalTransform의 인덱스 보장
                     bones.Add(b);
+                    boneLocalPoses.Add(LocalTransform);
+
                     if (parentIndex >= 0)
                         bones[parentIndex].Children.Add(myIndex);
                     parentIndex = myIndex;
@@ -64,9 +72,10 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName,
             };
 
         recurse(scene->GetRootNode(), -1);
-        //skelMesh->InitializeSkeleton(bones);
     }
-    FSkeleton ParsedSkeleton(bones);
+
+    FSkeleton* ParsedSkeleton = new FSkeleton(bones);
+    FSkeletonPose ParsedSkeletonPose(ParsedSkeleton, boneLocalPoses);;
 
     // 5) Mesh + Skin 데이터 파싱 (여러 메시 처리)
     {
@@ -79,7 +88,6 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName,
         rd->MaterialSubsets.Empty();
         rd->Vertices.Empty();
         rd->Indices.Empty();
-        rd->Skeleton = ParsedSkeleton;
 
         // 재귀 함수: 노드 트리를 돌며 모든 FbxMesh 를 파싱
         std::function<void(FbxNode*)> recurse = [&](FbxNode* node)
@@ -253,8 +261,8 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName,
                             // boneNode 이름 → skeleton 에서 인덱스 찾기
                             FName boneName = FName(boneNode->GetName());
                             int boneIndex = INDEX_NONE;
-                            for (int b = 0; b < rd->Skeleton.BoneCount; ++b)
-                                if (rd->Skeleton.Bones[b].Name == boneName)
+                            for (int b = 0; b < ParsedSkeletonPose.Skeleton->BoneCount; ++b)
+                                if (ParsedSkeletonPose.Skeleton->Bones[b].Name == boneName)
                                 {
                                     boneIndex = b;
                                     break;
@@ -463,12 +471,8 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName,
 
         // 바운딩 계산 작업
         ComputeBoundingBox(rd->Vertices, rd->BoundingBoxMin, rd->BoundingBoxMax);
-        // (8) 렌더 데이터 & 소스 정점 세팅
-        
-        
-        OutSkeletalMeshRenderData = rd;
-        
-        skelMesh->SetData(rd);
+
+        skelMesh->SetData(rd, ParsedSkeletonPose);
     }
 
     return skelMesh;

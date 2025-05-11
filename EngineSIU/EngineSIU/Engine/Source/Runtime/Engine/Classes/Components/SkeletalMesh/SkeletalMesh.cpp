@@ -5,42 +5,31 @@
 #include "UObject/Casts.h"
 #include "Engine/Source/Runtime/CoreUObject/UObject/ObjectFactory.h"
 
-void USkeletalMesh::SetBoneLocalTransform(int boneIndex, const FBonePose& localTransform)
-{
-    if (boneIndex >= 0 && boneIndex < RenderData->Skeleton.BoneCount)
-    {
-        RenderData->Skeleton.Bones[boneIndex].LocalTransform = localTransform;
-    }
-
-    // GlobalTransform 갱신은 Render 찍기 전에만 딱 한번 하도록 하기!
-}
-
-void USkeletalMesh::UpdateGlobalTransforms()
-{
-    RenderData->Skeleton.ComputeGlobalTransforms();
-}
-
 UObject* USkeletalMesh::Duplicate(UObject* InOuter)
 {
     ThisClass* NewSkeletalMesh = Cast<ThisClass>(Super::Duplicate(InOuter));
 
-    NewSkeletalMesh->RenderData = this->RenderData->Duplicate();
+    NewSkeletalMesh->RenderData = this->RenderData;
     NewSkeletalMesh->materials.Reserve(this->materials.Num());
+
+    NewSkeletalMesh->SkeletonPose = this->SkeletonPose.Duplicate();
 
     for (const auto& M : this->materials)
     {
         NewSkeletalMesh->materials.Emplace(M);
     }
 
-    return nullptr;
+    return NewSkeletalMesh;
 }
 
 USkeletalMesh* USkeletalMesh::DuplicateSkeletalMesh()
 {
     ThisClass* NewSkeletalMesh = FObjectFactory::ConstructObject<USkeletalMesh>(nullptr);
 
-    NewSkeletalMesh->RenderData = this->RenderData->Duplicate();
+    NewSkeletalMesh->RenderData = this->RenderData;
     NewSkeletalMesh->materials.Reserve(this->materials.Num());
+
+    NewSkeletalMesh->SkeletonPose = this->SkeletonPose.Duplicate();
 
     for (const auto& M : this->materials)
     {
@@ -70,17 +59,35 @@ void USkeletalMesh::GetUsedMaterials(TArray<UMaterial*>& OutMaterial) const
 
 FSkeleton* USkeletalMesh::GetSkeleton() const
 {
-    return &(RenderData->Skeleton);
+    return SkeletonPose.Skeleton;
 }
 
-FWString USkeletalMesh::GetOjbectName() const
+FWString USkeletalMesh::GetObjectName() const
 {
     return RenderData->ObjectName;
 }
 
-void USkeletalMesh::SetData(FSkeletalMeshRenderData* InRenderData)
+void USkeletalMesh::SetBoneLocalTransform(int boneIndex, const FBonePose& localTransform)
+{
+    if (boneIndex >= 0 && boneIndex < SkeletonPose.Skeleton->BoneCount)
+    {
+        SkeletonPose.LocalTransforms[boneIndex] = localTransform;
+    }
+
+    // GlobalTransform 갱신은 Render 찍기 전에만 딱 한번 하도록 하기!
+}
+
+void USkeletalMesh::UpdateGlobalTransforms()
+{
+    SkeletonPose.ComputeGlobalTransforms();
+}
+
+void USkeletalMesh::SetData(FSkeletalMeshRenderData* InRenderData, FSkeletonPose InSkeletonPose)
 {
     RenderData = InRenderData;
+    SkeletonPose = InSkeletonPose;
+
+    materials.Empty();
 
     for (int materialIndex = 0; materialIndex < RenderData->Materials.Num(); materialIndex++)
     {

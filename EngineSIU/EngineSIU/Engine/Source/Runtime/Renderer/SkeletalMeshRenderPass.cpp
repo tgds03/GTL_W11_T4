@@ -139,12 +139,12 @@ void FSkeletalMeshRenderPass::PrepareRenderState(const std::shared_ptr<FEditorVi
     Graphics->DeviceContext->OMSetRenderTargets(1, &RenderTargetRHI->RTV, DepthStencilRHI->DSV);
 }
 
-void FSkeletalMeshRenderPass::UpdateBoneConstant(FSkeletalMeshRenderData*& RenderData) const
+void FSkeletalMeshRenderPass::UpdateBoneConstant(FSkeletonPose* SkeletonPose) const
 {
-    FSkeleton& Skeleton = RenderData->Skeleton;
+    FSkeleton* Skeleton = SkeletonPose->Skeleton;
 
     FBoneWeightConstants BoneWeightConstants;
-    for (int i = 0; i < Skeleton.BoneCount; i++) 
+    for (int i = 0; i < Skeleton->BoneCount; i++) 
     {
         if (i >= MAX_BONE_NUM) 
         {
@@ -152,7 +152,8 @@ void FSkeletalMeshRenderPass::UpdateBoneConstant(FSkeletalMeshRenderData*& Rende
             break;
         }
 
-        BoneWeightConstants.BoneTransform[i] = Skeleton.Bones[i].InvBindTransform * Skeleton.Bones[i].GlobalTransform;
+        //BoneWeightConstants.BoneTransform[i] = Skeleton->Bones[i].InvBindTransform * Skeleton.Bones[i].GlobalTransform;
+        BoneWeightConstants.BoneTransform[i] = SkeletonPose->GetSkinningMatrix(i);
     }
 
     BufferManager->UpdateConstantBuffer(TEXT("FBoneWeightConstants"), BoneWeightConstants);
@@ -173,7 +174,7 @@ void FSkeletalMeshRenderPass::RenderAllSkeletalMeshesForPointLight(const std::sh
         FMatrix WorldMatrix = Comp->GetWorldMatrix();
 
         //ShadowRenderPass->UpdateCubeMapConstantBuffer(PointLight, WorldMatrix);
-        RenderPrimitive(RenderData, Comp->GetSkeletalMesh()->GetMaterials(), Comp->GetOverrideMaterials(), Comp->GetselectedSubMeshIndex());
+        RenderPrimitive(Comp->GetSkeletalMesh(), Comp->GetSkeletalMesh()->GetMaterials(), Comp->GetOverrideMaterials(), Comp->GetselectedSubMeshIndex());
     }
 }
 
@@ -215,7 +216,7 @@ void FSkeletalMeshRenderPass::RenderAllSkeletalMeshes(const std::shared_ptr<FEdi
 
         UpdateObjectConstant(WorldMatrix, UUIDColor, bIsSelected);
 
-        RenderPrimitive(RenderData, Comp->GetSkeletalMesh()->GetMaterials(), Comp->GetOverrideMaterials(), Comp->GetselectedSubMeshIndex());
+        RenderPrimitive(Comp->GetSkeletalMesh(), Comp->GetSkeletalMesh()->GetMaterials(), Comp->GetOverrideMaterials(), Comp->GetselectedSubMeshIndex());
 
         if (Viewport->GetShowFlag() & static_cast<uint64>(EEngineShowFlags::SF_AABB))
         {
@@ -224,9 +225,10 @@ void FSkeletalMeshRenderPass::RenderAllSkeletalMeshes(const std::shared_ptr<FEdi
     }
 }
 
-void FSkeletalMeshRenderPass::RenderPrimitive(FSkeletalMeshRenderData* RenderData, TArray<FStaticMaterial*> Materials, TArray<UMaterial*> OverrideMaterials, int SelectedSubMeshIndex) const
+void FSkeletalMeshRenderPass::RenderPrimitive(USkeletalMesh* SkeletalMesh, TArray<FStaticMaterial*> Materials, TArray<UMaterial*> OverrideMaterials, int SelectedSubMeshIndex) const
 {
-    UpdateBoneConstant(RenderData);
+    FSkeletalMeshRenderData* RenderData = SkeletalMesh->GetRenderData();
+    UpdateBoneConstant(SkeletalMesh->GetSkeletonPose());
 
     UINT Stride = sizeof(FSkeletalMeshVertex);
     UINT Offset = 0;
