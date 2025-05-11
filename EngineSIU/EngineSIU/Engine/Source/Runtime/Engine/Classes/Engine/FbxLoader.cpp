@@ -762,38 +762,12 @@ bool FFbxLoader::LoadFBXAnimationAsset(const FString& filePathName, UAnimDataMod
             }
 
             // FBX 행렬에서 위치, 회전, 스케일 추출
-            FbxVector4 Translation = LocalTransform.GetT();
-            FbxQuaternion Rotation = LocalTransform.GetQ();
-            FbxVector4 Scale = LocalTransform.GetS();
-
-            // 언리얼 엔진 형식으로 변환 (Y와 Z축 변환 포함)
-          // 올바른 위치 변환
-            FVector Position(
-                (float)Translation[0],    
-                (float)Translation[1],     
-                (float)Translation[2]     
-            );
-
-            FQuat RotQuat(
-                (float)Rotation[3],
-                (float)Rotation[0],
-                (float)Rotation[1],
-                (float)Rotation[2] 
-            );
-
-            // 정규화 추가 (필수!)
-            RotQuat.Normalize();
-
-            FVector ScaleVec(
-                (float)Scale[0],
-                (float)Scale[1],  
-                (float)Scale[2]
-            );
+            FMatrix LocalTransforMyMatrix = FMatrix::FromFbxMatrix(LocalTransform);
 
             // 키프레임 데이터 설정
-            BoneTrack.InternalTrackData.PosKeys[FrameIndex] = Position;
-            BoneTrack.InternalTrackData.RotKeys[FrameIndex] = RotQuat;
-            BoneTrack.InternalTrackData.ScaleKeys[FrameIndex] = ScaleVec;
+            BoneTrack.InternalTrackData.PosKeys[FrameIndex] = LocalTransforMyMatrix.GetTranslationVector();
+            BoneTrack.InternalTrackData.RotKeys[FrameIndex] = LocalTransforMyMatrix.GetMatrixWithoutScale().ToQuat();
+            BoneTrack.InternalTrackData.ScaleKeys[FrameIndex] = LocalTransforMyMatrix.GetScaleVector();
         }
 
         // 애니메이션 트랙 추가
