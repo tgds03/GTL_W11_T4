@@ -188,7 +188,7 @@ void FSkeletalMeshRenderPass::RenderAllSkeletalMeshes(const std::shared_ptr<FEdi
             continue;
         }
 
-        Comp->UpdateAnimation(1/60.f);
+        Comp->UpdateAnimation(1/30.f);
 
 
         FSkeletalMeshRenderData* RenderData = Comp->GetSkeletalMesh()->GetRenderData();
@@ -239,10 +239,10 @@ void FSkeletalMeshRenderPass::RenderPrimitive(USkeletalMesh* SkeletalMesh, TArra
     FString KeyName(RenderData->ObjectName.c_str());
     FVertexInfo VertexInfo;
     // 아래 코드 내부적으로 
-    BufferManager->CreateDynamicVertexBuffer(KeyName, RenderData->Vertices, VertexInfo);
+    BufferManager->CreateDynamicVertexBuffer(KeyName, RenderData->CPUSkinnedVertices, VertexInfo);
 
     // 2) 매 프레임 데이터 업데이트  
-    BufferManager->UpdateDynamicVertexBuffer(KeyName, RenderData->Vertices);
+    BufferManager->UpdateDynamicVertexBuffer(KeyName, RenderData->CPUSkinnedVertices);
 
     Graphics->DeviceContext->IASetVertexBuffers(0, 1, &VertexInfo.VertexBuffer, &Stride, &Offset);
 
@@ -324,8 +324,8 @@ void FSkeletalMeshRenderPass::ChangeViewMode(EViewModeIndex ViewMode)
         UpdateLitUnlitConstant(1);
         break;
     case EViewModeIndex::VMI_Lit_BlinnPhong:
-        VertexShader = ShaderManager->GetVertexShaderByKey(L"SkeletalMeshVertexShader");
-        InputLayout = ShaderManager->GetInputLayoutByKey(L"SkeletalMeshVertexShader");
+        VertexShader = ShaderManager->GetVertexShaderByKey(L"StaticMeshVertexShader");
+        InputLayout = ShaderManager->GetInputLayoutByKey(L"StaticMeshVertexShader");
         PixelShader = ShaderManager->GetPixelShaderByKey(L"PHONG_StaticMeshPixelShader");
         UpdateLitUnlitConstant(1);
         break;
