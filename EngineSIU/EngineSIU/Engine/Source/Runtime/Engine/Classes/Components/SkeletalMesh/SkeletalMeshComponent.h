@@ -17,7 +17,7 @@ class USkeletalMeshComponent : public USkinnedMeshComponent
 public:
     USkeletalMeshComponent();
     ~USkeletalMeshComponent() = default;
-
+    
     virtual void TickComponent(float DeltaTime) override;
     virtual void TickPose(float DeltaTime) override;
     void TickAnimation(float DeltaTime);

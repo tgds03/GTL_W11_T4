@@ -62,7 +62,6 @@ struct FSkeletalMeshRenderData
     FVector BoundingBoxMax;
 
     TArray<FSkeletalMeshVertex> CPUSkinnedVertices;
-    bool bIsCPUSkinnedValid = false;
 };
 
 struct FBoneWeightConstants

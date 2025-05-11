@@ -86,17 +86,6 @@ void UAnimInstance::GetBoneTransforms(TArray<FBonePose>& OutTransforms)
     // 본 트랜스폼 배열 초기화
     OutTransforms.SetNum(BoneCount);
 
-    //std::cout << "== 본 계층 구조 출력 ==" << std::endl;
-    //for (int32 i = 0; i < BoneCount; ++i)
-    //{
-    //    const FBone Bone = Skeleton->Bones[i];
-    //    FString ParentName = (Bone.ParentIndex != INDEX_NONE) ? Skeleton->Bones[Bone.ParentIndex].Name.ToString() : TEXT("None");
-
-    //    std::cout << "[" << i << "] Bone: " << *Bone.Name.ToString()
-    //        << " → Parent: " << *ParentName
-    //        << " [" << Bone.ParentIndex << "]" << std::endl;
-    //}
-
     // 초기값은 바인드 포즈 트랜스폼
     for (int32 i = 0; i < BoneCount; ++i)
     {
@@ -121,7 +110,6 @@ void UAnimInstance::GetBoneTransforms(TArray<FBonePose>& OutTransforms)
     {
         BoneNameToIndexMap.Add(Skeleton->Bones[i].Name, i);
     }
-
 
     // 각 본 트랙에서 트랜스폼 계산
     for (const FBoneAnimationTrack& Track : Tracks) 

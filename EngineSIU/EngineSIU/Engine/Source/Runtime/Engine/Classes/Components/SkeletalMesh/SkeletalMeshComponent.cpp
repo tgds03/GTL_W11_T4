@@ -18,6 +18,8 @@ USkeletalMeshComponent::USkeletalMeshComponent()
 }
 
 
+
+
 void USkeletalMeshComponent::InitializeAnimInstance()
 {
     if (!AnimInstance)
@@ -89,12 +91,9 @@ void USkeletalMeshComponent::PerformCPUSkinning()
 {
     FSkeletalMeshRenderData* RenderData = SkeletalMesh->GetRenderData();
 
-    // 필요하면 배열 초기화
-    if (RenderData->CPUSkinnedVertices.Num() != RenderData->Vertices.Num())
-    {
-        RenderData->CPUSkinnedVertices = RenderData->Vertices; // 원본 복사
-    }
-
+    RenderData->CPUSkinnedVertices.SetNum(RenderData->Vertices.Num());
+    RenderData->CPUSkinnedVertices = RenderData->Vertices; // 원본 복사
+    
     // CPU 스키닝 수행 - 원본은 유지하고 복사본만 수정
     for (int32 i = 0; i < RenderData->Vertices.Num(); i++)
     {
@@ -106,9 +105,6 @@ void USkeletalMeshComponent::PerformCPUSkinning()
         RenderData->CPUSkinnedVertices[i].Y = SkinnedPos.Y;
         RenderData->CPUSkinnedVertices[i].Z = SkinnedPos.Z;
     }
-
-    // CPU 스키닝 결과가 유효함을 표시
-    RenderData->bIsCPUSkinnedValid = true;
 }
 
 void USkeletalMeshComponent::TickComponent(float DeltaTime)
@@ -139,6 +135,9 @@ void USkeletalMeshComponent::TickAnimation(float DeltaTime)
     // 계산된 트랜스폼을 스켈레탈 메시에 적용 (예: 내부 함수)
     SkeletalMesh->SetBoneTransforms(BoneTransforms);
 
-    PerformCPUSkinning();
+    if (!FEngineLoop::IsGPUSkinningEnabled()) 
+    {
+        PerformCPUSkinning();
+    }
 }
 

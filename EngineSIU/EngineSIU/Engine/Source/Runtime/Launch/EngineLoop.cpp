@@ -297,3 +297,13 @@ void FEngineLoop::UpdateUI()
     }
     ViewportTypePanel::GetInstance().OnResize(AppWnd);
 }
+
+bool FEngineLoop::IsGPUSkinningEnabled()
+{
+    return bUseGPUSkinning;
+}
+
+void FEngineLoop::SetUseGPUSkinning(bool bInUseGPUSkinning)
+{
+    bUseGPUSkinning = bInUseGPUSkinning;
+}
