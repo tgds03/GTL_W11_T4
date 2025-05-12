@@ -59,7 +59,7 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
 {
     // 1) FBX로부터 USkeletalMesh 생성
 
-    FString FbxPath(TEXT("Contents/FBX/Twerkbin.fbx"));
+    FString FbxPath(TEXT("Contents/Fbx/Twerkbin.fbx"));
     
     USkeletalMesh* LoadedMesh = FResourceManager::LoadSkeletalMesh(FbxPath);
     if (!LoadedMesh)
@@ -110,6 +110,9 @@ void USkeletalMeshComponent::PerformCPUSkinning()
 void USkeletalMeshComponent::TickComponent(float DeltaTime)
 {
     USkinnedMeshComponent::TickComponent(DeltaTime);
+
+    //나중에 애니메이션 부를곳에서 부르기
+    TickAnimation(DeltaTime);
 }
 
 void USkeletalMeshComponent::TickPose(float DeltaTime)

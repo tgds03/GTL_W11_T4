@@ -34,6 +34,7 @@
 #include "Actors/CubeActor.h"
 #include "Actors/SphereActor.h"
 #include "Actors/CapsuleActor.h"
+#include "Components/SkeletalMesh/SkeletalMeshComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Contents/Actors/Fish.h"
 #include "Contents/Actors/ItemActor.h"
@@ -327,6 +328,7 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
             {.Label = "GoalPlatform", .OBJ = OBJ_GOALPLATFORM},
             {.Label = "Coin", .OBJ = OBJ_COIN},
             {.Label = "TriggerBox", .OBJ = OBJ_TRIGGERBOX},
+            {.Label = "SkeletalMesh", .OBJ = OBJ_SKELETALMESH},
         };
 
         for (const auto& primitive : primitives)
@@ -455,6 +457,15 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
                     SpawnedActor = World->SpawnActor<ATriggerBox>();
                     SpawnedActor->SetActorLabel(TEXT("OBJ_TRIGGERBOX"));
                     break;
+                case OBJ_SKELETALMESH:
+                    {
+                        SpawnedActor = World->SpawnActor<AActor>();
+                        SpawnedActor->SetActorLabel(TEXT("OBJ_SKELETALMESH"));
+                        USkeletalMeshComponent* Comp = SpawnedActor->AddComponent<USkeletalMeshComponent>();
+                        SpawnedActor->SetRootComponent(Comp);
+                        SpawnedActor->SetActorTickInEditor(true);
+                        break;
+                    }
                 case OBJ_CAMERA:
                 case OBJ_PLAYER:
                 case OBJ_END:
