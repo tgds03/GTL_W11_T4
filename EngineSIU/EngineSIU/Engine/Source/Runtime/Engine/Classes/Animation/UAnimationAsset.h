@@ -19,8 +19,5 @@ public:
     // 스켈레톤 접근자
     FSkeleton* GetSkeleton() const { return Skeleton; }
     void SetSkeleton(FSkeleton* InSkeleton) { Skeleton = InSkeleton; }
-
-    // 재생 길이 - 가상 함수, 자식 클래스에서 구현
-    virtual float GetPlayLength() const { return 0.0f; }
 };
 

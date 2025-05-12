@@ -1,10 +1,16 @@
 #pragma once
 
 #include "UAnimDataModel.h"
-#include "Launch/SkeletalDefine.h"
+#include "Launch/SkeletalDefine.h";
 
 class USkeletalMeshComponent;
 class UAnimSequence;
+
+enum class EAnimState
+{
+    Idle,
+    Twerk,
+};
 
 class UAnimInstance : public UObject
 {
@@ -12,16 +18,15 @@ protected:
     // 소유 컴포넌트
     USkeletalMeshComponent* OwningComponent;
 
-    UAnimSequence* CurrentSequence;
+    TMap<EAnimState, UAnimSequence*> AnimSequenceMap;
+
+    UAnimSequence* CurrentSequence = nullptr;
+    UAnimSequence* BlendSequence = nullptr;
 
     // 재생 상태
-    bool bIsPlaying;
-    bool bLooping;
-    float CurrentTime;
-    float PlayRate;
+    bool bIsPlaying = true;
+    float CurrentGlobalTime = 0;
 
-    // 현재 포즈 데이터
-    //TArray<FTransform> CurrentPose;
 
 public:
     UAnimInstance();
@@ -29,42 +34,34 @@ public:
 
     // 컴포넌트와 연결
     void Initialize(USkeletalMeshComponent* InComponent);
-
     void SetAnimSequence(UAnimSequence* InSequence);
 
     // 매 프레임 업데이트
     void Update(float DeltaTime);
+    virtual void NativeUpdateAnimation(float DeltaSeconds);
 
-    // 애니메이션 재생 제어
-    void PlayAnimation(UAnimSequence* InSequence, bool bInLooping = false);
-    void StopAnimation();
-    void PauseAnimation();
-    void ResumeAnimation();
+    //void TriggerAnimNotifies(float DeltaSceonds);
+
+#pragma region Properties
+    USkeletalMeshComponent* GetOwningComponent() const { return OwningComponent; }
+    void SetOwningComponent(USkeletalMeshComponent* InComponent) { OwningComponent = InComponent; }
 
     // 현재 애니메이션 접근자
     UAnimSequence* GetCurrentAnimSequence() const { return CurrentSequence; }
     void SetAnimaSequence(UAnimSequence* AnimSeq) { CurrentSequence = AnimSeq; }
-    // 현재 포즈 접근자
-   // const TArray<FTransform>& GetCurrentPose() const { return CurrentPose; }
 
-    // 재생 상태 접근자
     bool IsPlaying() const { return bIsPlaying; }
-    float GetCurrentTime() const { return CurrentTime; }
-    void SetCurrentTime(float InTime);
+#pragma endregion
 
-    // 재생 속도 설정
-    void SetPlayRate(float InRate) { PlayRate = FMath::Max(0.01f, InRate); }
-    float GetPlayRate() const { return PlayRate; }
-
-    void GetBoneTransforms(TArray<FBonePose>& OutTransforms);
+    //void GetBoneTransforms(TArray<FBonePose>& OutTransforms);
 
 protected:
     // 애니메이션 노티파이 처리
-    void ProcessNotifies(float PreviousTime, float CurrentTime);
+    //void ProcessNotifies(float PreviousTime, float CurrentTime);
 
     // 애니메이션 상태 업데이트
-    void UpdateAnimationState(float DeltaTime);
+    //void UpdateAnimationState(float DeltaTime);
 
     // 포즈 계산
-    void CalculatePose();
+    //void CalculatePose();
 };

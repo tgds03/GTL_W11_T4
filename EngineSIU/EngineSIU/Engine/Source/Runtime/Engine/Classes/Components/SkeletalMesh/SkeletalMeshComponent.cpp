@@ -2,6 +2,7 @@
 #include "Engine/FObjLoader.h"
 #include "Engine/Source/Runtime/CoreUObject/UObject/ObjectFactory.h"
 
+#include "Actors/Character/Character.h"
 #include "Engine/Source/Runtime/Engine/Classes/Asset/SkeletalMeshAsset.h"
 
 // 임시로 StaticMesh를 활용하면서 참고하게 된 코드 이후 제거 필요
@@ -11,14 +12,12 @@
 // FBX 테스트를 위해 넣은 코드 이후 제거 필요
 #include "Engine/Source/Runtime/Engine/Classes/Engine/FbxLoader.h"
 #include "Animation/AnimSequence.h"
+#include "Animation/UAnimationAsset.h" 
 
 USkeletalMeshComponent::USkeletalMeshComponent()
     :USkinnedMeshComponent()
 {
 }
-
-
-
 
 void USkeletalMeshComponent::InitializeAnimInstance()
 {
@@ -26,6 +25,59 @@ void USkeletalMeshComponent::InitializeAnimInstance()
     {
         AnimInstance = std::make_shared<UAnimInstance>();
         AnimInstance->Initialize(this);
+    }
+}
+
+void USkeletalMeshComponent::UpdateAnimation(float DeltaTime)
+{
+    if (!SkeletalMesh || !AnimInstance)
+    {
+        return;
+    }
+
+    // AnimInstance 업데이트 (시간 진행 등)
+    AnimInstance->Update(DeltaTime);
+
+    // 현재 애니메이션 프레임의 본 트랜스폼 계산
+    //TArray<FBonePose> BoneTransforms;
+    //AnimInstance->GetBoneTransforms(BoneTransforms);
+
+    // 계산된 트랜스폼을 스켈레탈 메시에 적용 (예: 내부 함수)
+    //SkeletalMesh->SetBoneTransforms(BoneTransforms);
+
+    if (!FEngineLoop::IsGPUSkinningEnabled()) 
+    {
+        PerformCPUSkinning();
+    }
+}
+
+void USkeletalMeshComponent::PlayAnimation(UAnimationAsset* NewAnimToPlay, bool bLooping)
+{
+    if (!AnimInstance)
+    {
+        return;
+    }
+
+    //SetAnimationMode(EAnimationMode::AnimationSingleNode);
+    SetAnimation(NewAnimToPlay);
+    Play(bLooping);
+}
+
+void USkeletalMeshComponent::SetAnimation(UAnimationAsset* InAnimAsset)
+{
+}
+
+void USkeletalMeshComponent::Play(bool bLooping)
+{
+}
+
+void USkeletalMeshComponent::HandleAnimNotify(const FAnimNotifyEvent* Notify)
+{
+    if (AnimInstance)
+    {
+        // 임시 코드
+        ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
+        OwnerCharacter->HandleAnimNotify(Notify);
     }
 }
 
@@ -52,13 +104,11 @@ void USkeletalMeshComponent::TestSkeletalMesh()
     }
 
     // 3) 변경된 본 트랜스폼을 바탕으로 애니메이션 업데이트
-    UpdateSkinnedPositions();
+    UpdateGlobalPose();
 }
 
 void USkeletalMeshComponent::TestFBXSkeletalMesh()
 {
-    // 1) FBX로부터 USkeletalMesh 생성
-
     FString FbxPath(TEXT("Contents/FBX/Twerkbin.fbx"));
     
     USkeletalMesh* LoadedMesh = FResourceManager::LoadSkeletalMesh(FbxPath);
@@ -69,22 +119,22 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
     }
 
     UAnimSequence* AnimSequence = FResourceManager::LoadAnimationSequence(FbxPath);
-
     if (!AnimSequence)
     {
         UE_LOG(LogLevel::Warning, TEXT("애니메이션 로드 실패, 스켈레톤만 표시합니다."));
-        UpdateSkinnedPositions();
+        UpdateGlobalPose();
         return;
     }
 
     InitializeAnimInstance();
+
     // 2) SkeletalMeshComponent에 세팅
     SetSkeletalMesh(LoadedMesh);
 
     // 5) AnimInstance에 애니메이션 시퀀스 설정
     AnimInstance->SetAnimSequence(AnimSequence);
 
-    UpdateSkinnedPositions();
+    UpdateGlobalPose();
 }
 
 void USkeletalMeshComponent::PerformCPUSkinning()
@@ -107,24 +157,3 @@ void USkeletalMeshComponent::PerformCPUSkinning()
     }
 }
 
-void USkeletalMeshComponent::UpdateAnimation(float DeltaTime)
-{
-    if (!SkeletalMesh || !AnimInstance)
-    {
-        return;
-    }
-    // AnimInstance 업데이트 (시간 진행 등)
-    AnimInstance->Update(DeltaTime);
-
-    // 현재 애니메이션 프레임의 본 트랜스폼 계산
-    TArray<FBonePose> BoneTransforms;
-    AnimInstance->GetBoneTransforms(BoneTransforms);
-
-    // 계산된 트랜스폼을 스켈레탈 메시에 적용 (예: 내부 함수)
-    SkeletalMesh->SetBoneTransforms(BoneTransforms);
-
-    if (!FEngineLoop::IsGPUSkinningEnabled()) 
-    {
-        PerformCPUSkinning();
-    }
-}

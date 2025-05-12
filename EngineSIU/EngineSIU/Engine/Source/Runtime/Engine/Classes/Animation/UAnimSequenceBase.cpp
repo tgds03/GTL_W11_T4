@@ -6,6 +6,18 @@ UAnimSequenceBase::UAnimSequenceBase()
 {
 }
 
+int32 UAnimSequenceBase::GetNumberOfFrames() const
+{
+    if (bLoopAnimation)
+    {
+        return AnimDataModel->GetNumberOfFrames();
+    }
+    else
+    {
+        return FMath::Max(AnimDataModel->GetNumberOfFrames() - 1, 0);;
+    }
+}
+
 bool UAnimSequenceBase::RemoveNotify(int32 NotifyIndex)
 {
     if (Notifies.IsValidIndex(NotifyIndex))
@@ -29,4 +41,14 @@ bool UAnimSequenceBase::FindNotifyEvent(float Time, FAnimNotifyEvent& OutEvent) 
         }
     }
     return false;
+}
+
+float UAnimSequenceBase::GetUnScaledPlayLength() const
+{
+    if (!AnimDataModel)
+    {
+        return 0.0f;
+    }
+
+    return FMath::Abs(AnimDataModel->GetPlayLength());
 }

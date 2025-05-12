@@ -720,7 +720,7 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\HeightFogActor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\HeightFogComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\FogRenderPass.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\LightActor.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\LightActors\LightActor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\ProjectileMovementComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Cube.cpp">
       <Filter>Engine\Source\Runtime\Engine\Classes\Actors</Filter>
@@ -747,12 +747,12 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\BillboardComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\TextComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\EditorRenderPass.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\SpotLightActor.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\DirectionalLightActor.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\PointLightActor.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\LightActors\SpotLightActor.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\LightActors\DirectionalLightActor.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\LightActors\PointLightActor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\DepthPrePass.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\TileLightCullingPass.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\AmbientLightActor.cpp">
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\LightActors\AmbientLightActor.cpp">
       <Filter>Engine\Source\Runtime\Engine\Classes\Actors</Filter>
     </ClCompile>
     <ClCompile Include="Engine\Source\Runtime\Core\Math\Plane.cpp" />
@@ -786,9 +786,9 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\SphereComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\BoxComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\HitResult.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\CubeActor.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\SphereActor.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\CapsuleActor.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\PrimitiveActors\CubeActor.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\PrimitiveActors\SphereActor.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\PrimitiveActors\CapsuleActor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Physics\CollisionManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\GameFramework\PlayerController.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\CameraComponent.cpp" />
@@ -841,6 +841,8 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Animation\UAnimationAsset.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Animation\UAnimSequenceBase.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Animation\UAnimInstance.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Pawn.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Character.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="EngineSIU.natvis" />
@@ -852,7 +854,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\HeightFogActor.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\HeightFogComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\FogRenderPass.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\LightActor.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\LightActors\LightActor.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\ProjectileMovementComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Cube.h">
       <Filter>Engine\Source\Runtime\Engine\Classes\Actors</Filter>
@@ -879,7 +881,7 @@
     <ClInclude Include="Engine\Source\Runtime\CoreUObject\UObject\ObjectGlobals.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Misc\Char.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Misc\Parse.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\AmbientLightActor.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\LightActors\AmbientLightActor.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\Light\AmbientLightComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\Light\DirectionalLightComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\InputCore\InputCoreTypes.h" />
@@ -921,7 +923,6 @@
     <ClInclude Include="LuaScripts\LuaScriptComponent.h" />
     <ClInclude Include="LuaScripts\LuaScriptFileUtils.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\Mesh\StaticMeshRenderData.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Asset\StaticMeshAsset.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\FObjLoader.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\StaticMeshRenderPassBase.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\ShapeComponent.h" />
@@ -930,9 +931,9 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\BoxComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\OverlapInfo.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\HitResult.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\CubeActor.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\SphereActor.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\CapsuleActor.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\PrimitiveActors\CubeActor.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\PrimitiveActors\SphereActor.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\PrimitiveActors\CapsuleActor.h" />
     <ClInclude Include="Engine\Source\Runtime\Physics\CollisionManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\OverlapResult.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\GameFramework\PlayerController.h" />
@@ -968,7 +969,6 @@
       <Filter>Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\SkeletalMesh\SkeletalMesh.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Asset\SkeletalMeshAsset.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\MeshRenderPass.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\SkeletalMeshRenderPass.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\FbxLoader.h" />
@@ -986,6 +986,12 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Animation\UAnimationAsset.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Animation\UAnimSequenceBase.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Animation\UAnimInstance.h" />
+    <ClInclude Include="Engine\Source\Runtime\Launch\BoneDefine.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Asset\SkeletalMeshAsset.h" />
+    <ClInclude Include="Engine\Source\Runtime\Launch\SkeletalDefine.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Asset\StaticMeshAsset.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Pawn.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Character.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />
@@ -1027,9 +1033,9 @@
   <ItemGroup>
     <None Include="Shaders\EditorShaderConstants.hlsli" />
     <None Include="Shaders\ShaderConstants.hlsli" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\SpotLightActor.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\DirectionalLightActor.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\PointLightActor.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\LightActors\SpotLightActor.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\LightActors\DirectionalLightActor.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\LightActors\PointLightActor.h" />
     <ClInclude Include="Engine\Source\Runtime\Launch\LightDefine.h" />
   </ItemGroup>
   <ItemGroup>

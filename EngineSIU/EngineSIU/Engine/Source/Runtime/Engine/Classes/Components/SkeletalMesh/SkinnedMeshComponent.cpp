@@ -159,11 +159,11 @@ void USkinnedMeshComponent::SetSkeletalMesh(USkeletalMesh* InMesh)
     {
         OverrideMaterials.SetNum(SkeletalMesh->GetMaterials().Num());
         AABB = FBoundingBox(SkeletalMesh->GetRenderData()->BoundingBoxMin, SkeletalMesh->GetRenderData()->BoundingBoxMax);
-        UpdateSkinnedPositions();
+        UpdateGlobalPose();
     }
 }
 
-void USkinnedMeshComponent::UpdateSkinnedPositions()
+void USkinnedMeshComponent::UpdateGlobalPose()
 {
     if (!SkeletalMesh)
     {

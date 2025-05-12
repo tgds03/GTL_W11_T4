@@ -50,7 +50,7 @@ struct FFrameRate
     /**
      * The denominator of the framerate represented as a number of frames per second (e.g. 1 for 60 fps)
      */
-    int32 Denominator;
+    int32 Denominator   ;
 };
 
 struct FAnimationCurveData

@@ -67,14 +67,8 @@ public:
     TArray<FBonePose> LocalTransforms;
     TArray<FMatrix> GlobalTransforms;
 
+    // 이걸로 생성하면 LocalTransform 세팅 해주면서 InvBindTransform세팅 해줘야함.
     FSkeletonPose() = default;
-
-    FSkeletonPose(FSkeleton* InSkeleton)
-        : Skeleton(InSkeleton)
-    {
-        LocalTransforms.SetNum(Skeleton->Bones.Num());
-        GlobalTransforms.SetNum(Skeleton->Bones.Num());
-    }
 
     FSkeletonPose(FSkeleton* InSkeleton, TArray<FBonePose> InLocalTransform)
         : FSkeletonPose(InSkeleton)
@@ -134,6 +128,13 @@ public:
     }
 
 private:
+    FSkeletonPose(FSkeleton* InSkeleton)
+        : Skeleton(InSkeleton)
+    {
+        LocalTransforms.SetNum(Skeleton->Bones.Num());
+        GlobalTransforms.SetNum(Skeleton->Bones.Num());
+    }
+
     FSkeleton* DuplicateSkeleton(const FSkeleton* OriginalData) const
     {
         FSkeleton* NewSkeleton = new FSkeleton();

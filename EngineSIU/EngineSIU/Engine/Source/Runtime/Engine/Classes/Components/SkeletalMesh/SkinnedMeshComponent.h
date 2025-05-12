@@ -25,7 +25,7 @@
     #pragma region Skeletal
         void SetSkeletalMesh(USkeletalMesh* InMesh);
         USkeletalMesh* GetSkeletalMesh() const { return SkeletalMesh; }
-        void UpdateSkinnedPositions();
+        void UpdateGlobalPose();
     #pragma endregion
 
         void SetselectedSubMeshIndex(const int& value) { selectedSubMeshIndex = value; }
@@ -34,8 +34,6 @@
     protected:
         /** Skeletal mesh asset containing FSkeleton and source vertices */
         USkeletalMesh* SkeletalMesh;
-
-  
 
         int selectedSubMeshIndex = -1;
     };
