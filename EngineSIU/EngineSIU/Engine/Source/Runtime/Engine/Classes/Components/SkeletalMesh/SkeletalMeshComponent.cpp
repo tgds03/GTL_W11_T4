@@ -82,7 +82,7 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
     SetSkeletalMesh(LoadedMesh);
 
     // 5) AnimInstance에 애니메이션 시퀀스 설정
-    AnimInstance->SetAnimSequence(AnimSequence);
+    AnimInstance->PlayAnimation(AnimSequence, true);
 
     UpdateSkinnedPositions();
 }
@@ -112,7 +112,7 @@ void USkeletalMeshComponent::TickComponent(float DeltaTime)
     USkinnedMeshComponent::TickComponent(DeltaTime);
 
     //나중에 애니메이션 부를곳에서 부르기
-    TickAnimation(DeltaTime);
+    TickPose(DeltaTime);
 }
 
 void USkeletalMeshComponent::TickPose(float DeltaTime)
@@ -124,7 +124,7 @@ void USkeletalMeshComponent::TickPose(float DeltaTime)
 
 void USkeletalMeshComponent::TickAnimation(float DeltaTime)
 {
-    if (!SkeletalMesh || !AnimInstance)
+    if (!SkeletalMesh || !AnimInstance || !AnimInstance->IsPlaying())
     {
         return;
     }

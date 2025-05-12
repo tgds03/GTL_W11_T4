@@ -15,17 +15,28 @@ void UAnimInstance::Initialize(USkeletalMeshComponent* InComponent)
     PlayRate = 1.0f;
 }
 
-void UAnimInstance::SetAnimSequence(UAnimSequence* InSequence)
+void UAnimInstance::StartAnimSequence(UAnimSequence* InSequence)
 {
     CurrentSequence = InSequence;
     CurrentTime = 0.0f; // 애니메이션 시간 초기화
+    OnAnimationNotifyDelegate["OnAnimationStart"].Broadcast();
 }
 
 void UAnimInstance::Update(float DeltaTime)
 {
-    if (!bIsPlaying || !CurrentSequence)
+    if (!bIsPlaying)
         return;
 
+    if (!CurrentSequence)
+    {
+        if (WaitSequences.IsEmpty())
+        {
+            return;
+        }
+
+        WaitSequences.Dequeue(CurrentSequence);
+    }
+    
     // 1. 애니메이션 시간 업데이트
     CurrentTime += DeltaTime * PlayRate;
 
@@ -38,22 +49,57 @@ void UAnimInstance::Update(float DeltaTime)
     float Duration = DataModel->GetPlayLength();
     if (Duration > 0.0f && CurrentTime >= Duration)
     {
-        if (bLooping)
+        if (CurrentSequence->IsLooping())
         {
+            //루프시작
+            OnAnimationNotifyDelegate["OnAnimationLoop"].Broadcast();
+            
             // 루프 처리
             CurrentTime = fmod(CurrentTime, Duration);
         }
         else
         {
             // 재생 종료
-            CurrentTime = Duration;
-            bIsPlaying = false;
+            OnAnimationNotifyDelegate["OnAnimationEnd"].Broadcast();
+            StopAnimation();
         }
     }
 
     // 4. 필요한 경우 애니메이션 이벤트(노티파이) 처리
     // (이 부분은 필요에 따라 구현)
 }
+
+void UAnimInstance::PlayAnimation(UAnimSequence* InSequence, bool bInLooping, bool bPlayDirect)
+{
+    InSequence->SetLooping(bInLooping);
+
+    if (bPlayDirect)
+    {
+        StartAnimSequence(InSequence);
+    }
+    else
+    {
+        WaitSequences.Enqueue(InSequence);
+    }
+}
+
+void UAnimInstance::StopAnimation()
+{
+    CurrentSequence = nullptr;
+    CurrentTime = 0.0f;
+    bIsPlaying = false;
+}
+
+bool UAnimInstance::IsLooping() const
+{
+    if (CurrentSequence)
+    {
+        return CurrentSequence->IsLooping();
+    }
+
+    return false;
+}
+
 void UAnimInstance::GetBoneTransforms(TArray<FBonePose>& OutTransforms)
 {
     if (!OwningComponent || !CurrentSequence)
@@ -96,13 +142,14 @@ void UAnimInstance::GetBoneTransforms(TArray<FBonePose>& OutTransforms)
     const TArray<FBoneAnimationTrack>& Tracks = DataModel->GetBoneAnimationTracks();
     float PlayLength = DataModel->GetPlayLength();
     int32 NumFrames = DataModel->GetNumberOfFrames();
-
-    // 현재 재생 시간으로 프레임 인덱스 계산
+    
+    // 로컬클록을 정규화
     float NormalizedTime = FMath::Clamp(CurrentTime / PlayLength, 0.0f, 1.0f);
-    float FrameTime = NormalizedTime * (NumFrames - 1);
-    int32 Frame1 = FMath::FloorToInt(FrameTime);
+    float FrameIndex = NormalizedTime * (NumFrames - 1);
+    int32 Frame1 = FMath::FloorToInt(FrameIndex);
+    //TODO: 다음 애니메이션 이어붙이기 해서 Min빼기 
     int32 Frame2 = FMath::Min(Frame1 + 1, NumFrames - 1);
-    float Alpha = FrameTime - Frame1;
+    float AlphaTime = FrameIndex - Frame1;
 
     // 본 이름 -> 인덱스 매핑
     TMap<FName, int32> BoneNameToIndexMap;
@@ -120,39 +167,28 @@ void UAnimInstance::GetBoneTransforms(TArray<FBonePose>& OutTransforms)
 
         int32 BoneIndex = *BoneIndexPtr;
         const FRawAnimSequenceTrack& RawTrack = Track.InternalTrackData;
-
+        
         // 위치 보간
         FVector Position = FVector::ZeroVector;
         if (RawTrack.PosKeys.Num() > 0)
         {
-            int32 PosFrame1 = FMath::Min(Frame1, RawTrack.PosKeys.Num() - 1);
-            int32 PosFrame2 = FMath::Min(Frame2, RawTrack.PosKeys.Num() - 1);
+            int32 PosKeyLastIndex = RawTrack.PosKeys.Num() - 1;
+            int32 PosFrame1 = FMath::Min(Frame1, PosKeyLastIndex);
+            int32 PosFrame2 = FMath::Min(Frame2, PosKeyLastIndex);
 
-            if (PosFrame1 == PosFrame2 || Alpha < KINDA_SMALL_NUMBER)
-            {
-                Position = RawTrack.PosKeys[PosFrame1];
-            }
-            else
-            {
-                Position = FMath::Lerp(RawTrack.PosKeys[PosFrame1], RawTrack.PosKeys[PosFrame2], Alpha);
-            }
+            //TODO: 조각적 선형근사로 변경
+            Position = FMath::Lerp(RawTrack.PosKeys[PosFrame1], RawTrack.PosKeys[PosFrame2], AlphaTime);
         }
 
         // 회전 보간
         FQuat Rotation = FQuat::Identity;
         if (RawTrack.RotKeys.Num() > 0)
         {
-            int32 RotFrame1 = FMath::Min(Frame1, RawTrack.RotKeys.Num() - 1);
-            int32 RotFrame2 = FMath::Min(Frame2, RawTrack.RotKeys.Num() - 1);
-
-            if (RotFrame1 == RotFrame2 || Alpha < KINDA_SMALL_NUMBER)
-            {
-                Rotation = RawTrack.RotKeys[RotFrame1];
-            }
-            else
-            {
-                Rotation = FQuat::Slerp(RawTrack.RotKeys[RotFrame1], RawTrack.RotKeys[RotFrame2], Alpha);
-            }
+            int32 RotKeyLastIndex = RawTrack.RotKeys.Num() - 1;
+            int32 RotFrame1 = FMath::Min(Frame1, RotKeyLastIndex);
+            int32 RotFrame2 = FMath::Min(Frame2, RotKeyLastIndex);
+            
+            Rotation = FQuat::Slerp(RawTrack.RotKeys[RotFrame1], RawTrack.RotKeys[RotFrame2], AlphaTime);
         }
         Rotation.Normalize(); // ← 꼭 추가
 
@@ -160,17 +196,11 @@ void UAnimInstance::GetBoneTransforms(TArray<FBonePose>& OutTransforms)
         FVector Scale = FVector::OneVector;
         if (RawTrack.ScaleKeys.Num() > 0)
         {
-            int32 ScaleFrame1 = FMath::Min(Frame1, RawTrack.ScaleKeys.Num() - 1);
-            int32 ScaleFrame2 = FMath::Min(Frame2, RawTrack.ScaleKeys.Num() - 1);
-
-            if (ScaleFrame1 == ScaleFrame2 || Alpha < KINDA_SMALL_NUMBER)
-            {
-                Scale = RawTrack.ScaleKeys[ScaleFrame1];
-            }
-            else
-            {
-                Scale = FMath::Lerp(RawTrack.ScaleKeys[ScaleFrame1], RawTrack.ScaleKeys[ScaleFrame2], Alpha);
-            }
+            int32 ScaleKeyLastIndex = RawTrack.ScaleKeys.Num() - 1;
+            int32 ScaleFrame1 = FMath::Min(Frame1, ScaleKeyLastIndex);
+            int32 ScaleFrame2 = FMath::Min(Frame2, ScaleKeyLastIndex);
+            
+            Scale = FMath::Lerp(RawTrack.ScaleKeys[ScaleFrame1], RawTrack.ScaleKeys[ScaleFrame2], AlphaTime);
         }
 
         // 로컬 트랜스폼 설정

@@ -1,42 +1,46 @@
 #pragma once
 
+#include "AnimSequence.h"
 #include "UAnimDataModel.h"
+#include "Container/Queue.h"
 #include "Launch/SkeletalDefine.h"
 
 class USkeletalMeshComponent;
 class UAnimSequence;
 
+DECLARE_MULTICAST_DELEGATE(FOnAnimationNotify);
+
 class UAnimInstance : public UObject
 {
 protected:
     // 소유 컴포넌트
-    USkeletalMeshComponent* OwningComponent;
+    USkeletalMeshComponent* OwningComponent = nullptr;
 
-    UAnimSequence* CurrentSequence;
+    UAnimSequence* CurrentSequence = nullptr;
 
+    TQueue<UAnimSequence*> WaitSequences;
+    
     // 재생 상태
     bool bIsPlaying;
-    bool bLooping;
     float CurrentTime;
     float PlayRate;
 
     // 현재 포즈 데이터
     //TArray<FTransform> CurrentPose;
-
+    TMap<FString, FOnAnimationNotify> OnAnimationNotifyDelegate;
+    
 public:
     UAnimInstance();
     virtual ~UAnimInstance() = default;
 
     // 컴포넌트와 연결
     void Initialize(USkeletalMeshComponent* InComponent);
-
-    void SetAnimSequence(UAnimSequence* InSequence);
-
+    
     // 매 프레임 업데이트
     void Update(float DeltaTime);
 
     // 애니메이션 재생 제어
-    void PlayAnimation(UAnimSequence* InSequence, bool bInLooping = false);
+    void PlayAnimation(UAnimSequence* InSequence, bool bInLooping = false, bool bPlayDirect = false);
     void StopAnimation();
     void PauseAnimation();
     void ResumeAnimation();
@@ -48,12 +52,13 @@ public:
    // const TArray<FTransform>& GetCurrentPose() const { return CurrentPose; }
 
     // 재생 상태 접근자
+    bool IsLooping() const;
     bool IsPlaying() const { return bIsPlaying; }
     float GetCurrentTime() const { return CurrentTime; }
     void SetCurrentTime(float InTime);
 
     // 재생 속도 설정
-    void SetPlayRate(float InRate) { PlayRate = FMath::Max(0.01f, InRate); }
+    void SetPlayRate(float InRate) { PlayRate = InRate; }
     float GetPlayRate() const { return PlayRate; }
 
     void GetBoneTransforms(TArray<FBonePose>& OutTransforms);
@@ -62,6 +67,8 @@ protected:
     // 애니메이션 노티파이 처리
     void ProcessNotifies(float PreviousTime, float CurrentTime);
 
+    void StartAnimSequence(UAnimSequence* InSequence);
+    
     // 애니메이션 상태 업데이트
     void UpdateAnimationState(float DeltaTime);
 
