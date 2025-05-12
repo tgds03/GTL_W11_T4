@@ -445,6 +445,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Source\Runtime\Core\Container\Queue.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Animation\AnimTypes.h" />
     <ClInclude Include="Engine\Source\Runtime\Launch\BoneDefine.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Animation\AnimSequence.h" />
