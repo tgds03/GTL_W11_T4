@@ -12,6 +12,7 @@ class AActor;
 class USceneComponent;
 class USkeletalMesh;
 class SkeletalMeshEditorController;
+class UAnimInstance;
 
 class UEditorEngine : public UEngine
 {
@@ -27,6 +28,7 @@ public:
     UWorld* PIEWorld = nullptr;
     UWorld* EditorWorld = nullptr;
     UWorld* SkeletalMeshEditWorld = nullptr;
+    UWorld* PreviewWorld = nullptr;
 
     void StartPIE();
     void BindEssentialObjects();
@@ -35,6 +37,8 @@ public:
     void StartSkeletalMeshEditMode();
     void StartSkeletalMeshEditMode(USkeletalMesh* InMesh);
     void EndSkeletalMeshEditMode();
+
+    void StartAnimaitonEditMode(UAnimInstance* InAnim);
 
     std::shared_ptr<SkeletalMeshEditorController> GetSkeletalMeshEditorController() const
     {
