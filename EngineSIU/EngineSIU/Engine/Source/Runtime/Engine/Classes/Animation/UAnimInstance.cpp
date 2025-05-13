@@ -79,7 +79,6 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
         CurrentState = AnimStateMachine->CurrentState;
     }
-    
 
     // Delegate pose calculation to the sequence
     TArray<FBonePose> NewLocalPoses;
@@ -93,17 +92,21 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         
         BlendSequence->GetAnimationPose(Mesh, NewBlendPoses);
 
+        //블렌드 진행도 0~1
+        float BlendAlpha = BlendSequence->LocalTime / BlendTime;
+        float RemainBlendAlpha = (1 - BlendAlpha);
+        
         //본 갯수가 똑같아야함
         for (int b = 0; b < NewLocalPoses.Num(); b++)
         {
             FBonePose& BonePose = NewLocalPoses[b];
             FBonePose& BlendBonePose = NewBlendPoses[b];
-            //가중치는 각 0.5f로 세팅
-            BonePose.Location = (BonePose.Location * 0.5f) + (BlendBonePose.Location * 0.5f);
-            
-            BonePose.Rotation = FQuat::Slerp(BonePose.Rotation, BlendBonePose.Rotation, 0.5f).GetNormalized();
 
-            BonePose.Scale = (BonePose.Scale * 0.5f) + (BlendBonePose.Scale * 0.5f);
+            BonePose.Location = (BonePose.Location * BlendAlpha) + (BlendBonePose.Location * RemainBlendAlpha);
+            
+            BonePose.Rotation = FQuat::Slerp(BonePose.Rotation, BlendBonePose.Rotation, BlendAlpha).GetNormalized();
+
+            BonePose.Scale = (BonePose.Scale * BlendAlpha) + (BlendBonePose.Scale * RemainBlendAlpha);
         }
 
         // 현재 애니메이션이 끝나거나 블렌드시간이 지나면 애니메이션 교체

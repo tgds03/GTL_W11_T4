@@ -59,17 +59,10 @@ public:
     bool IsPlaying() const { return bIsPlaying; }
 #pragma endregion
 
-    void GetBoneTransforms(TArray<FBonePose>& OutTransforms);
-    
     void AddAnimSequence(EAnimState InAnimState, UAnimSequence* InAnimSequence){ AnimSequenceMap.Add(InAnimState, InAnimSequence); }
     UAnimSequence* GetAnimSequence(EAnimState InAnimState){ return AnimSequenceMap[InAnimState]; }
 
-protected:
-    // 애니메이션 노티파이 처리
-    //void ProcessNotifies(float PreviousTime, float CurrentTime);
-
-    void ProcessState();
-    
+protected:    
     void StartAnimSequence(UAnimSequence* InSequence);
     
     // 애니메이션 상태 업데이트
