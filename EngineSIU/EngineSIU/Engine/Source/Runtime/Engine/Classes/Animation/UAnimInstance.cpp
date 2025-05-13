@@ -102,11 +102,11 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
             FBonePose& BonePose = NewLocalPoses[b];
             FBonePose& BlendBonePose = NewBlendPoses[b];
 
-            BonePose.Location = (BonePose.Location * BlendAlpha) + (BlendBonePose.Location * RemainBlendAlpha);
+            BonePose.Location = (BonePose.Location * RemainBlendAlpha) + (BlendBonePose.Location * BlendAlpha);
             
             BonePose.Rotation = FQuat::Slerp(BonePose.Rotation, BlendBonePose.Rotation, BlendAlpha).GetNormalized();
 
-            BonePose.Scale = (BonePose.Scale * BlendAlpha) + (BlendBonePose.Scale * RemainBlendAlpha);
+            BonePose.Scale = (BonePose.Scale * RemainBlendAlpha) + (BlendBonePose.Scale * BlendAlpha);
         }
 
         // 현재 애니메이션이 끝나거나 블렌드시간이 지나면 애니메이션 교체
