@@ -10,6 +10,7 @@ enum EAnimState
     AS_Run,
     AS_Fly,
     AS_Dance,
+    AS_Die,
 };
 
 class UAnimationStateMachine : public UObject

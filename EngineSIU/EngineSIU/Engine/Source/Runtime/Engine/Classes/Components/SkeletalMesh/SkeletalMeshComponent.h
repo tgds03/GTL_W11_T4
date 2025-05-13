@@ -35,9 +35,11 @@ public:
     void GenerateSampleData();
 
     // 각도 변화 주기
-    void TestSkeletalMesh();
+    void TestSkeletalDie();
 
     void TestFBXSkeletalMesh(); 
 
     void PerformCPUSkinning();
+
+    APawn* OwnerPawn = nullptr;
 };
