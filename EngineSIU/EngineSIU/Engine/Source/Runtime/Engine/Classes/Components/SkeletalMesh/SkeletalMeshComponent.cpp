@@ -4,11 +4,10 @@
 
 #include "Engine/Source/Runtime/Engine/Classes/Asset/SkeletalMeshAsset.h"
 
-// 임시로 StaticMesh를 활용하면서 참고하게 된 코드 이후 제거 필요
-#include "Engine/Source/Runtime/Engine/Classes/Components/Mesh/StaticMeshRenderData.h"
-#include "Engine/Source/Runtime/Engine/Classes/Asset/StaticMeshAsset.h"
-
 // FBX 테스트를 위해 넣은 코드 이후 제거 필요
+#include <memory>
+
+#include "Actors/Pawn.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/FbxLoader.h"
 #include "Animation/AnimSequence.h"
 
@@ -17,15 +16,12 @@ USkeletalMeshComponent::USkeletalMeshComponent()
 {
 }
 
-
-
-
-void USkeletalMeshComponent::InitializeAnimInstance()
+void USkeletalMeshComponent::InitializeAnimInstance(APawn* InOwner)
 {
     if (!AnimInstance)
     {
         AnimInstance = std::make_shared<UAnimInstance>();
-        AnimInstance->Initialize(this);
+        AnimInstance->Initialize(this, InOwner);
     }
 }
 
@@ -59,7 +55,7 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
 {
     // 1) FBX로부터 USkeletalMesh 생성
 
-    FString FbxPath(TEXT("Contents/FBX/Twerkbin.fbx"));
+    FString FbxPath(TEXT("Contents/Fbx/Twerkbin.fbx"));
     
     USkeletalMesh* LoadedMesh = FResourceManager::LoadSkeletalMesh(FbxPath);
     if (!LoadedMesh)
@@ -77,13 +73,17 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
         return;
     }
 
-    InitializeAnimInstance();
     // 2) SkeletalMeshComponent에 세팅
     SetSkeletalMesh(LoadedMesh);
 
-    // 5) AnimInstance에 애니메이션 시퀀스 설정
-    AnimInstance->SetAnimSequence(AnimSequence);
+    // AS_Dance상태일땐 AnimSequence돌리라고 추가
+    AnimInstance->AddAnimSequence(AS_Dance, AnimSequence);
 
+    if (APawn* Actor = dynamic_cast<APawn*>(GetOwner()))
+    {
+        Actor->CurrentMovementMode = EDancing;
+    }
+    
     UpdateSkinnedPositions();
 }
 
@@ -107,9 +107,24 @@ void USkeletalMeshComponent::PerformCPUSkinning()
     }
 }
 
-void USkeletalMeshComponent::UpdateAnimation(float DeltaTime)
+void USkeletalMeshComponent::TickComponent(float DeltaTime)
 {
-    if (!SkeletalMesh || !AnimInstance)
+    USkinnedMeshComponent::TickComponent(DeltaTime);
+
+    //나중에 애니메이션 부를곳에서 부르기
+    TickPose(DeltaTime);
+}
+
+void USkeletalMeshComponent::TickPose(float DeltaTime)
+{
+    USkinnedMeshComponent::TickPose(DeltaTime);
+
+    TickAnimation(DeltaTime);
+}
+
+void USkeletalMeshComponent::TickAnimation(float DeltaTime)
+{
+    if (!SkeletalMesh || !AnimInstance || !AnimInstance->IsPlaying())
     {
         return;
     }
@@ -128,3 +143,4 @@ void USkeletalMeshComponent::UpdateAnimation(float DeltaTime)
         PerformCPUSkinning();
     }
 }
+

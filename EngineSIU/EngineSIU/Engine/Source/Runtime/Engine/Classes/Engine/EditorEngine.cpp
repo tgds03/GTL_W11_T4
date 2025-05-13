@@ -20,7 +20,6 @@
 #include "Launch/EngineLoop.h"
 #include "LevelEditor/SLevelEditor.h"
 
-#include <fbxsdk.h>
 
 namespace PrivateEditorSelection
 {

@@ -45,9 +45,8 @@ public:
     static FResourceManager ResourceManager;
     static uint32 TotalAllocationBytes;
     static uint32 TotalAllocationCount;
-    inline static bool bUseGPUSkinning = false;
-
-
+    inline static bool bUseGPUSkinning = true;
+    
     HWND AppWnd;
 
     FGPUTimingManager GPUTimingManager;
