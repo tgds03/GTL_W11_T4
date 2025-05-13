@@ -61,41 +61,15 @@ void USkeletalMeshComponent::GenerateSampleData()
 {
 }
 
-void USkeletalMeshComponent::TestSkeletalMesh()
+void USkeletalMeshComponent::TestSkeletalMesh(FString FileName)
 {
-    if (!SkeletalMesh)
+    if (AnimInstance)
     {
-        return; 
+        AnimInstance.reset();
+        InitializeAnimInstance(Cast<APawn>(GetOwner()));
     }
 
-    const int32 BoneCount = SkeletalMesh->GetSkeleton()->BoneCount;
-    TArray<FBonePose>& LocalTransforms = SkeletalMesh->GetLocalTransforms();
-
-    for (int32 BoneIndex = 1; BoneIndex < BoneCount; ++BoneIndex)
-    {
-        FBonePose& localTransform = LocalTransforms[BoneIndex];
-
-        // 2) 루트(0)를 제외한 모든 본에 대해 LocalTransform을 Y축으로 10도 기울이기
-        localTransform.Rotation = localTransform.Rotation * FQuat::CreateRotation(0, 0, 10);
-    }
-
-    // 3) 변경된 본 트랜스폼을 바탕으로 애니메이션 업데이트
-    UpdateGlobalPose();
-}
-
-void USkeletalMeshComponent::TestFBXSkeletalMesh()
-{
-    // 1) FBX로부터 USkeletalMesh 생성
-
-    //FString FbxPath(TEXT("Contents/Fbx/Twerkbin.fbx"));
-    FString FbxPath(TEXT("Contents/Fbx/Walking.fbx"));
-    
-    USkeletalMesh* LoadedMesh = FResourceManager::LoadSkeletalMesh(FbxPath);
-    if (!LoadedMesh)
-    {
-        UE_LOG(LogLevel::Warning, TEXT("FBX 로드 실패: %s"), *FbxPath);
-        return;
-    }
+    FString FbxPath(TEXT("Contents/Fbx/") + FileName + TEXT(".fbx"));
 
     UAnimSequence* AnimSequence = FResourceManager::LoadAnimationSequence(FbxPath);
     if (!AnimSequence)
@@ -105,18 +79,48 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
         return;
     }
 
-    // 2) SkeletalMeshComponent에 세팅
-    SetSkeletalMesh(LoadedMesh);
-
     AnimSequence->SetRateScale(-0.5f);
-
-    // AS_Dance상태일땐 AnimSequence돌리라고 추가
     AnimInstance->AddAnimSequence(AS_Dance, AnimSequence);
-
     if (APawn* Actor = dynamic_cast<APawn*>(GetOwner()))
     {
         Actor->CurrentMovementMode = EDancing;
     }
+}
+
+void USkeletalMeshComponent::LoadAndSetFBX(FString FileName)
+{
+    // 1) FBX로부터 USkeletalMesh 생성
+
+    //FString FbxPath(TEXT("Contents/Fbx/Twerkbin.fbx"));
+    FString FbxPath(TEXT("Contents/Fbx/") + FileName + TEXT(".fbx"));
+    
+    USkeletalMesh* LoadedMesh = FResourceManager::LoadSkeletalMesh(FbxPath);
+    if (!LoadedMesh)
+    {
+        UE_LOG(LogLevel::Warning, TEXT("FBX 로드 실패: %s"), *FbxPath);
+        return;
+    }
+
+    //UAnimSequence* AnimSequence = FResourceManager::LoadAnimationSequence(FbxPath);
+    //if (!AnimSequence)
+    //{
+    //    UE_LOG(LogLevel::Warning, TEXT("애니메이션 로드 실패, 스켈레톤만 표시합니다."));
+    //    UpdateGlobalPose();
+    //    return;
+    //}
+
+    // 2) SkeletalMeshComponent에 세팅
+    SetSkeletalMesh(LoadedMesh);
+
+    //AnimSequence->SetRateScale(-0.5f);
+
+    // AS_Dance상태일땐 AnimSequence돌리라고 추가
+    //AnimInstance->AddAnimSequence(AS_Dance, AnimSequence);
+
+    //if (APawn* Actor = dynamic_cast<APawn*>(GetOwner()))
+    //{
+    //    Actor->CurrentMovementMode = EDancing;
+    //}
     
     UpdateGlobalPose();
 }

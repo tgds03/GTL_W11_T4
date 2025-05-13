@@ -11,7 +11,7 @@
 class AActor;
 class USceneComponent;
 class USkeletalMesh;
-class SkeletalMeshEditorController;
+class UDataPreviewController;
 class UAnimInstance;
 
 class UEditorEngine : public UEngine
@@ -35,14 +35,14 @@ public:
     void EndPIE();
 
     void StartSkeletalMeshEditMode();
-    void StartSkeletalMeshEditMode(USkeletalMesh* InMesh);
     void EndSkeletalMeshEditMode();
 
+    void StartSkeletalMeshEditMode(USkeletalMesh* InMesh);
     void StartAnimaitonEditMode(UAnimInstance* InAnim);
 
-    std::shared_ptr<SkeletalMeshEditorController> GetSkeletalMeshEditorController() const
+    std::shared_ptr<UDataPreviewController> GetSkeletalMeshEditorController() const
     {
-        return SkelEditorController;
+        return DataPreviewController;
     }
 
     // 주석은 UE에서 사용하던 매개변수.
@@ -81,5 +81,5 @@ public:
 private:
     AEditorPlayer* EditorPlayer = nullptr;
 
-    std::shared_ptr<SkeletalMeshEditorController> SkelEditorController = nullptr;
+    std::shared_ptr<UDataPreviewController> DataPreviewController = nullptr;
 };

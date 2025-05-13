@@ -234,28 +234,6 @@ void UEditorEngine::StartSkeletalMeshEditMode()
     ActiveWorld = SkeletalMeshEditWorld;
 }
 
-void UEditorEngine::StartSkeletalMeshEditMode(USkeletalMesh* InMesh)
-{
-    if (SkeletalMeshEditWorld)
-        return;
-
-    StartSkeletalMeshEditMode();
-
-    SkelEditorController = std::make_shared<SkeletalMeshEditorController>();
-    SkelEditorController->Initialize(InMesh, GEngineLoop.GetLevelEditor()->GetViewports()->get());
-
-    FEditorViewportClient* ActiveViewport = GEngineLoop.GetLevelEditor()->GetActiveViewportClient().get();
-
-    ActiveViewport->SetViewMode(EViewModeIndex::VMI_Unlit);
-
-    AActor* PreviewActor = ActiveWorld->SpawnActor<AActor>();
-    PreviewActor->SetActorLabel(FString(InMesh->GetObjectName()));
-
-    USkeletalMeshComponent* SkelMeshComp = PreviewActor->AddComponent<USkeletalMeshComponent>();
-    SkelMeshComp->SetSkeletalMesh(SkelEditorController->OriginalMesh);
-    SkelMeshComp->UpdateGlobalPose();
-}
-
 void UEditorEngine::EndSkeletalMeshEditMode()
 {
     if (!SkeletalMeshEditWorld)
@@ -276,9 +254,46 @@ void UEditorEngine::EndSkeletalMeshEditMode()
     ActiveWorld = EditorWorld;
 }
 
+void UEditorEngine::StartSkeletalMeshEditMode(USkeletalMesh* InMesh)
+{
+    if (SkeletalMeshEditWorld)
+        return;
+
+    StartSkeletalMeshEditMode();
+
+    DataPreviewController = std::make_shared<UDataPreviewController>();
+    DataPreviewController->Initialize(InMesh, GEngineLoop.GetLevelEditor()->GetViewports()->get());
+
+    //FEditorViewportClient* ActiveViewport = GEngineLoop.GetLevelEditor()->GetActiveViewportClient().get();
+
+    //ActiveViewport->SetViewMode(EViewModeIndex::VMI_Unlit);
+
+    AActor* PreviewActor = ActiveWorld->SpawnActor<AActor>();
+    PreviewActor->SetActorLabel(FString(InMesh->GetObjectName()));
+
+    USkeletalMeshComponent* SkelMeshComp = PreviewActor->AddComponent<USkeletalMeshComponent>();
+    SkelMeshComp->SetSkeletalMesh(DataPreviewController->OriginalMesh);
+}
+
 void UEditorEngine::StartAnimaitonEditMode(UAnimInstance* InAnim)
 {
-    //if ()
+    if (PreviewWorld)
+        return;
+    
+    // TODO : StartSKeletalMeshEditMode를 StartPreviewMode로 바꾸고 PreViewMode안에서 타입나눠서 분기
+    //StartSkeletalMeshEditMode();
+    FWorldContext& SkeletalMeshEditorWorldContext = CreateNewWorldContext(EWorldType::EditorPreview);
+
+    PreviewWorld = UWorld::CreateWorld(this, EWorldType::EditorPreview, TEXT("EditorPreViewWorld"));
+
+    SkeletalMeshEditorWorldContext.SetCurrentWorld(PreviewWorld);
+
+    ActiveWorld = PreviewWorld;
+    /*************************************************************************/
+
+    DataPreviewController = std::make_shared<UDataPreviewController>();
+    DataPreviewController->Initialize(InAnim, GEngineLoop.GetLevelEditor()->GetViewports()->get());
+    
 }
 
 FWorldContext& UEditorEngine::GetEditorWorldContext(/*bool bEnsureIsGWorld*/)

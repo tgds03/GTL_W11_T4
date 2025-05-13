@@ -1,22 +1,61 @@
 #include "SkeletalMeshEditorController.h"
 #include "InteractiveToolsFramework/BoneGizmos/ABoneGizmo.h"
+#include "Components/SkeletalMesh/SkeletalmeshComponent.h"
+#include "Animation/UAnimInstance.h"
 #include "Engine.h"
 #include "World/World.h"
+#include "Engine/Source/Editor/UnrealEd/EditorViewportClient.h"
 
-void SkeletalMeshEditorController::Initialize(USkeletalMesh* InMesh, FEditorViewportClient* InViewport)
+void UDataPreviewController::Initialize(USkeletalMesh* InMesh, FEditorViewportClient* InViewport)
 {
     OriginalMesh = InMesh;
     EditingMesh = OriginalMesh->DuplicateSkeletalMesh();
     AttachedViewport = InViewport;
 
-    SetBoneGizmo(OriginalMesh);
+    AttachedViewport->SetViewMode(EViewModeIndex::VMI_Unlit);
+
+    SetType(EPreviewType::SkeletalMesh);
+
+    SetBoneGizmo(EditingMesh);
 }
 
-void SkeletalMeshEditorController::Release()
+void UDataPreviewController::Initialize(UAnimInstance* InAnim, FEditorViewportClient* InViewport)
 {
+    USkeletalMesh* InMesh = InAnim->GetOwningComponent()->GetSkeletalMesh();
+
+    if (!InMesh)
+    {
+        // TODO: Default Mesh로 초기화
+        UE_LOG(LogLevel::Error, TEXT("InMesh is null"));
+        return;
+    }
+
+    OriginalMesh = InMesh;
+    EditingMesh = OriginalMesh->DuplicateSkeletalMesh();
+
+    OriginalAnim = InAnim;
+    EditingAnim = OriginalAnim; // TODO: 복제 함수 추가 필요
+    //EditingAnim = OriginalAnim->DuplicateAnimInstance();
+
+    AttachedViewport = InViewport;
+
+    SetType(EPreviewType::Animation);
+
+    SetBoneGizmo(EditingMesh);
 }
 
-void SkeletalMeshEditorController::SetBoneGizmo(USkeletalMesh* InMesh)
+void UDataPreviewController::Release()
+{
+    AttachedViewport = nullptr;
+    OriginalMesh = nullptr;
+    EditingMesh = nullptr;
+    OriginalAnim = nullptr;
+    EditingAnim = nullptr;
+    SelectedGizmo = nullptr; 
+    BoneGizmos.Empty();
+}
+
+void UDataPreviewController::SetBoneGizmo(USkeletalMesh* InMesh)
 {
     if (InMesh == nullptr)
         return;
@@ -43,7 +82,7 @@ void SkeletalMeshEditorController::SetBoneGizmo(USkeletalMesh* InMesh)
     }
 }
 
-int SkeletalMeshEditorController::GetBoneIndex(ABoneGizmo* InBoneGizmo)
+int UDataPreviewController::GetBoneIndex(ABoneGizmo* InBoneGizmo)
 {
     for (int i = 0; i < BoneGizmos.Num(); i++) 
     {
@@ -55,12 +94,12 @@ int SkeletalMeshEditorController::GetBoneIndex(ABoneGizmo* InBoneGizmo)
     return -1;
 }
 
-int SkeletalMeshEditorController::GetSelectedBoneIndex()
+int UDataPreviewController::GetSelectedBoneIndex()
 {
     return GetBoneIndex(SelectedGizmo);
 }
 
-void SkeletalMeshEditorController::SetSelectedBoneIndex(int index)
+void UDataPreviewController::SetSelectedBoneIndex(int index)
 {
     if (index >= BoneGizmos.Num()) 
     {

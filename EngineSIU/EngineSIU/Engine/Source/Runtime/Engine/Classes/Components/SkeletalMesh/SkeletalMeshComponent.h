@@ -23,6 +23,7 @@ public:
 
     void PlayAnimation(UAnimationAsset* NewAnimToPlay, bool bLooping = false);
     //void SetAnimationMode(EAnimationMode AnimationMode);
+    std::shared_ptr<UAnimInstance> GetAnimInstance() const { return AnimInstance; }
     void SetAnimation(UAnimationAsset* InAnimAsset);
     void Play(bool bLooping = false);
     void HandleAnimNotify(const FAnimNotifyEvent* Notify);
@@ -35,9 +36,9 @@ public:
     void GenerateSampleData();
 
     // 각도 변화 주기
-    void TestSkeletalMesh();
+    void TestSkeletalMesh(FString FileName);
 
-    void TestFBXSkeletalMesh(); 
+    void LoadAndSetFBX(FString FileName); 
 
     void PerformCPUSkinning();
 };
