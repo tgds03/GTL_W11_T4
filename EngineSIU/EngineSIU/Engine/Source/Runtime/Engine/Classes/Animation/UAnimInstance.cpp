@@ -39,30 +39,10 @@ void UAnimInstance::Update(float DeltaTime)
 }
 
 void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
-    if (!bIsPlaying)
-        return;
-
+{
     if (AnimStateMachine)
     {
         AnimStateMachine->ProcessState();
-    }
-    
-    // if (!CurrentSequence)
-    // {
-    //     if (WaitSequences.IsEmpty())
-    //     {
-    //         return;
-    //     }
-    //
-    //     WaitSequences.Dequeue(CurrentSequence);
-    // }
-    
-    // 1. 애니메이션 시간 업데이트
-    CurrentTime += DeltaTime * PlayRate;
-
-    if (BlendSequence)
-    {
-        BlendCurrentTime += DeltaTime * PlayRate;
     }
 
     //바뀌면 애니메이션 체인지 -> 추가할지 바로바꿀지 결정
@@ -81,10 +61,11 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     // 2. 애니메이션 데이터 모델 가져오기
     UAnimDataModel* DataModel = CurrentSequence->GetDataModel();
     if (!DataModel)
+    {
         return;
+    }
 
     UAnimSequence* Animation = GetAnimSequence(AnimStateMachine->CurrentState);
-    
     if (!Animation)
     {
         return;

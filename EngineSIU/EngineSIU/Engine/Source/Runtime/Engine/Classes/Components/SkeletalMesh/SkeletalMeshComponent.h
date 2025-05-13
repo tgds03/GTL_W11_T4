@@ -19,7 +19,7 @@ public:
     USkeletalMeshComponent();
     ~USkeletalMeshComponent() = default;
 
-    void UpdateAnimation(float deltatime);
+    void InitializeAnimInstance(APawn* InOwner);
 
     void PlayAnimation(UAnimationAsset* NewAnimToPlay, bool bLooping = false);
     //void SetAnimationMode(EAnimationMode AnimationMode);
@@ -30,8 +30,6 @@ public:
     virtual void TickComponent(float DeltaTime) override;
     virtual void TickPose(float DeltaTime) override;
     void TickAnimation(float DeltaTime);
-
-    void InitializeAnimInstance(APawn* InOwner);
 
     // OBJ 파일을 통한 Sample Skeletal Mesh 구현
     void GenerateSampleData();

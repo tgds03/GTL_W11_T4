@@ -43,10 +43,6 @@ public:
     UAnimInstance();
     virtual ~UAnimInstance() = default;
 
-    // 컴포넌트와 연결
-    void Initialize(USkeletalMeshComponent* InComponent);
-    void SetAnimSequence(UAnimSequence* InSequence);
-
     // 매 프레임 업데이트
     void Update(float DeltaTime);
     virtual void NativeUpdateAnimation(float DeltaSeconds);

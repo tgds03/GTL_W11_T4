@@ -27,29 +27,6 @@ void USkeletalMeshComponent::InitializeAnimInstance(APawn* InOwner)
     }
 }
 
-void USkeletalMeshComponent::UpdateAnimation(float DeltaTime)
-{
-    if (!SkeletalMesh || !AnimInstance)
-    {
-        return;
-    }
-
-    // AnimInstance 업데이트 (시간 진행 등) 
-    AnimInstance->Update(DeltaTime);
-
-    // 현재 애니메이션 프레임의 본 트랜스폼 계산
-    //TArray<FBonePose> BoneTransforms;
-    //AnimInstance->GetBoneTransforms(BoneTransforms);
-
-    // 계산된 트랜스폼을 스켈레탈 메시에 적용 (예: 내부 함수)
-    //SkeletalMesh->SetBoneTransforms(BoneTransforms);
-
-    if (!FEngineLoop::IsGPUSkinningEnabled()) 
-    {
-        PerformCPUSkinning();
-    }
-}
-
 void USkeletalMeshComponent::PlayAnimation(UAnimationAsset* NewAnimToPlay, bool bLooping)
 {
     if (!AnimInstance)
@@ -139,7 +116,6 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
     }
     
     UpdateGlobalPose();
-    UpdateSkinnedPositions();
 }
 
 void USkeletalMeshComponent::PerformCPUSkinning()
@@ -179,23 +155,17 @@ void USkeletalMeshComponent::TickPose(float DeltaTime)
 
 void USkeletalMeshComponent::TickAnimation(float DeltaTime)
 {
-    if (!SkeletalMesh || !AnimInstance || !AnimInstance->IsPlaying())
+    if (!SkeletalMesh || !AnimInstance)
     {
         return;
     }
     // AnimInstance 업데이트 (시간 진행 등)
     AnimInstance->Update(DeltaTime);
 
-    // 현재 애니메이션 프레임의 본 트랜스폼 계산
-    TArray<FBonePose> BoneTransforms;
-    AnimInstance->GetBoneTransforms(BoneTransforms);
-
-    // 계산된 트랜스폼을 스켈레탈 메시에 적용 (예: 내부 함수)
-    SkeletalMesh->SetBoneTransforms(BoneTransforms);
-
     if (!FEngineLoop::IsGPUSkinningEnabled()) 
     {
         PerformCPUSkinning();
     }
+
 }
 
