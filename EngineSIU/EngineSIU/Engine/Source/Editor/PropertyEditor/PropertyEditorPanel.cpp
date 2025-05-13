@@ -454,7 +454,7 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
             SkeletalMeshComp->TestSkeletalMesh(FileName);
         }
         ImGui::PopStyleColor(3);
-
+        
         // TestFBX 버튼을 연한 주황색으로
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.6f, 0.2f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.7f, 0.3f, 1.0f));
@@ -465,7 +465,7 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
             Engine->StartSkeletalMeshEditMode(SkeletalMeshComp->GetSkeletalMesh());
         }
         ImGui::PopStyleColor(3);
-
+        
         // Edit 버튼을 붉은 색으로
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.3f, 0.3f, 1.0f));
@@ -476,7 +476,12 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
             Engine->StartAnimaitonEditMode(SkeletalMeshComp->GetAnimInstance().get());
         }
         ImGui::PopStyleColor(3);
-
+        
+        if (ImGui::Button("TestDie", ImVec2(64, 64)))
+        {
+            SkeletalMeshComp->TestSkeletalDie();
+        }
+        
         ImGui::TreePop();
     }
     ImGui::PopStyleColor();

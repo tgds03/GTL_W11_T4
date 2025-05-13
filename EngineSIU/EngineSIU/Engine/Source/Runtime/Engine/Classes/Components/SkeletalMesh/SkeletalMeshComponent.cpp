@@ -20,6 +20,8 @@ USkeletalMeshComponent::USkeletalMeshComponent()
 
 void USkeletalMeshComponent::InitializeAnimInstance(APawn* InOwner)
 {
+    OwnerPawn = InOwner;
+    
     if (!AnimInstance)
     {
         AnimInstance = std::make_shared<UAnimInstance>();
@@ -78,9 +80,27 @@ void USkeletalMeshComponent::TestSkeletalMesh(FString FileName)
         UpdateGlobalPose();
         return;
     }
+    
+    // 2) SkeletalMeshComponent에 세팅
+    SetSkeletalMesh(LoadedMesh);
 
-    AnimSequence->SetRateScale(-0.5f);
+    //////////////////////////////////
+    FbxPath = TEXT("Contents/Fbx/Capoeira.fbx");
+    UAnimSequence* AnimSequence2 = FResourceManager::LoadAnimationSequence(FbxPath);
+    if (!AnimSequence2)
+    {
+        UE_LOG(LogLevel::Warning, TEXT("AnimSequence2 애니메이션 로드 실패."));
+        return;
+    }
+
+    float AnimSpeed = 0.5f;
+    AnimSequence->SetRateScale(AnimSpeed);
+    AnimSequence2->SetRateScale(AnimSpeed);
+    
+    // AS_Dance상태일땐 AnimSequence돌리라고 추가
     AnimInstance->AddAnimSequence(AS_Dance, AnimSequence);
+    AnimInstance->AddAnimSequence(AS_Die, AnimSequence2);
+    
     if (APawn* Actor = dynamic_cast<APawn*>(GetOwner()))
     {
         Actor->CurrentMovementMode = EDancing;

@@ -1,6 +1,7 @@
-﻿#include "AnimationStateMachine.h"
+#include "AnimationStateMachine.h"
 
-#include "Actors/Pawn.h"
+#include "Actors/Character/Pawn.h"
+#include "Actors/Character/Character.h"
 
 void UAnimationStateMachine::Initialize(APawn* InOwner)
 {
@@ -16,5 +17,9 @@ void UAnimationStateMachine::ProcessState()
     else if (Owner->CurrentMovementMode == EDancing)
     {
         CurrentState = AS_Dance;
+    }
+    else if (Owner->CurrentMovementMode == EDie)
+    {
+        CurrentState = AS_Die;
     }
 }

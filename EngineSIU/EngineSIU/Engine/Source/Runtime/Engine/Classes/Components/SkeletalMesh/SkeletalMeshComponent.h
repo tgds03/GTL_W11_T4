@@ -37,8 +37,11 @@ public:
 
     // 각도 변화 주기
     void TestSkeletalMesh(FString FileName);
+    void TestSkeletalDie();
 
     void LoadAndSetFBX(FString FileName); 
 
     void PerformCPUSkinning();
+
+    APawn* OwnerPawn = nullptr;
 };
