@@ -22,10 +22,18 @@ void UAnimInstance::Initialize(USkeletalMeshComponent* InComponent, APawn* InOwn
     }
 }
 
-void UAnimInstance::StartAnimSequence(UAnimSequence* InSequence)
+void UAnimInstance::StartAnimSequence(UAnimSequence* InSequence, float InBlendingTime)
 {
-    CurrentSequence = InSequence;
-    CurrentSequence->BeginSequence();
+    if (!CurrentSequence)
+    {
+        CurrentSequence = InSequence;
+        CurrentSequence->BeginSequence();
+        return;
+    }
+
+    BlendSequence = InSequence;
+    BlendTime = InBlendingTime;
+    BlendSequence->BeginSequence();
 }
 
 void UAnimInstance::Update(float DeltaTime)
@@ -68,14 +76,7 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     //바뀌면 애니메이션 체인지 -> 추가할지 바로바꿀지 결정
     if (CurrentState != AnimStateMachine->CurrentState)
     {
-        if (!CurrentSequence)
-        {   // 돌아가고 있는게 없으면 바로 변경
-            StartAnimSequence(AnimSequenceMap[AnimStateMachine->CurrentState]);
-        }
-        else
-        {   // 돌아가고 있는 애니메이션이 있으면 블렌드시키면서 변경
-            ChangeAnimation(AnimSequenceMap[AnimStateMachine->CurrentState], 1.0f);
-        }
+        StartAnimSequence(AnimSequenceMap[AnimStateMachine->CurrentState], 1.0f);
 
         CurrentState = AnimStateMachine->CurrentState;
     }
@@ -123,20 +124,13 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     Mesh->SetBoneLocalTransforms(NewLocalPoses);
 }
 
-void UAnimInstance::ChangeAnimation(UAnimSequence* NewAnim, float InBlendingTime)
-{
-    BlendSequence = NewAnim;
-    BlendTime = InBlendingTime;
-    BlendSequence->BeginSequence();
-}
-
 void UAnimInstance::PlayAnimation(UAnimSequence* InSequence, bool bInLooping, bool bPlayDirect)
 {
     InSequence->SetLooping(bInLooping);
 
     if (bPlayDirect)
     {
-        StartAnimSequence(InSequence);
+        StartAnimSequence(InSequence, 0.0f);
     }
     else
     {
