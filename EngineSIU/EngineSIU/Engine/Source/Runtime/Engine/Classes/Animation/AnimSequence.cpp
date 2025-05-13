@@ -5,23 +5,7 @@ UAnimSequence::UAnimSequence()
 {
 }
 
-float UAnimSequence::GetLocalTime(float GlobalTime) const
-{
-    float LocalTime = GlobalTime - AnimationStartTime;
-    float SequenceLength = GetUnScaledPlayLength();
-
-    if (bLoopAnimation)
-    {
-        return FMath::Fmod(LocalTime, SequenceLength);
-    }
-    // 루프가 아닌 경우
-    else
-    {
-        return FMath::Clamp(LocalTime, 0.0f, SequenceLength);
-    }
-}
-
-void UAnimSequence::GetAnimationPose(float Time, USkeletalMesh* SkeletalMesh, TArray<FBonePose>& OutBoneTransforms) const
+void UAnimSequence::GetAnimationPose(USkeletalMesh* SkeletalMesh, TArray<FBonePose>& OutBoneTransforms) const
 {
     if (!SkeletalMesh)
     {
@@ -39,7 +23,7 @@ void UAnimSequence::GetAnimationPose(float Time, USkeletalMesh* SkeletalMesh, TA
     float PlayLength = GetUnScaledPlayLength();
     int32 NumFrames = GetNumberOfFrames();
 
-    float NormalizedTime = FMath::Clamp(Time / PlayLength, 0.0f, 1.0f);
+    float NormalizedTime = FMath::Clamp(LocalTime / PlayLength, 0.0f, 1.0f);
     float FrameTime = NormalizedTime * (NumFrames - 1);
     int32 Frame1 = FMath::FloorToInt(FrameTime);
     int32 Frame2 = FMath::Min(Frame1 + 1, NumFrames - 1);

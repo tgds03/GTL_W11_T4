@@ -112,6 +112,8 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
         return;
     }
     
+    // AnimSequence->SetRateScale(-0.5f);
+
     // AS_Dance상태일땐 AnimSequence돌리라고 추가
     AnimInstance->AddAnimSequence(AS_Dance, AnimSequence);
     AnimInstance->AddAnimSequence(AS_Die, AnimSequence2);

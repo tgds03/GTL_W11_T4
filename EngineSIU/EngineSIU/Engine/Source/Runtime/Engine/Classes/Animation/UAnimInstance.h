@@ -23,13 +23,9 @@ protected:
 
     TQueue<UAnimSequence*> WaitSequences;
     
-    // 재생 상태
     bool bIsPlaying = true;
-    float CurrentGlobalTime = 0;
-    
-    float BlendTime;
-    float CurrentBlendTime;
-    
+    float BlendTime = 0.f;
+
     TMap<EAnimState, UAnimSequence*> AnimSequenceMap;
     EAnimState CurrentState;
     

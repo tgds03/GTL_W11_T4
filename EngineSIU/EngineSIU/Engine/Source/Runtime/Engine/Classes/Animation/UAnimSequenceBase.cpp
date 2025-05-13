@@ -1,5 +1,7 @@
 #include "UAnimSequenceBase.h"
 
+#include <algorithm>
+
 
 UAnimSequenceBase::UAnimSequenceBase()
     : RateScale(1.0f)
@@ -26,6 +28,40 @@ bool UAnimSequenceBase::RemoveNotify(int32 NotifyIndex)
         return true;
     }
     return false;
+}
+
+void UAnimSequenceBase::BeginSequence()
+{
+    LocalTime = 0.f;
+}
+
+void UAnimSequenceBase::TickSequence(float DeltaTime)
+{
+    float SequenceLength = GetUnScaledPlayLength();
+
+    if (FMath::IsNearlyZero(SequenceLength))
+    {
+        LocalTime = 0.f;
+        return;
+    }
+
+    float RawLocalTime = LocalTime + DeltaTime * RateScale;
+    
+    if (bLoopAnimation)
+    {
+        float TimeInCycle = FMath::Fmod(RawLocalTime, SequenceLength);
+
+        if (TimeInCycle < 0.0f)
+        {
+            TimeInCycle += SequenceLength;
+        }
+        LocalTime = TimeInCycle;
+    }
+    // 루프가 아닌 경우
+    else
+    {
+        LocalTime = FMath::Clamp(RawLocalTime, 0.0f, SequenceLength);
+    }
 }
 
 bool UAnimSequenceBase::FindNotifyEvent(float Time, FAnimNotifyEvent& OutEvent) const

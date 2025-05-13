@@ -25,7 +25,7 @@ void UAnimInstance::Initialize(USkeletalMeshComponent* InComponent, APawn* InOwn
 void UAnimInstance::StartAnimSequence(UAnimSequence* InSequence)
 {
     CurrentSequence = InSequence;
-    CurrentGlobalTime = 0.0f;
+    CurrentSequence->BeginSequence();
 }
 
 void UAnimInstance::Update(float DeltaTime)
@@ -35,6 +35,16 @@ void UAnimInstance::Update(float DeltaTime)
         return;
     }
 
+    if (CurrentSequence)
+    {
+        CurrentSequence->TickSequence(DeltaTime);
+    }
+
+    if (BlendSequence)
+    {
+        BlendSequence->TickSequence(DeltaTime);
+    }
+    
     NativeUpdateAnimation(DeltaTime);
 }
 
@@ -48,6 +58,11 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     if (AnimStateMachine)
     {
         AnimStateMachine->ProcessState();
+    }
+
+    if (AnimSequenceMap.IsEmpty())
+    {
+        return;
     }
 
     //바뀌면 애니메이션 체인지 -> 추가할지 바로바꿀지 결정
@@ -65,26 +80,18 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         CurrentState = AnimStateMachine->CurrentState;
     }
     
-    CurrentGlobalTime += DeltaSeconds;
-
-    // Convert to local sequence time
-    float LocalTime = CurrentSequence->GetLocalTime(CurrentGlobalTime);
 
     // Delegate pose calculation to the sequence
     TArray<FBonePose> NewLocalPoses;
     USkeletalMesh* Mesh = OwningComponent->GetSkeletalMesh();
-    CurrentSequence->GetAnimationPose(LocalTime, Mesh, NewLocalPoses);
+    CurrentSequence->GetAnimationPose(Mesh, NewLocalPoses);
 
     //여기서 블렌딩로직 추가
     if (BlendSequence)
     {
-        CurrentBlendTime += DeltaSeconds;
-        
-        float BlendLocalTime = BlendSequence->GetLocalTime(CurrentBlendTime);
-
         TArray<FBonePose> NewBlendPoses;
         
-        BlendSequence->GetAnimationPose(BlendLocalTime, Mesh, NewBlendPoses);
+        BlendSequence->GetAnimationPose(Mesh, NewBlendPoses);
 
         //본 갯수가 똑같아야함
         for (int b = 0; b < NewLocalPoses.Num(); b++)
@@ -103,12 +110,11 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         }
 
         // 현재 애니메이션이 끝나거나 블렌드시간이 지나면 애니메이션 교체
-        if (CurrentBlendTime > BlendTime || LocalTime > CurrentSequence->GetUnScaledPlayLength())
+        if (CurrentSequence->LocalTime > CurrentSequence->GetUnScaledPlayLength() || BlendSequence->LocalTime > BlendTime)
         {
             CurrentSequence = BlendSequence;
             BlendSequence = nullptr;
             BlendTime = 0.f;
-            CurrentBlendTime = 0.f;
         }
     }
 
@@ -120,7 +126,7 @@ void UAnimInstance::ChangeAnimation(UAnimSequence* NewAnim, float InBlendingTime
 {
     BlendSequence = NewAnim;
     BlendTime = InBlendingTime;
-    CurrentBlendTime = 0.0f;
+    BlendSequence->BeginSequence();
 }
 
 void UAnimInstance::PlayAnimation(UAnimSequence* InSequence, bool bInLooping, bool bPlayDirect)

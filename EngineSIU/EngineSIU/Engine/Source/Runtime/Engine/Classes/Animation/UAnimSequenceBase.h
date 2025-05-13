@@ -10,8 +10,7 @@ class UAnimSequenceBase : public UAnimationAsset
     TArray<FAnimNotifyEvent> Notifies;
     UAnimDataModel* AnimDataModel = nullptr;
     float RateScale = 1.0f;
-    float AnimationStartTime = 0.0f;
-    
+    float LocalTime = 0.0f;
     
     // 루프 애니메이션 여부
     bool bLoopAnimation;
@@ -37,6 +36,9 @@ public:
     void AddNotify(const FAnimNotifyEvent& Notify) { Notifies.Add(Notify); }
     bool RemoveNotify(int32 NotifyIndex);
 
+    virtual void BeginSequence();
+    virtual void TickSequence(float DeltaTime);
+    
     // 노티파이 검색
     bool FindNotifyEvent(float Time, FAnimNotifyEvent& OutEvent) const;
 
