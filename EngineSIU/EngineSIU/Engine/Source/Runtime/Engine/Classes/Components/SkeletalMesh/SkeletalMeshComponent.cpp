@@ -27,6 +27,7 @@ void USkeletalMeshComponent::InitializeAnimInstance(APawn* InOwner)
     }
 }
 
+
 void USkeletalMeshComponent::PlayAnimation(UAnimationAsset* NewAnimToPlay, bool bLooping)
 {
     if (!AnimInstance)

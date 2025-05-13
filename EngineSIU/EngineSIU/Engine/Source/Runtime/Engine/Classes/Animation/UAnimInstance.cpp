@@ -81,6 +81,10 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     Mesh->SetBoneLocalTransforms(NewLocalPoses);
 }
 
+void UAnimInstance::TriggerAnimNotifies(float DeltaSceonds)
+{
+}
+
 void UAnimInstance::ChangeAnimation(UAnimSequence* NewAnim, float InBlendingTime)
 {
     BlendSequence = NewAnim;

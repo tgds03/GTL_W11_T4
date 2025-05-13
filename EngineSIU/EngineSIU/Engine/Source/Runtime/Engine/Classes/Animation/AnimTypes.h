@@ -25,6 +25,53 @@ struct FAnimNotifyEvent
     FName NotifyName;
 };
 
+struct FAnimNotifyEventReference
+{
+    const FAnimNotifyEvent* Notify = nullptr;
+
+    FAnimNotifyEventReference() = default;
+    FAnimNotifyEventReference(const FAnimNotifyEvent& InEvent) : Notify(&InEvent) {}
+
+    const FAnimNotifyEvent* GetNotify() const { return Notify; }
+};
+
+// 3. 노티파이 큐 클래스
+class FAnimNotifyQueue
+{
+public:
+    // 현재 프레임에 처리할 노티파이 참조 목록
+    TArray<FAnimNotifyEventReference> AnimNotifies;
+
+    // 큐 초기화
+    void Reset() { AnimNotifies.Empty(); }
+
+    // 단일 노티파이 추가
+    void AddAnimNotify(const FAnimNotifyEvent* Notify, const UObject* NotifySource)
+    {
+        if (Notify)
+        {
+            AnimNotifies.Add(FAnimNotifyEventReference(*Notify));
+        }
+    }
+
+    // 노티파이 배열 추가 (내부 구현)
+    void AddAnimNotifies(bool bSrcIsLeader, const TArray<FAnimNotifyEventReference>& NewNotifies, const float InstanceWeight)
+    {
+        for (const FAnimNotifyEventReference& NotifyRef : NewNotifies)
+        {
+            if (const FAnimNotifyEvent* Notify = NotifyRef.GetNotify())
+            {
+                // bSrcIsLeader와 InstanceWeight를 사용한 처리 로직
+                // 예: 가중치가 충분히 높을 때만 추가
+                if (InstanceWeight > 0.01f)
+                {
+                    AnimNotifies.Add(NotifyRef);
+                }
+            }
+        }
+    }
+};
+
 struct FFrameRate
 {
     /**

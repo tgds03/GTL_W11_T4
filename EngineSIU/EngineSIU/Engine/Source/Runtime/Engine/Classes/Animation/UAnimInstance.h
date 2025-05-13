@@ -41,7 +41,7 @@ public:
     void Update(float DeltaTime);
     virtual void NativeUpdateAnimation(float DeltaSeconds);
 
-    //void TriggerAnimNotifies(float DeltaSceonds);
+    void TriggerAnimNotifies(float DeltaSceonds);
 
 #pragma region Properties
     USkeletalMeshComponent* GetOwningComponent() const { return OwningComponent; }
