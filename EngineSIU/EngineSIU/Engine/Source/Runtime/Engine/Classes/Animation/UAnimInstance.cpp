@@ -50,6 +50,11 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         AnimStateMachine->ProcessState();
     }
 
+    if (AnimSequenceMap.IsEmpty())
+    {
+        return;
+    }
+
     //바뀌면 애니메이션 체인지 -> 추가할지 바로바꿀지 결정
     if (CurrentState != AnimStateMachine->CurrentState)
     {

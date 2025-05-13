@@ -10,9 +10,19 @@ float UAnimSequence::GetLocalTime(float GlobalTime) const
     float LocalTime = GlobalTime * RateScale;
     float SequenceLength = GetUnScaledPlayLength();
 
+    if (FMath::IsNearlyZero(SequenceLength))
+    {
+        return 0;
+    }
+
     if (bLoopAnimation)
     {
-        return FMath::Fmod(LocalTime, SequenceLength);
+        float TimeInCycle = FMath::Fmod(LocalTime, SequenceLength);
+        if (TimeInCycle < 0.0f)
+        {
+            TimeInCycle += SequenceLength;
+        }
+        return TimeInCycle;
     }
     // 루프가 아닌 경우
     else

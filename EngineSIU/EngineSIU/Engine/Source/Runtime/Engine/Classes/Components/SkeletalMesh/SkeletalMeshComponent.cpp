@@ -87,7 +87,8 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
 {
     // 1) FBX로부터 USkeletalMesh 생성
 
-    FString FbxPath(TEXT("Contents/Fbx/Twerkbin.fbx"));
+    //FString FbxPath(TEXT("Contents/Fbx/Twerkbin.fbx"));
+    FString FbxPath(TEXT("Contents/Fbx/Walking.fbx"));
     
     USkeletalMesh* LoadedMesh = FResourceManager::LoadSkeletalMesh(FbxPath);
     if (!LoadedMesh)
@@ -106,6 +107,8 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
 
     // 2) SkeletalMeshComponent에 세팅
     SetSkeletalMesh(LoadedMesh);
+
+    AnimSequence->SetRateScale(-0.5f);
 
     // AS_Dance상태일땐 AnimSequence돌리라고 추가
     AnimInstance->AddAnimSequence(AS_Dance, AnimSequence);
