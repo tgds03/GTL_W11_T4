@@ -278,7 +278,7 @@ void UEditorEngine::EndSkeletalMeshEditMode()
 
 void UEditorEngine::StartAnimaitonEditMode(UAnimInstance* InAnim)
 {
-    if ()
+    //if ()
 }
 
 FWorldContext& UEditorEngine::GetEditorWorldContext(/*bool bEnsureIsGWorld*/)

@@ -8,7 +8,7 @@
 // FBX 테스트를 위해 넣은 코드 이후 제거 필요
 #include <memory>
 
-#include "Actors/Pawn.h"
+#include "Actors/Character/Pawn.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/FbxLoader.h"
 #include "Animation/AnimSequence.h"
 #include "Animation/UAnimationAsset.h" 

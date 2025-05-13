@@ -1,7 +1,13 @@
 #include "Pawn.h"
 
+#include "Components/SkeletalMesh/SkeletalMeshComponent.h"
+
 APawn::APawn()
 {
+    SkeletalMeshComponent = AddComponent<USkeletalMeshComponent>();
+    SetRootComponent(SkeletalMeshComponent);
+    SkeletalMeshComponent->InitializeAnimInstance(this);
+    SetActorTickInEditor(true);
 }
 
 void APawn::PostSpawnInitialize()
@@ -11,8 +17,7 @@ void APawn::PostSpawnInitialize()
 
 UObject* APawn::Duplicate(UObject* InOuter)
 {
-    ThisClass* NewActor = Cast<ThisClass>(Super::Duplicate(InOuter));
-    return NewActor;
+    return nullptr;
 }
 
 void APawn::BeginPlay()
@@ -34,3 +39,4 @@ void APawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     Super::EndPlay(EndPlayReason);
 }
+

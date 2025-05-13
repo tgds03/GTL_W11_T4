@@ -1,6 +1,6 @@
 #include "LightGridGenerator.h"
-#include "Actors/PointLightActor.h"
-#include "Actors/SpotLightActor.h"
+#include "Actors/LightActors/PointLightActor.h"
+#include "Actors/LightActors/SpotLightActor.h"
 #include "World/World.h"
 #include "Components/Light/PointLightComponent.h"
 #include "Components/Light/SpotLightComponent.h"

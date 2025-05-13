@@ -10,12 +10,6 @@ class UAnimationStateMachine;
 class USkeletalMeshComponent;
 class UAnimSequence;
 
-enum class EAnimState
-{
-    Idle,
-    Twerk,
-};
-
 class UAnimInstance : public UObject
 {
 protected:
@@ -55,7 +49,6 @@ public:
     void Initialize(USkeletalMeshComponent* InComponent, APawn* InOwner);
     
     // 매 프레임 업데이트
-    void Update(float DeltaTime);
     void ChangeAnimation(UAnimSequence* NewAnim, float InBlendingTime);
 
     // 애니메이션 재생 제어
