@@ -43,9 +43,6 @@ public:
     USkeletalMeshComponent* GetOwningComponent() const { return OwningComponent; }
     void SetOwningComponent(USkeletalMeshComponent* InComponent) { OwningComponent = InComponent; }
     void Initialize(USkeletalMeshComponent* InComponent, APawn* InOwner);
-    
-    // 매 프레임 업데이트
-    void ChangeAnimation(UAnimSequence* NewAnim, float InBlendingTime);
 
     // 애니메이션 재생 제어
     void PlayAnimation(UAnimSequence* InSequence, bool bInLooping = false, bool bPlayDirect = false);
@@ -63,7 +60,7 @@ public:
     UAnimSequence* GetAnimSequence(EAnimState InAnimState){ return AnimSequenceMap[InAnimState]; }
 
 protected:    
-    void StartAnimSequence(UAnimSequence* InSequence);
+    void StartAnimSequence(UAnimSequence* InSequence, float InBlendingTime);
     
     // 애니메이션 상태 업데이트
     //void UpdateAnimationState(float DeltaTime);
