@@ -842,6 +842,9 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Pawn.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Character.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Animation\AnimationStateMachine.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\LuaScriptComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaScriptManager.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaTypes\LuaUserTypes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="EngineSIU.natvis" />
@@ -990,6 +993,11 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Character.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Container\Queue.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Animation\AnimationStateMachine.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\LuaScriptComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaScriptManager.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaTypes\LuaUserTypes.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaUtils\LuaBindUtils.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaUtils\LuaTypeMacros.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />

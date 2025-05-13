@@ -107,11 +107,20 @@ void FQuat::Normalize()
     *this = FQuat(W / magnitude, X / magnitude, Y / magnitude, Z / magnitude);
 }
 
-FQuat FQuat::GetNormalized() const
+FQuat FQuat::GetUnsafeNormal() const
 {
-    FQuat Result = *this;
-    Result.Normalize();
-    return Result;
+    float Magnitude = sqrtf(W * W + X * X + Y * Y + Z * Z);
+    return FQuat(W / Magnitude, X / Magnitude, Y / Magnitude, Z / Magnitude);
+}
+
+FQuat FQuat::GetSafeNormal(float Tolerance) const
+{
+    float Magnitude = sqrtf(W * W + X * X + Y * Y + Z * Z);
+    if (Magnitude < Tolerance)
+    {
+        return FQuat(1, 0, 0, 0);
+    }
+    return FQuat(W / Magnitude, X / Magnitude, Y / Magnitude, Z / Magnitude);
 }
 
 FQuat FQuat::FromAxisAngle(const FVector& Axis, float Angle)
