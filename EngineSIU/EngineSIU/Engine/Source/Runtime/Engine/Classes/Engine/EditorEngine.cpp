@@ -3,7 +3,7 @@
 #include "World/World.h"
 #include "Level.h"
 #include "Actors/Cube.h"
-#include "Actors/DirectionalLightActor.h"
+#include "Actors/LightActors/DirectionalLightActor.h"
 #include "GameFramework/Actor.h"
 #include "Classes/Engine/AssetManager.h"
 #include "Components/Light/DirectionalLightComponent.h"
@@ -253,7 +253,7 @@ void UEditorEngine::StartSkeletalMeshEditMode(USkeletalMesh* InMesh)
 
     USkeletalMeshComponent* SkelMeshComp = PreviewActor->AddComponent<USkeletalMeshComponent>();
     SkelMeshComp->SetSkeletalMesh(SkelEditorController->OriginalMesh);
-    SkelMeshComp->UpdateSkinnedPositions();
+    SkelMeshComp->UpdateGlobalPose();
 }
 
 void UEditorEngine::EndSkeletalMeshEditMode()
@@ -274,6 +274,11 @@ void UEditorEngine::EndSkeletalMeshEditMode()
 
     // 원래 EditorWorld 로 복귀
     ActiveWorld = EditorWorld;
+}
+
+void UEditorEngine::StartAnimaitonEditMode(UAnimInstance* InAnim)
+{
+    //if ()
 }
 
 FWorldContext& UEditorEngine::GetEditorWorldContext(/*bool bEnsureIsGWorld*/)

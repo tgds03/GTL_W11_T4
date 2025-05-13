@@ -3,7 +3,7 @@
 #include "World/World.h"
 
 #include "Actors/Player.h"
-#include "Actors/LightActor.h"
+#include "Actors/LightActors/LightActor.h"
 #include "Actors/FireballActor.h"
 
 #include "Components/Light/LightComponent.h"
@@ -26,14 +26,14 @@
 
 #include "Engine/EditorEngine.h"
 #include <Actors/HeightFogActor.h>
-#include "Actors/PointLightActor.h"
-#include "Actors/DirectionalLightActor.h"
-#include "Actors/SpotLightActor.h"
-#include "Actors/AmbientLightActor.h"
+#include "Actors/LightActors/PointLightActor.h"
+#include "Actors/LightActors/DirectionalLightActor.h"
+#include "Actors/LightActors/SpotLightActor.h"
+#include "Actors/LightActors/AmbientLightActor.h"
 
-#include "Actors/CubeActor.h"
-#include "Actors/SphereActor.h"
-#include "Actors/CapsuleActor.h"
+#include "Actors/PrimitiveActors/CubeActor.h"
+#include "Actors/PrimitiveActors/SphereActor.h"
+#include "Actors/PrimitiveActors/CapsuleActor.h"
 #include "Actors/Pawn.h"
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
 #include "GameFramework/PlayerController.h"

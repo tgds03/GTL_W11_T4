@@ -2,14 +2,16 @@
 #include "Engine/FObjLoader.h"
 #include "Engine/Source/Runtime/CoreUObject/UObject/ObjectFactory.h"
 
+#include "Actors/Character/Character.h"
 #include "Engine/Source/Runtime/Engine/Classes/Asset/SkeletalMeshAsset.h"
 
 // FBX 테스트를 위해 넣은 코드 이후 제거 필요
 #include <memory>
 
-#include "Actors/Pawn.h"
+#include "Actors/Character/Pawn.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/FbxLoader.h"
 #include "Animation/AnimSequence.h"
+#include "Animation/UAnimationAsset.h" 
 
 USkeletalMeshComponent::USkeletalMeshComponent()
     :USkinnedMeshComponent()
@@ -22,6 +24,36 @@ void USkeletalMeshComponent::InitializeAnimInstance(APawn* InOwner)
     {
         AnimInstance = std::make_shared<UAnimInstance>();
         AnimInstance->Initialize(this, InOwner);
+    }
+}
+
+void USkeletalMeshComponent::PlayAnimation(UAnimationAsset* NewAnimToPlay, bool bLooping)
+{
+    if (!AnimInstance)
+    {
+        return;
+    }
+
+    //SetAnimationMode(EAnimationMode::AnimationSingleNode);
+    SetAnimation(NewAnimToPlay);
+    Play(bLooping);
+}
+
+void USkeletalMeshComponent::SetAnimation(UAnimationAsset* InAnimAsset)
+{
+}
+
+void USkeletalMeshComponent::Play(bool bLooping)
+{
+}
+
+void USkeletalMeshComponent::HandleAnimNotify(const FAnimNotifyEvent* Notify)
+{
+    if (AnimInstance)
+    {
+        // 임시 코드
+        ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
+        OwnerCharacter->HandleAnimNotify(Notify);
     }
 }
 
@@ -48,7 +80,7 @@ void USkeletalMeshComponent::TestSkeletalMesh()
     }
 
     // 3) 변경된 본 트랜스폼을 바탕으로 애니메이션 업데이트
-    UpdateSkinnedPositions();
+    UpdateGlobalPose();
 }
 
 void USkeletalMeshComponent::TestFBXSkeletalMesh()
@@ -65,11 +97,10 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
     }
 
     UAnimSequence* AnimSequence = FResourceManager::LoadAnimationSequence(FbxPath);
-
     if (!AnimSequence)
     {
         UE_LOG(LogLevel::Warning, TEXT("애니메이션 로드 실패, 스켈레톤만 표시합니다."));
-        UpdateSkinnedPositions();
+        UpdateGlobalPose();
         return;
     }
 
@@ -84,7 +115,7 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
         Actor->CurrentMovementMode = EDancing;
     }
     
-    UpdateSkinnedPositions();
+    UpdateGlobalPose();
 }
 
 void USkeletalMeshComponent::PerformCPUSkinning()
@@ -124,23 +155,17 @@ void USkeletalMeshComponent::TickPose(float DeltaTime)
 
 void USkeletalMeshComponent::TickAnimation(float DeltaTime)
 {
-    if (!SkeletalMesh || !AnimInstance || !AnimInstance->IsPlaying())
+    if (!SkeletalMesh || !AnimInstance)
     {
         return;
     }
     // AnimInstance 업데이트 (시간 진행 등)
     AnimInstance->Update(DeltaTime);
 
-    // 현재 애니메이션 프레임의 본 트랜스폼 계산
-    TArray<FBonePose> BoneTransforms;
-    AnimInstance->GetBoneTransforms(BoneTransforms);
-
-    // 계산된 트랜스폼을 스켈레탈 메시에 적용 (예: 내부 함수)
-    SkeletalMesh->SetBoneTransforms(BoneTransforms);
-
     if (!FEngineLoop::IsGPUSkinningEnabled()) 
     {
         PerformCPUSkinning();
     }
+
 }
 

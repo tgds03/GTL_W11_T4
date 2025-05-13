@@ -12,3 +12,10 @@ enum class EWorldType
     GameRPC,
     Inactive
 };
+
+enum class EPreviewType
+{
+    None,
+    SkeletalMesh,
+    Animation,
+};

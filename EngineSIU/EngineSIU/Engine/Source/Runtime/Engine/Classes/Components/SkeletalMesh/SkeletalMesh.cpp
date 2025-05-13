@@ -102,7 +102,7 @@ FWString USkeletalMesh::GetObjectName() const
     return RenderData->ObjectName;
 }
 
-void USkeletalMesh::SetBoneTransforms(const TArray<FBonePose>& InBoneTransforms)
+void USkeletalMesh::SetBoneLocalTransforms(const TArray<FBonePose>& InBoneTransforms)
 {
     if (!RenderData || !SkeletonPose.Skeleton->BoneCount)
         return;
@@ -117,7 +117,7 @@ void USkeletalMesh::SetBoneTransforms(const TArray<FBonePose>& InBoneTransforms)
         return;
     }
 
-    // 모든 본의 로컬 트랜스폼 설정
+     //모든 본의 로컬 트랜스폼 설정
     for (int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex)
     {
         // 개별 본 로컬 트랜스폼 설정
