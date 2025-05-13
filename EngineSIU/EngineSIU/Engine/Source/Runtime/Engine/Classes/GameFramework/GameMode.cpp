@@ -1,5 +1,4 @@
 #include "GameMode.h"
-#include "LuaScripts/LuaScriptComponent.h"
 #include "EngineLoop.h"
 #include "SoundManager.h"
 #include "InputCore/InputCoreTypes.h"

@@ -761,7 +761,6 @@
     <ClCompile Include="Engine\Source\Runtime\CoreUObject\UObject\ObjectGlobals.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Math\Vector4.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Misc\Parse.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\AmbientLightActor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\Light\AmbientLightComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\Light\DirectionalLightComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\InputCore\InputCoreTypes.cpp" />
@@ -777,7 +776,6 @@
     <ClCompile Include="Engine\Source\Runtime\Core\Stats\GPUTimingManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Stats\ProfilerStatsManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\ShadowManager.cpp" />
-    <ClCompile Include="LuaScripts\LuaScriptComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\Mesh\StaticMeshRenderData.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\FObjLoader.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Renderer\StaticMeshRenderPassBase.cpp" />
@@ -843,6 +841,7 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Animation\UAnimInstance.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Pawn.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Character.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Animation\AnimationStateMachine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="EngineSIU.natvis" />
@@ -919,9 +918,6 @@
     <ClInclude Include="Engine\Source\Runtime\Core\Stats\ProfilerStatsManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\ShadowManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Stats\StatDefine.h" />
-    <ClInclude Include="LuaScripts\LuaBindingHelpers.h" />
-    <ClInclude Include="LuaScripts\LuaScriptComponent.h" />
-    <ClInclude Include="LuaScripts\LuaScriptFileUtils.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Components\Mesh\StaticMeshRenderData.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\FObjLoader.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\StaticMeshRenderPassBase.h" />
@@ -992,6 +988,8 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Asset\StaticMeshAsset.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Pawn.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Character.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Container\Queue.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Animation\AnimationStateMachine.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />
@@ -1004,9 +1002,6 @@
     <ClInclude Include="Engine\Source\Runtime\Renderer\ShaderConstants.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\DepthPrePass.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\TileLightCullingPass.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\AmbientLightActor.h">
-      <Filter>Engine\Source\Runtime\Engine\Classes\Actors</Filter>
-    </ClInclude>
     <None Include="Shaders\CompositingShader.hlsl" />
     <None Include="Shaders\DepthBufferPixelShader.hlsl" />
     <None Include="Shaders\DepthBufferVertexShader.hlsl" />

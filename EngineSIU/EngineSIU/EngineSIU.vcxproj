@@ -347,7 +347,6 @@
     <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_widgets.cpp" />
     <ClCompile Include="Engine\Source\ThirdParty\tinyfiledialogs\tinyfiledialogs.cpp" />
     <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_curve.cpp" />
-    <ClCompile Include="LuaScripts\LuaScriptComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\PlayerCameraManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\PerlinNoiseCameraShakePattern.cpp" />
     <ClCompile Include="Engine\Source\Editor\PropertyEditor\SkeletonMeshEditorPanel.cpp" />
@@ -680,9 +679,6 @@
     <ClInclude Include="Engine\Source\ThirdParty\JSON\json.hpp" />
     <ClInclude Include="Engine\Source\ThirdParty\tinyfiledialogs\tinyfiledialogs.h" />
     <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui_curve.h" />
-    <ClInclude Include="LuaScripts\LuaBindingHelpers.h" />
-    <ClInclude Include="LuaScripts\LuaScriptComponent.h" />
-    <ClInclude Include="LuaScripts\LuaScriptFileUtils.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\PlayerCameraManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\PerlinNoiseCameraShakePattern.h" />
     <ClInclude Include="Engine\Source\Editor\PropertyEditor\SkeletonMeshEditorPanel.h" />
