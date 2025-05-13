@@ -40,7 +40,7 @@ void UAnimInstance::Update(float DeltaTime)
 
 void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
-    if (!OwningComponent)
+    if (!OwningComponent || AnimSequenceMap.IsEmpty())
     {
         return;
     }
@@ -61,10 +61,10 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         {   // 돌아가고 있는 애니메이션이 있으면 블렌드시키면서 변경
             ChangeAnimation(AnimSequenceMap[AnimStateMachine->CurrentState], 1.0f);
         }
+
+        CurrentState = AnimStateMachine->CurrentState;
     }
     
-    CurrentState = AnimStateMachine->CurrentState;
-
     CurrentGlobalTime += DeltaSeconds;
 
     // Convert to local sequence time
@@ -76,6 +76,41 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     CurrentSequence->GetAnimationPose(LocalTime, Mesh, NewLocalPoses);
 
     //여기서 블렌딩로직 추가
+    if (BlendSequence)
+    {
+        CurrentBlendTime += DeltaSeconds;
+        
+        float BlendLocalTime = BlendSequence->GetLocalTime(CurrentBlendTime);
+
+        TArray<FBonePose> NewBlendPoses;
+        
+        BlendSequence->GetAnimationPose(BlendLocalTime, Mesh, NewBlendPoses);
+
+        //본 갯수가 똑같아야함
+        for (int b = 0; b < NewLocalPoses.Num(); b++)
+        {
+            FBonePose& BonePose = NewLocalPoses[b];
+            FBonePose& BlendBonePose = NewBlendPoses[b];
+            //가중치는 각 0.5f로 세팅
+            BonePose.Location = (BonePose.Location * 0.5f) + (BlendBonePose.Location * 0.5f);
+            
+            FRotator BonePoseRotator = FRotator::FromQuaternion(BonePose.Rotation);
+            FRotator BlendBonePoseRotator = FRotator::FromQuaternion(BlendBonePose.Rotation);
+            FRotator TotalBonePoseRotator = (BonePoseRotator * 0.5f) + (BlendBonePoseRotator * 0.5f);
+            BonePose.Rotation = TotalBonePoseRotator.ToQuaternion();
+
+            BonePose.Scale = (BonePose.Scale * 0.5f) + (BlendBonePose.Scale * 0.5f);
+        }
+
+        // 현재 애니메이션이 끝나거나 블렌드시간이 지나면 애니메이션 교체
+        if (CurrentBlendTime > BlendTime || LocalTime > CurrentSequence->GetUnScaledPlayLength())
+        {
+            CurrentSequence = BlendSequence;
+            BlendSequence = nullptr;
+            BlendTime = 0.f;
+            CurrentBlendTime = 0.f;
+        }
+    }
 
     // Apply poses and update global transforms
     Mesh->SetBoneLocalTransforms(NewLocalPoses);
@@ -85,6 +120,7 @@ void UAnimInstance::ChangeAnimation(UAnimSequence* NewAnim, float InBlendingTime
 {
     BlendSequence = NewAnim;
     BlendTime = InBlendingTime;
+    CurrentBlendTime = 0.0f;
 }
 
 void UAnimInstance::PlayAnimation(UAnimSequence* InSequence, bool bInLooping, bool bPlayDirect)

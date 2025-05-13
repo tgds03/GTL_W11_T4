@@ -10,7 +10,9 @@ class UAnimSequenceBase : public UAnimationAsset
     TArray<FAnimNotifyEvent> Notifies;
     UAnimDataModel* AnimDataModel = nullptr;
     float RateScale = 1.0f;
-
+    float AnimationStartTime = 0.0f;
+    
+    
     // 루프 애니메이션 여부
     bool bLoopAnimation;
 
@@ -20,7 +22,7 @@ class UAnimSequenceBase : public UAnimationAsset
 public:
     UAnimSequenceBase();
     virtual ~UAnimSequenceBase() = default;
-
+    
     UAnimDataModel* GetDataModel() const { return AnimDataModel; }
     void SetDataModel(UAnimDataModel* AnimDataModel) { this->AnimDataModel = AnimDataModel; }
 

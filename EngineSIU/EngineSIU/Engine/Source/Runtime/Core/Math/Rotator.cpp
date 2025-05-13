@@ -102,7 +102,7 @@ FRotator FRotator::Add(float DeltaPitch, float DeltaYaw, float DeltaRoll) const
     return FRotator(Pitch + DeltaPitch, Yaw + DeltaYaw, Roll + DeltaRoll);
 }
 
-FRotator FRotator::FromQuaternion(const FQuat& InQuat) const
+FRotator FRotator::FromQuaternion(const FQuat& InQuat)
 {
     return FRotator(InQuat);
 }

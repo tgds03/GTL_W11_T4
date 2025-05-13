@@ -28,7 +28,7 @@ protected:
     float CurrentGlobalTime = 0;
     
     float BlendTime;
-    float BlendCurrentTime;
+    float CurrentBlendTime;
     
     TMap<EAnimState, UAnimSequence*> AnimSequenceMap;
     EAnimState CurrentState;

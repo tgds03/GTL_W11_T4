@@ -7,7 +7,7 @@ UAnimSequence::UAnimSequence()
 
 float UAnimSequence::GetLocalTime(float GlobalTime) const
 {
-    float LocalTime = GlobalTime * RateScale;
+    float LocalTime = GlobalTime - AnimationStartTime;
     float SequenceLength = GetUnScaledPlayLength();
 
     if (bLoopAnimation)
