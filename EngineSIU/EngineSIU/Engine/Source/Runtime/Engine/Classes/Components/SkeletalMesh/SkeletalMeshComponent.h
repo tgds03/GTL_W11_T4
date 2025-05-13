@@ -38,7 +38,7 @@ public:
     // 각도 변화 주기
     void TestSkeletalMesh();
 
-    void TestFBXSkeletalMesh();
+    void TestFBXSkeletalMesh(); 
 
     void PerformCPUSkinning();
 };

@@ -35,7 +35,7 @@ void USkeletalMeshComponent::UpdateAnimation(float DeltaTime)
         return;
     }
 
-    // AnimInstance 업데이트 (시간 진행 등)
+    // AnimInstance 업데이트 (시간 진행 등) 
     AnimInstance->Update(DeltaTime);
 
     // 현재 애니메이션 프레임의 본 트랜스폼 계산

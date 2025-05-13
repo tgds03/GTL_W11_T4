@@ -44,6 +44,7 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     // Delegate pose calculation to the sequence
     TArray<FBonePose> NewLocalPoses;
     USkeletalMesh* Mesh = OwningComponent->GetSkeletalMesh();
+
     CurrentSequence->GetAnimationPose(LocalTime, Mesh, NewLocalPoses);
 
     // Apply poses and update global transforms

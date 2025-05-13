@@ -277,6 +277,11 @@ void UEditorEngine::EndSkeletalMeshEditMode()
     ActiveWorld = EditorWorld;
 }
 
+void UEditorEngine::StartAnimaitonEditMode(UAnimInstance* InAnim)
+{
+    if ()
+}
+
 FWorldContext& UEditorEngine::GetEditorWorldContext(/*bool bEnsureIsGWorld*/)
 {
     for (FWorldContext* WorldContext : WorldList)
