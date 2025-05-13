@@ -451,7 +451,7 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
                 FileName = "Walking";
             }
 
-            SkeletalMeshComp->TestSkeletalMesh(FileName);
+            SkeletalMeshComp->LoadAndSetAnimation(FileName);
         }
         ImGui::PopStyleColor(3);
         
@@ -477,9 +477,13 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
         }
         ImGui::PopStyleColor(3);
         
-        if (ImGui::Button("TestDie", ImVec2(64, 64)))
+        if (ImGui::Button("Test StateMachinw", ImVec2(128, 32)))
         {
-            SkeletalMeshComp->TestSkeletalDie();
+            SkeletalMeshComp->TestAnimationStateMachine();
+        }
+        if (ImGui::Button("Switch State", ImVec2(128, 32)))
+        {
+            SkeletalMeshComp->SwitchState();
         }
         
         ImGui::TreePop();

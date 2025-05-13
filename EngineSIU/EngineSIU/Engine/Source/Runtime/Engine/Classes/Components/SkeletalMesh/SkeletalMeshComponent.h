@@ -33,11 +33,11 @@ public:
     void TickAnimation(float DeltaTime);
 
     // OBJ 파일을 통한 Sample Skeletal Mesh 구현
-    void GenerateSampleData();
+    void TestAnimationStateMachine();
 
     // 각도 변화 주기
-    void TestSkeletalMesh(FString FileName);
-    void TestSkeletalDie();
+    void LoadAndSetAnimation(FString FileName);
+    void SwitchState();
 
     void LoadAndSetFBX(FString FileName); 
 
