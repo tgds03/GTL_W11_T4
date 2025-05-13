@@ -27,7 +27,6 @@ protected:
     bool bIsPlaying = true;
     float CurrentGlobalTime = 0;
 
-
 public:
     UAnimInstance();
     virtual ~UAnimInstance() = default;

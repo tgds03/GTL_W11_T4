@@ -156,4 +156,3 @@ void USkeletalMeshComponent::PerformCPUSkinning()
         RenderData->CPUSkinnedVertices[i].Z = SkinnedPos.Z;
     }
 }
-
