@@ -1,25 +1,33 @@
 #include "UAnimInstance.h"
-#include <Engine/SkeletalMeshEditorController.h>
 #include "Components/SkeletalMesh/SkeletalMesh.h"
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
 #include "Animation/AnimSequence.h"
+#include "AnimationStateMachine.h"
+
 #include <cmath>
+#include <memory>
+
 UAnimInstance::UAnimInstance()
 {
 }
 
-void UAnimInstance::Initialize(USkeletalMeshComponent* InComponent)
+void UAnimInstance::Initialize(USkeletalMeshComponent* InComponent, APawn* InOwner)
 {
     OwningComponent = InComponent;
     CurrentTime = 0.0f;
     PlayRate = 1.0f;
+
+    if (!AnimStateMachine)
+    {
+        AnimStateMachine = std::make_shared<UAnimationStateMachine>();
+        AnimStateMachine->Initialize(InOwner);
+    }
 }
 
 void UAnimInstance::StartAnimSequence(UAnimSequence* InSequence)
 {
     CurrentSequence = InSequence;
     CurrentTime = 0.0f; // 애니메이션 시간 초기화
-    OnAnimationNotifyDelegate["OnAnimationStart"].Broadcast();
 }
 
 void UAnimInstance::Update(float DeltaTime)
@@ -27,46 +35,80 @@ void UAnimInstance::Update(float DeltaTime)
     if (!bIsPlaying)
         return;
 
-    if (!CurrentSequence)
+    if (AnimStateMachine)
     {
-        if (WaitSequences.IsEmpty())
-        {
-            return;
-        }
-
-        WaitSequences.Dequeue(CurrentSequence);
+        AnimStateMachine->ProcessState();
     }
+    
+    // if (!CurrentSequence)
+    // {
+    //     if (WaitSequences.IsEmpty())
+    //     {
+    //         return;
+    //     }
+    //
+    //     WaitSequences.Dequeue(CurrentSequence);
+    // }
     
     // 1. 애니메이션 시간 업데이트
     CurrentTime += DeltaTime * PlayRate;
 
+    if (BlendSequence)
+    {
+        BlendCurrentTime += DeltaTime * PlayRate;
+    }
+
+    //바뀌면 애니메이션 체인지 -> 추가할지 바로바꿀지 결정
+    if (CurrentState != AnimStateMachine->CurrentState)
+    {
+        if (!CurrentSequence)
+        {   // 돌아가고 있는게 없으면 바로 변경
+            StartAnimSequence(AnimSequenceMap[AnimStateMachine->CurrentState]);
+        }
+        else
+        {   // 돌아가고 있는 애니메이션이 있으면 블렌드시키면서 변경
+            ChangeAnimation(AnimSequenceMap[AnimStateMachine->CurrentState], 1.0f);
+        }
+    }
+    
     // 2. 애니메이션 데이터 모델 가져오기
     UAnimDataModel* DataModel = CurrentSequence->GetDataModel();
     if (!DataModel)
         return;
 
+    UAnimSequence* Animation = GetAnimSequence(AnimStateMachine->CurrentState);
+    
+    if (!Animation)
+    {
+        return;
+    }
+    
     // 3. 애니메이션 끝에 도달했는지 체크 (루핑 처리)
     float Duration = DataModel->GetPlayLength();
     if (Duration > 0.0f && CurrentTime >= Duration)
     {
         if (CurrentSequence->IsLooping())
         {
-            //루프시작
-            OnAnimationNotifyDelegate["OnAnimationLoop"].Broadcast();
-            
             // 루프 처리
             CurrentTime = fmod(CurrentTime, Duration);
         }
         else
         {
-            // 재생 종료
-            OnAnimationNotifyDelegate["OnAnimationEnd"].Broadcast();
-            StopAnimation();
+            CurrentSequence = nullptr;
+            CurrentTime = 0.0f;
+            bIsPlaying = false;
         }
     }
 
     // 4. 필요한 경우 애니메이션 이벤트(노티파이) 처리
     // (이 부분은 필요에 따라 구현)
+    CurrentState = AnimStateMachine->CurrentState;
+}
+
+void UAnimInstance::ChangeAnimation(UAnimSequence* NewAnim, float InBlendingTime)
+{
+    BlendSequence = NewAnim;
+    BlendTime = InBlendingTime;
 }
 
 void UAnimInstance::PlayAnimation(UAnimSequence* InSequence, bool bInLooping, bool bPlayDirect)
@@ -81,13 +123,6 @@ void UAnimInstance::PlayAnimation(UAnimSequence* InSequence, bool bInLooping, bo
     {
         WaitSequences.Enqueue(InSequence);
     }
-}
-
-void UAnimInstance::StopAnimation()
-{
-    CurrentSequence = nullptr;
-    CurrentTime = 0.0f;
-    bIsPlaying = false;
 }
 
 bool UAnimInstance::IsLooping() const
@@ -123,6 +158,15 @@ void UAnimInstance::GetBoneTransforms(TArray<FBonePose>& OutTransforms)
         return;
     }
 
+    //장면전환해서 블렌드할 일이 생기면
+    bool bIsBlending = false;
+    UAnimDataModel* BlendModel = nullptr;
+    if (BlendSequence)
+    {
+        BlendModel = BlendSequence->GetDataModel();
+        bIsBlending = true;
+    }
+    
     // 스켈레톤 정보 가져오기
     const FSkeleton* Skeleton = SkeletalMesh->GetSkeleton();
     int32 BoneCount = Skeleton->BoneCount;
@@ -147,10 +191,9 @@ void UAnimInstance::GetBoneTransforms(TArray<FBonePose>& OutTransforms)
     float NormalizedTime = FMath::Clamp(CurrentTime / PlayLength, 0.0f, 1.0f);
     float FrameIndex = NormalizedTime * (NumFrames - 1);
     int32 Frame1 = FMath::FloorToInt(FrameIndex);
-    //TODO: 다음 애니메이션 이어붙이기 해서 Min빼기 
     int32 Frame2 = FMath::Min(Frame1 + 1, NumFrames - 1);
     float AlphaTime = FrameIndex - Frame1;
-
+    
     // 본 이름 -> 인덱스 매핑
     TMap<FName, int32> BoneNameToIndexMap;
     for (int32 i = 0; i < BoneCount; ++i)
@@ -203,8 +246,98 @@ void UAnimInstance::GetBoneTransforms(TArray<FBonePose>& OutTransforms)
             Scale = FMath::Lerp(RawTrack.ScaleKeys[ScaleFrame1], RawTrack.ScaleKeys[ScaleFrame2], AlphaTime);
         }
 
+        if (bIsBlending)
+        {
+            Position *= 0.5f;
+            Rotation = Rotation * 0.5f;
+            Rotation.Normalize();
+            Scale *= 0.5f;            
+        }
+        
         // 로컬 트랜스폼 설정
         OutTransforms[BoneIndex] = FBonePose(Rotation, Position, Scale);
     }
 
+    if (bIsBlending)
+    {
+        const TArray<FBoneAnimationTrack>& BlendTracks = BlendModel->GetBoneAnimationTracks();
+        float BlendPlayLength = BlendModel->GetPlayLength();
+        int32 BlendNumFrames = BlendModel->GetNumberOfFrames();
+
+        float BlendNormalizedTime = FMath::Clamp(BlendCurrentTime / BlendPlayLength, 0.0f, 1.0f);
+        float BlendFrameIndex = BlendNormalizedTime * (BlendNumFrames - 1);
+        int32 BlendFrame1 = FMath::FloorToInt(BlendFrameIndex);
+        int32 BlendFrame2 = FMath::Min(BlendFrame1 + 1, BlendNumFrames - 1);
+        float BlendAlphaTime = BlendFrameIndex - BlendFrame1;
+        
+        for (const FBoneAnimationTrack& Track : BlendTracks) 
+        {
+            const int32* BoneIndexPtr = BoneNameToIndexMap.Find(Track.Name);
+            if (!BoneIndexPtr)
+                continue;
+
+            int32 BoneIndex = *BoneIndexPtr;
+            const FRawAnimSequenceTrack& RawTrack = Track.InternalTrackData;
+            
+            // 위치 보간
+            FVector Position = FVector::ZeroVector;
+            if (RawTrack.PosKeys.Num() > 0)
+            {
+                int32 PosKeyLastIndex = RawTrack.PosKeys.Num() - 1;
+                int32 PosFrame1 = FMath::Min(BlendFrame1, PosKeyLastIndex);
+                int32 PosFrame2 = FMath::Min(BlendFrame2, PosKeyLastIndex);
+
+                //TODO: 조각적 선형근사로 변경
+                Position = FMath::Lerp(RawTrack.PosKeys[PosFrame1], RawTrack.PosKeys[PosFrame2], BlendAlphaTime);
+            }
+
+            // 회전 보간
+            FQuat Rotation = FQuat::Identity;
+            if (RawTrack.RotKeys.Num() > 0)
+            {
+                int32 RotKeyLastIndex = RawTrack.RotKeys.Num() - 1;
+                int32 RotFrame1 = FMath::Min(BlendFrame1, RotKeyLastIndex);
+                int32 RotFrame2 = FMath::Min(BlendFrame2, RotKeyLastIndex);
+                
+                Rotation = FQuat::Slerp(RawTrack.RotKeys[RotFrame1], RawTrack.RotKeys[RotFrame2], BlendAlphaTime);
+            }
+            Rotation.Normalize(); // ← 꼭 추가
+
+            // 스케일 보간
+            FVector Scale = FVector::OneVector;
+            if (RawTrack.ScaleKeys.Num() > 0)
+            {
+                int32 ScaleKeyLastIndex = RawTrack.ScaleKeys.Num() - 1;
+                int32 ScaleFrame1 = FMath::Min(BlendFrame1, ScaleKeyLastIndex);
+                int32 ScaleFrame2 = FMath::Min(BlendFrame2, ScaleKeyLastIndex);
+                
+                Scale = FMath::Lerp(RawTrack.ScaleKeys[ScaleFrame1], RawTrack.ScaleKeys[ScaleFrame2], BlendAlphaTime);
+            }
+
+            //절반가중치만큼만 적용
+            Position *= 0.5f;
+            Rotation = Rotation * 0.5f;
+            Rotation.Normalize();
+            Scale *= 0.5f;
+
+            FBonePose OriginPose = OutTransforms[BoneIndex];
+
+            OriginPose.Location += Position * 0.5f;
+            OriginPose.Rotation = OriginPose.Rotation * Rotation;
+            OriginPose.Scale += Scale;
+            
+            // 로컬 트랜스폼 설정
+            OutTransforms[BoneIndex] = OriginPose;
+        }
+
+        // 현재 애니메이션이 끝나거나 블렌드시간이 지나면 애니메이션 교체
+        if (BlendCurrentTime > BlendTime || CurrentTime > PlayLength)
+        {
+            CurrentTime = BlendCurrentTime;
+            CurrentSequence = BlendSequence;
+            BlendSequence = nullptr;
+            BlendTime = 0.f;
+            BlendCurrentTime = 0.f;
+        }
+    }
 }

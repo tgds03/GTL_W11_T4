@@ -80,6 +80,11 @@ FQuat FQuat::operator*(const FQuat& Other) const
         );
 }
 
+FQuat FQuat::operator*(const float Scalar) const
+{
+    return FQuat(W * Scalar, X * Scalar, Y * Scalar, Z * Scalar);
+}
+
 FVector FQuat::RotateVector(const FVector& Vec) const
 {
     // 벡터를 쿼터니언으로 변환

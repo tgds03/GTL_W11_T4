@@ -34,6 +34,7 @@
 #include "Actors/CubeActor.h"
 #include "Actors/SphereActor.h"
 #include "Actors/CapsuleActor.h"
+#include "Actors/Pawn.h"
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Contents/Actors/Fish.h"
@@ -459,11 +460,8 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
                     break;
                 case OBJ_SKELETALMESH:
                     {
-                        SpawnedActor = World->SpawnActor<AActor>();
-                        SpawnedActor->SetActorLabel(TEXT("OBJ_SKELETALMESH"));
-                        USkeletalMeshComponent* Comp = SpawnedActor->AddComponent<USkeletalMeshComponent>();
-                        SpawnedActor->SetRootComponent(Comp);
-                        SpawnedActor->SetActorTickInEditor(true);
+                        SpawnedActor = World->SpawnActor<APawn>();
+                        SpawnedActor->SetActorLabel(TEXT("OBJ_APAWN"));
                         break;
                     }
                 case OBJ_CAMERA:
