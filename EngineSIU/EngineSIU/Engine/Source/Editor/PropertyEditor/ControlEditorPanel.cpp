@@ -35,6 +35,7 @@
 #include "Actors/PrimitiveActors/SphereActor.h"
 #include "Actors/PrimitiveActors/CapsuleActor.h"
 #include "Actors/Character/Pawn.h"
+#include "Actors/Character/Character.h"
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Contents/Actors/Fish.h"

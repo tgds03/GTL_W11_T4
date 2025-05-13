@@ -1,6 +1,7 @@
-﻿#include "AnimationStateMachine.h"
+#include "AnimationStateMachine.h"
 
 #include "Actors/Character/Pawn.h"
+#include "Actors/Character/Character.h"
 
 void UAnimationStateMachine::Initialize(APawn* InOwner)
 {
