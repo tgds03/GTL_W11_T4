@@ -73,7 +73,8 @@ void USkeletalMeshComponent::TestSkeletalDie()
     if (OwnerPawn->CurrentMovementMode == EDie)
     {
         OwnerPawn->CurrentMovementMode = EDancing;
-    }else if (OwnerPawn->CurrentMovementMode == EDancing)
+    }
+    else if (OwnerPawn->CurrentMovementMode == EDancing)
     {
         OwnerPawn->CurrentMovementMode = EDie;
     }
@@ -104,16 +105,18 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
     SetSkeletalMesh(LoadedMesh);
 
     //////////////////////////////////
-    FbxPath = TEXT("Contents/Fbx/Dying.fbx");
+    FbxPath = TEXT("Contents/Fbx/Capoeira.fbx");
     UAnimSequence* AnimSequence2 = FResourceManager::LoadAnimationSequence(FbxPath);
     if (!AnimSequence2)
     {
         UE_LOG(LogLevel::Warning, TEXT("AnimSequence2 애니메이션 로드 실패."));
         return;
     }
-    
-    // AnimSequence->SetRateScale(-0.5f);
 
+    float AnimSpeed = 0.5f;
+    AnimSequence->SetRateScale(AnimSpeed);
+    AnimSequence2->SetRateScale(AnimSpeed);
+    
     // AS_Dance상태일땐 AnimSequence돌리라고 추가
     AnimInstance->AddAnimSequence(AS_Dance, AnimSequence);
     AnimInstance->AddAnimSequence(AS_Die, AnimSequence2);

@@ -101,10 +101,7 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
             //가중치는 각 0.5f로 세팅
             BonePose.Location = (BonePose.Location * 0.5f) + (BlendBonePose.Location * 0.5f);
             
-            FRotator BonePoseRotator = FRotator::FromQuaternion(BonePose.Rotation);
-            FRotator BlendBonePoseRotator = FRotator::FromQuaternion(BlendBonePose.Rotation);
-            FRotator TotalBonePoseRotator = (BonePoseRotator * 0.5f) + (BlendBonePoseRotator * 0.5f);
-            BonePose.Rotation = TotalBonePoseRotator.ToQuaternion();
+            BonePose.Rotation = FQuat::Slerp(BonePose.Rotation, BlendBonePose.Rotation, 0.5f).GetNormalized();
 
             BonePose.Scale = (BonePose.Scale * 0.5f) + (BlendBonePose.Scale * 0.5f);
         }
@@ -117,6 +114,7 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
             BlendTime = 0.f;
         }
     }
+    //여기서 만든 NewBlendPoses로 Blend해야함
 
     // Apply poses and update global transforms
     Mesh->SetBoneLocalTransforms(NewLocalPoses);
