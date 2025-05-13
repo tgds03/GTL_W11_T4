@@ -99,7 +99,7 @@ void USkeletalMesh::UpdateGlobalTransforms()
 
 FWString USkeletalMesh::GetObjectName() const
 {
-    return FWString();
+    return RenderData->ObjectName;
 }
 
 void USkeletalMesh::SetBoneLocalTransforms(const TArray<FBonePose>& InBoneTransforms)

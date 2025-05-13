@@ -34,6 +34,8 @@ struct FQuat
     FQuat operator*(const FQuat& Other) const;
     //void operator*=(const FQuat& Other);
 
+    FQuat operator*(const float Scalar) const;
+    
     // (쿼터니언) 벡터 회전
     FVector RotateVector(const FVector& Vec) const;
 

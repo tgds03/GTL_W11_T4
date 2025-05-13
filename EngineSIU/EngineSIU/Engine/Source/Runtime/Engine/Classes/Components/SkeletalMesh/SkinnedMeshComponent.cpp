@@ -10,6 +10,18 @@ USkinnedMeshComponent::USkinnedMeshComponent()
 
 }
 
+void USkinnedMeshComponent::TickComponent(float DeltaTime)
+{
+    UMeshComponent::TickComponent(DeltaTime);
+
+    TickPose(DeltaTime);
+}
+
+void USkinnedMeshComponent::TickPose(float DeltaTime)
+{
+    
+}
+
 UObject* USkinnedMeshComponent::Duplicate(UObject* InOuter)
 {
     ThisClass* NewComponent = Cast<ThisClass>(Super::Duplicate(InOuter));

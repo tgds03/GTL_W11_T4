@@ -273,7 +273,11 @@ bool AActor::SetRootComponent(USceneComponent* NewRootComponent)
             USceneComponent* OldRootComponent = RootComponent;
             RootComponent = NewRootComponent;
 
-            if (OldRootComponent)
+            if (OldRootComponent->StaticClass() == USceneComponent::StaticClass())
+            {
+                OldRootComponent->DestroyComponent();
+            }
+            else if (OldRootComponent)
             {
                 OldRootComponent->SetupAttachment(RootComponent);
             }

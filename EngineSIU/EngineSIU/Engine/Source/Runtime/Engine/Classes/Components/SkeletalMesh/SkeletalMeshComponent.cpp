@@ -5,11 +5,10 @@
 #include "Actors/Character/Character.h"
 #include "Engine/Source/Runtime/Engine/Classes/Asset/SkeletalMeshAsset.h"
 
-// 임시로 StaticMesh를 활용하면서 참고하게 된 코드 이후 제거 필요
-#include "Engine/Source/Runtime/Engine/Classes/Components/Mesh/StaticMeshRenderData.h"
-#include "Engine/Source/Runtime/Engine/Classes/Asset/StaticMeshAsset.h"
-
 // FBX 테스트를 위해 넣은 코드 이후 제거 필요
+#include <memory>
+
+#include "Actors/Pawn.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/FbxLoader.h"
 #include "Animation/AnimSequence.h"
 #include "Animation/UAnimationAsset.h" 
@@ -19,12 +18,12 @@ USkeletalMeshComponent::USkeletalMeshComponent()
 {
 }
 
-void USkeletalMeshComponent::InitializeAnimInstance()
+void USkeletalMeshComponent::InitializeAnimInstance(APawn* InOwner)
 {
     if (!AnimInstance)
     {
         AnimInstance = std::make_shared<UAnimInstance>();
-        AnimInstance->Initialize(this);
+        AnimInstance->Initialize(this, InOwner);
     }
 }
 
@@ -109,7 +108,9 @@ void USkeletalMeshComponent::TestSkeletalMesh()
 
 void USkeletalMeshComponent::TestFBXSkeletalMesh()
 {
-    FString FbxPath(TEXT("Contents/FBX/Twerkbin.fbx"));
+    // 1) FBX로부터 USkeletalMesh 생성
+
+    FString FbxPath(TEXT("Contents/Fbx/Twerkbin.fbx"));
     
     USkeletalMesh* LoadedMesh = FResourceManager::LoadSkeletalMesh(FbxPath);
     if (!LoadedMesh)
@@ -126,15 +127,19 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
         return;
     }
 
-    InitializeAnimInstance();
-
     // 2) SkeletalMeshComponent에 세팅
     SetSkeletalMesh(LoadedMesh);
 
-    // 5) AnimInstance에 애니메이션 시퀀스 설정
-    AnimInstance->SetAnimSequence(AnimSequence);
+    // AS_Dance상태일땐 AnimSequence돌리라고 추가
+    AnimInstance->AddAnimSequence(AS_Dance, AnimSequence);
 
+    if (APawn* Actor = dynamic_cast<APawn*>(GetOwner()))
+    {
+        Actor->CurrentMovementMode = EDancing;
+    }
+    
     UpdateGlobalPose();
+    UpdateSkinnedPositions();
 }
 
 void USkeletalMeshComponent::PerformCPUSkinning()
@@ -156,3 +161,41 @@ void USkeletalMeshComponent::PerformCPUSkinning()
         RenderData->CPUSkinnedVertices[i].Z = SkinnedPos.Z;
     }
 }
+
+void USkeletalMeshComponent::TickComponent(float DeltaTime)
+{
+    USkinnedMeshComponent::TickComponent(DeltaTime);
+
+    //나중에 애니메이션 부를곳에서 부르기
+    TickPose(DeltaTime);
+}
+
+void USkeletalMeshComponent::TickPose(float DeltaTime)
+{
+    USkinnedMeshComponent::TickPose(DeltaTime);
+
+    TickAnimation(DeltaTime);
+}
+
+void USkeletalMeshComponent::TickAnimation(float DeltaTime)
+{
+    if (!SkeletalMesh || !AnimInstance || !AnimInstance->IsPlaying())
+    {
+        return;
+    }
+    // AnimInstance 업데이트 (시간 진행 등)
+    AnimInstance->Update(DeltaTime);
+
+    // 현재 애니메이션 프레임의 본 트랜스폼 계산
+    TArray<FBonePose> BoneTransforms;
+    AnimInstance->GetBoneTransforms(BoneTransforms);
+
+    // 계산된 트랜스폼을 스켈레탈 메시에 적용 (예: 내부 함수)
+    SkeletalMesh->SetBoneTransforms(BoneTransforms);
+
+    if (!FEngineLoop::IsGPUSkinningEnabled()) 
+    {
+        PerformCPUSkinning();
+    }
+}
+
