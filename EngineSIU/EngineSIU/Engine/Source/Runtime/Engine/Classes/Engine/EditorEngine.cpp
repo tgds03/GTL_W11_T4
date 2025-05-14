@@ -56,17 +56,7 @@ void UEditorEngine::Init()
         assert(AssetManager);
         AssetManager->InitAssetManager();
     }
-    LoadLevel("Saved/AutoSaves.scene");
-
-    // FbxManager* manager = FbxManager::Create();
-    // FbxScene* scene = FbxScene::Create(manager, "Scene");
-    // FbxImporter* importer = FbxImporter::Create(manager, "");
-    // if (importer->Initialize("model.fbx", -1, manager->GetIOSettings())) {
-    //     importer->Import(scene);
-    // }
-    // importer->Destroy();
-    // manager->Destroy();
-    
+    LoadLevel("Saved/AutoSaves.scene");  
 }
 
 void UEditorEngine::Release()
@@ -307,7 +297,11 @@ void UEditorEngine::StartAnimaitonEditMode(UAnimInstance* InAnim)
     USkeletalMeshComponent* SkelComp = Cast<USkeletalMeshComponent>(PreviewActor->GetRootComponent());
     SkelComp->SetRelativeRotation(FRotator(0, 0, -90));
     SkelComp->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
-    SkelComp->SetAnimInstance(InAnim);
+    
+    //TODO 에디터로 넘어올때 기존 월드 틱 사라지게 해야함 안그러면 틱 2번씩 돌아서 2배로 빨라짐.
+    // 임시로 이거 지워서 속도맞춰둠
+    //SkelComp->SetAnimInstance(InAnim);
+    
     SkelComp->SetSkeletalMesh(DataPreviewController->OriginalMesh);
 }
 
