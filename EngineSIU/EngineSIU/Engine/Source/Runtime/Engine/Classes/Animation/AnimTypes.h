@@ -42,6 +42,11 @@ public:
     // 현재 프레임에 처리할 노티파이 참조 목록
     TArray<FAnimNotifyEventReference> AnimNotifies;
 
+    TArray<FAnimNotifyEventReference> GetAnimNotifies() 
+    {
+        return AnimNotifies;
+    }
+
     // 큐 초기화
     void Reset() { AnimNotifies.Empty(); }
 
@@ -55,18 +60,14 @@ public:
     }
 
     // 노티파이 배열 추가 (내부 구현)
-    void AddAnimNotifies(bool bSrcIsLeader, const TArray<FAnimNotifyEventReference>& NewNotifies, const float InstanceWeight)
+    void AddAnimNotifies(const TArray<FAnimNotifyEventReference>& NewNotifies)
     {
         for (const FAnimNotifyEventReference& NotifyRef : NewNotifies)
         {
             if (const FAnimNotifyEvent* Notify = NotifyRef.GetNotify())
             {
-                // bSrcIsLeader와 InstanceWeight를 사용한 처리 로직
-                // 예: 가중치가 충분히 높을 때만 추가
-                if (InstanceWeight > 0.01f)
-                {
-                    AnimNotifies.Add(NotifyRef);
-                }
+                AnimNotifies.Add(NotifyRef);
+                
             }
         }
     }

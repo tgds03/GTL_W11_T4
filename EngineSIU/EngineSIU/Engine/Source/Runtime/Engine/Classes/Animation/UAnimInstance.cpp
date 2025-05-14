@@ -85,6 +85,22 @@ void UAnimInstance::TriggerAnimNotifies(float DeltaSceonds)
 {
 }
 
+void UAnimInstance::CheckAnimNotifyQueue()
+{
+    // 큐 초기화
+    NotifyQueue.Reset();
+
+    // 현재 재생 중인 애니메이션에서 노티파이 수집
+    //if (CurrentSequence) {
+    //    // 이전 프레임과 현재 프레임 사이에 있는 노티파이 찾기
+    //    for (const FAnimNotifyEvent& Notify : CurrentSequence->Notifies) {
+    //        if (Notify.TriggerTime > PreviousTime && Notify.TriggerTime <= CurrentTime) {
+    //            NotifyQueue.AddAnimNotify(&Notify, CurrentSequence);
+    //        }
+    //    }
+    //}
+}
+
 void UAnimInstance::ChangeAnimation(UAnimSequence* NewAnim, float InBlendingTime)
 {
     BlendSequence = NewAnim;

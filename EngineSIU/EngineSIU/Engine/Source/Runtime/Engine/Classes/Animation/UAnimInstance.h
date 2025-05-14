@@ -23,10 +23,13 @@ protected:
 
     TQueue<UAnimSequence*> WaitSequences;
     
+    FAnimNotifyQueue NotifyQueue;
+
     // 재생 상태
     bool bIsPlaying = true;
     float CurrentGlobalTime = 0;
-    
+    float PreviousLocalTime = 0.0f;
+
     float BlendTime;
     float BlendCurrentTime;
     
@@ -42,6 +45,8 @@ public:
     virtual void NativeUpdateAnimation(float DeltaSeconds);
 
     void TriggerAnimNotifies(float DeltaSceonds);
+
+    void CheckAnimNotifyQueue();
 
 #pragma region Properties
     USkeletalMeshComponent* GetOwningComponent() const { return OwningComponent; }
