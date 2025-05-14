@@ -10,7 +10,7 @@ UAnimSequenceBase::UAnimSequenceBase()
 {
     FAnimNotifyEvent f;
     f.NotifyName = "Attack";
-    f.TriggerTime = .3f;
+    f.TriggerTime = .3328f;
     Notifies.Add(f);
 }
 

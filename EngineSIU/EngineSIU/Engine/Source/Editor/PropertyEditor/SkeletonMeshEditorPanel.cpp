@@ -163,23 +163,23 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
     {
         // 현재 시간 가져오기 - 이 부분이 중요! 매 프레임 업데이트
         CurrentTime = AnimInstance->GetCurrentSequence()->GetLocalTime();
-        
+
         // 애니메이션 총 길이
         TotalDuration = AnimInstance->GetCurrentSequence()->GetUnScaledPlayLength();
-        
+
         // 재생 중인지 확인
         bPlaying = AnimInstance->GetIsPlaying();
         // 루프 상태
         bLooping = AnimInstance->GetCurrentSequence()->IsLooping();
-        
+
         // 재생 속도
         PlayRate = AnimInstance->GetCurrentSequence()->GetRateScale();
-        
+
         // 애니메이션 이름 (처음 한 번만 가져옴)
         if (AnimNameBuffer[0] == '\0')
         {
             //FString AnimName = AnimInstance->GetAnimStateMachine()->GetCurrentSequence()->GetName();
-          //  FCString::Strncpy(AnimNameBuffer, *AnimName, IM_ARRAYSIZE(AnimNameBuffer));
+            //FCString::Strncpy(AnimNameBuffer, *AnimName, IM_ARRAYSIZE(AnimNameBuffer));
         }
     }
 
@@ -193,7 +193,7 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
         ImGui::SetNextItemWidth(150);
         ImGui::InputText("##AnimName", AnimNameBuffer, IM_ARRAYSIZE(AnimNameBuffer));
         ImGui::SameLine();
-        if (ImGui::Button("Load")) 
+        if (ImGui::Button("Load"))
         {
             FString FileName(AnimNameBuffer);
             if (FileName.Len() == 0)
@@ -207,7 +207,7 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
                 UE_LOG(LogLevel::Warning, TEXT("애니메이션 로드 실패, 스켈레톤만 표시합니다."));
                 return;
             }
-            
+
             //// 애니메이션 로드 성공 후 초기화
             //if (AnimInstance && AnimInstance->GetAnimStateMachine())
             //{
@@ -224,7 +224,7 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
         // 재생/일시정지 토글 버튼
         if (ImGui::Button(bPlaying ? "\ue9a8" : "\uf04b", ImVec2(28, 28))) {
             bPlaying = !bPlaying;
-            
+
             if (AnimInstance)
             {
                 AnimInstance->SetIsPlaying(bPlaying);
@@ -248,7 +248,7 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
         // 루핑 설정
         ImGui::SameLine(0, 15);
         if (ImGui::Checkbox("Loop", &bLooping)) {
-            if (AnimInstance && AnimInstance->GetAnimStateMachine() && 
+            if (AnimInstance && AnimInstance->GetAnimStateMachine() &&
                 AnimInstance->GetCurrentSequence())
             {
                 AnimInstance->GetCurrentSequence()->SetLooping(bLooping);
@@ -262,8 +262,8 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
         ImGui::SetNextItemWidth(120);
         if (ImGui::InputFloat("##PlayRate", &PlayRate, 0.1f, 0.5f, "%.1f")) {
             PlayRate = FMath::Clamp(PlayRate, -10.0f, 10.0f);
-            
-            if (AnimInstance && AnimInstance->GetAnimStateMachine() && 
+
+            if (AnimInstance && AnimInstance->GetAnimStateMachine() &&
                 AnimInstance->GetCurrentSequence())
             {
                 AnimInstance->GetCurrentSequence()->SetRateScale(PlayRate);
@@ -280,6 +280,13 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
 
     // === 2. 메인 영역 - 타임라인과 노티파이 목록 ===
     const float leftColumnWidth = ImGui::GetContentRegionAvail().x * 0.7f;
+
+    // 노티파이 편집 관련 변수 (클래스 멤버 변수로 옮기는 것이 좋음)
+    static bool bEditingNotify = false;
+    static int EditingNotifyIndex = -1;
+    static char EditNotifyName[64] = "";
+    static float EditNotifyTime = 0.0f;
+    static bool EditNotifyModalOpen = false;
 
     // 왼쪽 컬럼: 타임라인
     ImGui::BeginChild("LeftPanel", ImVec2(leftColumnWidth, 0), false, ImGuiWindowFlags_NoScrollbar);
@@ -331,9 +338,9 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
 
         // 노티파이 마커 표시
         TArray<FAnimNotifyEvent> Notifies;
-        
+
         // 실제 노티파이 가져오기
-        if (AnimInstance && AnimInstance->GetAnimStateMachine() && 
+        if (AnimInstance && AnimInstance->GetAnimStateMachine() &&
             AnimInstance->GetCurrentSequence())
         {
             Notifies = AnimInstance->GetCurrentSequence()->GetNotifies();
@@ -343,7 +350,7 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
             // 테스트용 데이터
             static struct { float Time; const char* Name; }
             TestNotifies[] = { {1.0f, "FootStep"}, {2.5f, "Attack"} };
-            
+
             for (int i = 0; i < IM_ARRAYSIZE(TestNotifies); i++)
             {
                 FAnimNotifyEvent Notify;
@@ -357,7 +364,7 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
         for (int i = 0; i < Notifies.Num(); i++) {
             float NotifyTime = Notifies[i].TriggerTime * TotalDuration;
             FName NotifyName = Notifies[i].NotifyName;
-            
+
             float notifyPos = timelineStart.x + (timelineEnd.x - timelineStart.x) * (NotifyTime / TotalDuration);
 
             // 마커 그리기 (삼각형)
@@ -416,12 +423,19 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
                     }
                 }
 
+                // Edit 메뉴 항목 처리 - 편집 상태만 설정하고 팝업은 나중에 열기
                 if (ImGui::MenuItem("Edit")) {
-                    // 노티파이 편집 기능 (추후 구현)
+                    if (AnimInstance && AnimInstance->GetCurrentSequence()) {
+                        // 편집할 노티파이 정보 저장
+                        EditingNotifyIndex = i;
+                        strcpy_s(EditNotifyName, *NotifyName.ToString());
+                        EditNotifyTime = NotifyTime;
+                        EditNotifyModalOpen = true;
+                    }
                 }
 
                 if (ImGui::MenuItem("Delete")) {
-                    if (AnimInstance && AnimInstance->GetAnimStateMachine() && 
+                    if (AnimInstance && AnimInstance->GetAnimStateMachine() &&
                         AnimInstance->GetCurrentSequence())
                     {
                         AnimInstance->GetCurrentSequence()->RemoveNotify(i);
@@ -450,7 +464,7 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
             relativePos = FMath::Clamp(relativePos, 0.0f, 1.0f);
 
             CurrentTime = relativePos * TotalDuration;
-            
+
             if (AnimInstance && AnimInstance->GetAnimStateMachine())
             {
                 AnimInstance->GetCurrentSequence()->SetLocalTime(CurrentTime);
@@ -462,8 +476,155 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
     }
     ImGui::EndChild();
 
-    // 오른쪽 컬럼 코드...
-    
+    // 오른쪽 컬럼: 노티파이 관리
+    ImGui::SameLine();
+    ImGui::BeginChild("RightPanel", ImVec2(0, 0), true);
+    {
+        ImGui::Text("Notify Events");
+        ImGui::Separator();
+
+        // 노티파이 추가 컨트롤
+        static char NewNotifyName[64] = "NewNotify";
+        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 60);
+        ImGui::InputText("##NotifyName", NewNotifyName, IM_ARRAYSIZE(NewNotifyName));
+        ImGui::SameLine();
+        if (ImGui::Button("Add")) {
+            if (AnimInstance && AnimInstance->GetCurrentSequence()) {
+                // 현재 시간 기준으로 노티파이 추가
+                float NormalizedTime = CurrentTime / TotalDuration;
+
+                // 노티파이 생성 및 추가
+                FAnimNotifyEvent NewNotify;
+                NewNotify.TriggerTime = NormalizedTime;
+                NewNotify.NotifyName = FName(NewNotifyName);
+
+                AnimInstance->GetCurrentSequence()->AddNotify(NewNotify);
+            }
+        }
+
+        // 노티파이 목록 표시
+        if (ImGui::BeginTable("NotifyTable", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableSetupColumn("Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+            ImGui::TableSetupColumn("##Actions", ImGuiTableColumnFlags_WidthFixed, 60.0f);
+            ImGui::TableHeadersRow();
+
+            // 노티파이 목록 표시
+            if (AnimInstance && AnimInstance->GetCurrentSequence()) {
+                TArray<FAnimNotifyEvent> Notifies = AnimInstance->GetCurrentSequence()->GetNotifies();
+
+                for (int i = 0; i < Notifies.Num(); i++) {
+                    float NotifyTime = Notifies[i].TriggerTime * TotalDuration;
+                    FName NotifyName = Notifies[i].NotifyName;
+
+                    ImGui::TableNextRow();
+
+                    // 이름 열
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%s", *NotifyName.ToString());
+
+                    // 시간 열
+                    ImGui::TableNextColumn();
+                    ImGui::Text("%.2f sec", NotifyTime);
+
+                    // 액션 열
+                    ImGui::TableNextColumn();
+                    ImGui::PushID(i);
+
+                    // 이동 버튼
+                    if (ImGui::Button("Go")) {
+                        CurrentTime = NotifyTime;
+                        if (AnimInstance) {
+                            AnimInstance->GetCurrentSequence()->SetLocalTime(CurrentTime);
+                        }
+                    }
+
+                    ImGui::SameLine();
+
+                    // 삭제 버튼
+                    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.1f, 0.1f, 1.0f));
+                    if (ImGui::Button("X")) {
+                        if (AnimInstance && AnimInstance->GetCurrentSequence()) {
+                            AnimInstance->GetCurrentSequence()->RemoveNotify(i);
+                        }
+                    }
+                    ImGui::PopStyleColor();
+
+                    ImGui::PopID();
+                }
+            }
+
+            ImGui::EndTable();
+        }
+    }
+    ImGui::EndChild();
+
+    // 노티파이 편집 모달 팝업 (메인 윈도우 레벨에서 처리)
+    if (EditNotifyModalOpen) {
+        ImGui::OpenPopup("Edit Notify Modal");
+    }
+
+    ImGui::SetNextWindowSize(ImVec2(300, 200), ImGuiCond_FirstUseEver);
+    if (ImGui::BeginPopupModal("Edit Notify Modal", &EditNotifyModalOpen)) {
+        ImGui::Text("Edit Notify Event");
+        ImGui::Separator();
+
+        // 노티파이 이름 편집
+        ImGui::Text("Name:");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+        ImGui::InputText("##EditNotifyName", EditNotifyName, IM_ARRAYSIZE(EditNotifyName));
+
+        // 노티파이 시간 편집
+        ImGui::Text("Time (seconds):");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x);
+        ImGui::SliderFloat("##EditNotifyTime", &EditNotifyTime, 0.0f, TotalDuration, "%.3f");
+
+        ImGui::Separator();
+
+        // 버튼 레이아웃을 위한 공간
+        float buttonWidth = (ImGui::GetContentRegionAvail().x - ImGui::GetStyle().ItemSpacing.x) / 2;
+
+        // 저장 버튼
+        if (ImGui::Button("Save", ImVec2(buttonWidth, 0))) {
+            // 노티파이 업데이트
+            if (AnimInstance && AnimInstance->GetCurrentSequence() &&
+                EditingNotifyIndex >= 0 && EditingNotifyIndex < AnimInstance->GetCurrentSequence()->GetNotifies().Num()) {
+
+
+                // 새 노티파이 정보 생성
+                FAnimNotifyEvent UpdatedNotify;
+                UpdatedNotify.NotifyName = FName(EditNotifyName);
+                UpdatedNotify.TriggerTime = EditNotifyTime / TotalDuration; // 정규화된 시간으로 변환
+
+                // 기존 노티파이 제거 후 업데이트된 노티파이 추가
+     
+                AnimInstance->GetCurrentSequence()->RemoveNotify(EditingNotifyIndex);
+                AnimInstance->GetCurrentSequence()->Notifies.Add(UpdatedNotify);
+          
+            }
+
+            // 모달 닫기
+            EditNotifyModalOpen = false;
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::SameLine();
+
+        // 취소 버튼
+        if (ImGui::Button("Cancel", ImVec2(buttonWidth, 0))) {
+            EditNotifyModalOpen = false;
+            ImGui::CloseCurrentPopup();
+        }
+
+        ImGui::EndPopup();
+    }
+
+    // 디버그 정보 표시 (필요시 활성화)
+    //ImGui::Text("DEBUG: EditNotifyModalOpen=%s, EditingNotifyIndex=%d", 
+    //    EditNotifyModalOpen ? "true" : "false", EditingNotifyIndex);
+
     ImGui::End();
 }
 
