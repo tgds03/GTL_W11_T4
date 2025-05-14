@@ -23,16 +23,9 @@ protected:
 
     TQueue<UAnimSequence*> WaitSequences;
     
-    FAnimNotifyQueue NotifyQueue;
-
-    // 재생 상태
     bool bIsPlaying = true;
-    float CurrentGlobalTime = 0;
-    float PreviousLocalTime = 0.0f;
+    float BlendTime = 0.f;
 
-    float BlendTime;
-    float BlendCurrentTime;
-    
     TMap<EAnimState, UAnimSequence*> AnimSequenceMap;
     EAnimState CurrentState;
     
@@ -52,9 +45,6 @@ public:
     USkeletalMeshComponent* GetOwningComponent() const { return OwningComponent; }
     void SetOwningComponent(USkeletalMeshComponent* InComponent) { OwningComponent = InComponent; }
     void Initialize(USkeletalMeshComponent* InComponent, APawn* InOwner);
-    
-    // 매 프레임 업데이트
-    void ChangeAnimation(UAnimSequence* NewAnim, float InBlendingTime);
 
     // 애니메이션 재생 제어
     void PlayAnimation(UAnimSequence* InSequence, bool bInLooping = false, bool bPlayDirect = false);
@@ -68,18 +58,11 @@ public:
     bool IsPlaying() const { return bIsPlaying; }
 #pragma endregion
 
-    void GetBoneTransforms(TArray<FBonePose>& OutTransforms);
-    
     void AddAnimSequence(EAnimState InAnimState, UAnimSequence* InAnimSequence){ AnimSequenceMap.Add(InAnimState, InAnimSequence); }
     UAnimSequence* GetAnimSequence(EAnimState InAnimState){ return AnimSequenceMap[InAnimState]; }
 
-protected:
-    // 애니메이션 노티파이 처리
-    //void ProcessNotifies(float PreviousTime, float CurrentTime);
-
-    void ProcessState();
-    
-    void StartAnimSequence(UAnimSequence* InSequence);
+protected:    
+    void StartAnimSequence(UAnimSequence* InSequence, float InBlendingTime);
     
     // 애니메이션 상태 업데이트
     //void UpdateAnimationState(float DeltaTime);

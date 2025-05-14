@@ -20,6 +20,8 @@ USkeletalMeshComponent::USkeletalMeshComponent()
 
 void USkeletalMeshComponent::InitializeAnimInstance(APawn* InOwner)
 {
+    OwnerPawn = InOwner;
+    
     if (!AnimInstance)
     {
         AnimInstance = std::make_shared<UAnimInstance>();
@@ -62,26 +64,21 @@ void USkeletalMeshComponent::GenerateSampleData()
 {
 }
 
-void USkeletalMeshComponent::TestSkeletalMesh()
+void USkeletalMeshComponent::TestSkeletalDie()
 {
-    if (!SkeletalMesh)
+    if (!OwnerPawn)
     {
         return; 
     }
 
-    const int32 BoneCount = SkeletalMesh->GetSkeleton()->BoneCount;
-    TArray<FBonePose>& LocalTransforms = SkeletalMesh->GetLocalTransforms();
-
-    for (int32 BoneIndex = 1; BoneIndex < BoneCount; ++BoneIndex)
+    if (OwnerPawn->CurrentMovementMode == EDie)
     {
-        FBonePose& localTransform = LocalTransforms[BoneIndex];
-
-        // 2) 루트(0)를 제외한 모든 본에 대해 LocalTransform을 Y축으로 10도 기울이기
-        localTransform.Rotation = localTransform.Rotation * FQuat::CreateRotation(0, 0, 10);
+        OwnerPawn->CurrentMovementMode = EDancing;
     }
-
-    // 3) 변경된 본 트랜스폼을 바탕으로 애니메이션 업데이트
-    UpdateGlobalPose();
+    else if (OwnerPawn->CurrentMovementMode == EDancing)
+    {
+        OwnerPawn->CurrentMovementMode = EDie;
+    }
 }
 
 void USkeletalMeshComponent::TestFBXSkeletalMesh()
@@ -108,9 +105,23 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
     // 2) SkeletalMeshComponent에 세팅
     SetSkeletalMesh(LoadedMesh);
 
+    //////////////////////////////////
+    FbxPath = TEXT("Contents/Fbx/Capoeira.fbx");
+    UAnimSequence* AnimSequence2 = FResourceManager::LoadAnimationSequence(FbxPath);
+    if (!AnimSequence2)
+    {
+        UE_LOG(LogLevel::Warning, TEXT("AnimSequence2 애니메이션 로드 실패."));
+        return;
+    }
+
+    float AnimSpeed = 0.5f;
+    AnimSequence->SetRateScale(AnimSpeed);
+    AnimSequence2->SetRateScale(AnimSpeed);
+    
     // AS_Dance상태일땐 AnimSequence돌리라고 추가
     AnimInstance->AddAnimSequence(AS_Dance, AnimSequence);
-
+    AnimInstance->AddAnimSequence(AS_Die, AnimSequence2);
+    
     if (APawn* Actor = dynamic_cast<APawn*>(GetOwner()))
     {
         Actor->CurrentMovementMode = EDancing;
