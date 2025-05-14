@@ -11,7 +11,7 @@
 #include "Actors/Character/Pawn.h"
 #include "Engine/Source/Runtime/Engine/Classes/Engine/FbxLoader.h"
 #include "Animation/AnimSequence.h"
-#include "Animation/UAnimationAsset.h" 
+#include "Animation/UAnimationAsset.h"
 
 USkeletalMeshComponent::USkeletalMeshComponent()
     :USkinnedMeshComponent()
@@ -93,64 +93,11 @@ void USkeletalMeshComponent::LoadAndSetAnimation(FString FileName)
     }
 
     AnimSequence->SetRateScale(-0.5f);
-    AnimInstance->GetAnimStateMachine()->AddAnimSequence(AS_Dance, AnimSequence);
+    AnimInstance->SetTargetSequence(AnimSequence, 0.5f);
 
     if (APawn* Actor = dynamic_cast<APawn*>(GetOwner()))
     {
         Actor->CurrentMovementMode = EDancing;
-    }
-}
-
-void USkeletalMeshComponent::TestAnimationStateMachine()
-{
-    FString FbxPath(TEXT("Contents/Fbx/Twerkbin.fbx"));
-
-    UAnimSequence* AnimSequence = FResourceManager::LoadAnimationSequence(FbxPath);
-    if (!AnimSequence)
-    {
-        UE_LOG(LogLevel::Warning, TEXT("애니메이션 로드 실패, 스켈레톤만 표시합니다."));
-        UpdateGlobalPose();
-        return;
-    }
-
-    FbxPath = TEXT("Contents/Fbx/Capoeira.fbx");
-    UAnimSequence* AnimSequence2 = FResourceManager::LoadAnimationSequence(FbxPath);
-    if (!AnimSequence2)
-    {
-        UE_LOG(LogLevel::Warning, TEXT("AnimSequence2 애니메이션 로드 실패."));
-        return;
-    }
-
-    float AnimSpeed = 0.5f;
-    AnimSequence->SetRateScale(AnimSpeed);
-    AnimSequence2->SetRateScale(AnimSpeed);
-
-    UAnimationStateMachine* StateMachine = AnimInstance->GetAnimStateMachine();
-    
-    // AS_Dance상태일땐 AnimSequence돌리라고 추가
-    StateMachine->AddAnimSequence(AS_Dance, AnimSequence);
-    StateMachine->AddAnimSequence(AS_Die, AnimSequence2);
-  
-    if (APawn* Actor = dynamic_cast<APawn*>(GetOwner()))
-    {
-        Actor->CurrentMovementMode = EDancing;
-    }
-}
-
-void USkeletalMeshComponent::SwitchState()
-{
-    if (!OwnerPawn)
-    {
-        return;
-    }
-
-    if (OwnerPawn->CurrentMovementMode == EDie)
-    {
-        OwnerPawn->CurrentMovementMode = EDancing;
-    }
-    else if (OwnerPawn->CurrentMovementMode == EDancing)
-    {
-        OwnerPawn->CurrentMovementMode = EDie;
     }
 }
 

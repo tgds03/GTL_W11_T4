@@ -423,7 +423,7 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
             FString FileName(SkelInputBuffer);
             if (FileName.Len() == 0)
             {
-                FileName = "Walking";
+                FileName = "Twerkbin";
             }
 
             SkeletalMeshComp->LoadAndSetFBX(FileName);
@@ -446,7 +446,7 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
             FString FileName(AnimInputBuffer);
             if (FileName.Len() == 0)
             {
-                FileName = "Walking";
+                FileName = "Twerkbin";
             }
 
             SkeletalMeshComp->LoadAndSetAnimation(FileName);
@@ -477,11 +477,12 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
         
         if (ImGui::Button("Test StateMachinw", ImVec2(128, 32)))
         {
-            SkeletalMeshComp->TestAnimationStateMachine();
+            // TODO: AnimStateMachine Test
+            //SkeletalMeshComp->TestAnimationStateMachine();
         }
         if (ImGui::Button("Switch State", ImVec2(128, 32)))
         {
-            SkeletalMeshComp->SwitchState();
+            //SkeletalMeshComp->SwitchState();
         }
         
         ImGui::TreePop();

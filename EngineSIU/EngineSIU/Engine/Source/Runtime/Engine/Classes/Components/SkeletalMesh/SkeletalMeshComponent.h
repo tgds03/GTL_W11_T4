@@ -37,9 +37,6 @@ public:
     void LoadAndSetFBX(FString FileName); 
     void LoadAndSetAnimation(FString FileName);
 
-    void TestAnimationStateMachine();
-    void SwitchState();
-
     void PerformCPUSkinning();
 
     APawn* OwnerPawn = nullptr;
