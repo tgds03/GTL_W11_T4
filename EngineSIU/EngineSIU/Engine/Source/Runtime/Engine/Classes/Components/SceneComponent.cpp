@@ -335,7 +335,7 @@ void USceneComponent::SetRelativeRotation(const FRotator& InRotation)
 
 void USceneComponent::SetRelativeRotation(const FQuat& InQuat)
 {
-    FQuat NormalizedQuat = InQuat.GetNormalized();
+    FQuat NormalizedQuat = InQuat.GetSafeNormal();
 
     RelativeRotation = NormalizedQuat.Rotator();
     RelativeRotation.Normalize();

@@ -32,8 +32,6 @@
 #include "Renderer/ShadowManager.h"
 #include "UnrealEd/EditorViewportClient.h"
 #include "UObject/UObjectIterator.h"
-#include "LuaScripts/LuaScriptComponent.h"
-#include "LuaScripts/LuaScriptFileUtils.h"
 #include "imgui/imgui_bezier.h"
 #include "imgui/imgui_curve.h"
 
@@ -270,67 +268,67 @@ void PropertyEditorPanel::RenderForActor(AActor* SelectedActor, USceneComponent*
         Engine->SelectActor(NewActor);
         Engine->DeselectComponent(Engine->GetSelectedComponent());
     }
-    
-    FString BasePath = FString(L"LuaScripts\\");
-    FString LuaDisplayPath;
-    
-    if (SelectedActor->GetComponentByClass<ULuaScriptComponent>())
-    {
-        LuaDisplayPath = SelectedActor->GetComponentByClass<ULuaScriptComponent>()->GetDisplayName();
-        if (ImGui::Button("Edit Script"))
-        {
-            // 예: PickedActor에서 스크립트 경로를 받아옴
-            if (auto* ScriptComp = SelectedActor->GetComponentByClass<ULuaScriptComponent>())
-            {
-                std::wstring ws = (BasePath + ScriptComp->GetDisplayName()).ToWideString();
-                LuaScriptFileUtils::OpenLuaScriptFile(ws.c_str());
-            }
-        }
-    }
-    else
-    {
-        // Add Lua Script
-        if (ImGui::Button("Create Script"))
-        {
-            // Lua Script Component 생성 및 추가
-            ULuaScriptComponent* NewScript = SelectedActor->AddComponent<ULuaScriptComponent>();
-            FString LuaFilePath = NewScript->GetScriptPath();
-            std::filesystem::path FilePath = std::filesystem::path(GetData(LuaFilePath));
-            
-            try
-            {
-                std::filesystem::path Dir = FilePath.parent_path();
-                if (!std::filesystem::exists(Dir))
-                {
-                    std::filesystem::create_directories(Dir);
-                }
+    //
+    //FString BasePath = FString(L"LuaScripts\\");
+    //FString LuaDisplayPath;
+    //
+    //if (SelectedActor->GetComponentByClass<ULuaScriptComponent>())
+    //{
+    //    LuaDisplayPath = SelectedActor->GetComponentByClass<ULuaScriptComponent>()->GetDisplayName();
+    //    if (ImGui::Button("Edit Script"))
+    //    {
+    //        // 예: PickedActor에서 스크립트 경로를 받아옴
+    //        if (auto* ScriptComp = SelectedActor->GetComponentByClass<ULuaScriptComponent>())
+    //        {
+    //            std::wstring ws = (BasePath + ScriptComp->GetDisplayName()).ToWideString();
+    //            LuaScriptFileUtils::OpenLuaScriptFile(ws.c_str());
+    //        }
+    //    }
+    //}
+    //else
+    //{
+    //    // Add Lua Script
+    //    if (ImGui::Button("Create Script"))
+    //    {
+    //        // Lua Script Component 생성 및 추가
+    //        ULuaScriptComponent* NewScript = SelectedActor->AddComponent<ULuaScriptComponent>();
+    //        FString LuaFilePath = NewScript->GetScriptPath();
+    //        std::filesystem::path FilePath = std::filesystem::path(GetData(LuaFilePath));
+    //        
+    //        try
+    //        {
+    //            std::filesystem::path Dir = FilePath.parent_path();
+    //            if (!std::filesystem::exists(Dir))
+    //            {
+    //                std::filesystem::create_directories(Dir);
+    //            }
 
-                std::ifstream luaTemplateFile(TemplateFilePath.ToWideString());
+    //            std::ifstream luaTemplateFile(TemplateFilePath.ToWideString());
 
-                std::ofstream file(FilePath);
-                if (file.is_open())
-                {
-                    if (luaTemplateFile.is_open())
-                    {
-                        file << luaTemplateFile.rdbuf();
-                    }
-                    // 생성 완료
-                    file.close();
-                }
-                else
-                {
-                    MessageBoxA(nullptr, "Failed to Create Script File for writing: ", "Error", MB_OK | MB_ICONERROR);
-                }
-            }
-            catch (const std::filesystem::filesystem_error& e)
-            {
-                MessageBoxA(nullptr, "Failed to Create Script File for writing: ", "Error", MB_OK | MB_ICONERROR);
-            }
-            LuaDisplayPath = NewScript->GetDisplayName();
-        }
-    }
-    ImGui::InputText("Script File", GetData(LuaDisplayPath), IM_ARRAYSIZE(*LuaDisplayPath),
-        ImGuiInputTextFlags_ReadOnly);
+    //            std::ofstream file(FilePath);
+    //            if (file.is_open())
+    //            {
+    //                if (luaTemplateFile.is_open())
+    //                {
+    //                    file << luaTemplateFile.rdbuf();
+    //                }
+    //                // 생성 완료
+    //                file.close();
+    //            }
+    //            else
+    //            {
+    //                MessageBoxA(nullptr, "Failed to Create Script File for writing: ", "Error", MB_OK | MB_ICONERROR);
+    //            }
+    //        }
+    //        catch (const std::filesystem::filesystem_error& e)
+    //        {
+    //            MessageBoxA(nullptr, "Failed to Create Script File for writing: ", "Error", MB_OK | MB_ICONERROR);
+    //        }
+    //        LuaDisplayPath = NewScript->GetDisplayName();
+    //    }
+    //}
+    //ImGui::InputText("Script File", GetData(LuaDisplayPath), IM_ARRAYSIZE(*LuaDisplayPath),
+    //    ImGuiInputTextFlags_ReadOnly);
 
     if (ImGui::TreeNodeEx("Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
     {
@@ -479,11 +477,12 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
         
         if (ImGui::Button("Test StateMachinw", ImVec2(128, 32)))
         {
-            SkeletalMeshComp->TestAnimationStateMachine();
+            // TODO: AnimStateMachine Test
+            //SkeletalMeshComp->TestAnimationStateMachine();
         }
         if (ImGui::Button("Switch State", ImVec2(128, 32)))
         {
-            SkeletalMeshComp->SwitchState();
+            //SkeletalMeshComp->SwitchState();
         }
         
         ImGui::TreePop();

@@ -14,7 +14,7 @@ class USkeletalMeshComponent : public USkinnedMeshComponent
     DECLARE_CLASS(USkeletalMeshComponent, USkinnedMeshComponent)
 
   //  std::shared_ptr<UAnimInstance*>
-        UAnimInstance* AnimInstance = nullptr;
+    UAnimInstance* AnimInstance = nullptr;
 
 public:
     USkeletalMeshComponent();
@@ -37,9 +37,6 @@ public:
     // 각도 변화 주기
     void LoadAndSetFBX(FString FileName); 
     void LoadAndSetAnimation(FString FileName);
-
-    void TestAnimationStateMachine();
-    void SwitchState();
 
     void PerformCPUSkinning();
 

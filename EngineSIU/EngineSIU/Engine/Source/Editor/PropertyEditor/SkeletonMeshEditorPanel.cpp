@@ -153,12 +153,9 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
     // 현재 애니메이션 정보 - 실제 구현 시 이 변수들을 애니메이션 시스템과 연결
     static float CurrentTime = 0.0f;        // TODO: StateMachine->GetCurrentSequence()->LocalTime
     static float TotalDuration = 5.0f;      // TODO: StateMachine->GetCurrentSequence()->GetUnScaledPlayLength()
-    static bool bPlaying = AnimInstance->IsPlaying();           // TODO: StateMachine->IsPlaying()
     static bool bLooping = true;            // TODO: StateMachine->GetCurrentSequence()->bLooping
     static float PlayRate = 1.0f;           // TODO: StateMachine->GetCurrentSequence()->PlayRate
     static char AnimNameBuffer[128] = "";   // TODO: 현재 애니메이션 이름
-
-    AnimInstance->SetIsPlaying(bPlaying);
 
     // === 1. 상단 컨트롤 바 ===
     ImGui::BeginGroup();
@@ -191,19 +188,19 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
         ImGui::SameLine(0, 20);
         ImGui::PushFont(IconFont);
 
-        // 재생/일시정지 토글 버튼
-        if (ImGui::Button(bPlaying ? "\ue99c" : "\ue9a8", ImVec2(28, 28))) {
-            // TODO: 재생/일시정지 토글
-            bPlaying = !bPlaying;
-        }
+        //// 재생/일시정지 토글 버튼
+        //if (ImGui::Button(bPlaying ? "\ue99c" : "\ue9a8", ImVec2(28, 28))) {
+        //    // TODO: 재생/일시정지 토글
+        //    bPlaying = !bPlaying;
+        //}
 
-        ImGui::SameLine();
-        if (ImGui::Button("\ue9e4", ImVec2(28, 28))) {
-            // TODO: 애니메이션 정지 및 리셋
-          AnimInstance->GetAnimStateMachine()->SetAnimationTime(0.0f);
-          bPlaying = false;
-            
-        }
+        //ImGui::SameLine();
+        //if (ImGui::Button("\ue9e4", ImVec2(28, 28))) {
+        //    // TODO: 애니메이션 정지 및 리셋
+        //  AnimInstance->GetAnimStateMachine()->SetAnimationTime(0.0f);
+        //  bPlaying = false;
+        //    
+        //}
         ImGui::PopFont();
 
         // 루핑 설정
@@ -221,7 +218,7 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
         if (ImGui::InputFloat("##PlayRate", &PlayRate, 0.1f, 0.5f, "%.1f")) {
             // TODO: 재생 속도 변경
            PlayRate = FMath::Clamp(PlayRate, 0.1f, 10.0f);
-           AnimInstance->GetAnimStateMachine()->GetCurrentAnimSequence()->SetRateScale(PlayRate);
+           AnimInstance->GetCurrentSequence()->SetRateScale(PlayRate);
         }
 
         // 현재 시간/총 시간 표시
@@ -241,7 +238,7 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
         // 타임라인 슬라이더
         if (ImGui::SliderFloat("##Timeline", &CurrentTime, 0.0f, TotalDuration, "")) {
             // TODO: 애니메이션 시간 설정
-           AnimInstance->GetAnimStateMachine()->SetAnimationTime(CurrentTime);
+           //AnimInstance->GetAnimStateMachine()->SetAnimationTime(CurrentTime);
         }
 
         // 타임라인 시각화 영역
@@ -376,7 +373,7 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
             relativePos = FMath::Clamp(relativePos, 0.0f, 1.0f);
 
             CurrentTime = relativePos * TotalDuration;
-            AnimInstance->GetAnimStateMachine()->SetAnimationTime(CurrentTime);
+            //AnimInstance->GetAnimStateMachine()->SetAnimationTime(CurrentTime);
 
         }
 

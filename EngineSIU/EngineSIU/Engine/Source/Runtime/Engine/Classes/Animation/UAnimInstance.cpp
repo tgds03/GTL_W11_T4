@@ -1,4 +1,5 @@
 #include "UAnimInstance.h"
+#include "UObject/ObjectFactory.h"
 #include "Components/SkeletalMesh/SkeletalMesh.h"
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
 #include "Animation/AnimSequence.h"
@@ -15,74 +16,112 @@ void UAnimInstance::Initialize(USkeletalMeshComponent* InComponent, APawn* InOwn
     
     if (!AnimStateMachine)
     {
-        AnimStateMachine = std::make_shared<UAnimationStateMachine>();
-        AnimStateMachine->Initialize(InOwner);
+        AnimStateMachine = FObjectFactory::ConstructObject<UAnimationStateMachine>(GetOuter());
+        AnimStateMachine->Initialize(InOwner, "Scripts/DefaultStateMachine.lua", this);
     }
 }
 
 void UAnimInstance::Update(float DeltaTime)
 {
-    if (!bIsPlaying)
-    {
-        return;
-    }
-    
     NativeUpdateAnimation(DeltaTime);
 }
 
 void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
-    if (!OwningComponent || !AnimStateMachine)
+
+    if (!OwningComponent)
     {
         return;
     }
-    
     USkeletalMesh* Mesh = OwningComponent->GetSkeletalMesh();
-    
-    if(AnimStateMachine->GetCurrentAnimSequence())
-    PreviousSequenceTime = AnimStateMachine->GetCurrentAnimSequence()->LocalTime;
+    if (!Mesh)
+    {
+        return;
+    }
 
-    AnimStateMachine->ProcessState();
-    AnimStateMachine->UpdateSequence(DeltaSeconds, Mesh);
+    if (AnimStateMachine)
+    {
+        AnimStateMachine->ProcessState();
+    }
+    
+    if(CurrentSequence)
+    PreviousSequenceTime = CurrentSequence->LocalTime;
 
     CheckAnimNotifyQueue();
     TriggerAnimNotifies();
-
-    TArray<FBonePose> NewLocalPoses = AnimStateMachine->GetCurrentPose();
-    
-    if (NewLocalPoses.Num() > 0)
+    // Current와 Target이 모두 있는 경우 애니메이션 블렌딩을 수행.
+    // 블렌딩이 끝나면 Current를 Target으로 교체.
+    // Target이 없는 경우 Current를 그대로 사용.
+    // Current가 Looping인 경우 Looping을 유지.
+    if (CurrentSequence)
     {
-        // Apply poses and update global transforms
-        Mesh->SetBoneLocalTransforms(NewLocalPoses);
+        CurrentSequence->TickSequence(DeltaSeconds);
+    }
+    if (TargetSequence)
+    {
+        TargetSequence->TickSequence(DeltaSeconds);
+    }
+
+    if (CurrentSequence && TargetSequence)
+    {
+        TArray<FBonePose> CurrentPose;
+        CurrentSequence->GetAnimationPose(Mesh, CurrentPose);
+        TArray<FBonePose> TargetPose;
+        TargetSequence->GetAnimationPose(Mesh, TargetPose); 
+        TArray<FBonePose> BlendedPose;
+        float Alpha = ElapsedTime / BlendTime;
+        for (int32 i = 0; i < CurrentPose.Num(); ++i)
+        {
+            FBonePose Blended;
+            Blended.Location = FMath::Lerp(CurrentPose[i].Location, TargetPose[i].Location, Alpha);
+            Blended.Rotation = FQuat::Slerp(CurrentPose[i].Rotation, TargetPose[i].Rotation, Alpha).GetSafeNormal();
+            Blended.Scale = FMath::Lerp(CurrentPose[i].Scale, TargetPose[i].Scale, Alpha);
+            BlendedPose.Add(Blended);
+        }
+        ElapsedTime += DeltaSeconds;
+        if (ElapsedTime >= BlendTime)
+        {
+            ElapsedTime = 0.f;
+            CurrentSequence = TargetSequence;
+            TargetSequence = nullptr;
+        }
+        Mesh->SetBoneLocalTransforms(BlendedPose);
+    }
+    else if (CurrentSequence)
+    {
+        TArray<FBonePose> CurrentPose;
+        CurrentSequence->GetAnimationPose(Mesh, CurrentPose);
+        Mesh->SetBoneLocalTransforms(CurrentPose);
+    }
+    else if (TargetSequence)
+    {
+        TArray<FBonePose> TargetPose;
+        TargetSequence->GetAnimationPose(Mesh, TargetPose);
+        Mesh->SetBoneLocalTransforms(TargetPose);
     }
 }
 
+void UAnimInstance::SetTargetSequence(UAnimSequence* InSequence, float InBlendTime)
+{
+    TargetSequence = InSequence;
+    BlendTime = InBlendTime;
+    ElapsedTime = 0.f;
+}
 
-void UAnimInstance::PlayAnimation(UAnimSequence* InSequence, bool bInLooping, bool bPlayDirect)
+
+void UAnimInstance::PlayAnimation(UAnimSequence* InSequence, bool bInLooping)
 {
     InSequence->SetLooping(bInLooping);
-
-    if (bPlayDirect)
-    {
-        AnimStateMachine->StartAnimSequence(InSequence, 0.0f);
-    }
-    else
-    {
-        WaitSequences.Enqueue(InSequence);
-    }
 }
 
-bool UAnimInstance::IsLooping() const
+void UAnimInstance::PlayAnimationByName(const FString& Name, bool bIsLooping)
 {
-    if (AnimStateMachine)
+    UAnimSequence* Sequence = FResourceManager::GetAnimationSequence(Name.ToWideString());
+    if (!Sequence)
     {
-        if (AnimStateMachine->CurrentSequence)
-        {
-            return AnimStateMachine->CurrentSequence->IsLooping();
-        }
+        UE_LOG(LogLevel::Error, TEXT("Animation Sequence not found: %s"), *Name);
     }
-
-    return false;
+    PlayAnimation(Sequence, bIsLooping);
 }
 
 void UAnimInstance::CheckAnimNotifyQueue()
@@ -91,7 +130,6 @@ void UAnimInstance::CheckAnimNotifyQueue()
     NotifyQueue.Reset();
 
     // 노티파이 수집
-    UAnimSequence* CurrentSequence = GetAnimStateMachine()->GetCurrentAnimSequence();
     if (!CurrentSequence || CurrentSequence->Notifies.Num() == 0)
         return;
 

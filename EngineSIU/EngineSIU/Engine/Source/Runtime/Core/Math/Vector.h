@@ -2,7 +2,7 @@
 #include <cassert>
 #include "MathUtility.h"
 #include "Serialization/Archive.h"
-#include "Quat.h"
+
 #include "Rotator.h"
 
 struct FVector2D
@@ -70,7 +70,7 @@ public:
     * Initialize this Vector based on an FString. The String is expected to contain X=, Y=.
     * The TVector2<T> will be bogus when InitFromString returns false.
     *
-    * @param    InSourceString    FString containing the vector values.
+    * @param	InSourceString	FString containing the vector values.
     * @return true if the X,Y values were read successfully; false otherwise.
     */
     bool InitFromString(const FString& InSourceString);
@@ -85,7 +85,7 @@ struct FVector
     FVector(float X, float Y, float Z) : X(X), Y(Y), Z(Z) {}
     explicit  FVector(float Scalar) : X(Scalar), Y(Scalar), Z(Scalar) {}
 
-    
+
     FVector(const FRotator& InRotator);
 
     // Vector(0, 0, 0)
@@ -161,54 +161,14 @@ public:
     float& operator[](int Index);
     const float& operator[](int Index) const;
 
-    // 길이 제곱 계산
-    FORCEINLINE float SizeSquared() const
-    {
-        return (X * X + Y * Y + Z * Z);
-    }
-
-    // < 연산자: 제곱 길이 비교
-    FORCEINLINE bool operator<(const FVector& Other) const
-    {
-        return (SizeSquared() < Other.SizeSquared());
-    }
-
-    // > 연산자: 제곱 길이 비교
-    FORCEINLINE bool operator>(const FVector& Other) const
-    {
-        return (SizeSquared() > Other.SizeSquared());
-    }
-    
-    // FVector < float (제곱 길이 비교)
-    FORCEINLINE bool operator<(float Scalar) const
-    {
-        return SizeSquared() < Scalar * Scalar;
-    }
-
-    // FVector > float (제곱 길이 비교)
-    FORCEINLINE bool operator>(float Scalar) const
-    {
-        return SizeSquared() > Scalar * Scalar;
-    }
-
-    // float < FVector (제곱 길이 비교)
-    friend FORCEINLINE bool operator<(float Scalar, const FVector& Vec)
-    {
-        return Scalar * Scalar < Vec.SizeSquared();
-    }
-
-    // float > FVector (제곱 길이 비교)
-    friend FORCEINLINE bool operator>(float Scalar, const FVector& Vec)
-    {
-        return Scalar * Scalar > Vec.SizeSquared();
-    }
 
 public:
     bool Equals(const FVector& V, float Tolerance = KINDA_SMALL_NUMBER) const;
     bool AllComponentsEqual(float Tolerance = KINDA_SMALL_NUMBER) const;
 
     float Length() const;
-    float LengthSquared() const;
+    float SquaredLength() const;
+    float SizeSquared() const;
 
     bool Normalize(float Tolerance = SMALL_NUMBER);
 
@@ -221,9 +181,12 @@ public:
     bool IsNearlyZero(float Tolerance = SMALL_NUMBER) const;
     bool IsZero() const;
 
-    
+    bool IsNormalized() const;
+
     FString ToString() const;
     bool InitFromString(const FString& InSourceString);
+
+    FVector GetClampedToMaxSize(float MaxSize) const;
 };
 
 inline FVector::FVector(const FRotator& InRotator)
@@ -276,7 +239,7 @@ inline FVector FVector::CrossProduct(const FVector& A, const FVector& B)
 
 inline FVector FVector::operator+(const FVector& Other) const
 {
-    return {X + Other.X, Y + Other.Y, Z + Other.Z};
+    return { X + Other.X, Y + Other.Y, Z + Other.Z };
 }
 
 inline FVector& FVector::operator+=(const FVector& Other)
@@ -287,7 +250,7 @@ inline FVector& FVector::operator+=(const FVector& Other)
 
 inline FVector FVector::operator-(const FVector& Other) const
 {
-    return {X - Other.X, Y - Other.Y, Z - Other.Z};
+    return { X - Other.X, Y - Other.Y, Z - Other.Z };
 }
 
 inline FVector& FVector::operator-=(const FVector& Other)
@@ -298,12 +261,12 @@ inline FVector& FVector::operator-=(const FVector& Other)
 
 inline FVector FVector::operator*(const FVector& Other) const
 {
-    return {X * Other.X, Y * Other.Y, Z * Other.Z};
+    return { X * Other.X, Y * Other.Y, Z * Other.Z };
 }
 
 inline FVector FVector::operator*(float Scalar) const
 {
-    return {X * Scalar, Y * Scalar, Z * Scalar};
+    return { X * Scalar, Y * Scalar, Z * Scalar };
 }
 
 inline FVector& FVector::operator*=(float Scalar)
@@ -314,12 +277,12 @@ inline FVector& FVector::operator*=(float Scalar)
 
 inline FVector FVector::operator/(const FVector& Other) const
 {
-    return {X / Other.X, Y / Other.Y, Z / Other.Z};
+    return { X / Other.X, Y / Other.Y, Z / Other.Z };
 }
 
 inline FVector FVector::operator/(float Scalar) const
 {
-    return {X / Scalar, Y / Scalar, Z / Scalar};
+    return { X / Scalar, Y / Scalar, Z / Scalar };
 }
 
 inline FVector& FVector::operator/=(float Scalar)
@@ -330,7 +293,7 @@ inline FVector& FVector::operator/=(float Scalar)
 
 inline FVector FVector::operator-() const
 {
-    return {-X, -Y, -Z};
+    return { -X, -Y, -Z };
 }
 
 inline bool FVector::operator==(const FVector& Other) const
@@ -357,7 +320,7 @@ inline const float& FVector::operator[](int Index) const
 
 inline bool FVector::Equals(const FVector& V, float Tolerance) const
 {
-    return FMath::Abs(X-V.X) <= Tolerance && FMath::Abs(Y-V.Y) <= Tolerance && FMath::Abs(Z-V.Z) <= Tolerance;
+    return FMath::Abs(X - V.X) <= Tolerance && FMath::Abs(Y - V.Y) <= Tolerance && FMath::Abs(Z - V.Z) <= Tolerance;
 }
 
 inline bool FVector::AllComponentsEqual(float Tolerance) const
@@ -370,9 +333,14 @@ inline float FVector::Length() const
     return FMath::Sqrt(X * X + Y * Y + Z * Z);
 }
 
-inline float FVector::LengthSquared() const
+inline float FVector::SquaredLength() const
 {
     return X * X + Y * Y + Z * Z;
+}
+
+inline float FVector::SizeSquared() const
+{
+    return SquaredLength();
 }
 
 inline bool FVector::Normalize(float Tolerance)
@@ -389,13 +357,13 @@ inline bool FVector::Normalize(float Tolerance)
 
 inline FVector FVector::GetUnsafeNormal() const
 {
-    const float Scale = FMath::InvSqrt(X*X + Y*Y + Z*Z);
-    return {X * Scale, Y * Scale, Z * Scale};
+    const float Scale = FMath::InvSqrt(X * X + Y * Y + Z * Z);
+    return { X * Scale, Y * Scale, Z * Scale };
 }
 
 inline FVector FVector::GetSafeNormal(float Tolerance) const
 {
-    const float SquareSum = X*X + Y*Y + Z*Z;
+    const float SquareSum = X * X + Y * Y + Z * Z;
 
     // Not sure if it's safe to add tolerance in there. Might introduce too many errors
     if (SquareSum == 1.f)
@@ -407,7 +375,7 @@ inline FVector FVector::GetSafeNormal(float Tolerance) const
         return ZeroVector;
     }
     const float Scale = FMath::InvSqrt(SquareSum);
-    return {X * Scale, Y * Scale, Z * Scale};
+    return { X * Scale, Y * Scale, Z * Scale };
 }
 
 inline FVector FVector::ComponentMin(const FVector& Other) const
@@ -431,17 +399,38 @@ inline FVector FVector::ComponentMax(const FVector& Other) const
 inline bool FVector::IsNearlyZero(float Tolerance) const
 {
     return
-        FMath::Abs(X)<=Tolerance
-        &&    FMath::Abs(Y)<=Tolerance
-        &&    FMath::Abs(Z)<=Tolerance;
+        FMath::Abs(X) <= Tolerance
+        && FMath::Abs(Y) <= Tolerance
+        && FMath::Abs(Z) <= Tolerance;
 }
 
 inline bool FVector::IsZero() const
 {
-    return X==0.f && Y==0.f && Z==0.f;
+    return X == 0.f && Y == 0.f && Z == 0.f;
 }
 
+inline bool FVector::IsNormalized() const
+{
+    constexpr float ThreshVectorNormalized = 0.01f;
+    return (FMath::Abs(1.f - SizeSquared()) < ThreshVectorNormalized);
+}
 
+inline FVector FVector::GetClampedToMaxSize(float MaxSize) const
+{
+    const float SquaredSum = X * X + Y * Y + Z * Z;
+    const float MaxSizeSq = MaxSize * MaxSize;
+
+    // 길이가 최대보다 크면
+    if (SquaredSum > MaxSizeSq && MaxSizeSq > 0.f)
+    {
+        // 스케일 비율 = MaxSize / 현재 길이
+        const float Scale = MaxSize / FMath::Sqrt(SquaredSum);
+        return FVector(X * Scale, Y * Scale, Z * Scale);
+    }
+
+    // 아니면 원본 그대로
+    return *this;
+}
 
 inline FArchive& operator<<(FArchive& Ar, FVector2D& V)
 {
@@ -453,32 +442,4 @@ inline FArchive& operator<<(FArchive& Ar, FVector& V)
     return Ar << V.X << V.Y << V.Z;
 }
 
-struct FTransform
-{
-    FQuat Rotation;     // 회전 (쿼터니언)
-    FVector Translation; // 위치
-    FVector Scale;       // 크기
 
-    FTransform operator*(const FTransform& Other) const
-    {
-        FTransform Result;
-
-        // 1. Scale
-        Result.Scale = Scale * Other.Scale;
-
-        // 2. Rotation
-        Result.Rotation = Rotation * Other.Rotation;
-
-        // 3. Translation
-        FVector ScaledTranslation = Other.Translation * Scale;
-        FVector RotatedTranslation = Rotation.RotateVector(ScaledTranslation);
-        Result.Translation = RotatedTranslation + Translation;
-
-        return Result;
-    }
-
-    // Getter 함수들
-    const FQuat& GetRotation() const { return Rotation; }
-    const FVector& GetTranslation() const { return Translation; }
-    const FVector& GetScale() const { return Scale; }
-};

@@ -2,116 +2,61 @@
 
 #include "AnimSequence.h"
 #include "Actors/Character/Pawn.h"
+#include "Engine/Lua/LuaScriptManager.h"
+#include "Animation/UAnimInstance.h"
 
-void UAnimationStateMachine::Initialize(APawn* InOwner)
+void UAnimationStateMachine::Initialize(APawn* InOwner, const FString& LuaScriptName, UAnimInstance* InAnimInstance)
 {
     Owner = InOwner;
+    ScriptFilePath = LuaScriptName;
+    OwnedAnimInstance = InAnimInstance;
+    LastStateName = TEXT("");
+
+    InitLuaStateMachine();
 }
 
 void UAnimationStateMachine::ProcessState()
 {
-    if (Owner->CurrentMovementMode == EIdle)
-    {
-        CurrentState = AS_Idle;
-    }
-    else if (Owner->CurrentMovementMode == EDancing)
-    {
-        CurrentState = AS_Dance;
-    }
-    else if (Owner->CurrentMovementMode == EDie)
-    {
-        CurrentState = AS_Die;
-    }
-}
-
-void UAnimationStateMachine::StartAnimSequence(UAnimSequence* InSequence, float InBlendingTime)
-{
-    if (!CurrentSequence)
-    {
-        CurrentSequence = InSequence;
-
-        FAnimNotifyEvent f;
-        f.TriggerTime = .338235f;
-        f.NotifyName = "Attack";
-        GetCurrentAnimSequence()->AddNotify(f);
-
-        CurrentSequence->BeginSequence();
+    if (!LuaTable.valid())
         return;
-    }
 
-    BlendSequence = InSequence;
-    BlendTime = InBlendingTime;
-    BlendSequence->BeginSequence();
-}
-
-void UAnimationStateMachine::UpdateSequence(float DeltaTime, USkeletalMesh* InSkeletalMesh)
-{
-    if (AnimSequenceMap.IsEmpty())
+    sol::function UpdateFunc = LuaTable["Update"];
+    if (!UpdateFunc.valid())
     {
+        UE_LOG(LogLevel::Warning, TEXT("Lua Update function not valid!"));
         return;
-    }
-
-    if (CurrentSequence)
-    {
-        CurrentSequence->TickSequence(DeltaTime);
-    }
-
-    if (BlendSequence)
-    {
-        BlendSequence->TickSequence(DeltaTime);
     }
     
-    //바뀌면 애니메이션 체인지 -> 추가할지 바로바꿀지 결정
-    if (CurrentState != PreState)
+    sol::object result = UpdateFunc(LuaTable);
+
+    sol::table StateInfo = result.as<sol::table>();
+    FString StateName = StateInfo["anim"].get_or(std::string("")).c_str();
+    float Blend = StateInfo["blend"].get_or(0.f);
+
+    if (!StateName.IsEmpty() && StateName != LastStateName)
     {
-        StartAnimSequence(AnimSequenceMap[CurrentState], 1.0f);
+        LastStateName = StateName;
 
-        PreState = CurrentState;
-    }
-
-    // Delegate pose calculation to the sequence
-    CurrentSequence->GetAnimationPose(InSkeletalMesh, CurrentPose);
-
-    //여기서 블렌딩로직 추가
-    if (BlendSequence)
-    {
-        TArray<FBonePose> NewBlendPoses;
-        
-        BlendSequence->GetAnimationPose(InSkeletalMesh, NewBlendPoses);
-
-        //블렌드 진행도 0~1
-        float BlendAlpha = BlendSequence->LocalTime / BlendTime;
-        float RemainBlendAlpha = (1 - BlendAlpha);
-        
-        //본 갯수가 똑같아야함
-        for (int b = 0; b < CurrentPose.Num(); b++)
+        // 애니메이션 이름을 AnimInstance에 전달
+        if (OwnedAnimInstance)
         {
-            FBonePose& BonePose = CurrentPose[b];
-            FBonePose& BlendBonePose = NewBlendPoses[b];
-
-            BonePose.Location = (BonePose.Location * RemainBlendAlpha) + (BlendBonePose.Location * BlendAlpha);
-            
-            BonePose.Rotation = FQuat::Slerp(BonePose.Rotation, BlendBonePose.Rotation, BlendAlpha).GetNormalized();
-
-            BonePose.Scale = (BonePose.Scale * RemainBlendAlpha) + (BlendBonePose.Scale * BlendAlpha);
-        }
-
-        // 현재 애니메이션이 끝나거나 블렌드시간이 지나면 애니메이션 교체
-        if (CurrentSequence->LocalTime > CurrentSequence->GetUnScaledPlayLength() || BlendSequence->LocalTime > BlendTime)
-        {
-            CurrentSequence = BlendSequence;
-            BlendSequence = nullptr;
-            BlendTime = 0.f;
+            UAnimSequence* Sequence = FResourceManager::LoadAnimationSequence(StateName);
+            if (Sequence)
+            {
+                OwnedAnimInstance->SetTargetSequence(Sequence, Blend);
+            }
+            else
+            {
+                UE_LOG(LogLevel::Display, TEXT("AnimSequence not found for state: %s"), *StateName);
+            }
         }
     }
 }
 
-void UAnimationStateMachine::SetAnimationTime(float Time)
+void UAnimationStateMachine::InitLuaStateMachine()
 {
-    if (CurrentSequence)
-    {
-        CurrentSequence->SetLocalTime(Time);
-    }
+    LuaTable = FLuaScriptManager::Get().CreateLuaTable(ScriptFilePath);
+
 }
 
 
