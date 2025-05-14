@@ -18,16 +18,19 @@ USkeletalMeshComponent::USkeletalMeshComponent()
 {
 }
 
+
 void USkeletalMeshComponent::InitializeAnimInstance(APawn* InOwner)
 {
     OwnerPawn = InOwner;
     
     if (!AnimInstance)
     {
-        AnimInstance = std::make_shared<UAnimInstance>();
+        
+        AnimInstance = FObjectFactory::ConstructObject<UAnimInstance>(GetOuter());
         AnimInstance->Initialize(this, InOwner);
     }
 }
+
 
 void USkeletalMeshComponent::PlayAnimation(UAnimationAsset* NewAnimToPlay, bool bLooping)
 {
@@ -78,7 +81,7 @@ void USkeletalMeshComponent::LoadAndSetFBX(FString FileName)
 
 void USkeletalMeshComponent::LoadAndSetAnimation(FString FileName)
 {
-    AnimInstance.reset();
+    AnimInstance = nullptr;
     InitializeAnimInstance(Cast<APawn>(GetOwner()));
 
 
@@ -92,7 +95,7 @@ void USkeletalMeshComponent::LoadAndSetAnimation(FString FileName)
         return;
     }
 
-    AnimSequence->SetRateScale(-0.5f);
+    AnimSequence->SetRateScale(0.5f);
     AnimInstance->SetTargetSequence(AnimSequence, 0.5f);
 
     if (APawn* Actor = dynamic_cast<APawn*>(GetOwner()))

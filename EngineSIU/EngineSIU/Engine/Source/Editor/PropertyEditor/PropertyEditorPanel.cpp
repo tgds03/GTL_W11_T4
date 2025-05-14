@@ -471,7 +471,7 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
         if (ImGui::Button("Animation Edtior", ImVec2(150, 32)))
         {
             UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
-            Engine->StartAnimaitonEditMode(SkeletalMeshComp->GetAnimInstance().get());
+            Engine->StartAnimaitonEditMode(SkeletalMeshComp->GetAnimInstance());
         }
         ImGui::PopStyleColor(3);
         

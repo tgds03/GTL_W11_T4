@@ -20,6 +20,8 @@ int32 UAnimSequenceBase::GetNumberOfFrames() const
     }
 }
 
+
+
 bool UAnimSequenceBase::RemoveNotify(int32 NotifyIndex)
 {
     if (Notifies.IsValidIndex(NotifyIndex))

@@ -48,4 +48,5 @@ private:
     UAnimInstance* OwnedAnimInstance;
 
     FString LastStateName;
+    
 };

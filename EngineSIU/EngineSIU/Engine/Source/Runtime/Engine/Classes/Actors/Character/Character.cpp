@@ -38,9 +38,9 @@ void ACharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ACharacter::HandleAnimNotify(const FAnimNotifyEvent* Notify)
 {
-    if (Notify->NotifyName == TEXT("Twerk"))
+    if (Notify->NotifyName == TEXT("Attack"))
     {
-        // Handle the Twerk animation notify
+        std::cout << "Attack Yap!" << std::endl;
     }
     else
     {

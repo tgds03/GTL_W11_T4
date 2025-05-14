@@ -11,10 +11,19 @@ class UAnimSequence;
 
 class UAnimInstance : public UObject
 {
+    DECLARE_CLASS(UAnimInstance, UObject)
+
 protected:
     // 소유 컴포넌트
     USkeletalMeshComponent* OwningComponent = nullptr;
     UAnimationStateMachine* AnimStateMachine = nullptr;
+   
+    FAnimNotifyQueue NotifyQueue; // 노티파이 큐
+
+    bool bIsPlaying = true;
+
+    float PreviousSequenceTime = 0.f;
+
     
 public:
     UAnimInstance();
@@ -24,10 +33,13 @@ public:
     void Update(float DeltaTime);
     virtual void NativeUpdateAnimation(float DeltaSeconds);
 
-    //void TriggerAnimNotifies(float DeltaSceonds);
+    void CheckAnimNotifyQueue();
+    void TriggerAnimNotifies();
 
 public:
     void SetTargetSequence(UAnimSequence* InSequence, float InBlendTime);
+
+    UAnimSequence* GetCurrentSequence() const { return CurrentSequence; }
 
 private:
     UAnimSequence* CurrentSequence = nullptr;
@@ -44,7 +56,7 @@ public:
     // 애니메이션 재생 제어
     void PlayAnimation(UAnimSequence* InSequence, bool bInLooping = false);
     void PlayAnimationByName(const FString& Name, bool bIsLooping = false);
-
+    
     UAnimationStateMachine* GetAnimStateMachine() const { return AnimStateMachine; }
     
 #pragma endregion

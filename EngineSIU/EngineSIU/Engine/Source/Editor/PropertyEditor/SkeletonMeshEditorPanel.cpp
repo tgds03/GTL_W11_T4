@@ -133,67 +133,329 @@ void SkeletonMeshEditorPanel::RenderSkeletalMeshEditorUI()
 
 void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
 {
+    UAnimInstance* AnimInstance = Cast<UEditorEngine>(GEngine)
+        ->GetSkeletalMeshEditorController()
+        ->EdittingAnim;
+
     const ImGuiIO& IO = ImGui::GetIO();
     ImFont* IconFont = IO.Fonts->Fonts[FEATHER_FONT];
 
-    // 새로운 독립된 창 시작
-    ImGui::SetNextWindowPos(ImVec2(0, ImGui::GetIO().DisplaySize.y - 300), ImGuiCond_Always);
-    ImGui::SetNextWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x, 300), ImGuiCond_Always);
-
-    // 높이 조절 가능하고 좌우는 화면 꽉 차도록
+    // 패널 설정 - 스크롤 없이 모든 내용이 보이도록 고정 높이
+    const float panelHeight = 260.0f;
+    ImGui::SetNextWindowPos(ImVec2(0, ImGui::GetIO().DisplaySize.y - panelHeight), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x, panelHeight), ImGuiCond_Always);
     ImGui::Begin("Animation Editor", nullptr,
         ImGuiWindowFlags_NoCollapse |
         ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoBringToFrontOnFocus);
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoScrollbar);
 
-    // === 1. 좌측 상단: Anim Name + Load 버튼 ===
+    // 현재 애니메이션 정보 - 실제 구현 시 이 변수들을 애니메이션 시스템과 연결
+    static float CurrentTime = 0.0f;        // TODO: StateMachine->GetCurrentSequence()->LocalTime
+    static float TotalDuration = 5.0f;      // TODO: StateMachine->GetCurrentSequence()->GetUnScaledPlayLength()
+    static bool bLooping = true;            // TODO: StateMachine->GetCurrentSequence()->bLooping
+    static float PlayRate = 1.0f;           // TODO: StateMachine->GetCurrentSequence()->PlayRate
+    static char AnimNameBuffer[128] = "";   // TODO: 현재 애니메이션 이름
+
+    // === 1. 상단 컨트롤 바 ===
     ImGui::BeginGroup();
-    static char AnimNameBuffer[128] = "";
-
-    // AnimName Label + Input
-    ImGui::Text("Animation Name ");
-    ImGui::SameLine();
-    ImGui::SetNextItemWidth(150);
-    ImGui::InputText("##Anim Name", AnimNameBuffer, IM_ARRAYSIZE(AnimNameBuffer));
-    ImGui::SameLine(0.0f, 10.0f); // Load 버튼과 간격
-
-    // Load 버튼
-    ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.8f, 0.3f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.9f, 0.4f, 1.0f));
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.7f, 0.2f, 1.0f));
-    ImGui::Button("Load");
-    ImGui::PopStyleColor(3);
-
-    // 아이콘 버튼들
-    ImGui::SameLine(0.0f, 50.0f);
-    ImGui::PushFont(IconFont);
-    if (ImGui::Button("\ue9a8", ImVec2(32, 32))) // Play
     {
-        UE_LOG(LogLevel::Display, TEXT("Animation Play"));
-    }
-    ImGui::SameLine(0.0f, 5.0f);
-    if (ImGui::Button("\ue99c", ImVec2(32, 32))) // Pause
-    {
-        UE_LOG(LogLevel::Display, TEXT("Animation Pause"));
-    }
-    ImGui::SameLine(0.0f, 5.0f);
-    if (ImGui::Button("\ue9e4", ImVec2(32, 32))) // Stop
-    {
-        UE_LOG(LogLevel::Display, TEXT("Animation Stop"));
-    }
-    ImGui::PopFont();
+        // 애니메이션 이름 및 로드 버튼
+        ImGui::AlignTextToFramePadding();
+        ImGui::Text("Animation:");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(150);
+        ImGui::InputText("##AnimName", AnimNameBuffer, IM_ARRAYSIZE(AnimNameBuffer));
+        ImGui::SameLine();
+        if (ImGui::Button("Load")) 
+        {
+            FString FileName(AnimNameBuffer);
+            if (FileName.Len() == 0)
+            {
+                FileName = "Twerkbin";
+            }
+            FString FbxPath(TEXT("Contents/Fbx/") + FileName + TEXT(".fbx"));
+            UAnimSequence* AnimSequence = FResourceManager::LoadAnimationSequence(FbxPath);
+            if (!AnimSequence)
+            {
+                UE_LOG(LogLevel::Warning, TEXT("애니메이션 로드 실패, 스켈레톤만 표시합니다."));
+                return;
+            }
+            
+        }
 
-    ImGui::SameLine(0.0f, 50.0f);
-    static bool bLooping = true;
-    ImGui::Checkbox("Looping", &bLooping);  // ← 체크박스 추가
+        // 재생 컨트롤 버튼
+        ImGui::SameLine(0, 20);
+        ImGui::PushFont(IconFont);
 
+        //// 재생/일시정지 토글 버튼
+        //if (ImGui::Button(bPlaying ? "\ue99c" : "\ue9a8", ImVec2(28, 28))) {
+        //    // TODO: 재생/일시정지 토글
+        //    bPlaying = !bPlaying;
+        //}
 
-    // PlayRate 입력
-    ImGui::SameLine(0.0f, 50.0f);
-    static float PlayRate = 1.0f;
-    ImGui::SetNextItemWidth(100.0f);
-    ImGui::InputFloat("##PlayRate", &PlayRate, 0.1f, 1.0f, "%.2f");
+        //ImGui::SameLine();
+        //if (ImGui::Button("\ue9e4", ImVec2(28, 28))) {
+        //    // TODO: 애니메이션 정지 및 리셋
+        //  AnimInstance->GetAnimStateMachine()->SetAnimationTime(0.0f);
+        //  bPlaying = false;
+        //    
+        //}
+        ImGui::PopFont();
+
+        // 루핑 설정
+        ImGui::SameLine(0, 15);
+        if (ImGui::Checkbox("Loop", &bLooping)) {
+            // TODO: 루핑 설정 변경
+            // StateMachine->SetAnimationLooping(bLooping);
+        }
+
+        // 재생 속도 설정
+        ImGui::SameLine(0, 15);
+        ImGui::Text("Speed:");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
+        if (ImGui::InputFloat("##PlayRate", &PlayRate, 0.1f, 0.5f, "%.1f")) {
+            // TODO: 재생 속도 변경
+           PlayRate = FMath::Clamp(PlayRate, 0.1f, 10.0f);
+           AnimInstance->GetCurrentSequence()->SetRateScale(PlayRate);
+        }
+
+        // 현재 시간/총 시간 표시
+        ImGui::SameLine(0, 20);
+        ImGui::Text("Time: %.2f / %.2f sec", CurrentTime, TotalDuration);
+    }
     ImGui::EndGroup();
+
+    ImGui::Separator();
+
+    // === 2. 메인 영역 - 타임라인과 노티파이 목록 ===
+    const float leftColumnWidth = ImGui::GetContentRegionAvail().x * 0.7f;
+
+    // 왼쪽 컬럼: 타임라인
+    ImGui::BeginChild("LeftPanel", ImVec2(leftColumnWidth, 0), false, ImGuiWindowFlags_NoScrollbar);
+    {
+        // 타임라인 슬라이더
+        if (ImGui::SliderFloat("##Timeline", &CurrentTime, 0.0f, TotalDuration, "")) {
+            // TODO: 애니메이션 시간 설정
+           //AnimInstance->GetAnimStateMachine()->SetAnimationTime(CurrentTime);
+        }
+
+        // 타임라인 시각화 영역
+        const float timelineHeight = 50.0f;
+        ImVec2 timelineStart = ImGui::GetCursorScreenPos();
+        ImVec2 timelineEnd = ImVec2(timelineStart.x + leftColumnWidth - 20, timelineStart.y + timelineHeight);
+
+        ImDrawList* drawList = ImGui::GetWindowDrawList();
+
+        // 타임라인 배경
+        drawList->AddRectFilled(timelineStart, timelineEnd, IM_COL32(40, 40, 40, 255));
+
+        // 눈금 표시
+        int numTicks = 10;
+        for (int i = 0; i <= numTicks; i++) {
+            float tickPos = timelineStart.x + (timelineEnd.x - timelineStart.x) * ((float)i / numTicks);
+            float tickHeight = (i % 5 == 0) ? timelineHeight * 0.3f : timelineHeight * 0.15f;
+
+            // 눈금 선
+            drawList->AddLine(
+                ImVec2(tickPos, timelineEnd.y - 2),
+                ImVec2(tickPos, timelineEnd.y - tickHeight - 2),
+                IM_COL32(200, 200, 200, 255),
+                1.0f
+            );
+
+            // 주요 눈금에 시간 표시
+            if (i % 5 == 0) {
+                char tickLabel[16];
+                snprintf(tickLabel, sizeof(tickLabel), "%.1f", (TotalDuration * i) / numTicks);
+                drawList->AddText(
+                    ImVec2(tickPos - 10, timelineEnd.y - tickHeight - 15),
+                    IM_COL32(200, 200, 200, 255),
+                    tickLabel
+                );
+            }
+        }
+
+        // TODO: 실제 노티파이 목록 가져오기
+        // TArray<FAnimNotifyEvent>& Notifies = StateMachine->GetCurrentSequence()->Notifies;
+        // for (int i = 0; i < Notifies.Num(); i++) {
+        //     float NotifyTime = Notifies[i].TriggerTime * TotalDuration;
+        //     FName NotifyName = Notifies[i].NotifyName;
+        //     // 이후 코드는 동일...
+        // }
+
+        // 노티파이 마커 표시 (실제 구현 시 위 TODO 코드로 대체)
+        static struct { float Time; const char* Name; }
+        Notifies[] = { {1.0f, "FootStep"}, {2.5f, "Attack"} };
+
+        for (int i = 0; i < IM_ARRAYSIZE(Notifies); i++) {
+            float notifyPos = timelineStart.x + (timelineEnd.x - timelineStart.x) * (Notifies[i].Time / TotalDuration);
+
+            // 마커 그리기 (삼각형)
+            ImVec2 markerPoints[3] = {
+                ImVec2(notifyPos, timelineStart.y + 4),
+                ImVec2(notifyPos - 6, timelineStart.y + 12),
+                ImVec2(notifyPos + 6, timelineStart.y + 12)
+            };
+
+            // 노티파이 마커 색상
+            ImU32 markerColor = IM_COL32(0, 200, 0, 255);
+            if (strcmp(Notifies[i].Name, "Attack") == 0) {
+                markerColor = IM_COL32(200, 0, 0, 255);
+            }
+
+            drawList->AddConvexPolyFilled(markerPoints, 3, markerColor);
+
+            // 노티파이 이름 표시
+            drawList->AddText(
+                ImVec2(notifyPos - 20, timelineStart.y + 14),
+                IM_COL32(200, 200, 200, 255),
+                Notifies[i].Name
+            );
+
+            // 마커 클릭 처리
+            ImVec2 markerRect1(notifyPos - 8, timelineStart.y);
+            ImVec2 markerRect2(notifyPos + 8, timelineStart.y + 16);
+            if (ImGui::IsMouseHoveringRect(markerRect1, markerRect2)) {
+                // 마우스 호버 시 툴팁
+                ImGui::BeginTooltip();
+                ImGui::Text("%s (%.2f sec)", Notifies[i].Name, Notifies[i].Time);
+                ImGui::EndTooltip();
+
+                // 클릭 시 해당 시간으로 이동
+                if (ImGui::IsMouseClicked(0)) {
+                    CurrentTime = Notifies[i].Time;
+                    // TODO: StateMachine->SetAnimationTime(CurrentTime);
+                }
+
+                // 우클릭 시 컨텍스트 메뉴
+                if (ImGui::IsMouseClicked(1)) {
+                    ImGui::OpenPopup(("NotifyContextMenu_" + std::to_string(i)).c_str());
+                }
+            }
+
+            // 컨텍스트 메뉴 처리
+            if (ImGui::BeginPopup(("NotifyContextMenu_" + std::to_string(i)).c_str())) {
+                if (ImGui::MenuItem("Jump to")) {
+                    CurrentTime = Notifies[i].Time;
+                    // TODO: StateMachine->SetAnimationTime(CurrentTime);
+                }
+
+                if (ImGui::MenuItem("Edit")) {
+                    // TODO: 노티파이 편집 모드 활성화
+                }
+
+                if (ImGui::MenuItem("Delete")) {
+                    // TODO: 노티파이 삭제
+                    // StateMachine->GetCurrentSequence()->Notifies.RemoveAt(i);
+                }
+
+                ImGui::EndPopup();
+            }
+        }
+
+        // 현재 시간 표시 (세로선)
+        float currentTimePos = timelineStart.x + (timelineEnd.x - timelineStart.x) * (CurrentTime / TotalDuration);
+        drawList->AddLine(
+            ImVec2(currentTimePos, timelineStart.y),
+            ImVec2(currentTimePos, timelineEnd.y),
+            IM_COL32(255, 50, 50, 255),
+            2.0f
+        );
+
+        // 타임라인 클릭/드래그 처리
+        ImGui::SetCursorScreenPos(timelineStart);
+        ImGui::InvisibleButton("TimelineDrag", ImVec2(timelineEnd.x - timelineStart.x, timelineHeight));
+        if (ImGui::IsItemActive() && ImGui::IsMouseDragging(0)) {
+            float mouseX = ImGui::GetIO().MousePos.x;
+            float relativePos = (mouseX - timelineStart.x) / (timelineEnd.x - timelineStart.x);
+            relativePos = FMath::Clamp(relativePos, 0.0f, 1.0f);
+
+            CurrentTime = relativePos * TotalDuration;
+            //AnimInstance->GetAnimStateMachine()->SetAnimationTime(CurrentTime);
+
+        }
+
+        // 빈 공간 추가
+        ImGui::Dummy(ImVec2(0, timelineHeight + 5));
+    }
+    ImGui::EndChild();
+
+    // 오른쪽 컬럼: 노티파이 관리
+    ImGui::SameLine();
+    ImGui::BeginChild("RightPanel", ImVec2(0, 0), true);
+    {
+        ImGui::Text("Notify Events");
+        ImGui::Separator();
+
+        // 노티파이 추가 컨트롤
+        static char NewNotifyName[64] = "NewNotify";
+        ImGui::SetNextItemWidth(ImGui::GetContentRegionAvail().x - 60);
+        ImGui::InputText("##NotifyName", NewNotifyName, IM_ARRAYSIZE(NewNotifyName));
+        ImGui::SameLine();
+        if (ImGui::Button("Add")) {
+            // TODO: 현재 시간에 노티파이 추가
+            // 1. if (StateMachine && StateMachine->GetCurrentSequence()) {
+            // 2.   float NormalizedTime = CurrentTime / TotalDuration;
+            // 3.   StateMachine->GetCurrentSequence()->AddNotify(NormalizedTime, FName(NewNotifyName));
+            // 4. }
+        }
+
+        // 노티파이 목록 표시
+        if (ImGui::BeginTable("NotifyTable", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg)) {
+            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthStretch);
+            ImGui::TableSetupColumn("Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+            ImGui::TableSetupColumn("##Actions", ImGuiTableColumnFlags_WidthFixed, 60.0f);
+            ImGui::TableHeadersRow();
+
+            // TODO: 실제 노티파이 목록 가져오기
+            // TArray<FAnimNotifyEvent>& Notifies = StateMachine->GetCurrentSequence()->Notifies;
+            // for (int i = 0; i < Notifies.Num(); i++) {
+            //     float NotifyTime = Notifies[i].TriggerTime * TotalDuration;
+            //     FName NotifyName = Notifies[i].NotifyName;
+            //     // 이후 코드는 동일...
+            // }
+
+            // 임시 데이터 (실제 구현 시 위 코드로 대체)
+            for (int i = 0; i < 1; i++) {
+                ImGui::TableNextRow();
+
+                // 이름 열
+                ImGui::TableNextColumn();
+                ImGui::Text("%s","Attack");
+
+                // 시간 열
+                ImGui::TableNextColumn();
+                ImGui::Text("%.2f sec", 3.f);
+
+                // 액션 열
+                ImGui::TableNextColumn();
+                ImGui::PushID(i);
+
+                // 이동 버튼
+                if (ImGui::Button("Go")) {
+                    CurrentTime = 2.f;
+                    // TODO: StateMachine->SetAnimationTime(CurrentTime);
+                }
+
+                ImGui::SameLine();
+
+                // 삭제 버튼
+                ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.1f, 0.1f, 1.0f));
+                if (ImGui::Button("X")) {
+                    // TODO: 노티파이 삭제
+                    // StateMachine->GetCurrentSequence()->Notifies.RemoveAt(i);
+                }
+                ImGui::PopStyleColor();
+
+                ImGui::PopID();
+            }
+
+            ImGui::EndTable();
+        }
+    }
+    ImGui::EndChild();
 
     ImGui::End();
 }
@@ -260,57 +522,6 @@ int32 SkeletonMeshEditorPanel::GetRootBoneIndex(USkeletalMesh* Mesh) const
     }
 
     return INDEX_NONE;
-}
-
-void SkeletonMeshEditorPanel::RenderSequenceUI()
-{
-    //UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
-    //auto Controller = Engine->GetSkeletalMeshEditorController();
-    //UAnimInstance* Anim = Controller->EditingAnim;
-
-    //if (!Anim)
-    //{
-    //    ImGui::Text("No animation loaded.");
-    //    return;
-    //}
-
-    //ImGui::Text("Animation Sequences:");
-
-    //for (const auto& Pair : Anim->GetAnimSequenceMap())
-    //{
-    //    FString StateName = TEXT("Unknown");
-    //    switch (Pair.Key)
-    //    {
-    //    case EAnimState::Idle: StateName = TEXT("Idle"); break;
-    //    case EAnimState::Twerk: StateName = TEXT("Twerk"); break;
-    //        // 필요 시 추가
-    //    }
-
-    //    ImGui::Text(" - %s", *StateName);
-    //}
-
-    //ImGui::Separator();
-
-    //ImGui::Text("Current Sequence Time: %.3f", Anim->GetCurrentTime());
-    //ImGui::Text("Play Rate: %.2fx", Anim->GetPlayRate());
-    //ImGui::Checkbox("Is Playing", &Anim->IsPlaying());
-
-    //if (ImGui::Button("Play"))
-    //{
-    //    Anim->SetPlaying(true);
-    //}
-
-    //ImGui::SameLine();
-    //if (ImGui::Button("Pause"))
-    //{
-    //    Anim->SetPlaying(false);
-    //}
-
-    //ImGui::SameLine();
-    //if (ImGui::Button("Reset"))
-    //{
-    //    Anim->SetCurrentTime(0.f);
-    //}
 }
 
 void SkeletonMeshEditorPanel::OnResize(HWND hWnd)

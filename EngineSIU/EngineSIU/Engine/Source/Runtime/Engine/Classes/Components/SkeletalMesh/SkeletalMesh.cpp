@@ -128,3 +128,46 @@ void USkeletalMesh::SetBoneLocalTransforms(const TArray<FBonePose>& InBoneTransf
     UpdateGlobalTransforms();
 }
 
+USkeletalMesh* USkeletalMesh::DeepDuplicateSkeletalMesh()
+{
+    // 새 USkeletalMesh 객체 생성
+    USkeletalMesh* NewMesh = new USkeletalMesh();
+
+    // 1. RenderData 복사
+    if (this->RenderData)
+    {
+        // 새 RenderData 할당 및 복사
+        NewMesh->RenderData = new FSkeletalMeshRenderData(*this->RenderData);
+    }
+
+    // 2. SkeletonPose 복사
+    NewMesh->SkeletonPose = this->SkeletonPose;
+
+    // LocalTransforms 깊은 복사 (필요시)
+    NewMesh->SkeletonPose.LocalTransforms.Empty();
+    for (const FBonePose& BonePose : this->SkeletonPose.LocalTransforms)
+    {
+        NewMesh->SkeletonPose.LocalTransforms.Add(BonePose);
+    }
+
+    // GlobalTransforms 깊은 복사
+    NewMesh->SkeletonPose.GlobalTransforms.Empty();
+    for (const FMatrix& Matrix : this->SkeletonPose.GlobalTransforms)
+    {
+        NewMesh->SkeletonPose.GlobalTransforms.Add(Matrix);
+    }
+
+    // 3. Materials 복사
+    NewMesh->materials.Empty();
+    for (FStaticMaterial* Material : this->materials)
+    {
+        if (Material)
+        {
+            // 메터리얼 포인터 복사 (메터리얼 자체는 공유해도 됨)
+            NewMesh->materials.Add(Material);
+        }
+    }
+
+
+    return NewMesh;
+}

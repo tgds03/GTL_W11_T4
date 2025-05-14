@@ -14,12 +14,17 @@ void UDataPreviewController::Initialize(USkeletalMesh* InMesh)
     AttachedViewport->SetViewMode(EViewModeIndex::VMI_Unlit);
 
     SetType(EPreviewType::SkeletalMesh);
-
+    isVisibleBone = true;
     SetBoneGizmo(OriginalMesh);
 }
 
 void UDataPreviewController::Initialize(UAnimInstance* InAnim)
 {
+    if (!InAnim)
+    {
+        return;
+    }
+
     USkeletalMesh* InMesh = InAnim->GetOwningComponent()->GetSkeletalMesh();
 
     if (!InMesh)
@@ -33,11 +38,11 @@ void UDataPreviewController::Initialize(UAnimInstance* InAnim)
     EdittingMesh = OriginalMesh->DuplicateSkeletalMesh();
 
     OriginalAnim = InAnim;
-    EditingAnim = OriginalAnim; // TODO: 복제 함수 추가 필요
+    EdittingAnim = OriginalAnim; // TODO: 복제 함수 추가 필요
     //EditingAnim = OriginalAnim->DuplicateAnimInstance();
 
     SetType(EPreviewType::Animation);
-
+    isVisibleBone = false;
     SetBoneGizmo(OriginalMesh);
 }
 
@@ -47,7 +52,7 @@ void UDataPreviewController::Release()
     OriginalMesh = nullptr;
     EdittingMesh = nullptr;
     OriginalAnim = nullptr;
-    EditingAnim = nullptr;
+    EdittingAnim = nullptr;
     SelectedGizmo = nullptr; 
     BoneGizmos.Empty();
 }

@@ -57,5 +57,6 @@ void UAnimationStateMachine::InitLuaStateMachine()
 {
     LuaTable = FLuaScriptManager::Get().CreateLuaTable(ScriptFilePath);
 
-
 }
+
+

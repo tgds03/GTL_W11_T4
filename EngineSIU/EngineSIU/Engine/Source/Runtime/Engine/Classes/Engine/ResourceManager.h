@@ -17,7 +17,7 @@ class FGraphicsDevice;
 class USkeletalMesh;
 
 class UAnimSequence;
-
+class UAnimDataModel;
 
 class FResourceManager
 {
@@ -77,7 +77,7 @@ public:
     static UAnimSequence* LoadAnimationSequence(const FString& FilePath);
     static UAnimSequence* GetAnimationSequence(const FWString& AnimationKey);
 private:
-    inline static TMap<FWString, UAnimSequence*> AnimSequenceMap;
+    inline static TMap<FWString, UAnimDataModel*> AnimDataMap;
 #pragma endregion
 
 #pragma region Material
