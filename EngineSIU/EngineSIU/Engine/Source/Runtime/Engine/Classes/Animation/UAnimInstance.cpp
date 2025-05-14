@@ -61,19 +61,19 @@ void UAnimInstance::CheckAnimNotifyQueue()
     NotifyQueue.Reset();
 
     // 노티파이 수집
-    if (CurrentSequence && CurrentSequence->Notifies.Num() > 0)
+    if (AnimStateMachine->GetCurrentAnimSequence() && AnimStateMachine->GetCurrentAnimSequence()->Notifies.Num() > 0)
     {
 
-        float SequenceLength = CurrentSequence->GetUnScaledPlayLength();
+        float SequenceLength = AnimStateMachine->GetCurrentAnimSequence()->GetUnScaledPlayLength();
         if (SequenceLength <= 0.0f)
             return;
 
         float NormalizedPrevTime = PreviousLocalTime / SequenceLength;
-        float NormalizedCurrTime = CurrentSequence->LocalTime / SequenceLength;
+        float NormalizedCurrTime = AnimStateMachine->GetCurrentAnimSequence()->LocalTime / SequenceLength;
 
         bool bLoopedThisFrame = NormalizedCurrTime < NormalizedPrevTime;
 
-        for (const FAnimNotifyEvent& Notify : CurrentSequence->Notifies)
+        for (const FAnimNotifyEvent& Notify : AnimStateMachine->GetCurrentAnimSequence()->Notifies)
         {
             bool bShouldTrigger = false;
 
