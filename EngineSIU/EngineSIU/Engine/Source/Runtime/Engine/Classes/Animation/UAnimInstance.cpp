@@ -101,12 +101,6 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         CurrentSequence->GetAnimationPose(Mesh, CurrentPose);
         Mesh->SetBoneLocalTransforms(CurrentPose);
     }
-    else if (TargetSequence)
-    {
-        TArray<FBonePose> TargetPose;
-        TargetSequence->GetAnimationPose(Mesh, TargetPose);
-        Mesh->SetBoneLocalTransforms(TargetPose);
-    }
 }
 
 void UAnimInstance::SetTargetSequence(UAnimSequence* InSequence, float InBlendTime)
@@ -114,6 +108,7 @@ void UAnimInstance::SetTargetSequence(UAnimSequence* InSequence, float InBlendTi
     if (CurrentSequence == nullptr)
     {
         CurrentSequence = InSequence;
+        return;
     }
 
     TargetSequence = InSequence;
@@ -121,20 +116,9 @@ void UAnimInstance::SetTargetSequence(UAnimSequence* InSequence, float InBlendTi
     ElapsedTime = 0.f;
 }
 
-
 void UAnimInstance::PlayAnimation(UAnimSequence* InSequence, bool bInLooping)
 {
     InSequence->SetLooping(bInLooping);
-}
-
-void UAnimInstance::PlayAnimationByName(const FString& Name, bool bIsLooping)
-{
-    UAnimSequence* Sequence = FResourceManager::GetAnimationSequence(Name.ToWideString());
-    if (!Sequence)
-    {
-        UE_LOG(LogLevel::Error, TEXT("Animation Sequence not found: %s"), *Name);
-    }
-    PlayAnimation(Sequence, bIsLooping);
 }
 
 void UAnimInstance::CheckAnimNotifyQueue()

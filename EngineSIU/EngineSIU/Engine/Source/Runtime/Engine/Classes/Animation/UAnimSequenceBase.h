@@ -21,6 +21,8 @@ class UAnimSequenceBase : public UAnimationAsset
 public:
     UAnimSequenceBase();
     virtual ~UAnimSequenceBase() = default;
+
+    virtual UObject* Duplicate(UObject* InOuter) override;
     
     UAnimDataModel* GetDataModel() const { return AnimDataModel; }
     void SetDataModel(UAnimDataModel* AnimDataModel) { this->AnimDataModel = AnimDataModel; }
