@@ -1,4 +1,5 @@
 #include "UAnimInstance.h"
+#include "UObject/ObjectFactory.h"
 #include "Components/SkeletalMesh/SkeletalMesh.h"
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
 #include "Animation/AnimSequence.h"
@@ -15,8 +16,8 @@ void UAnimInstance::Initialize(USkeletalMeshComponent* InComponent, APawn* InOwn
     
     if (!AnimStateMachine)
     {
-        AnimStateMachine = std::make_shared<UAnimationStateMachine>();
-        AnimStateMachine->Initialize(InOwner);
+        AnimStateMachine = FObjectFactory::ConstructObject<UAnimationStateMachine>(GetOuter());
+        AnimStateMachine->Initialize(InOwner, "Scripts/DefaultStateMachine.lua", this);
     }
 }
 
@@ -24,56 +25,191 @@ void UAnimInstance::Update(float DeltaTime)
 {
     if (!bIsPlaying)
     {
+        // 노티파이와 같은 일부 처리는 계속할 수 있음
+        CheckAnimNotifyQueue();
+        TriggerAnimNotifies();
         return;
     }
-    
+
     NativeUpdateAnimation(DeltaTime);
 }
 
 void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
-    if (!OwningComponent || !AnimStateMachine)
+
+    if (!OwningComponent)
     {
         return;
     }
-    
     USkeletalMesh* Mesh = OwningComponent->GetSkeletalMesh();
-    
-    AnimStateMachine->ProcessState();
-    AnimStateMachine->UpdateSequence(DeltaSeconds, Mesh);
-
-    TArray<FBonePose> NewLocalPoses = AnimStateMachine->GetCurrentPose();
-    
-    if (NewLocalPoses.Num() > 0)
+    if (!Mesh)
     {
-        // Apply poses and update global transforms
-        Mesh->SetBoneLocalTransforms(NewLocalPoses);
+        return;
+    }
+
+    if (AnimStateMachine)
+    {
+        AnimStateMachine->ProcessState();
+    }
+    
+    if(CurrentSequence)
+    PreviousSequenceTime = CurrentSequence->LocalTime;
+
+    CheckAnimNotifyQueue();
+    TriggerAnimNotifies();
+    // Current와 Target이 모두 있는 경우 애니메이션 블렌딩을 수행.
+    // 블렌딩이 끝나면 Current를 Target으로 교체.
+    // Target이 없는 경우 Current를 그대로 사용.
+    // Current가 Looping인 경우 Looping을 유지.
+    if (CurrentSequence)
+    {
+        CurrentSequence->TickSequence(DeltaSeconds);
+    }
+    if (TargetSequence)
+    {
+        TargetSequence->TickSequence(DeltaSeconds);
+    }
+
+    if (CurrentSequence && TargetSequence)
+    {
+        TArray<FBonePose> CurrentPose;
+        CurrentSequence->GetAnimationPose(Mesh, CurrentPose);
+        TArray<FBonePose> TargetPose;
+        TargetSequence->GetAnimationPose(Mesh, TargetPose); 
+        TArray<FBonePose> BlendedPose;
+        float Alpha = ElapsedTime / BlendTime;
+        for (int32 i = 0; i < CurrentPose.Num(); ++i)
+        {
+            FBonePose Blended;
+            Blended.Location = FMath::Lerp(CurrentPose[i].Location, TargetPose[i].Location, Alpha);
+            Blended.Rotation = FQuat::Slerp(CurrentPose[i].Rotation, TargetPose[i].Rotation, Alpha).GetSafeNormal();
+            Blended.Scale = FMath::Lerp(CurrentPose[i].Scale, TargetPose[i].Scale, Alpha);
+            BlendedPose.Add(Blended);
+        }
+        ElapsedTime += DeltaSeconds;
+        if (ElapsedTime >= BlendTime)
+        {
+            ElapsedTime = 0.f;
+            CurrentSequence = TargetSequence;
+            TargetSequence = nullptr;
+        }
+        Mesh->SetBoneLocalTransforms(BlendedPose);
+    }
+    else if (CurrentSequence)
+    {
+        TArray<FBonePose> CurrentPose;
+        CurrentSequence->GetAnimationPose(Mesh, CurrentPose);
+        Mesh->SetBoneLocalTransforms(CurrentPose);
     }
 }
 
-void UAnimInstance::PlayAnimation(UAnimSequence* InSequence, bool bInLooping, bool bPlayDirect)
+void UAnimInstance::SetTargetSequence(UAnimSequence* InSequence, float InBlendTime)
+{
+    if (CurrentSequence == nullptr)
+    {
+        CurrentSequence = InSequence;
+        return;
+    }
+
+    TargetSequence = InSequence;
+    BlendTime = InBlendTime;
+    ElapsedTime = 0.f;
+}
+
+void UAnimInstance::PlayAnimation(UAnimSequence* InSequence, bool bInLooping)
 {
     InSequence->SetLooping(bInLooping);
+}
 
-    if (bPlayDirect)
+void UAnimInstance::CheckAnimNotifyQueue()
+{
+    // 큐 초기화
+    NotifyQueue.Reset();
+
+    // 노티파이 수집
+    if (!CurrentSequence || CurrentSequence->Notifies.Num() == 0)
+        return;
+
+    // 재생 방향 확인 (중요!)
+    float PlayRate = CurrentSequence->GetRateScale();
+    bool bIsPlayingBackwards = PlayRate < 0.0f;
+
+    // 시간 정규화
+    float SequenceLength = CurrentSequence->GetUnScaledPlayLength();
+    if (SequenceLength <= 0.0f)
+        return;
+
+    float NormalizedPrevTime = PreviousSequenceTime / SequenceLength;
+    float NormalizedCurrTime = CurrentSequence->LocalTime / SequenceLength;
+
+    // 루핑 확인 (방향에 따라 다름)
+    bool bLoopedThisFrame = false;
+    if (!bIsPlayingBackwards)
     {
-        AnimStateMachine->StartAnimSequence(InSequence, 0.0f);
+        // 정방향 재생 시 루핑: 현재 < 이전
+        bLoopedThisFrame = NormalizedCurrTime < NormalizedPrevTime;
     }
     else
     {
-        WaitSequences.Enqueue(InSequence);
+        // 역방향 재생 시 루핑: 현재 > 이전
+        bLoopedThisFrame = NormalizedCurrTime > NormalizedPrevTime;
     }
-}
 
-bool UAnimInstance::IsLooping() const
-{
-    if (AnimStateMachine)
+    // 각 노티파이 검사
+    for (const FAnimNotifyEvent& Notify : CurrentSequence->Notifies)
     {
-        if (AnimStateMachine->CurrentSequence)
+        bool bShouldTrigger = false;
+
+        if (!bIsPlayingBackwards)
         {
-            return AnimStateMachine->CurrentSequence->IsLooping();
+            // 정방향 재생
+            if (bLoopedThisFrame)
+            {
+                // 루핑 케이스: 두 부분 확인 (이전~1.0 또는 0.0~현재)
+                bShouldTrigger = (Notify.TriggerTime > NormalizedPrevTime && Notify.TriggerTime <= 1.0f) ||
+                    (Notify.TriggerTime >= 0.0f && Notify.TriggerTime <= NormalizedCurrTime);
+            }
+            else
+            {
+                // 일반 케이스: 이전 < 트리거 <= 현재
+                bShouldTrigger = (Notify.TriggerTime > NormalizedPrevTime &&
+                    Notify.TriggerTime <= NormalizedCurrTime);
+            }
+        }
+        else
+        {
+            // 역방향 재생 (조건 반전)
+            if (bLoopedThisFrame)
+            {
+                // 루핑 케이스: 두 부분 확인 (이전~0.0 또는 1.0~현재)
+                bShouldTrigger = (Notify.TriggerTime < NormalizedPrevTime && Notify.TriggerTime >= 0.0f) ||
+                    (Notify.TriggerTime <= 1.0f && Notify.TriggerTime >= NormalizedCurrTime);
+            }
+            else
+            {
+                // 일반 케이스: 이전 > 트리거 >= 현재
+                bShouldTrigger = (Notify.TriggerTime < NormalizedPrevTime &&
+                    Notify.TriggerTime >= NormalizedCurrTime);
+            }
+        }
+
+        if (bShouldTrigger)
+        {
+            NotifyQueue.AddAnimNotify(&Notify);
         }
     }
+}
+void UAnimInstance::TriggerAnimNotifies()
+{
+    if (!OwningComponent)
+        return;
 
-    return false;
+    // 수집된 모든 노티파이 처리
+    for (const FAnimNotifyEvent* Notify : NotifyQueue.AnimNotifies)
+    {
+        if (Notify)
+        {
+            OwningComponent->HandleAnimNotify(Notify);
+        }
+    }
 }

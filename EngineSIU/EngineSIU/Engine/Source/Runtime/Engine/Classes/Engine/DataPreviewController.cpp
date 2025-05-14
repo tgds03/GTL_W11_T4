@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "World/World.h"
 #include "Engine/Source/Editor/UnrealEd/EditorViewportClient.h"
+#include "Actors/Character/Pawn.h"
 
 void UDataPreviewController::Initialize(USkeletalMesh* InMesh)
 {
@@ -14,14 +15,18 @@ void UDataPreviewController::Initialize(USkeletalMesh* InMesh)
     AttachedViewport->SetViewMode(EViewModeIndex::VMI_Unlit);
 
     SetType(EPreviewType::SkeletalMesh);
-
+    isVisibleBone = true;
     SetBoneGizmo(OriginalMesh);
 }
 
 void UDataPreviewController::Initialize(UAnimInstance* InAnim)
 {
-    USkeletalMesh* InMesh = InAnim->GetOwningComponent()->GetSkeletalMesh();
+    if (!InAnim)
+    {
+        return;
+    }
 
+    USkeletalMesh* InMesh = InAnim->GetOwningComponent()->GetSkeletalMesh();
     if (!InMesh)
     {
         // TODO: Default Mesh로 초기화
@@ -32,12 +37,23 @@ void UDataPreviewController::Initialize(UAnimInstance* InAnim)
     OriginalMesh = InMesh;
     EdittingMesh = OriginalMesh->DuplicateSkeletalMesh();
 
-    OriginalAnim = InAnim;
-    EditingAnim = OriginalAnim; // TODO: 복제 함수 추가 필요
     //EditingAnim = OriginalAnim->DuplicateAnimInstance();
 
-    SetType(EPreviewType::Animation);
+    APawn* PreviewActor = PreviewWorld->SpawnActor<APawn>();
+    PreviewActor->SetActorLabel(FString(TEXT("Animation Preview Actor")));
 
+    USkeletalMeshComponent* SkelComp = Cast<USkeletalMeshComponent>(PreviewActor->GetRootComponent());
+    SkelComp->SetRelativeRotation(FRotator(0, 0, -90));
+    SkelComp->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
+    UAnimSequence* CopyAnimSequence = Cast<UAnimSequence>(InAnim->GetCurrentSequence()->Duplicate(PreviewWorld));
+    SkelComp->GetAnimInstance()->SetTargetSequence(CopyAnimSequence, 0.0f);
+    SkelComp->SetSkeletalMesh(EdittingMesh);
+
+    OriginalAnim = InAnim;
+    EdittingAnim = SkelComp->GetAnimInstance(); // TODO: 복제 함수 추가 필요
+
+    SetType(EPreviewType::Animation);
+    isVisibleBone = false;
     SetBoneGizmo(OriginalMesh);
 }
 
@@ -47,7 +63,7 @@ void UDataPreviewController::Release()
     OriginalMesh = nullptr;
     EdittingMesh = nullptr;
     OriginalAnim = nullptr;
-    EditingAnim = nullptr;
+    EdittingAnim = nullptr;
     SelectedGizmo = nullptr; 
     BoneGizmos.Empty();
 }

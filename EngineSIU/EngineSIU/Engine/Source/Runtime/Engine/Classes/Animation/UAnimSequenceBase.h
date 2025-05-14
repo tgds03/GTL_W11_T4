@@ -21,6 +21,8 @@ class UAnimSequenceBase : public UAnimationAsset
 public:
     UAnimSequenceBase();
     virtual ~UAnimSequenceBase() = default;
+
+    virtual UObject* Duplicate(UObject* InOuter) override;
     
     UAnimDataModel* GetDataModel() const { return AnimDataModel; }
     void SetDataModel(UAnimDataModel* AnimDataModel) { this->AnimDataModel = AnimDataModel; }
@@ -30,6 +32,8 @@ public:
     bool HasRootMotion() const { return bEnableRootMotion; }
     void SetEnableRootMotion(bool bEnable) { bEnableRootMotion = bEnable; }
     int32 GetNumberOfFrames() const;
+
+    void AddNotify(float Time, FName Name);
 
     // 노티파이 접근자
     const TArray<FAnimNotifyEvent>& GetNotifies() const { return Notifies; }
@@ -48,5 +52,8 @@ public:
 
     // 재생 길이 조정 (재생 속도 적용)
     float GetUnScaledPlayLength() const;
+
+    void SetLocalTime(float Time) { LocalTime = Time; }
+    float GetLocalTime() { return LocalTime; }
 };
 

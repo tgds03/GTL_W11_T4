@@ -28,7 +28,7 @@ FVector ClosestPointOnLineSegment(const FVector& Point, const FVector& SegmentSt
     }
 
     FVector SegmentDir = SegmentEnd - SegmentStart;
-    double SegmentLengthSq = SegmentDir.LengthSquared(); // double 사용 권장 (정밀도)
+    double SegmentLengthSq = SegmentDir.SquaredLength(); // double 사용 권장 (정밀도)
 
     // 수치 안정성을 위해 매우 작은 길이는 0으로 처리
     if (SegmentLengthSq < KINDA_SMALL_NUMBER)
@@ -53,38 +53,38 @@ float SquaredDistBetweenLineSegments(const FVector& A, const FVector& B, const F
     FVector u = B - A;
     FVector v = D - C;
     FVector w = A - C;
-    
+
     float a = FVector::DotProduct(u, u);
     float b = FVector::DotProduct(u, v);
     float c = FVector::DotProduct(v, v);
     float d = FVector::DotProduct(u, w);
     float e = FVector::DotProduct(v, w);
-    float F = a*c - b*b;
-    
+    float F = a * c - b * b;
+
     float sc, tc;
-    
+
     // 두 선이 거의 평행한 경우
     if (F < FLT_EPSILON)
     {
         sc = 0.0f;
-        tc = (b > c ? d/b : e/c);
+        tc = (b > c ? d / b : e / c);
     }
     else
     {
-        sc = (b*e - c*d) / F;
-        tc = (a*e - b*d) / F;
+        sc = (b * e - c * d) / F;
+        tc = (a * e - b * d) / F;
     }
-    
+
     // 파라미터 값을 [0,1] 범위로 클램핑
     sc = FMath::Clamp(sc, 0.0f, 1.0f);
     tc = FMath::Clamp(tc, 0.0f, 1.0f);
-    
+
     // 각 선분에서 가장 가까운 점 계산
     FVector P = A + u * sc;
     FVector Q = C + v * tc;
-    
+
     // 두 점 사이의 거리 제곱 반환
-    return (P - Q).LengthSquared();
+    return (P - Q).SquaredLength();
 }
 
 // 점 P와 OBB 사이의 가장 가까운 점을 찾는 함수
@@ -101,7 +101,7 @@ FVector ClosestPointOnOBB(const FVector& P, const UBoxComponent* Box)
     ClosestP_Local.Z = std::max(-BoxExtent.Z, std::min(P_Local.Z, BoxExtent.Z));
 
     FMatrix BoxToWorld = Box->GetWorldMatrix(); // 가상 함수: 로컬->월드 변환 행렬
-    
+
     return BoxToWorld.TransformPosition(ClosestP_Local); // 월드 좌표로 다시 변환
 }
 
@@ -116,8 +116,8 @@ void ProjectOBB(const UBoxComponent* Box, const FVector& Axis, float& OutMin, fl
 
     // 박스 각 축 방향의 반경을 현재 축에 투영한 값의 절대값을 모두 더함
     float RadiusProj = FMath::Abs(FVector::DotProduct(Axes[0] * HalfSize.X, Axis)) +
-                       FMath::Abs(FVector::DotProduct(Axes[1] * HalfSize.Y, Axis)) +
-                       FMath::Abs(FVector::DotProduct(Axes[2] * HalfSize.Z, Axis));
+        FMath::Abs(FVector::DotProduct(Axes[1] * HalfSize.Y, Axis)) +
+        FMath::Abs(FVector::DotProduct(Axes[2] * HalfSize.Z, Axis));
 
     OutMin = CenterProj - RadiusProj;
     OutMax = CenterProj + RadiusProj;
@@ -194,7 +194,7 @@ float SquaredDistSegmentOBB(const FVector& A, const FVector& B, const UBoxCompon
     FVector PointOnBox;
 
     double LastDistSq = DBL_MAX;
-    
+
     for (int32 i = 0; i < MaxIterations; ++i)
     {
         // 1. 현재 선분 위의 점에서 OBB 위의 가장 가까운 점 찾기
@@ -204,11 +204,11 @@ float SquaredDistSegmentOBB(const FVector& A, const FVector& B, const UBoxCompon
         FVector NewPointOnSegment = ClosestPointOnLineSegment(PointOnBox, A, B);
 
         // 3. 수렴 확인: 이전 단계의 점과 새 점 사이의 거리 제곱 확인
-        double CurrentDistSq = (PointOnBox - NewPointOnSegment).LengthSquared();
+        double CurrentDistSq = (PointOnBox - NewPointOnSegment).SquaredLength();
         double ImprovementSq = FMath::Abs(CurrentDistSq - LastDistSq);
 
         // 점이 거의 움직이지 않거나 거리가 더 이상 줄어들지 않으면 수렴으로 간주
-        if ((PointOnSegment - NewPointOnSegment).LengthSquared() < ToleranceSq || ImprovementSq < ToleranceSq * 0.1 ) // 개선 정도도 확인
+        if ((PointOnSegment - NewPointOnSegment).SquaredLength() < ToleranceSq || ImprovementSq < ToleranceSq * 0.1) // 개선 정도도 확인
         {
             PointOnSegment = NewPointOnSegment; // 마지막 위치 업데이트
             LastDistSq = CurrentDistSq;
@@ -249,23 +249,23 @@ FCollisionManager::FCollisionManager()
 void FCollisionManager::CheckOverlap(const UWorld* World, const UPrimitiveComponent* Component, TArray<FOverlapResult>& OutOverlaps) const
 {
     OutOverlaps.Empty();
-    
+
     if (!Component || !Component->IsA<UShapeComponent>())
     {
         return;
     }
 
     const bool bComponentHasValidBox = Component->AABB.IsValidBox();
-    
+
     for (const auto Iter : TObjectRange<UShapeComponent>())
     {
         if (!Iter || Iter->GetWorld() != World || Iter == Component)
         {
-            continue;            
+            continue;
         }
 
         bool bCanSkip = true;
-        
+
         if (Iter->AABB.IsValidBox() && bComponentHasValidBox)
         {
             if (FBoundingBox::CheckOverlap(Component->AABB, Iter->AABB))
@@ -312,7 +312,7 @@ bool FCollisionManager::IsOverlapped(const UPrimitiveComponent* Component, const
         OutResult.Actor = OtherComponent->GetOwner();
         OutResult.Component = const_cast<UPrimitiveComponent*>(OtherComponent);
         OutResult.bBlockingHit = false;
-        
+
         return true;
     }
 
@@ -328,25 +328,25 @@ bool FCollisionManager::Check_Box_Box(const UShapeComponent* A, const UShapeComp
 {
     UBoxComponent* BoxA = Cast<UBoxComponent>(A);
     UBoxComponent* BoxB = Cast<UBoxComponent>(B);
-    
+
     FVector AxesA[3] = { BoxA->GetForwardVector(), BoxA->GetRightVector(), BoxA->GetUpVector() };
     FVector AxesB[3] = { BoxB->GetForwardVector(), BoxB->GetRightVector(), BoxB->GetUpVector() };
     FVector TestAxes[15]; // 검사할 축 (최대 15개)
 
     int32 AxisIndex = 0;
-    
+
     // 1. Box A의 3개 축
     for (int32 i = 0; i < 3; ++i)
     {
         TestAxes[AxisIndex++] = AxesA[i];
     }
-    
+
     // 2. Box B의 3개 축
     for (int32 i = 0; i < 3; ++i)
     {
         TestAxes[AxisIndex++] = AxesB[i];
     }
-    
+
     // 3. Box A의 축과 Box B의 축 간의 외적 (Cross Product) 9개
     for (int32 i = 0; i < 3; ++i)
     {
@@ -354,7 +354,7 @@ bool FCollisionManager::Check_Box_Box(const UShapeComponent* A, const UShapeComp
         {
             FVector Cross = FVector::CrossProduct(AxesA[i], AxesB[j]);
             // 외적이 0 벡터에 가까우면 (축이 평행하면) 검사할 필요 없음
-            if (Cross.LengthSquared() > 1e-6f)
+            if (Cross.SquaredLength() > 1e-6f)
             { // 작은 값 (epsilon)으로 비교
                 TestAxes[AxisIndex++] = Cross; //.Normalize(); // 정규화는 이론적으로 필요하나, OverlapOnAxis 결과에 영향 안 줌
             }
@@ -382,13 +382,13 @@ bool FCollisionManager::Check_Box_Sphere(const UShapeComponent* A, const UShapeC
 {
     UBoxComponent* Box = Cast<UBoxComponent>(A);
     USphereComponent* Sphere = Cast<USphereComponent>(B);
-    
+
     // 스피어 중심 P에서 OBB 위의 가장 가까운 점 Q 찾기
     FVector ClosestPoint = ClosestPointOnOBB(Sphere->GetWorldLocation(), Box);
 
     // P와 Q 사이의 거리 제곱 계산
     FVector Diff = Sphere->GetWorldLocation() - ClosestPoint;
-    float DistSq = Diff.LengthSquared();
+    float DistSq = Diff.SquaredLength();
 
     // 거리 제곱이 스피어 반지름 제곱보다 작거나 같으면 충돌
     float RadiusSq = Sphere->GetRadius() * Sphere->GetRadius();
@@ -399,7 +399,7 @@ bool FCollisionManager::Check_Box_Capsule(const UShapeComponent* A, const UShape
 {
     UBoxComponent* Box = Cast<UBoxComponent>(A);
     UCapsuleComponent* Capsule = Cast<UCapsuleComponent>(B);
-    
+
     FVector StartCap, EndCap;
     Capsule->GetEndPoints(StartCap, EndCap);
 
@@ -426,8 +426,8 @@ bool FCollisionManager::Check_Sphere_Sphere(const UShapeComponent* A, const USha
     float RadiusSum = SphereA->GetRadius() + SphereB->GetRadius();
 
     FVector Diff = SphereA->GetWorldLocation() - SphereB->GetWorldLocation();
-    float DistSq = Diff.LengthSquared();
-    
+    float DistSq = Diff.SquaredLength();
+
     return DistSq <= (RadiusSum * RadiusSum);
 }
 
@@ -444,7 +444,7 @@ bool FCollisionManager::Check_Sphere_Capsule(const UShapeComponent* A, const USh
 
     // 스피어 중심과 가장 가까운 점 사이의 거리 제곱 계산
     FVector Diff = Sphere->GetWorldLocation() - ClosestPointOnSegment;
-    float DistSq = Diff.LengthSquared();
+    float DistSq = Diff.SquaredLength();
 
     // 캡슐 반지름과 스피어 반지름의 합 계산
     float TotalRadius = Capsule->GetRadius() + Sphere->GetRadius();

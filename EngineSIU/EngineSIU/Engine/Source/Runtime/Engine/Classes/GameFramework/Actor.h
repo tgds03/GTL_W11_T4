@@ -11,7 +11,13 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FActorBeginOverlapSignature, AActor* /* Ove
 DECLARE_MULTICAST_DELEGATE_TwoParams(FActorEndOverlapSignature, AActor* /* OverlappedActor */, AActor* /* OtherActor */);
 DECLARE_MULTICAST_DELEGATE_FourParams(FActorHitSignature, AActor* /* SelfActor */, AActor* /* OtherActor */, FVector /*NormalImpulse*/, const FHitResult& /* Hit */);
 
+
 class UActorComponent;
+
+namespace sol
+{
+    class state;
+}
 
 class AActor : public UObject
 {
@@ -74,6 +80,10 @@ public:
         requires std::derived_from<T, UActorComponent>
     T* GetComponentByClass() const;
 
+    template<typename T>
+        requires std::derived_from<T, UActorComponent>
+    T* GetComponentByFName(FName InName);
+
     void InitializeComponents();
     void UninitializeComponents();
 
@@ -111,6 +121,18 @@ private:
 
     /** 현재 Actor가 삭제 처리중인지 여부 */
     uint8 bActorIsBeingDestroyed : 1 = false;
+
+public: // Lua Script.
+    // 자기 자신이 가진 정보들 Lua에 등록.
+    void InitLuaScriptComponent();
+    FString GetLuaScriptPathName();
+    virtual void RegisterLuaType(sol::state& Lua); // Lua에 클래스 등록해주는 함수.
+    virtual bool BindSelfLuaProperties(); // LuaEnv에서 사용할 멤버 변수 등록 함수.
+
+    bool bUseScript = true;
+protected:
+    class ULuaScriptComponent* LuaScriptComponent = nullptr;
+
 
 #if 1 // TODO: WITH_EDITOR 추가
 public:
@@ -178,6 +200,23 @@ T* AActor::GetComponentByClass() const
         if (T* CastedComponent = Cast<T>(Component))
         {
             return CastedComponent;
+        }
+    }
+    return nullptr;
+}
+
+template<typename T>
+    requires std::derived_from<T, UActorComponent>
+T* AActor::GetComponentByFName(FName InName)
+{
+    for (UActorComponent* Component : OwnedComponents)
+    {
+        if (Component->GetFName() == InName)
+        {
+            if (T* CastedComponent = Cast<T>(Component))
+            {
+                return CastedComponent;
+            }
         }
     }
     return nullptr;

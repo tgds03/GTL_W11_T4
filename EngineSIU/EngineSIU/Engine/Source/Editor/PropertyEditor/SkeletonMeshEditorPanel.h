@@ -3,6 +3,11 @@
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
 #include "UnrealEd/EditorPanel.h"
 
+struct FSkeletonSequencePlayer
+{
+    UAnimSequence* Sequence = nullptr;
+    
+};
 
 class SkeletonMeshEditorPanel : public UEditorPanel
 {

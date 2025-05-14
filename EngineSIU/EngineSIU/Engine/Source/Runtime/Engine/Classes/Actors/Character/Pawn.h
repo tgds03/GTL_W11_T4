@@ -27,6 +27,10 @@ public:
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     EMovementMode CurrentMovementMode = EIdle;
+
+    virtual void RegisterLuaType(sol::state& Lua) override;
+    virtual bool BindSelfLuaProperties() override;
+
 protected:
     UPROPERTY
     (USkeletalMeshComponent*, SkeletalMeshComponent, = nullptr)

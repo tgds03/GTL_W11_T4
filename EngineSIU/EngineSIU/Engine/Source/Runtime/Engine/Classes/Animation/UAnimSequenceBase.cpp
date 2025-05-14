@@ -2,10 +2,39 @@
 
 #include <algorithm>
 
+#include "UObject\Casts.h"
+
 
 UAnimSequenceBase::UAnimSequenceBase()
     : RateScale(1.0f)
 {
+    FAnimNotifyEvent f;
+    f.NotifyName = "BBUNG";
+    f.TriggerTime = .3f;
+    Notifies.Add(f);
+}
+
+UObject* UAnimSequenceBase::Duplicate(UObject* InOuter)
+{
+    UAnimSequenceBase* NewAnimSequence = Cast<UAnimSequenceBase>(Super::Duplicate(InOuter));
+
+    NewAnimSequence->Notifies.Empty();
+    NewAnimSequence->Notifies.Reserve(Notifies.Num());
+    for (const FAnimNotifyEvent& OrigEvent : Notifies)
+    {
+        FAnimNotifyEvent NewEvent = OrigEvent;
+        NewAnimSequence->Notifies.Add(NewEvent);
+    }
+
+    NewAnimSequence->Notifies = Notifies;
+    NewAnimSequence->RateScale = RateScale;
+    NewAnimSequence->LocalTime = LocalTime;
+    NewAnimSequence->bLoopAnimation = bLoopAnimation;
+    NewAnimSequence->bEnableRootMotion = bEnableRootMotion;
+    NewAnimSequence->SetSkeleton(Skeleton);
+    NewAnimSequence->SetDataModel(AnimDataModel);
+
+    return NewAnimSequence;
 }
 
 int32 UAnimSequenceBase::GetNumberOfFrames() const

@@ -505,33 +505,29 @@ USkeletalMesh* FResourceManager::LoadSkeletalMesh(const FString& FilePath)
 {
     FWString WideFilePath = FilePath.ToWideString();
 
+
+    USkeletalMesh* OriginalMesh = nullptr;
+
+
     if (SkeletalMeshMap.Contains(WideFilePath))
     {
-        return SkeletalMeshMap[WideFilePath];
+        OriginalMesh = SkeletalMeshMap[WideFilePath];
+    }
+    else
+    {
+        // 원본 메시 로드
+        OriginalMesh = LoadSkeletalMeshAsset(FilePath);
+        if (OriginalMesh == nullptr) return nullptr;
+        OriginalMesh->GetRenderData()->ObjectName = WideFilePath;
+        SkeletalMeshMap.Add(WideFilePath, OriginalMesh);
     }
 
-    USkeletalMesh* SkeletalMeshData = LoadSkeletalMeshAsset(FilePath);
-
-    if (SkeletalMeshData == nullptr) return nullptr;
-
-    SkeletalMeshData->GetRenderData()->ObjectName = WideFilePath;
-
-    SkeletalMeshMap.Add(WideFilePath, SkeletalMeshData);
-
-    return SkeletalMeshData;
+    // 항상 복제본 반환
+    return OriginalMesh->DuplicateSkeletalMesh();
 }
 
 USkeletalMesh* FResourceManager::LoadSkeletalMeshAsset(const FString& PathFileName)
 {
-    // FWString BinaryPath = (PathFileName + ".bin").ToWideString();
-    // if (std::ifstream(BinaryPath).good())
-    // {
-    //     if (LoadStaticMeshFromBinary(BinaryPath, *NewStaticMesh))
-    //     {
-    //         ObjStaticMeshMap.Add(PathFileName, NewStaticMesh);
-    //         return NewStaticMesh;
-    //     }
-    // }
     USkeletalMesh* LoadedSkeletalMesh = FFbxLoader::LoadFBXSkeletalMeshAsset(PathFileName);
 
     FSkeletalMeshRenderData* NewSkeletalMeshRenderData = LoadedSkeletalMesh->GetRenderData();
@@ -560,9 +556,12 @@ UAnimSequence* FResourceManager::LoadAnimationSequence(const FString& FilePath)
     FWString WideFilePath = FilePath.ToWideString();
 
     // 이미 로드된 애니메이션이 있는지 확인
-    if (AnimSequenceMap.Contains(WideFilePath))
+    if (AnimDataMap.Contains(WideFilePath))
     {
-        return AnimSequenceMap[WideFilePath];
+        UAnimSequence* AnimSequence = FObjectFactory::ConstructObject<UAnimSequence>(nullptr);
+        AnimSequence->SetDataModel(AnimDataMap[WideFilePath]);
+        return AnimSequence;
+        //return GetAnimationSequence(WideFilePath);
     }
 
     // AnimDataModel 생성
@@ -582,16 +581,19 @@ UAnimSequence* FResourceManager::LoadAnimationSequence(const FString& FilePath)
     // AnimSequence에 AnimDataModel 설정
     AnimSequence->SetDataModel(AnimDataModel);
    // AnimSequence->SetName(FilePath);
-
     // 맵에 추가
-    AnimSequenceMap.Add(WideFilePath, AnimSequence);
-
+    AnimDataMap.Add(WideFilePath, AnimDataModel);
     return AnimSequence;
 }
 
 UAnimSequence* FResourceManager::GetAnimationSequence(const FWString& AnimationKey)
 {
-    return AnimSequenceMap.Contains(AnimationKey) ? AnimSequenceMap[AnimationKey] : nullptr;
+    if (!AnimDataMap.Contains(AnimationKey))
+        return nullptr;
+    UAnimSequence* AnimSequence = FObjectFactory::ConstructObject<UAnimSequence>(nullptr);
+    // AnimSequence에 AnimDataModel 설정
+    AnimSequence->SetDataModel(AnimDataMap[AnimationKey]);
+    return AnimSequence;
 }
 #pragma endregion
 
