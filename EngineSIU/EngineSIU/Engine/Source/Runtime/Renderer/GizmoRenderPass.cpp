@@ -29,7 +29,7 @@
 
 #include "Components/StaticMeshComponent.h"
 #include "Engine/EditorEngine.h"
-#include "Engine/SkeletalMeshEditorController.h"
+#include "Engine/DataPreviewController.h"
 #include "BoneGizmos/ABoneGizmo.h"
 
 FGizmoRenderPass::FGizmoRenderPass()
