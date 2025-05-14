@@ -5,6 +5,7 @@
 #include "Engine.h"
 #include "World/World.h"
 #include "Engine/Source/Editor/UnrealEd/EditorViewportClient.h"
+#include "Actors/Character/Pawn.h"
 
 void UDataPreviewController::Initialize(USkeletalMesh* InMesh)
 {
@@ -26,7 +27,6 @@ void UDataPreviewController::Initialize(UAnimInstance* InAnim)
     }
 
     USkeletalMesh* InMesh = InAnim->GetOwningComponent()->GetSkeletalMesh();
-
     if (!InMesh)
     {
         // TODO: Default Mesh로 초기화
@@ -40,6 +40,15 @@ void UDataPreviewController::Initialize(UAnimInstance* InAnim)
     OriginalAnim = InAnim;
     EdittingAnim = OriginalAnim; // TODO: 복제 함수 추가 필요
     //EditingAnim = OriginalAnim->DuplicateAnimInstance();
+
+    APawn* PreviewActor = PreivewWorld->SpawnActor<APawn>();
+    PreviewActor->SetActorLabel(FString(TEXT("Animation Preview Actor")));
+
+    USkeletalMeshComponent* SkelComp = Cast<USkeletalMeshComponent>(PreviewActor->GetRootComponent());
+    SkelComp->SetRelativeRotation(FRotator(0, 0, -90));
+    SkelComp->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
+    SkelComp->SetAnimInstance(std::shared_ptr<UAnimInstance>(InAnim));
+    SkelComp->SetSkeletalMesh(OriginalMesh);
 
     SetType(EPreviewType::Animation);
     isVisibleBone = false;
