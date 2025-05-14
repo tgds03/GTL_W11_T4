@@ -8,6 +8,7 @@
 #include <filesystem>
 
 class ULuaScriptComponent;
+class UAnimationStateMachine;
 
 struct FLuaTableScriptInfo
 {
@@ -22,6 +23,7 @@ private:
     sol::state LuaState;
     static TMap<FString, FLuaTableScriptInfo> ScriptCacheMap;
     static TSet<ULuaScriptComponent*> ActiveLuaComponents;
+    static TSet<UAnimationStateMachine*> ActiveAnimLua;
 
 public:
     FLuaScriptManager();
@@ -38,6 +40,9 @@ public:
 
     void RegisterActiveLuaComponent(ULuaScriptComponent* LuaComponent);
     void UnRigisterActiveLuaComponent(ULuaScriptComponent* LuaComponent);
+
+    void RegisterActiveAnimLua(UAnimationStateMachine* AnimInstance);
+    void UnRigisterActiveAnimLua(UAnimationStateMachine* AnimInstance);
 
     void HotReloadLuaScript();
 

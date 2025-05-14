@@ -15,6 +15,8 @@
 #include "Renderer/DepthPrePass.h"
 #include "Renderer/TileLightCullingPass.h"
 
+#include "Engine/Lua/LuaScriptManager.h"
+
 #include "SoundManager.h"
 
 extern LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -186,6 +188,8 @@ void FEngineLoop::Tick()
         {
             GPUTimingManager.EndFrame();        // End GPU frame timing
         }
+
+        FLuaScriptManager::Get().HotReloadLuaScript();
 
         GraphicDevice.SwapBuffer();
         do

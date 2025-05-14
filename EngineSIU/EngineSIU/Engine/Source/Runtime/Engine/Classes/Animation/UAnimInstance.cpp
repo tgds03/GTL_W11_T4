@@ -17,7 +17,7 @@ void UAnimInstance::Initialize(USkeletalMeshComponent* InComponent, APawn* InOwn
     if (!AnimStateMachine)
     {
         AnimStateMachine = FObjectFactory::ConstructObject<UAnimationStateMachine>(GetOuter());
-        AnimStateMachine->Initialize(InOwner, "Scripts/DefaultStateMachine.lua", this);
+        AnimStateMachine->Initialize(InOwner, "Scripts/Animation/DefaultStateMachine.lua", this);
     }
 }
 

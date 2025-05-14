@@ -16,7 +16,7 @@ void APawn::PostSpawnInitialize()
     SetRootComponent(SkeletalMeshComponent);
     SkeletalMeshComponent->InitializeAnimInstance(this);
     SetActorTickInEditor(true);
-}
+
     if (LuaScriptComponent)
     {
         LuaScriptComponent->SetScriptName(TEXT("Scripts/DefaultPawn.lua"));

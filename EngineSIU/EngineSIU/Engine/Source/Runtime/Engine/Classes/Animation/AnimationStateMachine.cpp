@@ -5,6 +5,16 @@
 #include "Engine/Lua/LuaScriptManager.h"
 #include "Animation/UAnimInstance.h"
 
+UAnimationStateMachine::~UAnimationStateMachine()
+{
+    FLuaScriptManager::Get().UnRigisterActiveAnimLua(this);
+    if (LuaTable.valid())
+    {
+        LuaTable.clear();
+        LuaTable = sol::table();
+    }
+}
+
 void UAnimationStateMachine::Initialize(APawn* InOwner, const FString& LuaScriptName, UAnimInstance* InAnimInstance)
 {
     Owner = InOwner;
@@ -57,6 +67,7 @@ void UAnimationStateMachine::InitLuaStateMachine()
 {
     LuaTable = FLuaScriptManager::Get().CreateLuaTable(ScriptFilePath);
 
+    FLuaScriptManager::Get().RegisterActiveAnimLua(this);
 }
 
 
