@@ -6,15 +6,17 @@
 
 APawn::APawn()
 {
-    SkeletalMeshComponent = AddComponent<USkeletalMeshComponent>();
-    SetRootComponent(SkeletalMeshComponent);
-    SkeletalMeshComponent->InitializeAnimInstance(this);
-    SetActorTickInEditor(true);
 }
 
 void APawn::PostSpawnInitialize()
 {
     Super::PostSpawnInitialize();
+
+    SkeletalMeshComponent = AddComponent<USkeletalMeshComponent>();
+    SetRootComponent(SkeletalMeshComponent);
+    SkeletalMeshComponent->InitializeAnimInstance(this);
+    SetActorTickInEditor(true);
+}
     if (LuaScriptComponent)
     {
         LuaScriptComponent->SetScriptName(TEXT("Scripts/DefaultPawn.lua"));
@@ -23,7 +25,11 @@ void APawn::PostSpawnInitialize()
 
 UObject* APawn::Duplicate(UObject* InOuter)
 {
-    return nullptr;
+    ThisClass* NewPawn = Cast<ThisClass>(Super::Duplicate(InOuter));
+    NewPawn->CurrentMovementMode = CurrentMovementMode;
+    NewPawn->SkeletalMeshComponent = GetComponentByClass<USkeletalMeshComponent>();
+
+    return NewPawn;
 }
 
 void APawn::BeginPlay()
