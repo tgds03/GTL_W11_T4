@@ -26,7 +26,11 @@ void UAnimInstance::StartAnimSequence(UAnimSequence* InSequence, float InBlendin
 {
     if (!CurrentSequence)
     {
+
         CurrentSequence = InSequence;
+        FAnimNotifyEvent ev;
+        ev.TriggerTime = .5f;
+        CurrentSequence->AddNotify(ev);
         CurrentSequence->BeginSequence();
         return;
     }
@@ -81,6 +85,13 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
         CurrentState = AnimStateMachine->CurrentState;
     }
 
+
+  
+    CheckAnimNotifyQueue();
+    TriggerAnimNotifies();
+
+    PreviousLocalTime = CurrentSequence->LocalTime;
+
     // Delegate pose calculation to the sequence
     TArray<FBonePose> NewLocalPoses;
     USkeletalMesh* Mesh = OwningComponent->GetSkeletalMesh();
@@ -131,17 +142,48 @@ void UAnimInstance::TriggerAnimNotifies(float DeltaSceonds)
 void UAnimInstance::CheckAnimNotifyQueue()
 {
     // 큐 초기화
-   // NotifyQueue.Reset();
+    NotifyQueue.Reset();
 
-    // 현재 재생 중인 애니메이션에서 노티파이 수집
-    //if (CurrentSequence) {
-    //    // 이전 프레임과 현재 프레임 사이에 있는 노티파이 찾기
-    //    for (const FAnimNotifyEvent& Notify : CurrentSequence->Notifies) {
-    //        if (Notify.TriggerTime > PreviousTime && Notify.TriggerTime <= CurrentTime) {
-    //            NotifyQueue.AddAnimNotify(&Notify, CurrentSequence);
-    //        }
-    //    }
-    //}
+    // 노티파이 수집
+    if (CurrentSequence && CurrentSequence->Notifies.Num() > 0)
+    {
+
+        float SequenceLength = CurrentSequence->GetUnScaledPlayLength();
+        if (SequenceLength <= 0.0f)
+            return;
+
+        float NormalizedPrevTime = PreviousLocalTime / SequenceLength;
+        float NormalizedCurrTime = CurrentSequence->LocalTime / SequenceLength;
+
+        bool bLoopedThisFrame = NormalizedCurrTime < NormalizedPrevTime;
+
+        for (const FAnimNotifyEvent& Notify : CurrentSequence->Notifies)
+        {
+            bool bShouldTrigger = false;
+
+            if (bLoopedThisFrame)
+            {
+                // 루핑 케이스: 두 부분 확인 (이전~1.0 또는 0.0~현재)
+                bShouldTrigger = (Notify.TriggerTime > NormalizedPrevTime && Notify.TriggerTime <= 1.0f) ||
+                    (Notify.TriggerTime >= 0.0f && Notify.TriggerTime <= NormalizedCurrTime);
+            }
+            else
+            {
+                // 일반 케이스: 두 시간 사이 확인
+                bShouldTrigger = (Notify.TriggerTime > NormalizedPrevTime &&
+                    Notify.TriggerTime <= NormalizedCurrTime);
+            }
+
+            if (bShouldTrigger)
+            {
+                NotifyQueue.AddAnimNotify(&Notify);
+            }
+        }
+    }
+}
+
+void UAnimInstance::TriggerAnimNotifies()
+{
 }
 
 

@@ -39,38 +39,47 @@ struct FAnimNotifyEventReference
 class FAnimNotifyQueue
 {
 public:
-    // 현재 프레임에 처리할 노티파이 참조 목록
-    TArray<FAnimNotifyEventReference> AnimNotifies;
+    // 생성자
+    FAnimNotifyQueue() = default;
 
-    TArray<FAnimNotifyEventReference> GetAnimNotifies() 
+    // 큐 초기화 (모든 노티파이 제거)
+    void Reset()
     {
-        return AnimNotifies;
+        AnimNotifies.Empty();
     }
 
-    // 큐 초기화
-    void Reset() { AnimNotifies.Empty(); }
-
-    // 단일 노티파이 추가
-    void AddAnimNotify(const FAnimNotifyEvent* Notify, const UObject* NotifySource)
+    // 노티파이 추가
+    void AddAnimNotify(const FAnimNotifyEvent* Notify)
     {
-        if (Notify)
+        if (Notify != nullptr)
         {
-            AnimNotifies.Add(FAnimNotifyEventReference(*Notify));
+            AnimNotifies.Add(Notify);
         }
     }
 
-    // 노티파이 배열 추가 (내부 구현)
-    void AddAnimNotifies(const TArray<FAnimNotifyEventReference>& NewNotifies)
+    // 여러 노티파이 한번에 추가
+    void AddAnimNotifies(const TArray<const FAnimNotifyEvent*>& Notifies)
     {
-        for (const FAnimNotifyEventReference& NotifyRef : NewNotifies)
+        for (const FAnimNotifyEvent* Notify : Notifies)
         {
-            if (const FAnimNotifyEvent* Notify = NotifyRef.GetNotify())
-            {
-                AnimNotifies.Add(NotifyRef);
-                
-            }
+            AddAnimNotify(Notify);
         }
     }
+
+    // 큐에 있는 노티파이 개수 반환
+    int32 Num() const
+    {
+        return AnimNotifies.Num();
+    }
+
+    // 큐가 비어있는지 확인
+    bool IsEmpty() const
+    {
+        return AnimNotifies.Num() == 0;
+    }
+
+    // 현재 프레임에 처리할 노티파이 목록
+    TArray<const FAnimNotifyEvent*> AnimNotifies;
 };
 
 struct FFrameRate

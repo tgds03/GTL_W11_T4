@@ -23,6 +23,14 @@ protected:
 
     TQueue<UAnimSequence*> WaitSequences;
     
+    float PreviousLocalTime = 0.0f;   // 이전 프레임의 시간
+    FAnimNotifyQueue NotifyQueue;     // 노티파이 큐
+
+    // 노티파이 처리 함수
+    void CheckAnimNotifyQueue();
+    void TriggerAnimNotifies();
+
+
     bool bIsPlaying = true;
     float BlendTime = 0.f;
 
@@ -38,8 +46,6 @@ public:
     virtual void NativeUpdateAnimation(float DeltaSeconds);
 
     void TriggerAnimNotifies(float DeltaSceonds);
-
-    void CheckAnimNotifyQueue();
 
 #pragma region Properties
     USkeletalMeshComponent* GetOwningComponent() const { return OwningComponent; }
