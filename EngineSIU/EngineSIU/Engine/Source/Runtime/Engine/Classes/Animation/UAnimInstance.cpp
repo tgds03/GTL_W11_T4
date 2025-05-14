@@ -25,9 +25,6 @@ void UAnimInstance::Update(float DeltaTime)
 {
     if (!bIsPlaying)
     {
-        // 노티파이와 같은 일부 처리는 계속할 수 있음
-        CheckAnimNotifyQueue();
-        TriggerAnimNotifies();
         return;
     }
 
@@ -55,8 +52,6 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     if(CurrentSequence)
     PreviousSequenceTime = CurrentSequence->LocalTime;
 
-    CheckAnimNotifyQueue();
-    TriggerAnimNotifies();
     // Current와 Target이 모두 있는 경우 애니메이션 블렌딩을 수행.
     // 블렌딩이 끝나면 Current를 Target으로 교체.
     // Target이 없는 경우 Current를 그대로 사용.
@@ -69,6 +64,9 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
     {
         TargetSequence->TickSequence(DeltaSeconds);
     }
+
+    CheckAnimNotifyQueue();
+    TriggerAnimNotifies();
 
     if (CurrentSequence && TargetSequence)
     {
