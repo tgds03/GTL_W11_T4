@@ -425,7 +425,7 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
             FString FileName(SkelInputBuffer);
             if (FileName.Len() == 0)
             {
-                FileName = "AlienSoldier";
+                FileName = "Twerkbin";
             }
 
             SkeletalMeshComp->LoadAndSetFBX(FileName);
@@ -473,7 +473,7 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
         if (ImGui::Button("Animation Edtior", ImVec2(150, 32)))
         {
             UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
-            Engine->StartAnimaitonEditMode(SkeletalMeshComp->GetAnimInstance().get());
+            Engine->StartAnimaitonEditMode(SkeletalMeshComp->GetAnimInstance());
         }
         ImGui::PopStyleColor(3);
         

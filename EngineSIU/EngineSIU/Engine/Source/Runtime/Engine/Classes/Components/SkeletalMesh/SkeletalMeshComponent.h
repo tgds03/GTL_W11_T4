@@ -13,7 +13,8 @@ class USkeletalMeshComponent : public USkinnedMeshComponent
 {
     DECLARE_CLASS(USkeletalMeshComponent, USkinnedMeshComponent)
 
-    std::shared_ptr<UAnimInstance> AnimInstance = nullptr;
+  //  std::shared_ptr<UAnimInstance*>
+        UAnimInstance* AnimInstance = nullptr;
 
 public:
     USkeletalMeshComponent();
@@ -23,8 +24,8 @@ public:
 
     void PlayAnimation(UAnimationAsset* NewAnimToPlay, bool bLooping = false);
     //void SetAnimationMode(EAnimationMode AnimationMode);
-    std::shared_ptr<UAnimInstance> GetAnimInstance() const { return AnimInstance; }
-    void SetAnimInstance(std::shared_ptr<UAnimInstance> InAnimInstance) { AnimInstance = InAnimInstance; }
+    UAnimInstance* GetAnimInstance() const { return AnimInstance; }
+    void SetAnimInstance(UAnimInstance* InAnimInstance) { AnimInstance = InAnimInstance; }
     void SetAnimation(UAnimationAsset* InAnimAsset);
     void Play(bool bLooping = false);
     void HandleAnimNotify(const FAnimNotifyEvent* Notify);

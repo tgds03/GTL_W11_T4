@@ -18,13 +18,14 @@ USkeletalMeshComponent::USkeletalMeshComponent()
 {
 }
 
+
 void USkeletalMeshComponent::InitializeAnimInstance(APawn* InOwner)
 {
     OwnerPawn = InOwner;
     
     if (!AnimInstance)
     {
-        AnimInstance = std::make_shared<UAnimInstance>();
+        AnimInstance = new UAnimInstance();//std::make_shared<UAnimInstance>();
         AnimInstance->Initialize(this, InOwner);
     }
 }
@@ -79,7 +80,7 @@ void USkeletalMeshComponent::LoadAndSetFBX(FString FileName)
 
 void USkeletalMeshComponent::LoadAndSetAnimation(FString FileName)
 {
-    AnimInstance.reset();
+    AnimInstance = nullptr;
     InitializeAnimInstance(Cast<APawn>(GetOwner()));
 
 
