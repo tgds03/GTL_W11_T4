@@ -17,6 +17,10 @@
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
 #include "SkeletalMeshEditorController.h"
 
+#include "Actors/Character/Pawn.h"
+#include "Animation/UAnimInstance.h"
+#include "UObject/Casts.h"
+
 #include "Launch/EngineLoop.h"
 #include "LevelEditor/SLevelEditor.h"
 
@@ -114,7 +118,27 @@ void UEditorEngine::Tick(float DeltaTime)
                 }
             }
         }
-        else if (WorldContext->WorldType == EWorldType::SkeletalMeshEditor)
+        //else if (WorldContext->WorldType == EWorldType::SkeletalMeshEditor)
+        //{
+        //    if (UWorld* World = WorldContext->World())
+        //    {
+        //        World->Tick(DeltaTime);
+        //        EditorPlayer->Tick(DeltaTime);
+        //        ULevel* Level = World->GetActiveLevel();
+        //        TArray CachedActors = Level->Actors;
+        //        if (Level)
+        //        {
+        //            for (AActor* Actor : CachedActors)
+        //            {
+        //                if (Actor)
+        //                {
+        //                    Actor->Tick(DeltaTime);
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
+        else if (WorldContext->WorldType == EWorldType::EditorPreview)
         {
             if (UWorld* World = WorldContext->World())
             {
@@ -220,65 +244,71 @@ void UEditorEngine::EndPIE()
     ActiveWorld = EditorWorld;
 }
 
-void UEditorEngine::StartSkeletalMeshEditMode()
+void UEditorEngine::StartEditorPreviewMode()
 {
-    if (SkeletalMeshEditWorld)
+    if (PreviewWorld)
         return;
 
-    FWorldContext& SkeletalMeshEditorWorldContext = CreateNewWorldContext(EWorldType::SkeletalMeshEditor);
+    FWorldContext& SkeletalMeshEditorWorldContext = CreateNewWorldContext(EWorldType::EditorPreview);
 
-    SkeletalMeshEditWorld = UWorld::CreateWorld(this, EWorldType::SkeletalMeshEditor, TEXT("SkeletalMeshEditWorld"));
+    PreviewWorld = UWorld::CreateWorld(this, EWorldType::EditorPreview, TEXT("Preview Mode"));
 
-    SkeletalMeshEditorWorldContext.SetCurrentWorld(SkeletalMeshEditWorld);
+    SkeletalMeshEditorWorldContext.SetCurrentWorld(PreviewWorld);
 
-    ActiveWorld = SkeletalMeshEditWorld;
+    ActiveWorld = PreviewWorld;
 }
 
-void UEditorEngine::StartSkeletalMeshEditMode(USkeletalMesh* InMesh)
+void UEditorEngine::EndEditorPreviewMode()
 {
-    if (SkeletalMeshEditWorld)
-        return;
-
-    StartSkeletalMeshEditMode();
-
-    SkelEditorController = std::make_shared<SkeletalMeshEditorController>();
-    SkelEditorController->Initialize(InMesh, GEngineLoop.GetLevelEditor()->GetViewports()->get());
-
-    FEditorViewportClient* ActiveViewport = GEngineLoop.GetLevelEditor()->GetActiveViewportClient().get();
-
-    ActiveViewport->SetViewMode(EViewModeIndex::VMI_Unlit);
-
-    AActor* PreviewActor = ActiveWorld->SpawnActor<AActor>();
-    PreviewActor->SetActorLabel(FString(InMesh->GetObjectName()));
-
-    USkeletalMeshComponent* SkelMeshComp = PreviewActor->AddComponent<USkeletalMeshComponent>();
-    SkelMeshComp->SetSkeletalMesh(SkelEditorController->OriginalMesh);
-    SkelMeshComp->UpdateGlobalPose();
-}
-
-void UEditorEngine::EndSkeletalMeshEditMode()
-{
-    if (!SkeletalMeshEditWorld)
+    if (!PreviewWorld)
         return;
 
     // Context 제거
-    if (FWorldContext* ctx = GetSkeletalMeshEditWorldContext())
+    if (FWorldContext* ctx = GetEditorPreviewWorldContext())
     {
         WorldList.Remove(ctx);
     }
 
     // World 정리
-    SkeletalMeshEditWorld->Release();
-    GUObjectArray.MarkRemoveObject(SkeletalMeshEditWorld);
-    SkeletalMeshEditWorld = nullptr;
+    PreviewWorld->Release();
+    GUObjectArray.MarkRemoveObject(PreviewWorld);
+    PreviewWorld = nullptr;
 
     // 원래 EditorWorld 로 복귀
     ActiveWorld = EditorWorld;
 }
 
+void UEditorEngine::StartSkeletalMeshEditMode(USkeletalMesh* InMesh)
+{
+    StartEditorPreviewMode();
+    FEditorViewportClient* ViewPort = GEngineLoop.GetLevelEditor()->GetViewports()->get();
+    DataPreviewController = std::make_shared<UDataPreviewController>(ActiveWorld, ViewPort);
+    DataPreviewController->Initialize(InMesh);
+
+    // TODO : Initialize에서 InMesh를 받아서 처리하도록 변경
+    AActor* PreviewActor = ActiveWorld->SpawnActor<AActor>();
+    PreviewActor->SetActorLabel(FString(InMesh->GetObjectName()));
+
+    USkeletalMeshComponent* SkelMeshComp = PreviewActor->AddComponent<USkeletalMeshComponent>();
+    SkelMeshComp->SetSkeletalMesh(DataPreviewController->OriginalMesh);
+}
+
 void UEditorEngine::StartAnimaitonEditMode(UAnimInstance* InAnim)
 {
-    //if ()
+    StartEditorPreviewMode();
+    FEditorViewportClient* ViewPort = GEngineLoop.GetLevelEditor()->GetViewports()->get();
+    DataPreviewController = std::make_shared<UDataPreviewController>(ActiveWorld, ViewPort);
+    DataPreviewController->Initialize(InAnim);
+
+    APawn* PreviewActor = ActiveWorld->SpawnActor<APawn>();
+    // TODO : AnimObjectName 설정
+    PreviewActor->SetActorLabel(FString(TEXT("Animation Preview Actor")));
+
+    USkeletalMeshComponent* SkelComp = Cast<USkeletalMeshComponent>(PreviewActor->GetRootComponent());
+    //SkelComp->SetRelativeRotation(FRotator(-90, 0, 0));
+    //SkelComp->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
+    SkelComp->SetAnimInstance(std::shared_ptr<UAnimInstance>(InAnim));
+    SkelComp->SetSkeletalMesh(DataPreviewController->OriginalMesh);
 }
 
 FWorldContext& UEditorEngine::GetEditorWorldContext(/*bool bEnsureIsGWorld*/)
@@ -305,11 +335,11 @@ FWorldContext* UEditorEngine::GetPIEWorldContext(/*int32 WorldPIEInstance*/)
     return nullptr;
 }
 
-FWorldContext* UEditorEngine::GetSkeletalMeshEditWorldContext()
+FWorldContext* UEditorEngine::GetEditorPreviewWorldContext()
 {
     for (FWorldContext* WorldContext : WorldList)
     {
-        if (WorldContext->WorldType == EWorldType::SkeletalMeshEditor)
+        if (WorldContext->WorldType == EWorldType::EditorPreview)
         {
             return WorldContext;
         }

@@ -337,6 +337,8 @@
     <ClCompile Include="Engine\Source\Runtime\Windows\RawInput.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Windows\WindowsCursor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Windows\WindowsPlatformTime.cpp" />
+    <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_neo_internal.cpp" />
+    <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_neo_sequencer.cpp" />
     <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui.cpp" />
     <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_bezier.cpp" />
     <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_demo.cpp" />
@@ -668,6 +670,8 @@
     <ClInclude Include="Engine\Source\ThirdParty\DirectXTK\Include\VertexTypes.h" />
     <ClInclude Include="Engine\Source\ThirdParty\DirectXTK\Include\WICTextureLoader.h" />
     <ClInclude Include="Engine\Source\ThirdParty\DirectXTK\Include\XboxDDSTextureLoader.h" />
+    <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui_neo_internal.h" />
+    <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui_neo_sequencer.h" />
     <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imconfig.h" />
     <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui.h" />
     <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui_bezier.h" />
