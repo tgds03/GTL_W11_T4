@@ -31,6 +31,11 @@ public:
     virtual void RegisterLuaType(sol::state& Lua) override;
     virtual bool BindSelfLuaProperties() override;
 
+    float GetExciting() const { return Exciting;}
+    void SetExciting(float InExciting) { Exciting = InExciting; }
+    
+    float Exciting = 0.f;
+    
 protected:
     UPROPERTY
     (USkeletalMeshComponent*, SkeletalMeshComponent, = nullptr)

@@ -54,7 +54,9 @@ void APawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void APawn::RegisterLuaType(sol::state& Lua)
 {
-    DEFINE_LUA_TYPE_WITH_PARENT(APawn, sol::bases<AActor>())
+    DEFINE_LUA_TYPE_WITH_PARENT(APawn, sol::bases<AActor>(),
+        "Exciting", sol::property(&ThisClass::GetExciting, &ThisClass::SetExciting)
+        )
 }
 
 bool APawn::BindSelfLuaProperties()

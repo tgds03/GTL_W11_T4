@@ -7,7 +7,7 @@
 
 UAnimationStateMachine::~UAnimationStateMachine()
 {
-    FLuaScriptManager::Get().UnRigisterActiveAnimLua(this);
+    FLuaScriptManager::Get().UnRegisterActiveAnimLua(this);
     if (LuaTable.valid())
     {
         LuaTable.clear();
@@ -37,7 +37,7 @@ void UAnimationStateMachine::ProcessState()
         return;
     }
     
-    sol::object result = UpdateFunc(LuaTable);
+    sol::object result = UpdateFunc(LuaTable, 0.0f);
 
     sol::table StateInfo = result.as<sol::table>();
     FString StateName = StateInfo["anim"].get_or(std::string("")).c_str();
@@ -52,7 +52,7 @@ void UAnimationStateMachine::ProcessState()
         {
             UAnimSequence* Sequence = FResourceManager::LoadAnimationSequence(StateName);
             if (Sequence)
-            {
+            {   
                 OwnedAnimInstance->SetTargetSequence(Sequence, Blend);
             }
             else
@@ -68,6 +68,9 @@ void UAnimationStateMachine::InitLuaStateMachine()
     LuaTable = FLuaScriptManager::Get().CreateLuaTable(ScriptFilePath);
 
     FLuaScriptManager::Get().RegisterActiveAnimLua(this);
+    if (!LuaTable.valid())
+        return;
+    LuaTable["Owner"] = Owner;
 }
 
 

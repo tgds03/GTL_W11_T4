@@ -2,18 +2,15 @@ AnimFSM = {
     current = "Idle",
     Update = function(self, dt)
 
-        self.current = "Contents/Fbx/Twerkbin.fbx"
+        -- self.current = "Contents/Fbx/Capoeira.fbx"
 
+        local Exciting = self.Owner.Exciting
 
-        -- local speed = self.owner:GetVelocity():Length()
-
-        -- if speed < 10 then
-        --     self.current = "Idle"
-        -- elseif speed < 300 then
-        --     self.current = "Walk"
-        -- else
-        --     self.current = "Run"
-        -- end
+        if Exciting < 2 then
+            self.current = "Contents/Fbx/Capoeira.fbx"
+        else
+            self.current = "Contents/Fbx/Twerkbin.fbx"
+        end
 
         return {
             anim = self.current,

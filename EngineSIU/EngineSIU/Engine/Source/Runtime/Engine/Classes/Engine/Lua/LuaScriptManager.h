@@ -42,7 +42,7 @@ public:
     void UnRigisterActiveLuaComponent(ULuaScriptComponent* LuaComponent);
 
     void RegisterActiveAnimLua(UAnimationStateMachine* AnimInstance);
-    void UnRigisterActiveAnimLua(UAnimationStateMachine* AnimInstance);
+    void UnRegisterActiveAnimLua(UAnimationStateMachine* AnimInstance);
 
     void HotReloadLuaScript();
 

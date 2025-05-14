@@ -357,6 +357,7 @@ void AActor::InitLuaScriptComponent()
         if (LuaScriptComponent == nullptr)
         {
             LuaScriptComponent = AddComponent<ULuaScriptComponent>("LuaComponent_0");
+            RegisterLuaType(FLuaScriptManager::Get().GetLua());
         }
     }
 }

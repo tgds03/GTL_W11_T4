@@ -2,8 +2,8 @@
     "Actors": [
         {
             "ActorClass": "APawn",
-            "ActorID": "APawn_127",
-            "ActorLabel": "OBJ_APAWN_127",
+            "ActorID": "APawn_134",
+            "ActorLabel": "OBJ_APAWN_134",
             "ActorTickInEditor": "true",
             "Components": [
                 {
@@ -20,14 +20,14 @@
                 },
                 {
                     "ComponentClass": "USkeletalMeshComponent",
-                    "ComponentID": "USkeletalMeshComponent_129",
+                    "ComponentID": "USkeletalMeshComponent_137",
                     "Properties": {
                         "AABB_max": "X=96.463 Y=199.254 Z=33.858",
                         "AABB_min": "X=-96.461 Y=-0.209 Z=-24.923",
                         "AttachParentID": "nullptr",
                         "ComponentClass": "USkeletalMeshComponent",
-                        "ComponentName": "USkeletalMeshComponent_129",
-                        "ComponentOwner": "APawn_127",
+                        "ComponentName": "USkeletalMeshComponent_137",
+                        "ComponentOwner": "APawn_134",
                         "ComponentOwnerClass": "APawn",
                         "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
@@ -37,9 +37,21 @@
                         "bIsActive": "true",
                         "m_Type": ""
                     }
+                },
+                {
+                    "ComponentClass": "ULuaScriptComponent",
+                    "ComponentID": "LuaComponent_0",
+                    "Properties": {
+                        "ComponentClass": "ULuaScriptComponent",
+                        "ComponentName": "LuaComponent_0",
+                        "ComponentOwner": "APawn_134",
+                        "ComponentOwnerClass": "APawn",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
+                    }
                 }
             ],
-            "RootComponentID": "USkeletalMeshComponent_129"
+            "RootComponentID": "USkeletalMeshComponent_137"
         }
     ],
     "NextUUID": 0,

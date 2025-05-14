@@ -7,6 +7,7 @@
 
 #include "World/World.h"
 #include "Actors/Player.h"
+#include "Actors/Character/Pawn.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/Light/LightComponent.h"
@@ -484,7 +485,15 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
         {
             //SkeletalMeshComp->SwitchState();
         }
+
+        APawn* Pawn = SkeletalMeshComp->OwnerPawn;
+
+        if (Pawn)
+        {
+            ImGui::SliderFloat("Exciting", &Pawn->Exciting, 0.0f, 5.0f, "%.1f");
+        }
         
+
         ImGui::TreePop();
     }
     ImGui::PopStyleColor();

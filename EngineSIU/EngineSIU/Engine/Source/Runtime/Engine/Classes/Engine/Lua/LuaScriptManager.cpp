@@ -119,7 +119,7 @@ void FLuaScriptManager::RegisterActiveAnimLua(UAnimationStateMachine* AnimInstan
     ActiveAnimLua.Add(AnimInstance);
 }
 
-void FLuaScriptManager::UnRigisterActiveAnimLua(UAnimationStateMachine* AnimInstance)
+void FLuaScriptManager::UnRegisterActiveAnimLua(UAnimationStateMachine* AnimInstance)
 {
     if (ActiveAnimLua.Contains(AnimInstance))
         ActiveAnimLua.Remove(AnimInstance);

@@ -33,7 +33,6 @@ void UAnimInstance::Update(float DeltaTime)
 
 void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {
-
     if (!OwningComponent)
     {
         return;
