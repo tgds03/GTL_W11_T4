@@ -1,7 +1,7 @@
 #pragma once
 #include "Pawn.h"
 
-class FAnimNotifyEvent;
+struct FAnimNotifyEvent;
 
 class ACharacter : public APawn
 {
