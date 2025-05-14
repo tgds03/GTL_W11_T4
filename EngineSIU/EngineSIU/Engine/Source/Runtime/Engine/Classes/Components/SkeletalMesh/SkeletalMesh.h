@@ -19,6 +19,7 @@ public:
     virtual UObject* Duplicate(UObject* InOuter) override;
 
     USkeletalMesh* DuplicateSkeletalMesh();
+    USkeletalMesh* DeepDuplicateSkeletalMesh();
 
     FSkeletalMeshRenderData* GetRenderData() const { return RenderData; }
     const TArray<FStaticMaterial*>& GetMaterials() const { return materials; }
@@ -35,7 +36,6 @@ public:
     FSkeletonPose* GetSkeletonPose() { return &SkeletonPose; }
     TArray<FBonePose>& GetLocalTransforms() { return SkeletonPose.LocalTransforms; }
     TArray<FMatrix>& GetGlobalTransforms() { return SkeletonPose.GlobalTransforms; }
-
     void SetData(FSkeletalMeshRenderData* InRenderData, FSkeletonPose InSkeletonPose);
 
 public:
