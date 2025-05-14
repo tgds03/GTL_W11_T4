@@ -505,33 +505,29 @@ USkeletalMesh* FResourceManager::LoadSkeletalMesh(const FString& FilePath)
 {
     FWString WideFilePath = FilePath.ToWideString();
 
+
+    USkeletalMesh* OriginalMesh = nullptr;
+
+
     if (SkeletalMeshMap.Contains(WideFilePath))
     {
-        return SkeletalMeshMap[WideFilePath];
+        OriginalMesh = SkeletalMeshMap[WideFilePath];
+    }
+    else
+    {
+        // 원본 메시 로드
+        OriginalMesh = LoadSkeletalMeshAsset(FilePath);
+        if (OriginalMesh == nullptr) return nullptr;
+        OriginalMesh->GetRenderData()->ObjectName = WideFilePath;
+        SkeletalMeshMap.Add(WideFilePath, OriginalMesh);
     }
 
-    USkeletalMesh* SkeletalMeshData = LoadSkeletalMeshAsset(FilePath);
-
-    if (SkeletalMeshData == nullptr) return nullptr;
-
-    SkeletalMeshData->GetRenderData()->ObjectName = WideFilePath;
-
-    SkeletalMeshMap.Add(WideFilePath, SkeletalMeshData);
-
-    return SkeletalMeshData;
+    // 항상 복제본 반환
+    return OriginalMesh->DuplicateSkeletalMesh();
 }
 
 USkeletalMesh* FResourceManager::LoadSkeletalMeshAsset(const FString& PathFileName)
 {
-    // FWString BinaryPath = (PathFileName + ".bin").ToWideString();
-    // if (std::ifstream(BinaryPath).good())
-    // {
-    //     if (LoadStaticMeshFromBinary(BinaryPath, *NewStaticMesh))
-    //     {
-    //         ObjStaticMeshMap.Add(PathFileName, NewStaticMesh);
-    //         return NewStaticMesh;
-    //     }
-    // }
     USkeletalMesh* LoadedSkeletalMesh = FFbxLoader::LoadFBXSkeletalMeshAsset(PathFileName);
 
     FSkeletalMeshRenderData* NewSkeletalMeshRenderData = LoadedSkeletalMesh->GetRenderData();
