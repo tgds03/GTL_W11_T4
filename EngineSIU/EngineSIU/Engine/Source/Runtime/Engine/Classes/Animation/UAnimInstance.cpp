@@ -131,7 +131,7 @@ void UAnimInstance::TriggerAnimNotifies(float DeltaSceonds)
 void UAnimInstance::CheckAnimNotifyQueue()
 {
     // 큐 초기화
-    NotifyQueue.Reset();
+   // NotifyQueue.Reset();
 
     // 현재 재생 중인 애니메이션에서 노티파이 수집
     //if (CurrentSequence) {
@@ -144,11 +144,6 @@ void UAnimInstance::CheckAnimNotifyQueue()
     //}
 }
 
-void UAnimInstance::ChangeAnimation(UAnimSequence* NewAnim, float InBlendingTime)
-{
-    BlendSequence = NewAnim;
-    BlendTime = InBlendingTime;
-}
 
 void UAnimInstance::PlayAnimation(UAnimSequence* InSequence, bool bInLooping, bool bPlayDirect)
 {

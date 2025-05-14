@@ -31,6 +31,8 @@ public:
     void SetEnableRootMotion(bool bEnable) { bEnableRootMotion = bEnable; }
     int32 GetNumberOfFrames() const;
 
+    void AddNotify(float Time, FName Name);
+
     // 노티파이 접근자
     const TArray<FAnimNotifyEvent>& GetNotifies() const { return Notifies; }
     void AddNotify(const FAnimNotifyEvent& Notify) { Notifies.Add(Notify); }

@@ -20,13 +20,7 @@ int32 UAnimSequenceBase::GetNumberOfFrames() const
     }
 }
 
-void UAnimSequenceBase::AddNotify(float Time, FName Name)
-{
-    FAnimNotifyEvent NewNotify;
-    NewNotify.TriggerTime = Time;
-    NewNotify.NotifyName = Name;
-    Notifies.Add(NewNotify);
-}
+
 
 bool UAnimSequenceBase::RemoveNotify(int32 NotifyIndex)
 {
