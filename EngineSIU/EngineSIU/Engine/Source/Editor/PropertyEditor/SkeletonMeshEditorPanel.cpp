@@ -15,7 +15,17 @@ void SkeletonMeshEditorPanel::Render()
     std::shared_ptr<UDataPreviewController> Controller = Engine->GetSkeletalMeshEditorController();
     EPreviewType PreviewType = Controller->GetType();
 
-    ImGui::Begin("Preview", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse);
+    // 1) 메인 뷰포트 정보 가져오기
+    const ImGuiViewport* vp = ImGui::GetMainViewport();
+
+    // 2) 다음 Begin() 창의 위치를 뷰포트 왼쪽 상단(WorkPos)으로 고정
+    ImGui::SetNextWindowPos(vp->WorkPos, ImGuiCond_Always);
+
+    // 3) 창 너비를 고정(예: 화면 너비의 30%), 높이는 뷰포트 전체 높이로 설정
+    float panelWidth = vp->WorkSize.x * 0.2f;
+    ImGui::SetNextWindowSize(ImVec2(panelWidth, vp->WorkSize.y - 260), ImGuiCond_Always);
+
+    ImGui::Begin("Preview", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoCollapse);
 
     RenderCommonEditorHeader();
 
