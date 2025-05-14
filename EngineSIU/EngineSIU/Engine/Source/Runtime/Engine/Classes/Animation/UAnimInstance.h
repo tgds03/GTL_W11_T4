@@ -19,7 +19,7 @@ protected:
 
     TQueue<UAnimSequence*> WaitSequences;
    
-    FAnimNotifyQueue NotifyQueue;     // 노티파이 큐
+    FAnimNotifyQueue NotifyQueue; // 노티파이 큐
 
     bool bIsPlaying = true;
 

@@ -135,7 +135,7 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
 {
     UAnimInstance* AnimInstance = Cast<UEditorEngine>(GEngine)
         ->GetSkeletalMeshEditorController()
-        ->EditingAnim;
+        ->EdittingAnim;
 
     const ImGuiIO& IO = ImGui::GetIO();
     ImFont* IconFont = IO.Fonts->Fonts[FEATHER_FONT];
@@ -158,7 +158,6 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
     static float PlayRate = 1.0f;           // TODO: StateMachine->GetCurrentSequence()->PlayRate
     static char AnimNameBuffer[128] = "";   // TODO: 현재 애니메이션 이름
 
-
     AnimInstance->SetIsPlaying(bPlaying);
 
     // === 1. 상단 컨트롤 바 ===
@@ -171,11 +170,21 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
         ImGui::SetNextItemWidth(150);
         ImGui::InputText("##AnimName", AnimNameBuffer, IM_ARRAYSIZE(AnimNameBuffer));
         ImGui::SameLine();
-        if (ImGui::Button("Load")) {
-            // TODO: 애니메이션 로드
-            // 1. FString animPath = GetAnimPathByName(AnimNameBuffer);
-            // 2. UAnimSequence* loadedAnim = LoadAnimationSequence(animPath);
-            // 3. StateMachine->SetCurrentSequence(loadedAnim);
+        if (ImGui::Button("Load")) 
+        {
+            FString FileName(AnimNameBuffer);
+            if (FileName.Len() == 0)
+            {
+                FileName = "Twerkbin";
+            }
+            FString FbxPath(TEXT("Contents/Fbx/") + FileName + TEXT(".fbx"));
+            UAnimSequence* AnimSequence = FResourceManager::LoadAnimationSequence(FbxPath);
+            if (!AnimSequence)
+            {
+                UE_LOG(LogLevel::Warning, TEXT("애니메이션 로드 실패, 스켈레톤만 표시합니다."));
+                return;
+            }
+            
         }
 
         // 재생 컨트롤 버튼
@@ -208,7 +217,7 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
         ImGui::SameLine(0, 15);
         ImGui::Text("Speed:");
         ImGui::SameLine();
-        ImGui::SetNextItemWidth(80);
+        ImGui::SetNextItemWidth(120);
         if (ImGui::InputFloat("##PlayRate", &PlayRate, 0.1f, 0.5f, "%.1f")) {
             // TODO: 재생 속도 변경
            PlayRate = FMath::Clamp(PlayRate, 0.1f, 10.0f);
@@ -516,57 +525,6 @@ int32 SkeletonMeshEditorPanel::GetRootBoneIndex(USkeletalMesh* Mesh) const
     }
 
     return INDEX_NONE;
-}
-
-void SkeletonMeshEditorPanel::RenderSequenceUI()
-{
-    //UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
-    //auto Controller = Engine->GetSkeletalMeshEditorController();
-    //UAnimInstance* Anim = Controller->EditingAnim;
-
-    //if (!Anim)
-    //{
-    //    ImGui::Text("No animation loaded.");
-    //    return;
-    //}
-
-    //ImGui::Text("Animation Sequences:");
-
-    //for (const auto& Pair : Anim->GetAnimSequenceMap())
-    //{
-    //    FString StateName = TEXT("Unknown");
-    //    switch (Pair.Key)
-    //    {
-    //    case EAnimState::Idle: StateName = TEXT("Idle"); break;
-    //    case EAnimState::Twerk: StateName = TEXT("Twerk"); break;
-    //        // 필요 시 추가
-    //    }
-
-    //    ImGui::Text(" - %s", *StateName);
-    //}
-
-    //ImGui::Separator();
-
-    //ImGui::Text("Current Sequence Time: %.3f", Anim->GetCurrentTime());
-    //ImGui::Text("Play Rate: %.2fx", Anim->GetPlayRate());
-    //ImGui::Checkbox("Is Playing", &Anim->IsPlaying());
-
-    //if (ImGui::Button("Play"))
-    //{
-    //    Anim->SetPlaying(true);
-    //}
-
-    //ImGui::SameLine();
-    //if (ImGui::Button("Pause"))
-    //{
-    //    Anim->SetPlaying(false);
-    //}
-
-    //ImGui::SameLine();
-    //if (ImGui::Button("Reset"))
-    //{
-    //    Anim->SetCurrentTime(0.f);
-    //}
 }
 
 void SkeletonMeshEditorPanel::OnResize(HWND hWnd)

@@ -425,7 +425,7 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
             FString FileName(SkelInputBuffer);
             if (FileName.Len() == 0)
             {
-                FileName = "Sword";
+                FileName = "AlienSoldier";
             }
 
             SkeletalMeshComp->LoadAndSetFBX(FileName);

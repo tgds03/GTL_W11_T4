@@ -40,7 +40,7 @@ void ACharacter::HandleAnimNotify(const FAnimNotifyEvent* Notify)
 {
     if (Notify->NotifyName == TEXT("Attack"))
     {
-        std::cout << "공격 얍" << std::endl;
+        std::cout << "Attack Yap!" << std::endl;
     }
     else
     {

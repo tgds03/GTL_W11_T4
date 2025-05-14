@@ -46,7 +46,7 @@ public:
     USkeletalMesh* EdittingMesh = nullptr;
 
     UAnimInstance* OriginalAnim = nullptr;
-    UAnimInstance* EditingAnim = nullptr;
+    UAnimInstance* EdittingAnim = nullptr;
 
     TArray<ABoneGizmo*> BoneGizmos;
     ABoneGizmo* SelectedGizmo = nullptr;
