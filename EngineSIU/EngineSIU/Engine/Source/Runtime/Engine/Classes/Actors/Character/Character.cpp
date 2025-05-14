@@ -1,5 +1,8 @@
-#include "Animation/AnimTypes.h"
 #include "Character.h"
+#include "Animation/AnimTypes.h"
+
+#include "Components/LuaScriptComponent.h"
+#include "Engine/Lua/LuaUtils/LuaTypeMacros.h"
 
 ACharacter::ACharacter()
 {
@@ -46,4 +49,23 @@ void ACharacter::HandleAnimNotify(const FAnimNotifyEvent* Notify)
     {
         // Default or unknown notify handling
     }
+}
+
+void ACharacter::RegisterLuaType(sol::state& Lua)
+{
+    DEFINE_LUA_TYPE_WITH_PARENT(ACharacter, sol::bases<AActor, APawn>())
+}
+
+bool ACharacter::BindSelfLuaProperties()
+{
+    Super::BindSelfLuaProperties();
+
+    sol::table& LuaTable = LuaScriptComponent->GetLuaSelfTable();
+    if (!LuaTable.valid())
+    {
+        return false;
+    }
+    LuaTable["this"] = this;
+
+    return true;
 }
