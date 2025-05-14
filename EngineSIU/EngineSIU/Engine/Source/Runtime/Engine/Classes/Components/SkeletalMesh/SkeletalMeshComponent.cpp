@@ -93,7 +93,7 @@ void USkeletalMeshComponent::LoadAndSetAnimation(FString FileName)
     }
 
     AnimSequence->SetRateScale(-0.5f);
-    AnimInstance->AddAnimSequence(AS_Dance, AnimSequence);
+    AnimInstance->GetAnimStateMachine()->AddAnimSequence(AS_Dance, AnimSequence);
 
     if (APawn* Actor = dynamic_cast<APawn*>(GetOwner()))
     {

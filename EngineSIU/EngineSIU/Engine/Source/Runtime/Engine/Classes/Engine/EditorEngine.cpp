@@ -15,7 +15,7 @@
 
 #include "Components/SkeletalMesh/SkeletalMesh.h"
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
-#include "SkeletalMeshEditorController.h"
+#include "DataPreviewController.h"
 
 #include "Actors/Character/Pawn.h"
 #include "Animation/UAnimInstance.h"

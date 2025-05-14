@@ -7,7 +7,7 @@
 #include "Math/Rotator.h"
 #include "Math/Vector.h"
 #include "Math/JungleMath.h"
-#include "Engine/SkeletalMeshEditorController.h"
+#include "Engine/DataPreviewController.h"
 
 void SkeletonMeshEditorPanel::Render()
 {
