@@ -167,7 +167,7 @@ void FGizmoRenderPass::Render(const std::shared_ptr<FEditorViewportClient>& View
         }
     }
 
-    if (Engine->ActiveWorld->WorldType == EWorldType::SkeletalMeshEditor)
+    if (Engine->ActiveWorld->WorldType == EWorldType::EditorPreview)
     {
         for (ABoneGizmo* Actor : Engine->GetSkeletalMeshEditorController()->GetBoneGizmos())
         {

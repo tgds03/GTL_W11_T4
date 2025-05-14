@@ -16,8 +16,13 @@ class ABoneGizmo;
 class UDataPreviewController
 {
 public:
-    void Initialize(USkeletalMesh* InMesh, FEditorViewportClient* InViewport);
-    void Initialize(UAnimInstance* InAnim, FEditorViewportClient* InViewport);
+    UDataPreviewController(UWorld* InWorld, FEditorViewportClient* InViewport)
+        : PreivewWorld(InWorld), AttachedViewport(InViewport) {
+    }
+    ~UDataPreviewController() = default;
+
+    void Initialize(USkeletalMesh* InMesh);
+    void Initialize(UAnimInstance* InAnim);
     void Release();
 
     TArray<ABoneGizmo*> GetBoneGizmos() { return BoneGizmos; }
@@ -34,10 +39,11 @@ public:
     EPreviewType GetType() const { return PreviewType; }
       
 public:
+    UWorld* PreivewWorld = nullptr;
     FEditorViewportClient* AttachedViewport = nullptr;
 
     USkeletalMesh* OriginalMesh = nullptr;
-    USkeletalMesh* EditingMesh = nullptr;
+    USkeletalMesh* EdittingMesh = nullptr;
 
     UAnimInstance* OriginalAnim = nullptr;
     UAnimInstance* EditingAnim = nullptr;

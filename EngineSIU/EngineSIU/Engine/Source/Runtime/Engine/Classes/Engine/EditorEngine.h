@@ -34,8 +34,8 @@ public:
     void BindEssentialObjects();
     void EndPIE();
 
-    void StartSkeletalMeshEditMode();
-    void EndSkeletalMeshEditMode();
+    void StartEditorPreviewMode();
+    void EndEditorPreviewMode();
 
     void StartSkeletalMeshEditMode(USkeletalMesh* InMesh);
     void StartAnimaitonEditMode(UAnimInstance* InAnim);
@@ -48,7 +48,7 @@ public:
     // 주석은 UE에서 사용하던 매개변수.
     FWorldContext& GetEditorWorldContext(/*bool bEnsureIsGWorld = false*/);
     FWorldContext* GetPIEWorldContext(/*int32 WorldPIEInstance = 0*/);
-    FWorldContext* GetSkeletalMeshEditWorldContext();
+    FWorldContext* GetEditorPreviewWorldContext();
 
 public:
     void SelectActor(AActor* InActor);

@@ -1,4 +1,4 @@
-#include "SkeletalMeshEditorController.h"
+#include "DataPreviewController.h"
 #include "InteractiveToolsFramework/BoneGizmos/ABoneGizmo.h"
 #include "Components/SkeletalMesh/SkeletalmeshComponent.h"
 #include "Animation/UAnimInstance.h"
@@ -6,20 +6,19 @@
 #include "World/World.h"
 #include "Engine/Source/Editor/UnrealEd/EditorViewportClient.h"
 
-void UDataPreviewController::Initialize(USkeletalMesh* InMesh, FEditorViewportClient* InViewport)
+void UDataPreviewController::Initialize(USkeletalMesh* InMesh)
 {
     OriginalMesh = InMesh;
-    EditingMesh = OriginalMesh->DuplicateSkeletalMesh();
-    AttachedViewport = InViewport;
+    EdittingMesh = OriginalMesh->DuplicateSkeletalMesh();
 
     AttachedViewport->SetViewMode(EViewModeIndex::VMI_Unlit);
 
     SetType(EPreviewType::SkeletalMesh);
 
-    SetBoneGizmo(EditingMesh);
+    SetBoneGizmo(OriginalMesh);
 }
 
-void UDataPreviewController::Initialize(UAnimInstance* InAnim, FEditorViewportClient* InViewport)
+void UDataPreviewController::Initialize(UAnimInstance* InAnim)
 {
     USkeletalMesh* InMesh = InAnim->GetOwningComponent()->GetSkeletalMesh();
 
@@ -31,24 +30,22 @@ void UDataPreviewController::Initialize(UAnimInstance* InAnim, FEditorViewportCl
     }
 
     OriginalMesh = InMesh;
-    EditingMesh = OriginalMesh->DuplicateSkeletalMesh();
+    EdittingMesh = OriginalMesh->DuplicateSkeletalMesh();
 
     OriginalAnim = InAnim;
     EditingAnim = OriginalAnim; // TODO: 복제 함수 추가 필요
     //EditingAnim = OriginalAnim->DuplicateAnimInstance();
 
-    AttachedViewport = InViewport;
-
     SetType(EPreviewType::Animation);
 
-    SetBoneGizmo(EditingMesh);
+    SetBoneGizmo(OriginalMesh);
 }
 
 void UDataPreviewController::Release()
 {
     AttachedViewport = nullptr;
     OriginalMesh = nullptr;
-    EditingMesh = nullptr;
+    EdittingMesh = nullptr;
     OriginalAnim = nullptr;
     EditingAnim = nullptr;
     SelectedGizmo = nullptr; 
