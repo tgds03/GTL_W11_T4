@@ -54,10 +54,17 @@ public:
     void Initialize(USkeletalMeshComponent* InComponent, APawn* InOwner);
 
     // 애니메이션 재생 제어
-    void PlayAnimation(UAnimSequence* InSequence, bool bInLooping = false);
-    void PlayAnimationByName(const FString& Name, bool bIsLooping = false);
-    
-    UAnimationStateMachine* GetAnimStateMachine() const { return AnimStateMachine; }
-    
+    void PlayAnimation(UAnimSequence* InSequence, bool bInLooping = false, bool bPlayDirect = false);
+
+    // 재생 상태 접근자
+    bool IsLooping() const;
+
+    bool IsPlaying() const { return bIsPlaying; }
+
+    void SetIsPlaying(bool IsPlaying) { bIsPlaying = IsPlaying; }
+
+    UAnimationStateMachine* GetAnimStateMachine() const { return AnimStateMachine.get(); }
 #pragma endregion
+
+    UAnimInstance* DuplicateAnimInstance() const;
 };
