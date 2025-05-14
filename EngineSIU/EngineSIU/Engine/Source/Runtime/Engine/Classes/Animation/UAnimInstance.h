@@ -29,6 +29,8 @@ public:
     UAnimInstance();
     virtual ~UAnimInstance() = default;
 
+    bool GetIsPlaying() { return bIsPlaying; }
+    void SetIsPlaying(bool IsPlaying) { bIsPlaying = IsPlaying; }
     // 매 프레임 업데이트
     void Update(float DeltaTime);
     virtual void NativeUpdateAnimation(float DeltaSeconds);
@@ -40,6 +42,7 @@ public:
     void SetTargetSequence(UAnimSequence* InSequence, float InBlendTime);
 
     UAnimSequence* GetCurrentSequence() const { return CurrentSequence; }
+    void SetCurrentSequence(UAnimSequence* Sequence) { CurrentSequence = Sequence; }
 
 private:
     UAnimSequence* CurrentSequence = nullptr;

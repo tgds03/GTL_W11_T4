@@ -6,6 +6,10 @@
 UAnimSequenceBase::UAnimSequenceBase()
     : RateScale(1.0f)
 {
+    FAnimNotifyEvent f;
+    f.NotifyName = "BBUNG";
+    f.TriggerTime = .3f;
+    Notifies.Add(f);
 }
 
 int32 UAnimSequenceBase::GetNumberOfFrames() const

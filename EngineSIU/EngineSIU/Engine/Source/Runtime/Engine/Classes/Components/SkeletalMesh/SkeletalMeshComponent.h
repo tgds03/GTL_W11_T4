@@ -25,7 +25,10 @@ public:
     void PlayAnimation(UAnimationAsset* NewAnimToPlay, bool bLooping = false);
     //void SetAnimationMode(EAnimationMode AnimationMode);
     UAnimInstance* GetAnimInstance() const { return AnimInstance; }
-    void SetAnimInstance(UAnimInstance* InAnimInstance) { AnimInstance = InAnimInstance; }
+    void SetAnimInstance(UAnimInstance* InAnimInstance) 
+    { 
+        AnimInstance = InAnimInstance; 
+    }
     void SetAnimation(UAnimationAsset* InAnimAsset);
     void Play(bool bLooping = false);
     void HandleAnimNotify(const FAnimNotifyEvent* Notify);

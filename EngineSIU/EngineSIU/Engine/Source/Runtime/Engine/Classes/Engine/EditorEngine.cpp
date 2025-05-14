@@ -300,7 +300,7 @@ void UEditorEngine::StartAnimaitonEditMode(UAnimInstance* InAnim)
     
     //TODO 에디터로 넘어올때 기존 월드 틱 사라지게 해야함 안그러면 틱 2번씩 돌아서 2배로 빨라짐.
     // 임시로 이거 지워서 속도맞춰둠
-    //SkelComp->SetAnimInstance(InAnim);
+    SkelComp->SetAnimInstance(InAnim);
     
     SkelComp->SetSkeletalMesh(DataPreviewController->OriginalMesh);
 }

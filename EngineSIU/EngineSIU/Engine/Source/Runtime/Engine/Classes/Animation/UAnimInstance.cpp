@@ -23,6 +23,14 @@ void UAnimInstance::Initialize(USkeletalMeshComponent* InComponent, APawn* InOwn
 
 void UAnimInstance::Update(float DeltaTime)
 {
+    if (!bIsPlaying)
+    {
+        // 노티파이와 같은 일부 처리는 계속할 수 있음
+        CheckAnimNotifyQueue();
+        TriggerAnimNotifies();
+        return;
+    }
+
     NativeUpdateAnimation(DeltaTime);
 }
 
@@ -103,6 +111,11 @@ void UAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 void UAnimInstance::SetTargetSequence(UAnimSequence* InSequence, float InBlendTime)
 {
+    if (CurrentSequence == nullptr)
+    {
+        CurrentSequence = InSequence;
+    }
+
     TargetSequence = InSequence;
     BlendTime = InBlendTime;
     ElapsedTime = 0.f;
