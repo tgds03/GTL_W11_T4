@@ -448,7 +448,7 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
             FString FileName(AnimInputBuffer);
             if (FileName.Len() == 0)
             {
-                FileName = "Sword";
+                FileName = "Twerkbin";
             }
 
             SkeletalMeshComp->LoadAndSetAnimation(FileName);

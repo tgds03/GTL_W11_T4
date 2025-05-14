@@ -106,4 +106,12 @@ void UAnimationStateMachine::UpdateSequence(float DeltaTime, USkeletalMesh* InSk
     }
 }
 
+void UAnimationStateMachine::SetAnimationTime(float Time)
+{
+    if (CurrentSequence)
+    {
+        CurrentSequence->SetLocalTime(Time);
+    }
+}
+
 

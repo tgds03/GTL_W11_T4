@@ -560,9 +560,12 @@ UAnimSequence* FResourceManager::LoadAnimationSequence(const FString& FilePath)
     FWString WideFilePath = FilePath.ToWideString();
 
     // 이미 로드된 애니메이션이 있는지 확인
-    if (AnimSequenceMap.Contains(WideFilePath))
+    if (AnimDataMap.Contains(WideFilePath))
     {
-        return AnimSequenceMap[WideFilePath];
+        UAnimSequence* AnimSequence = FObjectFactory::ConstructObject<UAnimSequence>(nullptr);
+        AnimSequence->SetDataModel(AnimDataMap[WideFilePath]);
+        return AnimSequence;
+        //return GetAnimationSequence(WideFilePath);
     }
 
     // AnimDataModel 생성
@@ -582,16 +585,19 @@ UAnimSequence* FResourceManager::LoadAnimationSequence(const FString& FilePath)
     // AnimSequence에 AnimDataModel 설정
     AnimSequence->SetDataModel(AnimDataModel);
    // AnimSequence->SetName(FilePath);
-
     // 맵에 추가
-    AnimSequenceMap.Add(WideFilePath, AnimSequence);
-
+    AnimDataMap.Add(WideFilePath, AnimDataModel);
     return AnimSequence;
 }
 
 UAnimSequence* FResourceManager::GetAnimationSequence(const FWString& AnimationKey)
 {
-    return AnimSequenceMap.Contains(AnimationKey) ? AnimSequenceMap[AnimationKey] : nullptr;
+    if (!AnimDataMap.Contains(AnimationKey))
+        return nullptr;
+    UAnimSequence* AnimSequence = FObjectFactory::ConstructObject<UAnimSequence>(nullptr);
+    // AnimSequence에 AnimDataModel 설정
+    AnimSequence->SetDataModel(AnimDataMap[AnimationKey]);
+    return AnimSequence;
 }
 #pragma endregion
 

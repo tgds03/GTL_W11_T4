@@ -20,6 +20,11 @@ void UDataPreviewController::Initialize(USkeletalMesh* InMesh)
 
 void UDataPreviewController::Initialize(UAnimInstance* InAnim)
 {
+    if (!InAnim)
+    {
+        return;
+    }
+
     USkeletalMesh* InMesh = InAnim->GetOwningComponent()->GetSkeletalMesh();
 
     if (!InMesh)

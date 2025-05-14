@@ -50,5 +50,8 @@ public:
 
     // 재생 길이 조정 (재생 속도 적용)
     float GetUnScaledPlayLength() const;
+
+    void SetLocalTime(float Time) { LocalTime = Time; }
+    float GetLocalTime() { return LocalTime; }
 };
 

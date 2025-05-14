@@ -25,6 +25,8 @@ public:
     void StartAnimSequence(UAnimSequence* InSequence, float InBlendingTime);
     void UpdateSequence(float DeltaTime, USkeletalMesh* InSkeletalMesh);
 
+    void SetAnimationTime(float Time);
+
     APawn* Owner;
 
     EAnimState CurrentState;
