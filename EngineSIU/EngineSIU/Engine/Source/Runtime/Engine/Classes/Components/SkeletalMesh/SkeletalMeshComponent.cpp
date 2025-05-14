@@ -128,7 +128,7 @@ void USkeletalMeshComponent::TickComponent(float DeltaTime)
     USkinnedMeshComponent::TickComponent(DeltaTime);
 
     //나중에 애니메이션 부를곳에서 부르기
-    // TickPose(DeltaTime);
+    //TickPose(DeltaTime);
 }
 
 void USkeletalMeshComponent::TickPose(float DeltaTime)
