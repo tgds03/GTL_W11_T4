@@ -222,7 +222,7 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
         ImGui::PushFont(IconFont);
 
         // 재생/일시정지 토글 버튼
-        if (ImGui::Button(bPlaying ? "\uf04c" : "\uf04b", ImVec2(28, 28))) {
+        if (ImGui::Button(bPlaying ? "\ue9a8" : "\uf04b", ImVec2(28, 28))) {
             bPlaying = !bPlaying;
             
             if (AnimInstance)
@@ -261,7 +261,7 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
         ImGui::SameLine();
         ImGui::SetNextItemWidth(120);
         if (ImGui::InputFloat("##PlayRate", &PlayRate, 0.1f, 0.5f, "%.1f")) {
-            PlayRate = FMath::Clamp(PlayRate, 0.1f, 10.0f);
+            PlayRate = FMath::Clamp(PlayRate, -10.0f, 10.0f);
             
             if (AnimInstance && AnimInstance->GetAnimStateMachine() && 
                 AnimInstance->GetCurrentSequence())
