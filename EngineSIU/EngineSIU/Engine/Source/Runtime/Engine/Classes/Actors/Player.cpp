@@ -129,7 +129,7 @@ bool AEditorPlayer::PickGizmo(FVector& pickPosition, FEditorViewportClient* InAc
             }
         }
 
-        if (Engine->ActiveWorld->WorldType == EWorldType::SkeletalMeshEditor)
+        if (Engine->ActiveWorld->WorldType == EWorldType::EditorPreview)
         {
             for (ABoneGizmo* GizmoActor : Engine->GetSkeletalMeshEditorController()->GetBoneGizmos())
             {

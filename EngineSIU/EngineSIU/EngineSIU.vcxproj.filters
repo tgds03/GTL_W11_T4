@@ -761,7 +761,6 @@
     <ClCompile Include="Engine\Source\Runtime\CoreUObject\UObject\ObjectGlobals.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Math\Vector4.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Misc\Parse.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\AmbientLightActor.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\Light\AmbientLightComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\Light\DirectionalLightComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\InputCore\InputCoreTypes.cpp" />
@@ -832,7 +831,7 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\ResourceManager.cpp">
       <Filter>Engine\Source\Runtime\Engine\Classes\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\SkeletalMeshEditorController.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\DataPreviewController.cpp" />
     <ClCompile Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\ABoneGizmo.cpp" />
     <ClCompile Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoJointComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoFrameComponent.cpp" />
@@ -843,6 +842,9 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Animation\UAnimInstance.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Pawn.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Character.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Animation\AnimationStateMachine.cpp" />
+    <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_neo_internal.cpp" />
+    <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_neo_sequencer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="EngineSIU.natvis" />
@@ -976,7 +978,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\ResourceManager.h">
       <Filter>Engine\Source\Runtime\Engine\Classes\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\SkeletalMeshEditorController.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\DataPreviewController.h" />
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\ABoneGizmo.h" />
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoJointComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoFrameComponent.h" />
@@ -992,6 +994,10 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Asset\StaticMeshAsset.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Pawn.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Character.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Container\Queue.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Animation\AnimationStateMachine.h" />
+    <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui_neo_internal.h" />
+    <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui_neo_sequencer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />
@@ -1004,9 +1010,6 @@
     <ClInclude Include="Engine\Source\Runtime\Renderer\ShaderConstants.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\DepthPrePass.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\TileLightCullingPass.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\AmbientLightActor.h">
-      <Filter>Engine\Source\Runtime\Engine\Classes\Actors</Filter>
-    </ClInclude>
     <None Include="Shaders\CompositingShader.hlsl" />
     <None Include="Shaders\DepthBufferPixelShader.hlsl" />
     <None Include="Shaders\DepthBufferVertexShader.hlsl" />
