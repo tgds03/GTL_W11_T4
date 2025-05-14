@@ -18,16 +18,13 @@ protected:
     std::shared_ptr<UAnimationStateMachine> AnimStateMachine = nullptr;
 
     TQueue<UAnimSequence*> WaitSequences;
-    
-    float PreviousLocalTime = 0.0f;   // 이전 프레임의 시간
+   
     FAnimNotifyQueue NotifyQueue;     // 노티파이 큐
 
-    // 노티파이 처리 함수
-    void CheckAnimNotifyQueue();
-    void TriggerAnimNotifies();
-
-
     bool bIsPlaying = true;
+
+    float PreviousSequenceTime = 0.f;
+
     
 public:
     UAnimInstance();
@@ -37,7 +34,8 @@ public:
     void Update(float DeltaTime);
     virtual void NativeUpdateAnimation(float DeltaSeconds);
 
-    void TriggerAnimNotifies(float DeltaSceonds);
+    void CheckAnimNotifyQueue();
+    void TriggerAnimNotifies();
 
 #pragma region Properties
     USkeletalMeshComponent* GetOwningComponent() const { return OwningComponent; }
@@ -49,6 +47,7 @@ public:
 
     // 재생 상태 접근자
     bool IsLooping() const;
+
     bool IsPlaying() const { return bIsPlaying; }
 
     UAnimationStateMachine* GetAnimStateMachine() const { return AnimStateMachine.get(); }

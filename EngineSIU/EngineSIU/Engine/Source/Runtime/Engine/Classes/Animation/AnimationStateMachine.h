@@ -1,5 +1,6 @@
-﻿#pragma once
+#pragma once
 #include "UObject/Object.h"
+#include "AnimTypes.h"
 
 struct FBonePose;
 class APawn;
@@ -45,4 +46,5 @@ public:
     void SetAnimaSequence(UAnimSequence* AnimSeq) { CurrentSequence = AnimSeq; }
     
     TArray<FBonePose> GetCurrentPose() { return CurrentPose; }
+    
 };

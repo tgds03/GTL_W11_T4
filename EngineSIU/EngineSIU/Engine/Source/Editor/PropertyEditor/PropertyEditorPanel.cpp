@@ -425,7 +425,7 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
             FString FileName(SkelInputBuffer);
             if (FileName.Len() == 0)
             {
-                FileName = "Walking";
+                FileName = "Sword";
             }
 
             SkeletalMeshComp->LoadAndSetFBX(FileName);
@@ -448,7 +448,7 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
             FString FileName(AnimInputBuffer);
             if (FileName.Len() == 0)
             {
-                FileName = "Walking";
+                FileName = "Sword";
             }
 
             SkeletalMeshComp->LoadAndSetAnimation(FileName);

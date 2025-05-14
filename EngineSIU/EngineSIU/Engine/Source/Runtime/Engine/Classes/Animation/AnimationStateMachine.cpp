@@ -29,6 +29,12 @@ void UAnimationStateMachine::StartAnimSequence(UAnimSequence* InSequence, float 
     if (!CurrentSequence)
     {
         CurrentSequence = InSequence;
+
+        FAnimNotifyEvent f;
+        f.TriggerTime = .338235f;
+        f.NotifyName = "Attack";
+        GetCurrentAnimSequence()->AddNotify(f);
+
         CurrentSequence->BeginSequence();
         return;
     }
@@ -44,7 +50,7 @@ void UAnimationStateMachine::UpdateSequence(float DeltaTime, USkeletalMesh* InSk
     {
         return;
     }
-    
+
     if (CurrentSequence)
     {
         CurrentSequence->TickSequence(DeltaTime);
@@ -99,3 +105,5 @@ void UAnimationStateMachine::UpdateSequence(float DeltaTime, USkeletalMesh* InSk
         }
     }
 }
+
+
