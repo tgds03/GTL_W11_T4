@@ -116,10 +116,12 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
     float AnimSpeed = 0.5f;
     AnimSequence->SetRateScale(AnimSpeed);
     AnimSequence2->SetRateScale(AnimSpeed);
+
+    UAnimationStateMachine* StateMachine = AnimInstance->GetAnimStateMachine();
     
     // AS_Dance상태일땐 AnimSequence돌리라고 추가
-    AnimInstance->AddAnimSequence(AS_Dance, AnimSequence);
-    AnimInstance->AddAnimSequence(AS_Die, AnimSequence2);
+    StateMachine->AddAnimSequence(AS_Dance, AnimSequence);
+    StateMachine->AddAnimSequence(AS_Die, AnimSequence2);
     
     if (APawn* Actor = dynamic_cast<APawn*>(GetOwner()))
     {
