@@ -47,7 +47,7 @@ void UDataPreviewController::Initialize(UAnimInstance* InAnim)
     SkelComp->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
     UAnimSequence* CopyAnimSequence = Cast<UAnimSequence>(InAnim->GetCurrentSequence()->Duplicate(PreviewWorld));
     SkelComp->GetAnimInstance()->SetTargetSequence(CopyAnimSequence, 0.0f);
-    SkelComp->SetSkeletalMesh(OriginalMesh);
+    SkelComp->SetSkeletalMesh(EdittingMesh);
 
     OriginalAnim = InAnim;
     EdittingAnim = SkelComp->GetAnimInstance(); // TODO: 복제 함수 추가 필요
