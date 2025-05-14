@@ -25,7 +25,7 @@ class UAnimationStateMachine : public UObject
 
 public:
     UAnimationStateMachine() = default;
-    
+    virtual ~UAnimationStateMachine();
     // LuaScriptName은 기본 경로 "Scripts/Animation/"에 추가.
     // 예: "MyScript.lua" -> "Scripts/Animation/MyScript.lua"
     // 인자는 하위 폴더 경로 + 파일명.lua 만 넣어줄 것.
@@ -35,11 +35,12 @@ public:
 
     APawn* Owner;
 
-private:
+public:
     void InitLuaStateMachine();
 
-public:
     void SetScriptFilePath(const FString& InScriptFilePath) { ScriptFilePath = InScriptFilePath; }
+
+    FString GetScriptFilePath() const { return ScriptFilePath; }
 
 private:
     FString ScriptFilePath;

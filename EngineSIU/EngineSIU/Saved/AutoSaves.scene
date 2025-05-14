@@ -7,11 +7,23 @@
             "ActorTickInEditor": "true",
             "Components": [
                 {
+                    "ComponentClass": "ULuaScriptComponent",
+                    "ComponentID": "LuaComponent_0",
+                    "Properties": {
+                        "ComponentClass": "ULuaScriptComponent",
+                        "ComponentName": "LuaComponent_0",
+                        "ComponentOwner": "APawn_127",
+                        "ComponentOwnerClass": "APawn",
+                        "bAutoActive": "true",
+                        "bIsActive": "true"
+                    }
+                },
+                {
                     "ComponentClass": "USkeletalMeshComponent",
                     "ComponentID": "USkeletalMeshComponent_129",
                     "Properties": {
-                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
-                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
+                        "AABB_max": "X=96.463 Y=199.254 Z=33.858",
+                        "AABB_min": "X=-96.461 Y=-0.209 Z=-24.923",
                         "AttachParentID": "nullptr",
                         "ComponentClass": "USkeletalMeshComponent",
                         "ComponentName": "USkeletalMeshComponent_129",
@@ -20,7 +32,7 @@
                         "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
                         "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "SkeletalMeshPath": "None",
+                        "SkeletalMeshPath": "Contents/Fbx/Twerkbin.fbx",
                         "bAutoActive": "true",
                         "bIsActive": "true",
                         "m_Type": ""

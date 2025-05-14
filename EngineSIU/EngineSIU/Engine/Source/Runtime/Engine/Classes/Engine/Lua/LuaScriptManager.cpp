@@ -4,10 +4,12 @@
 
 #include "Engine/Lua/LuaTypes/LuaUserTypes.h"
 #include "Components/LuaScriptComponent.h"
+#include "Animation/AnimationStateMachine.h"
 #include "GameFramework/Actor.h"
 
 TMap<FString, FLuaTableScriptInfo> FLuaScriptManager::ScriptCacheMap;
 TSet<ULuaScriptComponent*> FLuaScriptManager::ActiveLuaComponents;
+TSet<UAnimationStateMachine*> FLuaScriptManager::ActiveAnimLua;
 
 FLuaScriptManager::FLuaScriptManager()
 {
@@ -99,7 +101,7 @@ sol::table FLuaScriptManager::CreateLuaTable(const FString& ScriptName)
     }
 
     return NewEnv;
-} 
+}
 
 void FLuaScriptManager::RegisterActiveLuaComponent(ULuaScriptComponent* LuaComponent)
 {
@@ -110,6 +112,17 @@ void FLuaScriptManager::UnRigisterActiveLuaComponent(ULuaScriptComponent* LuaCom
 {
     if (ActiveLuaComponents.Contains(LuaComponent))
         ActiveLuaComponents.Remove(LuaComponent);
+}
+
+void FLuaScriptManager::RegisterActiveAnimLua(UAnimationStateMachine* AnimInstance)
+{
+    ActiveAnimLua.Add(AnimInstance);
+}
+
+void FLuaScriptManager::UnRigisterActiveAnimLua(UAnimationStateMachine* AnimInstance)
+{
+    if (ActiveAnimLua.Contains(AnimInstance))
+        ActiveAnimLua.Remove(AnimInstance);
 }
 
 void FLuaScriptManager::HotReloadLuaScript()
@@ -138,9 +151,18 @@ void FLuaScriptManager::HotReloadLuaScript()
         {
             if (LuaComponent->GetScriptName() == ChangedScript)
             {
-                //LuaComponent->GetOwner()->BindSelfLuaProperties();
+                LuaComponent->GetOwner()->BindSelfLuaProperties();
                 UE_LOG(LogLevel::Display, TEXT("Lua Script Reloaded: %s"), *ChangedScript);
             } 
+        }
+
+        for (UAnimationStateMachine* AnimStateMachine : ActiveAnimLua)
+        {
+            if (AnimStateMachine->GetScriptFilePath() == ChangedScript)
+            {
+                AnimStateMachine->InitLuaStateMachine();
+                UE_LOG(LogLevel::Display, TEXT("Lua Script Reloaded: %s"), *ChangedScript);
+            }
         }
     }
 }

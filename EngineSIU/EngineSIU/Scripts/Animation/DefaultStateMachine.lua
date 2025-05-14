@@ -2,7 +2,7 @@ AnimFSM = {
     current = "Idle",
     Update = function(self, dt)
 
-        self.current = "Contents/Fbx/Capoeira.fbx"
+        self.current = "Contents/Fbx/Twerkbin.fbx"
 
 
         -- local speed = self.owner:GetVelocity():Length()
