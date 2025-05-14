@@ -830,7 +830,7 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\ResourceManager.cpp">
       <Filter>Engine\Source\Runtime\Engine\Classes\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\SkeletalMeshEditorController.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\DataPreviewController.cpp" />
     <ClCompile Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\ABoneGizmo.cpp" />
     <ClCompile Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoJointComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoFrameComponent.cpp" />
@@ -845,6 +845,8 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Components\LuaScriptComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaScriptManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaTypes\LuaUserTypes.cpp" />
+    <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_neo_internal.cpp" />
+    <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_neo_sequencer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="EngineSIU.natvis" />
@@ -975,7 +977,7 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\ResourceManager.h">
       <Filter>Engine\Source\Runtime\Engine\Classes\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\SkeletalMeshEditorController.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\DataPreviewController.h" />
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\ABoneGizmo.h" />
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoJointComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoFrameComponent.h" />
@@ -998,6 +1000,8 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaTypes\LuaUserTypes.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaUtils\LuaBindUtils.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaUtils\LuaTypeMacros.h" />
+    <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui_neo_internal.h" />
+    <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui_neo_sequencer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />

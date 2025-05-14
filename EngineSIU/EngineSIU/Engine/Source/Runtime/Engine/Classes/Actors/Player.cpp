@@ -14,7 +14,7 @@
 #include "UObject/UObjectIterator.h"
 #include "Engine/EditorEngine.h"
 
-#include "Engine/SkeletalMeshEditorController.h"
+#include "Engine/DataPreviewController.h"
 #include "BoneGizmos/ABoneGizmo.h"
 
 void AEditorPlayer::Tick(float DeltaTime)
@@ -129,7 +129,7 @@ bool AEditorPlayer::PickGizmo(FVector& pickPosition, FEditorViewportClient* InAc
             }
         }
 
-        if (Engine->ActiveWorld->WorldType == EWorldType::SkeletalMeshEditor)
+        if (Engine->ActiveWorld->WorldType == EWorldType::EditorPreview)
         {
             for (ABoneGizmo* GizmoActor : Engine->GetSkeletalMeshEditorController()->GetBoneGizmos())
             {

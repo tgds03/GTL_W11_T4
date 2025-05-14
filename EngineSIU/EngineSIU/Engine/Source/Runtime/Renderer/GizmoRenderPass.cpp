@@ -29,7 +29,7 @@
 
 #include "Components/StaticMeshComponent.h"
 #include "Engine/EditorEngine.h"
-#include "Engine/SkeletalMeshEditorController.h"
+#include "Engine/DataPreviewController.h"
 #include "BoneGizmos/ABoneGizmo.h"
 
 FGizmoRenderPass::FGizmoRenderPass()
@@ -167,7 +167,7 @@ void FGizmoRenderPass::Render(const std::shared_ptr<FEditorViewportClient>& View
         }
     }
 
-    if (Engine->ActiveWorld->WorldType == EWorldType::SkeletalMeshEditor)
+    if (Engine->ActiveWorld->WorldType == EWorldType::EditorPreview)
     {
         for (ABoneGizmo* Actor : Engine->GetSkeletalMeshEditorController()->GetBoneGizmos())
         {

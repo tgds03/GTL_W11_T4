@@ -3,6 +3,7 @@
 
 #include <filesystem>
 #include "Engine/FObjLoader.h"
+#include "FbxLoader.h"
 
 bool UAssetManager::IsInitialized()
 {
@@ -33,6 +34,7 @@ void UAssetManager::InitAssetManager()
     AssetRegistry = std::make_unique<FAssetRegistry>();
 
     LoadObjFiles();
+    //LoadFBXFiles();
 }
 
 const TMap<FName, FAssetInfo>& UAssetManager::GetAssetRegistry()
@@ -60,6 +62,32 @@ void UAssetManager::LoadObjFiles()
             
             FString MeshName = NewAssetInfo.PackagePath.ToString() + "/" + NewAssetInfo.AssetName.ToString();
             FResourceManager::CreateStaticMesh(MeshName);
+            // ObjFileNames.push_back(UGTLStringLibrary::StringToWString(Entry.path().string()));
+            // FResourceManager::LoadObjStaticMeshAsset(UGTLStringLibrary::StringToWString(Entry.path().string()));
+        }
+    }
+}
+
+void UAssetManager::LoadFBXFiles()
+{
+    const std::string BasePathName = "Contents/";
+
+    // Obj 파일 로드
+
+    for (const auto& Entry : std::filesystem::recursive_directory_iterator(BasePathName))
+    {
+        if (Entry.is_regular_file() && Entry.path().extension() == ".fbx")
+        {
+            //FAssetInfo NewAssetInfo;
+            //NewAssetInfo.AssetName = FName(Entry.path().filename().string());
+            //NewAssetInfo.PackagePath = FName(Entry.path().parent_path().string());
+            //NewAssetInfo.AssetType = EAssetType::StaticMesh;
+            //NewAssetInfo.Size = static_cast<uint32>(std::filesystem::file_size(Entry.path()));
+
+            //AssetRegistry->PathNameToAssetInfo.Add(NewAssetInfo.AssetName, NewAssetInfo);
+
+            FFbxLoader::LoadFBXSkeletalMeshAsset(Entry.path().string());
+            FFbxLoader::LoadFBXAnimationAsset(Entry.path().string(), nullptr);
             // ObjFileNames.push_back(UGTLStringLibrary::StringToWString(Entry.path().string()));
             // FResourceManager::LoadObjStaticMeshAsset(UGTLStringLibrary::StringToWString(Entry.path().string()));
         }

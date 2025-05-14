@@ -24,7 +24,7 @@ void UnrealEd::Initialize()
     Panels["PropertyPanel"] = PropertyPanel;
 
     auto SkeletonPanel = std::make_shared<SkeletonMeshEditorPanel>();
-    SkeletonPanel->SetVisibleInWorldType(EWorldType::SkeletalMeshEditor);
+    SkeletonPanel->SetVisibleInWorldType(EWorldType::EditorPreview);
     Panels["SkeletonPanel"] = SkeletonPanel;
 }
 
@@ -35,7 +35,8 @@ void UnrealEd::Render() const
     for (const auto& Panel : Panels)
     {
         // TODO : Panel을 새로 만들지 Render할때 Type을 넣어서 분기 할지 고민
-        if (ActiveWorldType == Panel.Value->VisibleInWorldType)
+        if (ActiveWorldType == Panel.Value->VisibleInWorldType ||
+            Panel.Value->VisibleInWorldType == EWorldType::None)
             Panel.Value->Render();
     }
 }

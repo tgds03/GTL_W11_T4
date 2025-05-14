@@ -401,52 +401,89 @@ void PropertyEditorPanel::RenderForStaticMesh(UStaticMeshComponent* StaticMeshCo
 
 void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* SkeletalMeshComp) const
 {
+    float InputHeight = ImGui::GetFrameHeight();
+
     ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
     if (ImGui::TreeNodeEx("Skeletal Mesh", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
     {
         ImGui::Text("SkeletalMesh");
         
+        static char SkelInputBuffer[128] = "";
+        ImGui::Text("FBX Name  ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(150);
+        ImGui::InputText("##FBXInput", SkelInputBuffer, IM_ARRAYSIZE(SkelInputBuffer));
+        ImGui::SameLine();
         // GenerateSampleData 버튼을 연한 파란색으로
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.4f, 0.8f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.5f, 0.9f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.3f, 0.7f, 1.0f));
-        if (ImGui::Button("GenerateSampleData", ImVec2(64, 64))) 
+        if (ImGui::Button("Load", ImVec2(64, InputHeight)))
         {
-            SkeletalMeshComp->GenerateSampleData();
+            FString FileName(SkelInputBuffer);
+            if (FileName.Len() == 0)
+            {
+                FileName = "Walking";
+            }
+
+            SkeletalMeshComp->LoadAndSetFBX(FileName);
+            //SkeletalMeshComp->GenerateSampleData();
         }
         ImGui::PopStyleColor(3);
 
+        static char AnimInputBuffer[128] = "";
+        ImGui::Text("Anim Name");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(150);
+        ImGui::InputText("##AnimInput", AnimInputBuffer, IM_ARRAYSIZE(AnimInputBuffer));
+        ImGui::SameLine();
         // TestSkeletalMesh 버튼을 연한 초록색으로
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.8f, 0.3f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.3f, 0.9f, 0.4f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.1f, 0.7f, 0.2f, 1.0f));
-        if (ImGui::Button("TestDie", ImVec2(64, 64)))
+        if (ImGui::Button("Apply", ImVec2(64, InputHeight)))
         {
-            SkeletalMeshComp->TestSkeletalDie();
+            FString FileName(AnimInputBuffer);
+            if (FileName.Len() == 0)
+            {
+                FileName = "Walking";
+            }
+
+            SkeletalMeshComp->LoadAndSetAnimation(FileName);
         }
         ImGui::PopStyleColor(3);
-
+        
         // TestFBX 버튼을 연한 주황색으로
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.9f, 0.6f, 0.2f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(1.0f, 0.7f, 0.3f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.8f, 0.5f, 0.1f, 1.0f));
-        if (ImGui::Button("TestFBX", ImVec2(64, 64)))
-        {
-            SkeletalMeshComp->TestFBXSkeletalMesh();
-        }
-        ImGui::PopStyleColor(3);
-
-        // Edit 버튼을 붉은 색으로
-        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.3f, 0.3f, 1.0f));
-        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.1f, 1.0f));
-        if (ImGui::Button("Edit", ImVec2(64, 64)))
+        if (ImGui::Button("SkeletalMesh Editor", ImVec2(150, 32)))
         {
             UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
             Engine->StartSkeletalMeshEditMode(SkeletalMeshComp->GetSkeletalMesh());
         }
         ImGui::PopStyleColor(3);
-
+        
+        // Edit 버튼을 붉은 색으로
+        ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.9f, 0.3f, 0.3f, 1.0f));
+        ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.7f, 0.1f, 0.1f, 1.0f));
+        if (ImGui::Button("Animation Edtior", ImVec2(150, 32)))
+        {
+            UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
+            Engine->StartAnimaitonEditMode(SkeletalMeshComp->GetAnimInstance().get());
+        }
+        ImGui::PopStyleColor(3);
+        
+        if (ImGui::Button("Test StateMachinw", ImVec2(128, 32)))
+        {
+            SkeletalMeshComp->TestAnimationStateMachine();
+        }
+        if (ImGui::Button("Switch State", ImVec2(128, 32)))
+        {
+            SkeletalMeshComp->SwitchState();
+        }
+        
         ImGui::TreePop();
     }
     ImGui::PopStyleColor();
