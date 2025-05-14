@@ -60,8 +60,6 @@ public:
 
     bool IsPlaying() const { return bIsPlaying; }
 
-    void SetIsPlaying(bool IsPlaying) { bIsPlaying = IsPlaying; }
-
     UAnimationStateMachine* GetAnimStateMachine() const { return AnimStateMachine; }
 #pragma endregion
 

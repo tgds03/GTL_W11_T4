@@ -37,8 +37,6 @@ void UDataPreviewController::Initialize(UAnimInstance* InAnim)
     OriginalMesh = InMesh;
     EdittingMesh = OriginalMesh->DuplicateSkeletalMesh();
 
-    OriginalAnim = InAnim;
-    EdittingAnim = OriginalAnim; // TODO: 복제 함수 추가 필요
     //EditingAnim = OriginalAnim->DuplicateAnimInstance();
 
     APawn* PreviewActor = PreviewWorld->SpawnActor<APawn>();
@@ -50,6 +48,9 @@ void UDataPreviewController::Initialize(UAnimInstance* InAnim)
     UAnimSequence* CopyAnimSequence = Cast<UAnimSequence>(InAnim->GetCurrentSequence()->Duplicate(PreviewWorld));
     SkelComp->GetAnimInstance()->SetTargetSequence(CopyAnimSequence, 0.0f);
     SkelComp->SetSkeletalMesh(OriginalMesh);
+
+    OriginalAnim = InAnim;
+    EdittingAnim = SkelComp->GetAnimInstance(); // TODO: 복제 함수 추가 필요
 
     SetType(EPreviewType::Animation);
     isVisibleBone = false;
