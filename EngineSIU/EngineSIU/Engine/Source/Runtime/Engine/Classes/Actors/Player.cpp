@@ -14,7 +14,7 @@
 #include "UObject/UObjectIterator.h"
 #include "Engine/EditorEngine.h"
 
-#include "Engine/SkeletalMeshEditorController.h"
+#include "Engine/DataPreviewController.h"
 #include "BoneGizmos/ABoneGizmo.h"
 
 void AEditorPlayer::Tick(float DeltaTime)
