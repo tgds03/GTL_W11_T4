@@ -23,6 +23,8 @@ public:
 
     void PlayAnimation(UAnimationAsset* NewAnimToPlay, bool bLooping = false);
     //void SetAnimationMode(EAnimationMode AnimationMode);
+    std::shared_ptr<UAnimInstance> GetAnimInstance() const { return AnimInstance; }
+    void SetAnimInstance(std::shared_ptr<UAnimInstance> InAnimInstance) { AnimInstance = InAnimInstance; }
     void SetAnimation(UAnimationAsset* InAnimAsset);
     void Play(bool bLooping = false);
     void HandleAnimNotify(const FAnimNotifyEvent* Notify);
@@ -31,13 +33,12 @@ public:
     virtual void TickPose(float DeltaTime) override;
     void TickAnimation(float DeltaTime);
 
-    // OBJ 파일을 통한 Sample Skeletal Mesh 구현
-    void GenerateSampleData();
-
     // 각도 변화 주기
-    void TestSkeletalDie();
+    void LoadAndSetFBX(FString FileName); 
+    void LoadAndSetAnimation(FString FileName);
 
-    void TestFBXSkeletalMesh(); 
+    void TestAnimationStateMachine();
+    void SwitchState();
 
     void PerformCPUSkinning();
 

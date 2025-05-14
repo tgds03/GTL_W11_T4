@@ -59,32 +59,12 @@ void USkeletalMeshComponent::HandleAnimNotify(const FAnimNotifyEvent* Notify)
     }
 }
 
-void USkeletalMeshComponent::GenerateSampleData()
-{
-}
-
-void USkeletalMeshComponent::TestSkeletalDie()
-{
-    if (!OwnerPawn)
-    {
-        return; 
-    }
-
-    if (OwnerPawn->CurrentMovementMode == EDie)
-    {
-        OwnerPawn->CurrentMovementMode = EDancing;
-    }
-    else if (OwnerPawn->CurrentMovementMode == EDancing)
-    {
-        OwnerPawn->CurrentMovementMode = EDie;
-    }
-}
-
-void USkeletalMeshComponent::TestFBXSkeletalMesh()
+void USkeletalMeshComponent::LoadAndSetFBX(FString FileName)
 {
     // 1) FBX로부터 USkeletalMesh 생성
 
-    FString FbxPath(TEXT("Contents/Fbx/Twerkbin.fbx"));
+    //FString FbxPath(TEXT("Contents/Fbx/Twerkbin.fbx"));
+    FString FbxPath(TEXT("Contents/Fbx/") + FileName + TEXT(".fbx"));
     
     USkeletalMesh* LoadedMesh = FResourceManager::LoadSkeletalMesh(FbxPath);
     if (!LoadedMesh)
@@ -92,6 +72,17 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
         UE_LOG(LogLevel::Warning, TEXT("FBX 로드 실패: %s"), *FbxPath);
         return;
     }
+
+    SetSkeletalMesh(LoadedMesh);
+}
+
+void USkeletalMeshComponent::LoadAndSetAnimation(FString FileName)
+{
+    AnimInstance.reset();
+    InitializeAnimInstance(Cast<APawn>(GetOwner()));
+
+
+    FString FbxPath(TEXT("Contents/Fbx/") + FileName + TEXT(".fbx"));
 
     UAnimSequence* AnimSequence = FResourceManager::LoadAnimationSequence(FbxPath);
     if (!AnimSequence)
@@ -101,10 +92,27 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
         return;
     }
 
-    // 2) SkeletalMeshComponent에 세팅
-    SetSkeletalMesh(LoadedMesh);
+    AnimSequence->SetRateScale(-0.5f);
+    AnimInstance->AddAnimSequence(AS_Dance, AnimSequence);
 
-    //////////////////////////////////
+    if (APawn* Actor = dynamic_cast<APawn*>(GetOwner()))
+    {
+        Actor->CurrentMovementMode = EDancing;
+    }
+}
+
+void USkeletalMeshComponent::TestAnimationStateMachine()
+{
+    FString FbxPath(TEXT("Contents/Fbx/Twerkbin.fbx"));
+
+    UAnimSequence* AnimSequence = FResourceManager::LoadAnimationSequence(FbxPath);
+    if (!AnimSequence)
+    {
+        UE_LOG(LogLevel::Warning, TEXT("애니메이션 로드 실패, 스켈레톤만 표시합니다."));
+        UpdateGlobalPose();
+        return;
+    }
+
     FbxPath = TEXT("Contents/Fbx/Capoeira.fbx");
     UAnimSequence* AnimSequence2 = FResourceManager::LoadAnimationSequence(FbxPath);
     if (!AnimSequence2)
@@ -122,13 +130,28 @@ void USkeletalMeshComponent::TestFBXSkeletalMesh()
     // AS_Dance상태일땐 AnimSequence돌리라고 추가
     StateMachine->AddAnimSequence(AS_Dance, AnimSequence);
     StateMachine->AddAnimSequence(AS_Die, AnimSequence2);
-    
+  
     if (APawn* Actor = dynamic_cast<APawn*>(GetOwner()))
     {
         Actor->CurrentMovementMode = EDancing;
     }
-    
-    UpdateGlobalPose();
+}
+
+void USkeletalMeshComponent::SwitchState()
+{
+    if (!OwnerPawn)
+    {
+        return;
+    }
+
+    if (OwnerPawn->CurrentMovementMode == EDie)
+    {
+        OwnerPawn->CurrentMovementMode = EDancing;
+    }
+    else if (OwnerPawn->CurrentMovementMode == EDancing)
+    {
+        OwnerPawn->CurrentMovementMode = EDie;
+    }
 }
 
 void USkeletalMeshComponent::PerformCPUSkinning()

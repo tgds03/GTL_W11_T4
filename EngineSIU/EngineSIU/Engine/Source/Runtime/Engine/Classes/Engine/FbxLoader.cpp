@@ -29,6 +29,20 @@ USkeletalMesh* FFbxLoader::LoadFBXSkeletalMeshAsset(const FString& filePathName)
     importer->Import(scene);
     importer->Destroy();
 
+    //FbxAxisSystem sceneAxisSystem = scene->GetGlobalSettings().GetAxisSystem();
+    //FbxAxisSystem desiredAxisSystem(FbxAxisSystem::eZAxis, FbxAxisSystem::eParityOdd, FbxAxisSystem::eLeftHanded); // Z-Up, X-Forward
+
+    //if (sceneAxisSystem != desiredAxisSystem)
+    //{
+    //    desiredAxisSystem.ConvertScene(scene);  // 좌표계 변환
+    //}
+
+    //FbxSystemUnit sceneSystemUnit = scene->GetGlobalSettings().GetSystemUnit();
+    //if (sceneSystemUnit.GetScaleFactor() != 1.0)
+    //{
+    //    FbxSystemUnit::cm.ConvertScene(scene);  // 단위 변환 (centimeter 단위로)
+    //}
+
     // 3) USkeletalMesh 생성
     USkeletalMesh* skelMesh = FObjectFactory::ConstructObject<USkeletalMesh>(nullptr);
 
