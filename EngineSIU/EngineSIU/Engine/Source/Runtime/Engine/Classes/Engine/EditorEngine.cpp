@@ -299,16 +299,6 @@ void UEditorEngine::StartAnimaitonEditMode(UAnimInstance* InAnim)
     FEditorViewportClient* ViewPort = GEngineLoop.GetLevelEditor()->GetViewports()->get();
     DataPreviewController = std::make_shared<UDataPreviewController>(ActiveWorld, ViewPort);
     DataPreviewController->Initialize(InAnim);
-
-    APawn* PreviewActor = ActiveWorld->SpawnActor<APawn>();
-    // TODO : AnimObjectName 설정
-    PreviewActor->SetActorLabel(FString(TEXT("Animation Preview Actor")));
-
-    USkeletalMeshComponent* SkelComp = Cast<USkeletalMeshComponent>(PreviewActor->GetRootComponent());
-    SkelComp->SetRelativeRotation(FRotator(0, 0, -90));
-    SkelComp->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
-    SkelComp->SetAnimInstance(InAnim);
-    SkelComp->SetSkeletalMesh(DataPreviewController->OriginalMesh);
 }
 
 FWorldContext& UEditorEngine::GetEditorWorldContext(/*bool bEnsureIsGWorld*/)

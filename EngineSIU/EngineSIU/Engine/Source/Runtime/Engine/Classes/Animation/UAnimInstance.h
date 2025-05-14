@@ -24,6 +24,11 @@ protected:
 
     float PreviousSequenceTime = 0.f;
 
+private:
+    UAnimSequence* CurrentSequence = nullptr;
+    UAnimSequence* TargetSequence = nullptr;
+    float BlendTime = 0.f; // 블렌딩에 걸리는 시간.
+    float ElapsedTime = 0.f; // 블렌딩에 걸린 시간.
     
 public:
     UAnimInstance();
@@ -41,12 +46,6 @@ public:
 
     UAnimSequence* GetCurrentSequence() const { return CurrentSequence; }
 
-private:
-    UAnimSequence* CurrentSequence = nullptr;
-    UAnimSequence* TargetSequence = nullptr;
-    float BlendTime = 0.f; // 블렌딩에 걸리는 시간.
-    float ElapsedTime = 0.f; // 블렌딩에 걸린 시간.
-
 public:
 #pragma region Properties
     USkeletalMeshComponent* GetOwningComponent() const { return OwningComponent; }
@@ -54,17 +53,26 @@ public:
     void Initialize(USkeletalMeshComponent* InComponent, APawn* InOwner);
 
     // 애니메이션 재생 제어
-    void PlayAnimation(UAnimSequence* InSequence, bool bInLooping = false, bool bPlayDirect = false);
-
-    // 재생 상태 접근자
-    bool IsLooping() const;
+    void PlayAnimation(UAnimSequence* InSequence, bool bInLooping = false);
 
     bool IsPlaying() const { return bIsPlaying; }
 
     void SetIsPlaying(bool IsPlaying) { bIsPlaying = IsPlaying; }
 
-    UAnimationStateMachine* GetAnimStateMachine() const { return AnimStateMachine.get(); }
+    UAnimationStateMachine* GetAnimStateMachine() const { return AnimStateMachine; }
 #pragma endregion
 
     UAnimInstance* DuplicateAnimInstance() const;
 };
+
+//class UViewerAnimInstance : public UAnimInstance
+//{
+//    DECLARE_CLASS(UViewerAnimInstance, UAnimInstance)
+//
+//public:
+//    UViewerAnimInstance();
+//    virtual ~UViewerAnimInstance() = default;
+//
+//private:
+//    S
+//}

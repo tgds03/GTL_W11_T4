@@ -41,13 +41,14 @@ void UDataPreviewController::Initialize(UAnimInstance* InAnim)
     EdittingAnim = OriginalAnim; // TODO: 복제 함수 추가 필요
     //EditingAnim = OriginalAnim->DuplicateAnimInstance();
 
-    APawn* PreviewActor = PreivewWorld->SpawnActor<APawn>();
+    APawn* PreviewActor = PreviewWorld->SpawnActor<APawn>();
     PreviewActor->SetActorLabel(FString(TEXT("Animation Preview Actor")));
 
     USkeletalMeshComponent* SkelComp = Cast<USkeletalMeshComponent>(PreviewActor->GetRootComponent());
     SkelComp->SetRelativeRotation(FRotator(0, 0, -90));
     SkelComp->SetRelativeScale3D(FVector(0.1f, 0.1f, 0.1f));
-    SkelComp->SetAnimInstance(std::shared_ptr<UAnimInstance>(InAnim));
+    UAnimSequence* CopyAnimSequence = Cast<UAnimSequence>(InAnim->GetCurrentSequence()->Duplicate(PreviewWorld));
+    SkelComp->GetAnimInstance()->SetTargetSequence(CopyAnimSequence, 0.0f);
     SkelComp->SetSkeletalMesh(OriginalMesh);
 
     SetType(EPreviewType::Animation);

@@ -17,7 +17,7 @@ class UDataPreviewController
 {
 public:
     UDataPreviewController(UWorld* InWorld, FEditorViewportClient* InViewport)
-        : PreivewWorld(InWorld), AttachedViewport(InViewport) {
+        : PreviewWorld(InWorld), AttachedViewport(InViewport) {
     }
     ~UDataPreviewController() = default;
 
@@ -39,7 +39,7 @@ public:
     EPreviewType GetType() const { return PreviewType; }
       
 public:
-    UWorld* PreivewWorld = nullptr;
+    UWorld* PreviewWorld = nullptr;
     FEditorViewportClient* AttachedViewport = nullptr;
 
     USkeletalMesh* OriginalMesh = nullptr;

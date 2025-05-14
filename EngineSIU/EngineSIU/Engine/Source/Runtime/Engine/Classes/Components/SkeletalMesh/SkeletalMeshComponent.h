@@ -34,7 +34,6 @@ public:
     virtual void TickPose(float DeltaTime) override;
     void TickAnimation(float DeltaTime);
 
-    // 각도 변화 주기
     void LoadAndSetFBX(FString FileName); 
     void LoadAndSetAnimation(FString FileName);
 

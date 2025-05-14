@@ -25,7 +25,6 @@ void USkeletalMeshComponent::InitializeAnimInstance(APawn* InOwner)
     
     if (!AnimInstance)
     {
-        
         AnimInstance = FObjectFactory::ConstructObject<UAnimInstance>(GetOuter());
         AnimInstance->Initialize(this, InOwner);
     }
