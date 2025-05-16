@@ -451,3 +451,6 @@ FodyWeavers.xsd
 .idea
 
 **/imgui.ini
+
+# thirdparty
+/EngineSIU/EngineSIU/Engine/Source/ThirdParty/**
