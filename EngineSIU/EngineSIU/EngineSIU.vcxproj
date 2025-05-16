@@ -134,7 +134,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;FBXSDK_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\Engine\Source\Runtime\Physics;$(ProjectDir)\Engine\Source\ThirdParty\include\Lua;$(ProjectDir)\Engine\Source\ThirdParty\include;$(ProjectDir)\Engine\Source\ThirdParty\DirectXTK\Include;$(ProjectDir)\Engine\Source\ThirdParty\FBXSdk\include;$(ProjectDir)\Engine\Source\ThirdParty\FMOD_API\studio\inc;$(ProjectDir)\Shaders;$(ProjectDir)\Engine\Source\ThirdParty\FMOD_API\core\inc;$(ProjectDir)\Engine\Source\Runtime\InteractiveToolsFramework;$(ProjectDir)\Engine\Source\ThirdParty;$(ProjectDir)\Engine\Source\Runtime;$(ProjectDir)\Engine\Source\Runtime\Windows;$(ProjectDir)\Engine\Source\Editor;$(ProjectDir)\Engine\Source\Runtime\CoreUObject;$(ProjectDir)\Engine\Source\Runtime\Core;$(ProjectDir)\Engine\Source\Runtime\Launch;$(ProjectDir)\Engine\Source\Runtime\Engine;$(ProjectDir)\Engine\Source\Runtime\Engine\Classes;$(ProjectDir)\Engine\Source;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\Engine\Source\Runtime\Physics;$(ProjectDir)\Engine\Source\ThirdParty\include\Lua;$(ProjectDir)\Engine\Source\ThirdParty\include;$(ProjectDir)\Engine\Source\ThirdParty\DirectXTK\Include;$(ProjectDir)\Engine\Source\ThirdParty\FBX_SDK\include;$(ProjectDir)\Engine\Source\ThirdParty\FMOD_API\studio\inc;$(ProjectDir)\Shaders;$(ProjectDir)\Engine\Source\ThirdParty\FMOD_API\core\inc;$(ProjectDir)\Engine\Source\Runtime\InteractiveToolsFramework;$(ProjectDir)\Engine\Source\ThirdParty;$(ProjectDir)\Engine\Source\Runtime;$(ProjectDir)\Engine\Source\Runtime\Windows;$(ProjectDir)\Engine\Source\Editor;$(ProjectDir)\Engine\Source\Runtime\CoreUObject;$(ProjectDir)\Engine\Source\Runtime\Core;$(ProjectDir)\Engine\Source\Runtime\Launch;$(ProjectDir)\Engine\Source\Runtime\Engine;$(ProjectDir)\Engine\Source\Runtime\Engine\Classes;$(ProjectDir)\Engine\Source;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -145,9 +145,15 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)Engine\Source\ThirdParty\Lua;$(ProjectDir)\Engine\Source\ThirdParty\FMOD_API\studio\lib\x64;$(ProjectDir)\Engine\Source\ThirdParty\FMOD_API\core\lib\x64;$(ProjectDir)Engine\Source\ThirdParty\FBXSdk\lib\$(PlatformTarget)\$(Configuration);$(ProjectDir)Engine\Source\ThirdParty\DirectXTK\Lib\$(PlatformTarget)\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>DirectXTK.lib;lua.lib;fmodstudio_vc.lib;fmod_vc.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)Engine\Source\ThirdParty\Lua;$(ProjectDir)\Engine\Source\ThirdParty\FMOD_API\studio\lib\x64;$(ProjectDir)\Engine\Source\ThirdParty\FMOD_API\core\lib\x64;$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\$(PlatformTarget)\$(Configuration);$(ProjectDir)Engine\Source\ThirdParty\DirectXTK\Lib\$(PlatformTarget)\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DirectXTK.lib;lua.lib;fmodstudio.lib;fmod.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\Lua\lua.dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FMOD_API\core\lib\x64\fmod.dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configuration)\libfbxsdk.dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\vcruntime140_app.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -157,7 +163,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;FBXSDK_SHARED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)\Engine\Source\ThirdParty\FBXSdk\include;$(ProjectDir)\Engine\Source\Runtime\Physics;$(ProjectDir)\Engine\Source\ThirdParty\include\Lua;$(ProjectDir)\Engine\Source\ThirdParty\DirectXTK\Include;$(ProjectDir)\Engine\Source\ThirdParty\include;$(ProjectDir)\Shaders;$(ProjectDir)\Engine\Source\Runtime\InteractiveToolsFramework;$(ProjectDir)\Engine\Source\ThirdParty;$(ProjectDir)\Engine\Source\Runtime;$(ProjectDir)\Engine\Source\Runtime\Windows;$(ProjectDir)\Engine\Source\Editor;$(ProjectDir)\Engine\Source\Runtime\CoreUObject;$(ProjectDir)\Engine\Source\Runtime\Core;$(ProjectDir)\Engine\Source\Runtime\Launch;$(ProjectDir)\Engine\Source\Runtime\Engine;$(ProjectDir)\Engine\Source\Runtime\Engine\Classes;$(ProjectDir)\Engine\Source;$(ProjectDir);$(ProjectDir)\Engine\Source\ThirdParty\FMOD_API\studio\inc;$(ProjectDir)\Engine\Source\ThirdParty\FMOD_API\core\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\Engine\Source\ThirdParty\FBX_SDK\include;$(ProjectDir)\Engine\Source\Runtime\Physics;$(ProjectDir)\Engine\Source\ThirdParty\include\Lua;$(ProjectDir)\Engine\Source\ThirdParty\DirectXTK\Include;$(ProjectDir)\Engine\Source\ThirdParty\include;$(ProjectDir)\Shaders;$(ProjectDir)\Engine\Source\Runtime\InteractiveToolsFramework;$(ProjectDir)\Engine\Source\ThirdParty;$(ProjectDir)\Engine\Source\Runtime;$(ProjectDir)\Engine\Source\Runtime\Windows;$(ProjectDir)\Engine\Source\Editor;$(ProjectDir)\Engine\Source\Runtime\CoreUObject;$(ProjectDir)\Engine\Source\Runtime\Core;$(ProjectDir)\Engine\Source\Runtime\Launch;$(ProjectDir)\Engine\Source\Runtime\Engine;$(ProjectDir)\Engine\Source\Runtime\Engine\Classes;$(ProjectDir)\Engine\Source;$(ProjectDir);$(ProjectDir)\Engine\Source\ThirdParty\FMOD_API\studio\inc;$(ProjectDir)\Engine\Source\ThirdParty\FMOD_API\core\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -171,11 +177,16 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)Engine\Source\ThirdParty\Lua\;$(ProjectDir)\Engine\Source\ThirdParty\FMOD_API\studio\lib\x64;$(ProjectDir)\Engine\Source\ThirdParty\FMOD_API\core\lib\x64;$(ProjectDir)Engine\Source\ThirdParty\FBXSdk\lib\$(PlatformTarget)\$(Configuration);$(ProjectDir)Engine\Source\ThirdParty\DirectXTK\Lib\$(PlatformTarget)\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>DirectXTK.lib;lua.lib;fmodstudio_vc.lib;fmod_vc.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DirectXTK.lib;lua.lib;fmodstudio.lib;fmod.lib;libfbxsdk.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <FxCompile>
       <ShaderModel>5.0</ShaderModel>
     </FxCompile>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\Lua\lua.dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FMOD_API\core\lib\x64\fmod.dll" "$(OutDir)"
+xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configuration)\libfbxsdk.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Character.cpp" />
