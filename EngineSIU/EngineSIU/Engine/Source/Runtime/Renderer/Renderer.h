@@ -15,6 +15,7 @@
 #include "D3D11RHI/DXDBufferManager.h"
 
 
+class FCascadeParticleRenderPass;
 class FLightHeatMapRenderPass;
 class FPostProcessCompositingPass;
 enum class EResourceType : uint8;
@@ -67,6 +68,7 @@ protected:
     void PrepareRender(FViewportResource* ViewportResource) const;
     void PrepareRenderPass() const;
     void RenderWorldScene(const std::shared_ptr<FEditorViewportClient>& Viewport) const;
+    //void RenderTranslucency(const std::shared_ptr<FEditorViewportClient>& Viewport) const;
     void RenderPostProcess(const std::shared_ptr<FEditorViewportClient>& Viewport) const;
     void RenderEditorOverlay(const std::shared_ptr<FEditorViewportClient>& Viewport) const;
 
@@ -107,6 +109,8 @@ public:
     FFogRenderPass* FogRenderPass = nullptr;
     FCameraEffectRenderPass* CameraEffectRenderPass = nullptr;
     FEditorRenderPass* EditorRenderPass = nullptr;
+
+    FCascadeParticleRenderPass* CascadeParticleRenderPass = nullptr;
     
     FDepthPrePass* DepthPrePass = nullptr;
     FTileLightCullingPass* TileLightCullingPass = nullptr;

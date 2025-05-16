@@ -23,6 +23,7 @@
 #include <UObject/UObjectIterator.h>
 #include <UObject/Casts.h>
 
+#include "CascadeParticleRenderPass.h"
 #include "CompositingPass.h"
 #include "LightHeatMapRenderPass.h"
 #include "PostProcessCompositingPass.h"
@@ -372,6 +373,7 @@ void FRenderer::Render(const std::shared_ptr<FEditorViewportClient>& Viewport)
     }
 
     RenderWorldScene(Viewport);
+    // RenderTranslucency(Viewport);
     RenderPostProcess(Viewport);
     RenderEditorOverlay(Viewport);
 
@@ -431,6 +433,18 @@ void FRenderer::RenderWorldScene(const std::shared_ptr<FEditorViewportClient>& V
         }
     }
 }
+
+// void FRenderer::RenderTranslucency(const std::shared_ptr<FEditorViewportClient>& Viewport) const
+// {
+//     const uint64 ShowFlag = Viewport->GetShowFlag();
+//
+//     if (ShowFlag & EEngineShowFlags::SF_Primitives)
+//     {
+//         // QUICK_SCOPE_CYCLE_COUNTER(UpdateCascadeParticleRenderPass_CPU)
+//         // QUICK_GPU_SCOPE_CYCLE_COUNTER(UpdateCascadeParticleRenderPass_GPU, *GPUTimingManager)
+//         // CascadeParticleRenderPass->Render(Viewport);
+//     }    
+//}
 
 void FRenderer::RenderPostProcess(const std::shared_ptr<FEditorViewportClient>& Viewport) const
 {
