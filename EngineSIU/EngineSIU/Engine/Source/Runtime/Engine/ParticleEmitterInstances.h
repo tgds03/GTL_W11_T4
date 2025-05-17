@@ -47,7 +47,10 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
      */
     int32 MaxActiveParticles;
     /** The fraction of time left over from spawning.                   */
+    uint32 LoopCount;
+    
     float SpawnFraction;
+    float SecondsSinceCreation;
     float EmitterTime;
     float EmitterDuration;
 

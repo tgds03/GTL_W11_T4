@@ -7,6 +7,7 @@
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Particles/Event/ParticleModuleEventGenerator.h"
+#include "Particles/ParticleModuleRequired.h"
 
 void FParticleEmitterInstance::ResetParticleParameters(float DeltaTime)
 {
