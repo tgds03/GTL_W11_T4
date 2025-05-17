@@ -1,8 +1,10 @@
 ﻿#include "ParticleEmitterInstances.h"
 
 #include "Define.h"
+#include "Engine/Engine.h"
 #include "Particles/ParticleEmitter.h"
 #include "Particles/ParticleLODLevel.h"
+#include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Particles/Event/ParticleModuleEventGenerator.h"
 
@@ -13,6 +15,99 @@ void FParticleEmitterInstance::ResetParticleParameters(float DeltaTime)
 void FParticleEmitterInstance::KillParticles()
 {
 }
+
+
+/**
+ * Ensures enough memory is allocated for the requested number of particles.
+ *
+ * @param NewMaxActiveParticles		The number of particles for which memory must be allocated.
+ * @param bSetMaxActiveCount		If true, update the peak active particles for this LOD.
+ * @returns bool					true if memory is allocated for at least NewMaxActiveParticles.
+ */
+bool FParticleEmitterInstance::Resize(int32 NewMaxActiveParticles, bool bSetMaxActiveCount)
+{
+	SCOPE_CYCLE_COUNTER(STAT_ParticleEmitterInstance_Resize);
+
+	if (GEngine->MaxParticleResize > 0)
+	{
+		if ((NewMaxActiveParticles < 0) || (NewMaxActiveParticles > GEngine->MaxParticleResize))
+		{
+			if ((NewMaxActiveParticles < 0) || (NewMaxActiveParticles > GEngine->MaxParticleResizeWarn))
+			{
+				UE_LOG(LogParticles, Warning, TEXT("Emitter::Resize> Invalid NewMaxActive (%d) for Emitter in PSys %s"),
+					NewMaxActiveParticles, 
+					Component	? 
+								Component->Template ? *(Component->Template->GetPathName()) 
+													: *(Component->GetName()) 
+								:
+								TEXT("INVALID COMPONENT"));
+			}
+
+			return false;
+		}
+	}
+
+	if (NewMaxActiveParticles > MaxActiveParticles)
+	{
+		// Alloc (or realloc) the data array
+		// Allocations > 16 byte are always 16 byte aligned so ParticleData can be used with SSE.
+		// NOTE: We don't have to zero the memory here... It gets zeroed when grabbed later.
+#if STATS
+		{
+			// Update the memory stat
+			int32 OldMem = (MaxActiveParticles * ParticleStride) + (MaxActiveParticles * sizeof(uint16));
+			int32 NewMem = (NewMaxActiveParticles * ParticleStride) + (NewMaxActiveParticles * sizeof(uint16));
+			DEC_DWORD_STAT_BY(STAT_GTParticleData, OldMem);
+			INC_DWORD_STAT_BY(STAT_GTParticleData, NewMem);
+		}
+#endif
+
+		{
+			ParticleData = (uint8*) FMemory::Realloc(ParticleData, ParticleStride * NewMaxActiveParticles);
+			check(ParticleData);
+
+			// Allocate memory for indices.
+			if (ParticleIndices == NULL)
+			{
+				// Make sure that we clear all when it is the first alloc
+				MaxActiveParticles = 0;
+			}
+			ParticleIndices	= (uint16*) FMemory::Realloc(ParticleIndices, sizeof(uint16) * (NewMaxActiveParticles + 1));
+		}
+
+		// Fill in default 1:1 mapping.
+		for (int32 i=MaxActiveParticles; i<NewMaxActiveParticles; i++)
+		{
+			ParticleIndices[i] = i;
+		}
+
+		// Set the max count
+		MaxActiveParticles = NewMaxActiveParticles;
+	}
+
+#if STATS
+	{
+		int32 WastedMem = 
+			((MaxActiveParticles * ParticleStride) + (MaxActiveParticles * sizeof(uint16))) - 
+			((ActiveParticles * ParticleStride) + (ActiveParticles * sizeof(uint16)));
+		INC_DWORD_STAT_BY(STAT_DynamicEmitterGTMem_Waste,WastedMem);
+	}
+#endif
+
+	// Set the PeakActiveParticles
+	if (bSetMaxActiveCount)
+	{
+		UParticleLODLevel* LODLevel	= SpriteTemplate->GetLODLevel(0);
+		check(LODLevel);
+		if (MaxActiveParticles > LODLevel->PeakActiveParticles)
+		{
+			LODLevel->PeakActiveParticles = MaxActiveParticles;
+		}
+	}
+
+	return true;
+}
+
 
 /**
  *	Tick the instance.

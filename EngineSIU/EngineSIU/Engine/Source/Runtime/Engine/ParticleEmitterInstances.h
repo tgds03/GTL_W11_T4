@@ -53,6 +53,15 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
 
     
     virtual void KillParticles();
+    
+    /**
+     * Ensures enough memory is allocated for the requested number of particles.
+     *
+     * @param NewMaxActiveParticles		The number of particles for which memory must be allocated.
+     * @param bSetMaxActiveCount		If true, update the peak active particles for this LOD.
+     * @returns bool					true if memory is allocated for at least NewMaxActiveParticles.
+     */
+    virtual bool Resize(int32 NewMaxActiveParticles, bool bSetMaxActiveCount = true);
 
     virtual void Tick(float DeltaTime, bool bSuppressSpawning);
     
