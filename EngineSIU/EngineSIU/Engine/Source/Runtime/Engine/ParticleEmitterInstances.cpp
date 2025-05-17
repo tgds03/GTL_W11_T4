@@ -126,6 +126,15 @@ void FParticleEmitterInstance::Tick(float DeltaTime, bool bSuppressSpawning)
         return;
     }
 
+    UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
+    // if (bEnabled)
+    {
+        KillParticles();
+        ResetParticleParameters(DeltaTime);
+        Tick_ModuleUpdate(DeltaTime, LODLevel);
+        Tick_ModuleFinalUpdate(DeltaTime, LODLevel);
+    }
+
     // If this the FirstTime we are being ticked?
     // bool bFirstTime = (SecondsSinceCreation > 0.0f) ? false : true;
     //
@@ -185,27 +194,53 @@ void FParticleEmitterInstance::Tick(float DeltaTime, bool bSuppressSpawning)
     // INC_DWORD_STAT_BY(STAT_SpriteParticles, ActiveParticles);
 }
 
-float FParticleEmitterInstance::Tick_SpawnParticles(float DeltaTime, UParticleLODLevel* CurrentLODLevel, bool bSuppressSpawning, bool bFirstTime)
+float FParticleEmitterInstance::Tick_SpawnParticles(float DeltaTime, UParticleLODLevel* InCurrentLODLevel, bool bSuppressSpawning, bool bFirstTime)
 {
-    // if (!bHaltSpawning && !bHaltSpawningExternal && !bSuppressSpawning && (EmitterTime >= 0.0f))
-    // {
-    //     // If emitter is not done - spawn at current rate.
-    //     // If EmitterLoops is 0, then we loop forever, so always spawn.
-    //     if ((InCurrentLODLevel->RequiredModule->EmitterLoops == 0) ||
-    //         (LoopCount < InCurrentLODLevel->RequiredModule->EmitterLoops) ||
-    //         (SecondsSinceCreation < (EmitterDuration * InCurrentLODLevel->RequiredModule->EmitterLoops)) ||
-    //         bFirstTime)
-    //     {
-    //         bFirstTime = false;
-    //         SpawnFraction = Spawn(DeltaTime);
-    //     }
-    // }
+    if (!bSuppressSpawning && (EmitterTime >= 0.0f))
+    {
+        // If emitter is not done - spawn at current rate.
+        // If EmitterLoops is 0, then we loop forever, so always spawn.
+        if ((InCurrentLODLevel->RequiredModule->EmitterLoops == 0) ||
+            (LoopCount < InCurrentLODLevel->RequiredModule->EmitterLoops) ||
+            (SecondsSinceCreation < (EmitterDuration * InCurrentLODLevel->RequiredModule->EmitterLoops)) ||
+            bFirstTime)
+        {
+            bFirstTime = false;
+            SpawnFraction = Spawn(DeltaTime);
+        }
+    }
     // else if (bFakeBurstsWhenSpawningSupressed)
     // {
     //     FakeBursts();
     // }
 	
     return SpawnFraction;
+}
+
+void FParticleEmitterInstance::Tick_ModuleUpdate(float DeltaTime, UParticleLODLevel* CurrentLODLevel)
+{
+    UParticleLODLevel* HighestLODLevel = SpriteTemplate->LODLevels[0];
+    for (int ModuleIndex = 0; ModuleIndex < CurrentLODLevel->UpdateModules.Num(); ++ModuleIndex)
+    {
+        UParticleModule* CurrentModule = CurrentLODLevel->UpdateModules[ModuleIndex];
+        if (CurrentModule && CurrentModule->GetFlag(EModuleFlag::Enabled) && CurrentModule->GetFlag(EModuleFlag::UpdateModule))
+        {
+            CurrentModule->Update(this, GetModuleDataOffset(HighestLODLevel->UpdateModules[ModuleIndex]), DeltaTime);
+        }
+    }
+}
+
+void FParticleEmitterInstance::Tick_ModuleFinalUpdate(float DeltaTime, UParticleLODLevel* CurrentLODLevel)
+{
+    UParticleLODLevel* HighestLODLevel = SpriteTemplate->LODLevels[0];
+    for (int ModuleIndex = 0; ModuleIndex < CurrentLODLevel->UpdateModules.Num(); ++ModuleIndex)
+    {
+        UParticleModule* CurrentModule = CurrentLODLevel->UpdateModules[ModuleIndex];
+        if (CurrentModule && CurrentModule->GetFlag(EModuleFlag::Enabled) && CurrentModule->GetFlag(EModuleFlag::UpdateModule))
+        {
+            CurrentModule->FinalUpdate(this, GetModuleDataOffset(HighestLODLevel->UpdateModules[ModuleIndex]), DeltaTime);
+        }
+    }
 }
 
 uint32 FParticleEmitterInstance::GetModuleDataOffset(UParticleModule* Module)
@@ -416,6 +451,31 @@ void FParticleEmitterInstance::SpawnParticles(int32 Count, float StartTime, floa
 	{
 	    return;
 	}
+
+    Count = FMath::Min(Count, MaxActiveParticles - ActiveParticles);
+
+    auto SpawnInternal = [&]()
+    {
+        UParticleLODLevel* HighestLODLevel = SpriteTemplate->LODLevels[0];
+        float SpawnTime = StartTime;
+        float Interp = 1.0f;
+        const float InterpIncrement = (Count > 0 && Increment > 0.0f) ? (1.0f / static_cast<float>(Count)) : 0.0f;
+        for (int32 i = 0; i < Count; ++i)
+        {
+            if (!(ParticleData && ParticleIndices))
+            {
+                static bool bErrorReported = false;
+                if (!bErrorReported)
+                {
+                    UE_LOG(LogLevel::Error, TEXT("Detected null particles. Template: %s"), SpriteTemplate->GetName());
+                    bErrorReported = true;
+                }
+                ActiveParticles = 0;
+                Count = 0;
+                break;
+            }
+        }
+    };
 
 	// // Ensure we don't access particle beyond what is allocated.
 	// ensure( ActiveParticles + Count <= MaxActiveParticles );

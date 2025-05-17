@@ -14,6 +14,10 @@ public:
     /** The optional EventGenerator module. */
     class UParticleModuleEventGenerator* EventGenerator;
 
-    /** SpawnModules - These are called when particles are spawned.						*/
+    class UParticleModuleRequired* RequiredModule;
+    class UParticleModuleSpawn* SpawnModule;
+    TArray<class UParticleModule*> Modules;
     TArray<class UParticleModule*> SpawnModules;
+    TArray<class UParticleModule*> UpdateModules;
+    TArray<class UParticleModule*> FinalUpdateModules;
 };

@@ -48,6 +48,8 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
     int32 MaxActiveParticles;
     /** The fraction of time left over from spawning.                   */
     float SpawnFraction;
+    float EmitterTime;
+    float EmitterDuration;
 
     virtual void ResetParticleParameters(float DeltaTime);
 
@@ -76,6 +78,9 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
      *	@return	float				The SpawnFraction remaining
      */
     virtual float Tick_SpawnParticles(float DeltaTime, UParticleLODLevel* CurrentLODLevel, bool bSuppressSpawning, bool bFirstTime);
+
+    virtual void Tick_ModuleUpdate(float DeltaTime, UParticleLODLevel* CurrentLODLevel);
+    virtual void Tick_ModuleFinalUpdate(float DeltaTime, UParticleLODLevel* CurrentLODLevel);
     
     /** Get offset for particle payload data for a particular module */
     uint32 GetModuleDataOffset(UParticleModule* Module);
