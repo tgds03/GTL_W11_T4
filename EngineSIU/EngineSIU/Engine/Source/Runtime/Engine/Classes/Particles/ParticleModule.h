@@ -1,6 +1,7 @@
-﻿#pragma once
+#pragma once
 #include "UObject/Object.h"
 #include "UObject/ObjectMacros.h"
+#include "RandomStream.h"
 
 struct FBaseParticle;
 struct FParticleEmitterInstance;
@@ -55,4 +56,6 @@ public:
      *	@return	EModuleType		The type of module this is.
      */
     virtual EModuleType	GetModuleType() const	{	return EPMT_General;	}
+
+    FRandomStream& GetRandomStream(FParticleEmitterInstance* Owner);
 };

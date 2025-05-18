@@ -136,6 +136,21 @@ void UActorComponent::DestroyComponent(bool bPromoteChildren)
     GUObjectArray.MarkRemoveObject(this);
 }
 
+void UActorComponent::SetActive(bool bNewActive)
+{
+    // if it wants to activate
+    if (bNewActive)
+    {
+        // make sure to check if it should activate
+        Activate();
+    }
+    // otherwise, make sure it shouldn't activate
+    else
+    {
+        Deactivate();
+    }
+}
+
 void UActorComponent::Activate()
 {
     // TODO: Tick 다시 재생

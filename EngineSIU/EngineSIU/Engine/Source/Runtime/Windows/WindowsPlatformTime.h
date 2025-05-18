@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "HAL/PlatformType.h"
 
 
@@ -37,6 +37,8 @@ public:
      * @return uint64 현재 CPU 사이클 수
      */
     static uint64 Cycles64();
+
+    static uint64 Cycles();
 };
 
 typedef FWindowsPlatformTime FPlatformTime;

@@ -155,6 +155,9 @@ public:
     }
 
     ElementType Pop();
+
+    void SetNumZeroed(SizeType NewNum, bool bAllowShrinking);
+    
 };
 
 
@@ -432,4 +435,52 @@ FArchive& operator<<(FArchive& Ar, TArray<ElementType, Allocator>& Array)
     }
 
     return Ar;
+}
+
+template <typename T, typename Allocator>
+void TArray<T, Allocator>::SetNumZeroed(SizeType NewNum, bool bAllowShrinking)
+{
+    if (NewNum < 0)
+    {
+        assert(false && "Invalid size for SetNumZeroed");
+        return;
+    }
+
+    SizeType CurrentNum = Num();
+
+    if (NewNum > CurrentNum)
+    {
+        // 배열 확장
+        // std::vector::resize는 새로 추가된 요소를 값 초기화합니다.
+        // 기본 타입(int, float)은 0으로, 클래스는 기본 생성자 호출.
+        // 만약 클래스 T가 기본 생성자에서 멤버를 0으로 초기화하지 않는다면,
+        // 수동으로 0으로 채워주는 과정이 필요할 수 있습니다.
+        ContainerPrivate.resize(NewNum);
+
+        // 만약 T가 기본 타입이 아니고, 기본 생성자가 0으로 초기화하지 않는다면,
+        // 새로 추가된 부분만 명시적으로 0으로 초기화하는 로직이 필요합니다.
+        // 예를 들어, T가 복잡한 구조체이고 모든 멤버를 0으로 만들고 싶다면:
+        if constexpr (!std::is_fundamental_v<T> && !std::is_pointer_v<T>)
+        {
+            for (SizeType i = CurrentNum; i < NewNum; ++i)
+            {
+                // ContainerPrivate[i] = {}; // 값 초기화 (C++11 이상)
+                // 또는 memset(&ContainerPrivate[i], 0, sizeof(T)); // POD 타입에만 주의해서 사용
+                // 또는 T 타입에 적절한 Clear() 또는 Zero() 멤버 함수가 있다면 호출
+            }
+        }
+    }
+    else if (NewNum < CurrentNum)
+    {
+        // 배열 축소
+        ContainerPrivate.resize(NewNum); // 요소 제거
+        if (bAllowShrinking)
+        {
+            // std::vector는 resize만으로는 capacity를 줄이지 않을 수 있음.
+            // 명시적으로 shrink_to_fit() 호출 (C++11 이상)
+            ContainerPrivate.shrink_to_fit();
+        }
+    }
+    else 
+        NewNum == CurrentNum;
 }

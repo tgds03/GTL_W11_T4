@@ -847,6 +847,20 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaTypes\LuaUserTypes.cpp" />
     <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_neo_internal.cpp" />
     <ClCompile Include="Engine\Source\ThirdParty\include\ImGUI\imgui_neo_sequencer.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\Event\ParticleModuleEventBase.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\Event\ParticleModuleEventGenerator.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleLODLevel.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModule.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleSystem.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleSystemComponent.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleEmitter.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\TypeData\ParticleModuleTypeDataBase.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\TypeData\ParticleModuleTypeDataMesh.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\ParticleEmitterInstances.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Renderer\CascadeParticleRenderPass.cpp" />
+    <ClCompile Include="FXSystem.cpp" />
+    <ClCompile Include="RandomStream.h" />
+    <ClCompile Include="ParticleModuleRequired.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="EngineSIU.natvis" />
@@ -1002,6 +1016,20 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaUtils\LuaTypeMacros.h" />
     <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui_neo_internal.h" />
     <ClInclude Include="Engine\Source\ThirdParty\include\ImGUI\imgui_neo_sequencer.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\Event\ParticleModuleEventBase.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\Event\ParticleModuleEventGenerator.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleLODLevel.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModule.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleSystem.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleSystemComponent.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleEmitter.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\TypeData\ParticleModuleTypeDataBase.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\TypeData\ParticleModuleTypeDataMesh.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\ParticleEmitterInstances.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\ParticleHelper.h" />
+    <ClInclude Include="Engine\Source\Runtime\Renderer\CascadeParticleRenderPass.h" />
+    <ClInclude Include="FXSystem.h" />
+    <ClInclude Include="ParticleModuleRequired.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />

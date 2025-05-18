@@ -1,7 +1,8 @@
-﻿#pragma once
+#pragma once
 #include "Container/Array.h"
 #include "Math/Color.h"
 #include "Math/Vector.h"
+#include "RandomStream.h"
 
 #define DECLARE_PARTICLE(Name,Address)		\
 	FBaseParticle& Name = *((FBaseParticle*) (Address));
@@ -824,4 +825,10 @@ public:
 #if WITH_PARTICLE_PERF_STATS
     FParticlePerfStatsContext PerfStatContext;
 #endif
+};
+
+/** Random-seed instance payload */
+struct FParticleRandomSeedInstancePayload
+{
+    FRandomStream	RandomStream;
 };

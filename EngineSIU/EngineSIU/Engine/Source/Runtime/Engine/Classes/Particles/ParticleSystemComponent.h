@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Components/PrimitiveComponent.h"
 #include "UObject/ObjectMacros.h"
 
@@ -6,6 +6,9 @@ class FParticleDynamicData;
 struct FDynamicEmitterReplayDataBase;
 struct FParticleEmitterInstance;
 struct FDynamicEmitterDataBase;
+class UParticleSystem;
+class FFXSystem;
+class FRandomStream;
 
 class UFXSystemComponent : public UPrimitiveComponent
 {
@@ -26,6 +29,11 @@ public:
     virtual void TickComponent(float DeltaTime) override;
     /** Possibly parallel phase of TickComponent **/
     void ComputeTickComponent_Concurrent();
+
+    void InitializeSystem();
+
+    // If particles have not already been initialised (ie. EmitterInstances created) do it now.
+    virtual void InitParticles();
 
 protected:
 
@@ -59,11 +67,33 @@ protected:
 
 
 public:
-    class UParticleSystem* Template;
+    uint8 bWasDeactivated : 1;
+
+    /** Used to accumulate total tick time to determine whether system can be skipped ticking if not visible. */
+    float AccumTickTime;
+
+    UParticleSystem* Template;
+    FFXSystem* FXSystem;
+
+    /** This is created at start up and then added to each emitter */
+    float EmitterDelay;
+
+    /** Stream of random values to use with this component */
+    FRandomStream RandomStream;
+
+    float WarmupTime;
+    float WarmupTickRate;
+
+    /** If true, the ViewRelevanceFlags are dirty and should be recached */
+    uint8 bIsViewRelevanceDirty : 1;
+
+    uint8 bWasCompleted : 1;
 
 public:
     TArray<struct FParticleEmitterInstance*> EmitterInstances;
 
     // mutable TArray<FDynamicEmitterDataBase*> DynamicDataForThisFrame;
     TArray<FDynamicEmitterDataBase*> EmitterRenderData;
+private:
+    int32 LODLevel;
 };

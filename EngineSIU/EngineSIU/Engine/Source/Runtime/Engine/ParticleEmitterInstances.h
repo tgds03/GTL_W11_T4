@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "ParticleHelper.h"
 #include "HAL/PlatformType.h"
 
@@ -24,6 +24,13 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
     int32 CurrentLODLevelIndex;
     UParticleLODLevel* CurrentLODLevel;
 
+    /** If true, halt spawning for this instance.						*/
+    uint32 bHaltSpawning : 1;
+    /** If true, this emitter has been disabled by game code and some systems to re-enable are not allowed. */
+    uint32 bHaltSpawningExternal : 1;
+
+    /** Component can disable Tick and Rendering of this emitter. */
+    uint32 bEnabled : 1;
     /** Pointer to the particle data array.                             */
     uint8* ParticleData;
     /** Pointer to the particle index array.                            */
@@ -48,6 +55,48 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
     int32 MaxActiveParticles;
     /** The fraction of time left over from spawning.                   */
     float SpawnFraction;
+    /** The current duration fo the emitter instance.					*/
+    float EmitterDuration;
+    /** The emitter duration at each LOD level for the instance.		*/
+    TArray<float> EmitterDurations;
+    /** The emitter's delay for the current loop		*/
+    float CurrentDelay;
+
+    // Begin Test
+    /** The material to render this instance with.						*/
+    UMaterialInterface* CurrentMaterial;
+    // End Test
+
+    /** The number of loops completed by the instance.					*/
+    int32 LoopCount;
+
+    /////
+
+    /** If true, the emitter has modules that require loop notification.*/
+    uint32 bRequiresLoopNotification : 1;
+    /** Whether axis lock is enabled, cached here to avoid finding it from the module each frame */
+    uint32 bAxisLockEnabled : 1;
+    /** Axis lock flags, cached here to avoid finding it from the module each frame */
+    TEnumAsByte<EParticleAxisLock> LockAxisFlags;
+    /** The offset to the dynamic parameter payload in the particle data*/
+    int32 DynamicParameterDataOffset;
+    /** Offset to the light module data payload.						*/
+    int32 LightDataOffset;
+    float LightVolumetricScatteringIntensity;
+    /** The offset to the Camera payload in the particle data.			*/
+    int32 CameraPayloadOffset;
+    /** The total size of a particle (in bytes).						*/
+    int32 ParticleSize;
+    /** The PivotOffset applied to the vertex positions 			*/
+    FVector2D PivotOffset;
+    /** The offset to the TypeData payload in the particle data.		*/
+    int32 TypeDataOffset;
+    /** The offset to the TypeData instance payload.					*/
+    int32 TypeDataInstanceOffset;
+
+    ParticleSize = SpriteTemplate->ParticleSize;
+
+    virtual void Init();
 
     virtual void ResetParticleParameters(float DeltaTime);
 
@@ -103,7 +152,7 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
 
     
     /**
-     * Handle any pre-spawning actions required for particles
+     * Handle any pre-spawning actions required for particlesk
      *
      * @param Particle			The particle being spawned.
      * @param InitialLocation	The initial location of the particle.
@@ -119,8 +168,24 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
      * @param	SpawnTime					The time it was spawned at
      */
     virtual void PostSpawn(FBaseParticle* Particle, float InterpolationPercentage, float SpawnTime);
+
+    void InitParameters(UParticleEmitter* InTemplate, UParticleSystemComponent* InComponent);
+
+    void SetupEmitterDuration();
     
     void KillParticle(int32 Index);
+
+    /** Set the HaltSpawning flag */
+    virtual void SetHaltSpawning(bool bInHaltSpawning)
+    {
+        bHaltSpawning = bInHaltSpawning;
+    }
+
+    /** Set the bHaltSpawningExternal flag */
+    virtual void SetHaltSpawningExternal(bool bInHaltSpawning)
+    {
+        bHaltSpawningExternal = bInHaltSpawning;
+    }
 
     
     /**

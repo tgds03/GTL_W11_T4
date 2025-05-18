@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "World/World.h"
 
+#define WITH_EDITOR 1
+
 // 언리얼 엔진에서도 여기에서 FOverlapInfo의 생성자를 정의하고 있음.
 FOverlapInfo::FOverlapInfo(UPrimitiveComponent* InComponent, int32 InBodyIndex)
     : bFromSweep(false)
@@ -252,6 +254,7 @@ void UPrimitiveComponent::SetProperties(const TMap<FString, FString>& InProperti
     const FString* AABBmaxStr = InProperties.Find(TEXT("AABB_max"));
     if (AABBmaxStr) AABB.MaxLocation.InitFromString(*AABBmaxStr); 
 }
+
 
 void UPrimitiveComponent::BeginComponentOverlap(const FOverlapInfo& OtherOverlap, bool bDoNotifies)
 {

@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "UObject/Object.h"
 
 #include "ParticleEmitterInstances.h"
@@ -21,6 +21,10 @@ public:
     /** Map module pointers to their offset into the instance data.		*/
     TMap<UParticleModule*, uint32> ModuleInstanceOffsetMap;
     
+    bool HasAnyEnabledLODs() const;
+
+    virtual FParticleEmitterInstance* CreateInstance(UParticleSystemComponent* InComponent);
+
     /** GetCurrentLODLevel
 *	Returns the currently set LODLevel. Intended for game-time usage.
 *	Assumes that the given LODLevel will be in the [0..# LOD levels] range.
