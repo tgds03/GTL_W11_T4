@@ -731,6 +731,7 @@ xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configurati
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\PlayerCameraManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\PerlinNoiseCameraShakePattern.h" />
     <ClInclude Include="Engine\Source\Editor\PropertyEditor\SkeletonMeshEditorPanel.h" />
+    <ClInclude Include="EnumAsByte.h" />
     <ClInclude Include="FXSystem.h" />
     <ClInclude Include="ParticleModuleRequired.h" />
     <ClInclude Include="SoundManager.h" />

@@ -1030,6 +1030,7 @@
     <ClInclude Include="Engine\Source\Runtime\Renderer\CascadeParticleRenderPass.h" />
     <ClInclude Include="FXSystem.h" />
     <ClInclude Include="ParticleModuleRequired.h" />
+    <ClInclude Include="EnumAsByte.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />

@@ -35,6 +35,58 @@ enum EModuleType : int
     EPMT_MAX,
 };
 
+struct FParticleRandomSeedInfo
+{
+    /** The name to expose to the placed instances for setting this seed */
+    FName ParameterName;
+
+    /**
+     *	If true, the module will attempt to get the seed from the owner
+     *	instance. If that fails, it will fall back to getting it from
+     *	the RandomSeeds array.
+     */
+    uint8 bGetSeedFromInstance : 1;
+
+    /**
+     *	If true, the seed value retrieved from the instance will be an
+     *	index into the array of seeds.
+     */
+    uint8 bInstanceSeedIsIndex : 1;
+
+    /**
+     *	If true, then reset the seed upon the emitter looping.
+     *	For looping environmental effects this should likely be set to false to avoid
+     *	a repeating pattern.
+     */
+    uint8 bResetSeedOnEmitterLooping : 1;
+
+    /**
+    *	If true, then randomly select a seed entry from the RandomSeeds array
+    */
+    uint8 bRandomlySelectSeedArray : 1;
+
+    /**
+     *	The random seed values to utilize for the module.
+     *	More than 1 means the instance will randomly select one.
+     */
+    TArray<int32> RandomSeeds;
+
+
+
+    FParticleRandomSeedInfo()
+        : bGetSeedFromInstance(false)
+        , bInstanceSeedIsIndex(false)
+        , bResetSeedOnEmitterLooping(true)
+        , bRandomlySelectSeedArray(false)
+    {}
+
+    FORCEINLINE int32 GetInstancePayloadSize() const
+    {
+        return ((RandomSeeds.Num() > 0) ? sizeof(FParticleRandomSeedInstancePayload) : 0);
+    }
+
+};
+
 class UParticleModule : public UObject
 {
     DECLARE_CLASS(UParticleModule, UObject)
@@ -58,4 +110,18 @@ public:
     virtual EModuleType	GetModuleType() const	{	return EPMT_General;	}
 
     FRandomStream& GetRandomStream(FParticleEmitterInstance* Owner);
+
+    /**
+     *	Allows the module to prep its 'per-instance' data block.
+     *
+     *	@param	Owner		The FParticleEmitterInstance that 'owns' the particle.
+     *	@param	InstData	Pointer to the data block for this module.
+     */
+    virtual uint32	PrepPerInstanceBlock(FParticleEmitterInstance* Owner, void* InstData);
+
+
+    virtual FParticleRandomSeedInfo* GetRandomSeedInfo();
+
+    uint32 PrepRandomSeedInstancePayload(FParticleEmitterInstance* Owner, FParticleRandomSeedInstancePayload* InRandSeedPayload, const FParticleRandomSeedInfo& InRandSeedInfo);
+
 };

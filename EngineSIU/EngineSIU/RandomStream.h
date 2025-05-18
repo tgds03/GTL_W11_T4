@@ -177,6 +177,16 @@ public:
         return FString::Printf(TEXT("FRandomStream(InitialSeed=%i, Seed=%u)"), InitialSeed, Seed);
     }
 
+    /**
+     * Helper function for rand implementations.
+     *
+     * @return A random number in [0..A)
+     */
+    FORCEINLINE int32 RandHelper(int32 A) const
+    {
+        // GetFraction guarantees a result in the [0,1) range.
+        return ((A > 0) ? std::trunc(GetFraction() * float(A)) : 0);
+    }
 protected:
 
     /**

@@ -9,6 +9,7 @@
 #include "Particles/Event/ParticleModuleEventGenerator.h"
 #include "RandomStream.h"
 #include "ParticleModuleRequired.h"
+#include "Core/HAL/PlatformMemory.h"
 
 void FParticleEmitterInstance::ResetParticleParameters(float DeltaTime)
 {
@@ -65,7 +66,7 @@ bool FParticleEmitterInstance::Resize(int32 NewMaxActiveParticles, bool bSetMaxA
 #endif
 
 		{
-			ParticleData = (uint8*) FMemory::Realloc(ParticleData, ParticleStride * NewMaxActiveParticles);
+			ParticleData = (uint8*)FPlatformMemory::Realloc(ParticleData, ParticleStride * NewMaxActiveParticles);
 			check(ParticleData);
 
 			// Allocate memory for indices.
@@ -74,7 +75,7 @@ bool FParticleEmitterInstance::Resize(int32 NewMaxActiveParticles, bool bSetMaxA
 				// Make sure that we clear all when it is the first alloc
 				MaxActiveParticles = 0;
 			}
-			ParticleIndices	= (uint16*) FMemory::Realloc(ParticleIndices, sizeof(uint16) * (NewMaxActiveParticles + 1));
+			ParticleIndices	= (uint16*)FPlatformMemory::Realloc(ParticleIndices, sizeof(uint16) * (NewMaxActiveParticles + 1));
 		}
 
 		// Fill in default 1:1 mapping.
@@ -597,6 +598,21 @@ void FParticleEmitterInstance::KillParticle(int32 Index)
     }
 }
 
+FParticleRandomSeedInstancePayload* FParticleEmitterInstance::GetModuleRandomSeedInstanceData(UParticleModule* Module)
+{
+    // If there is instance data present, look up the modules offset
+    if (InstanceData)
+    {
+        uint32* Offset = SpriteTemplate->ModuleRandomSeedInstanceOffsetMap.Find(Module);
+        if (Offset)
+        {
+            assert(*Offset < (uint32)InstancePayloadSize);
+            return (FParticleRandomSeedInstancePayload*)&(InstanceData[*Offset]);
+        }
+    }
+    return NULL;
+}
+
 class UParticleLODLevel* FParticleEmitterInstance::GetCurrentLODLevelChecked()
 {
     if (SpriteTemplate == nullptr)
@@ -745,25 +761,36 @@ void FParticleEmitterInstance::Init()
 
         if ((InstanceData == NULL) || (SpriteTemplate->ReqInstanceBytes > InstancePayloadSize))
         {
-            InstanceData = (uint8*)(FMemory::Realloc(InstanceData, SpriteTemplate->ReqInstanceBytes));
-            InstancePayloadSize = SpriteTemplate->ReqInstanceBytes;
+            //InstanceData = (uint8*)(FPlatformMemory::Realloc(InstanceData, SpriteTemplate->ReqInstanceBytes));
+            //InstancePayloadSize = SpriteTemplate->ReqInstanceBytes;
+            ///////////////
+            void* NewInstanceData = FPlatformMemory::Realloc<EAT_Object>(InstanceData, SpriteTemplate->ReqInstanceBytes, InstancePayloadSize);
+            if (NewInstanceData) // Realloc 성공 시에만 업데이트
+            {
+                InstanceData = static_cast<uint8*>(NewInstanceData);
+                InstancePayloadSize = SpriteTemplate->ReqInstanceBytes;
+            }
+            else if (SpriteTemplate->ReqInstanceBytes > 0)
+            {
+                // Realloc 실패 처리 (예: 에러 로그, 프로그램 종료)
+                // InstanceData는 이전 상태 그대로 유지됨
+            }
         }
-
-        FMemory::Memzero(InstanceData, InstancePayloadSize);
+        FPlatformMemory::Memzero(InstanceData, InstancePayloadSize);
 
         for (UParticleModule* ParticleModule : SpriteTemplate->ModulesNeedingInstanceData)
         {
             assert(ParticleModule);
             uint8* PrepInstData = GetModuleInstanceData(ParticleModule);
-            check(PrepInstData != nullptr); // Shouldn't be in the list if it doesn't have data
+            assert(PrepInstData != nullptr); // Shouldn't be in the list if it doesn't have data
             ParticleModule->PrepPerInstanceBlock(this, (void*)PrepInstData);
         }
 
         for (UParticleModule* ParticleModule : SpriteTemplate->ModulesNeedingRandomSeedInstanceData)
         {
-            check(ParticleModule);
+            assert(ParticleModule);
             FParticleRandomSeedInstancePayload* SeedInstancePayload = GetModuleRandomSeedInstanceData(ParticleModule);
-            check(SeedInstancePayload != nullptr); // Shouldn't be in the list if it doesn't have data
+            assert(SeedInstancePayload != nullptr); // Shouldn't be in the list if it doesn't have data
             FParticleRandomSeedInfo* RandomSeedInfo = ParticleModule->GetRandomSeedInfo();
             ParticleModule->PrepRandomSeedInstancePayload(this, SeedInstancePayload, RandomSeedInfo ? *RandomSeedInfo : FParticleRandomSeedInfo());
         }
@@ -899,4 +926,62 @@ void FParticleEmitterInstance::Init()
     IsRenderDataDirty = 1;
 
     bEmitterIsDone = false;
+}
+
+/**
+ *	Retrieved the per-particle bytes that this emitter type requires.
+ *
+ *	@return	uint32	The number of required bytes for particles in the instance
+ */
+uint32 FParticleEmitterInstance::RequiredBytes()
+{
+    // If ANY LOD level has subUV, the size must be taken into account.
+    uint32 uiBytes = 0;
+    bool bHasSubUV = false;
+    for (int32 LODIndex = 0; (LODIndex < SpriteTemplate->LODLevels.Num()) && !bHasSubUV; LODIndex++)
+    {
+        // This code assumes that the module stacks are identical across LOD levevls...
+        UParticleLODLevel* LODLevel = SpriteTemplate->GetLODLevel(LODIndex);
+
+        if (LODLevel)
+        {
+            EParticleSubUVInterpMethod	InterpolationMethod = (EParticleSubUVInterpMethod)LODLevel->RequiredModule->InterpolationMethod;
+            //if (LODIndex > 0)
+            //{
+            //    if ((InterpolationMethod != PSUVIM_None) && (bHasSubUV == false))
+            //    {
+            //        UE_LOG(LogParticles, Warning, TEXT("Emitter w/ mismatched SubUV settings: %s"),
+            //            Component ?
+            //            Component->Template ?
+            //            *(Component->Template->GetPathName()) :
+            //            *(Component->GetFullName()) :
+            //            TEXT("INVALID PSYS!"));
+            //    }
+
+            //    if ((InterpolationMethod == PSUVIM_None) && (bHasSubUV == true))
+            //    {
+            //        UE_LOG(LogParticles, Warning, TEXT("Emitter w/ mismatched SubUV settings: %s"),
+            //            Component ?
+            //            Component->Template ?
+            //            *(Component->Template->GetPathName()) :
+            //            *(Component->GetFullName()) :
+            //            TEXT("INVALID PSYS!"));
+            //    }
+            //}
+            
+            // Check for SubUV utilization, and update the required bytes accordingly
+            if (InterpolationMethod != PSUVIM_None)
+            {
+                bHasSubUV = true;
+            }
+        }
+    }
+
+    if (bHasSubUV)
+    {
+        SubUVDataOffset = PayloadOffset;
+        uiBytes = sizeof(FFullSubUVPayload);
+    }
+
+    return uiBytes;
 }

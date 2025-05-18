@@ -8,6 +8,32 @@ class UParticleEmitter;
 class UParticleLODLevel;
 class UParticleSystemComponent;
 
+enum EParticleAxisLock
+{
+    /** No locking to an axis...							*/
+    EPAL_NONE,
+    /** Lock the sprite facing towards the positive X-axis	*/
+    EPAL_X,
+    /** Lock the sprite facing towards the positive Y-axis	*/
+    EPAL_Y,
+    /** Lock the sprite facing towards the positive Z-axis	*/
+    EPAL_Z,
+    /** Lock the sprite facing towards the negative X-axis	*/
+    EPAL_NEGATIVE_X,
+    /** Lock the sprite facing towards the negative Y-axis	*/
+    EPAL_NEGATIVE_Y,
+    /** Lock the sprite facing towards the negative Z-axis	*/
+    EPAL_NEGATIVE_Z,
+    /** Lock the sprite rotation on the X-axis				*/
+    EPAL_ROTATE_X,
+    /** Lock the sprite rotation on the Y-axis				*/
+    EPAL_ROTATE_Y ,
+    /** Lock the sprite rotation on the Z-axis				*/
+    EPAL_ROTATE_Z,
+
+    EPAL_MAX,
+};
+
 // Hacky base class to avoid 8 bytes of padding after the vtable
 struct FParticleEmitterInstanceFixLayout
 {
@@ -94,9 +120,10 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
     /** The offset to the TypeData instance payload.					*/
     int32 TypeDataInstanceOffset;
 
-    ParticleSize = SpriteTemplate->ParticleSize;
 
     virtual void Init();
+
+    uint32 RequiredBytes();
 
     virtual void ResetParticleParameters(float DeltaTime);
 
@@ -174,6 +201,9 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
     void SetupEmitterDuration();
     
     void KillParticle(int32 Index);
+
+    /** Get pointer to emitter instance random seed payload data for a particular module */
+    FParticleRandomSeedInstancePayload* GetModuleRandomSeedInstanceData(UParticleModule* Module);
 
     /** Set the HaltSpawning flag */
     virtual void SetHaltSpawning(bool bInHaltSpawning)

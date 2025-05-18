@@ -19,3 +19,17 @@ FParticleEmitterInstance* UParticleEmitter::CreateInstance(UParticleSystemCompon
     UE_LOG(LogLevel::Error, TEXT("UParticleEmitter::CreateInstance is pure virtual"));
     return NULL;
 }
+
+UParticleLODLevel* UParticleEmitter::GetCurrentLODLevel(FParticleEmitterInstance* Instance)
+{
+}
+
+UParticleLODLevel* UParticleEmitter::GetLODLevel(int32 LODLevel)
+{
+    if (LODLevel >= LODLevels.Num())
+    {
+        return NULL;
+    }
+
+    return LODLevels[LODLevel];
+}
