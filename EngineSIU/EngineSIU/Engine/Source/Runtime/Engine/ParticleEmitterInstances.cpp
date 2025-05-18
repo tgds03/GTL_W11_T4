@@ -27,45 +27,10 @@ void FParticleEmitterInstance::KillParticles()
  */
 bool FParticleEmitterInstance::Resize(int32 NewMaxActiveParticles, bool bSetMaxActiveCount)
 {
-	SCOPE_CYCLE_COUNTER(STAT_ParticleEmitterInstance_Resize);
-
-	if (GEngine->MaxParticleResize > 0)
-	{
-		if ((NewMaxActiveParticles < 0) || (NewMaxActiveParticles > GEngine->MaxParticleResize))
-		{
-			if ((NewMaxActiveParticles < 0) || (NewMaxActiveParticles > GEngine->MaxParticleResizeWarn))
-			{
-				UE_LOG(LogParticles, Warning, TEXT("Emitter::Resize> Invalid NewMaxActive (%d) for Emitter in PSys %s"),
-					NewMaxActiveParticles, 
-					Component	? 
-								Component->Template ? *(Component->Template->GetPathName()) 
-													: *(Component->GetName()) 
-								:
-								TEXT("INVALID COMPONENT"));
-			}
-
-			return false;
-		}
-	}
-
 	if (NewMaxActiveParticles > MaxActiveParticles)
 	{
-		// Alloc (or realloc) the data array
-		// Allocations > 16 byte are always 16 byte aligned so ParticleData can be used with SSE.
-		// NOTE: We don't have to zero the memory here... It gets zeroed when grabbed later.
-#if STATS
 		{
-			// Update the memory stat
-			int32 OldMem = (MaxActiveParticles * ParticleStride) + (MaxActiveParticles * sizeof(uint16));
-			int32 NewMem = (NewMaxActiveParticles * ParticleStride) + (NewMaxActiveParticles * sizeof(uint16));
-			DEC_DWORD_STAT_BY(STAT_GTParticleData, OldMem);
-			INC_DWORD_STAT_BY(STAT_GTParticleData, NewMem);
-		}
-#endif
-
-		{
-			ParticleData = (uint8*) FMemory::Realloc(ParticleData, ParticleStride * NewMaxActiveParticles);
-			check(ParticleData);
+		    ParticleData = (uint8*) FPlatformMemory::Realloc<EAT_Container>(ParticleData, ParticleStride * NewMaxActiveParticles);
 
 			// Allocate memory for indices.
 			if (ParticleIndices == NULL)
@@ -73,7 +38,7 @@ bool FParticleEmitterInstance::Resize(int32 NewMaxActiveParticles, bool bSetMaxA
 				// Make sure that we clear all when it is the first alloc
 				MaxActiveParticles = 0;
 			}
-			ParticleIndices	= (uint16*) FMemory::Realloc(ParticleIndices, sizeof(uint16) * (NewMaxActiveParticles + 1));
+		    ParticleIndices = (uint16*) FPlatformMemory::Realloc<EAT_Container>(ParticleIndices, sizeof(uint16) * (NewMaxActiveParticles + 1));
 		}
 
 		// Fill in default 1:1 mapping.
@@ -85,27 +50,7 @@ bool FParticleEmitterInstance::Resize(int32 NewMaxActiveParticles, bool bSetMaxA
 		// Set the max count
 		MaxActiveParticles = NewMaxActiveParticles;
 	}
-
-#if STATS
-	{
-		int32 WastedMem = 
-			((MaxActiveParticles * ParticleStride) + (MaxActiveParticles * sizeof(uint16))) - 
-			((ActiveParticles * ParticleStride) + (ActiveParticles * sizeof(uint16)));
-		INC_DWORD_STAT_BY(STAT_DynamicEmitterGTMem_Waste,WastedMem);
-	}
-#endif
-
-	// Set the PeakActiveParticles
-	if (bSetMaxActiveCount)
-	{
-		UParticleLODLevel* LODLevel	= SpriteTemplate->GetLODLevel(0);
-		check(LODLevel);
-		if (MaxActiveParticles > LODLevel->PeakActiveParticles)
-		{
-			LODLevel->PeakActiveParticles = MaxActiveParticles;
-		}
-	}
-
+    
 	return true;
 }
 
@@ -364,68 +309,52 @@ float FParticleEmitterInstance::Spawn(float DeltaTime)
 	}
 
 	// Spawn new particles...
-	// if ((SpawnRate > 0.f) || (BurstCount > 0))
-	// {
-	// 	float SafetyLeftover = OldLeftover;
-	// 	// Ensure continuous spawning... lots of fiddling.
-	// 	float	NewLeftover = OldLeftover + DeltaTime * SpawnRate;
-	// 	int32		Number		= FMath::FloorToInt(NewLeftover);
-	// 	float	Increment	= (SpawnRate > 0.0f) ? (1.f / SpawnRate) : 0.0f;
-	// 	float	StartTime = DeltaTime + OldLeftover * Increment - Increment;
-	// 	NewLeftover			= NewLeftover - Number;
-	//
-	// 	// Handle growing arrays.
-	// 	bool bProcessSpawn = true;
-	// 	int32 NewCount = ActiveParticles + Number + BurstCount;
-	//
-	// 	if (NewCount > FXConsoleVariables::MaxCPUParticlesPerEmitter)
-	// 	{
-	// 		int32 MaxNewParticles = FXConsoleVariables::MaxCPUParticlesPerEmitter - ActiveParticles;
-	// 		BurstCount = FMath::Min(MaxNewParticles, BurstCount);
-	// 		MaxNewParticles -= BurstCount;
-	// 		Number = FMath::Min(MaxNewParticles, Number);
-	// 		NewCount = ActiveParticles + Number + BurstCount;
-	// 	}
-	//
-	// 	float	BurstIncrement = SpriteTemplate->bUseLegacySpawningBehavior ? (BurstCount > 0.0f) ? (1.f / BurstCount) : 0.0f : 0.0f;
-	// 	float	BurstStartTime = SpriteTemplate->bUseLegacySpawningBehavior ? DeltaTime * BurstIncrement : 0.0f;
-	//
-	// 	if (NewCount >= MaxActiveParticles)
-	// 	{
-	// 		if (DeltaTime < PeakActiveParticleUpdateDelta)
-	// 		{
-	// 			bProcessSpawn = Resize(NewCount + FMath::TruncToInt(FMath::Sqrt(FMath::Sqrt((float)NewCount)) + 1));
-	// 		}
-	// 		else
-	// 		{
-	// 			bProcessSpawn = Resize((NewCount + FMath::TruncToInt(FMath::Sqrt(FMath::Sqrt((float)NewCount)) + 1)), false);
-	// 		}
-	// 	}
-	//
-	// 	if (bProcessSpawn == true)
-	// 	{
-	// 		FParticleEventInstancePayload* EventPayload = NULL;
-	// 		if (LODLevel->EventGenerator)
-	// 		{
-	// 			EventPayload = (FParticleEventInstancePayload*)GetModuleInstanceData(LODLevel->EventGenerator);
-	// 			if (EventPayload && !EventPayload->bSpawnEventsPresent && !EventPayload->bBurstEventsPresent)
-	// 			{
-	// 				EventPayload = NULL;
-	// 			}
-	// 		}
-	//
-	// 		const FVector InitialLocation = EmitterToSimulation.GetOrigin();
-	//
-	// 		// Spawn particles.
-	// 		SpawnParticles( Number, StartTime, Increment, InitialLocation, FVector::ZeroVector, EventPayload );
-	//
-	// 		// Burst particles.
-	// 		SpawnParticles(BurstCount, BurstStartTime, BurstIncrement, InitialLocation, FVector::ZeroVector, EventPayload);
-	//
-	// 		return NewLeftover;
-	// 	}
-	// 	return SafetyLeftover;
-	// }
+	if ((SpawnRate > 0.f) || (BurstCount > 0))
+	{
+		float SafetyLeftover = OldLeftover;
+		// Ensure continuous spawning... lots of fiddling.
+		float	NewLeftover = OldLeftover + DeltaTime * SpawnRate;
+		int32		Number		= FMath::FloorToInt(NewLeftover);
+		float	Increment	= (SpawnRate > 0.0f) ? (1.f / SpawnRate) : 0.0f;
+		float	StartTime = DeltaTime + OldLeftover * Increment - Increment;
+		NewLeftover			= NewLeftover - Number;
+	
+		// Handle growing arrays.
+		bool bProcessSpawn = true;
+		int32 NewCount = ActiveParticles + Number + BurstCount;
+	
+		// float	BurstIncrement = SpriteTemplate->bUseLegacySpawningBehavior ? (BurstCount > 0.0f) ? (1.f / BurstCount) : 0.0f : 0.0f;
+		// float	BurstStartTime = SpriteTemplate->bUseLegacySpawningBehavior ? DeltaTime * BurstIncrement : 0.0f;
+	
+		if (NewCount >= MaxActiveParticles)
+		{
+            bProcessSpawn = Resize(NewCount + FMath::FloorToInt(FMath::Sqrt(FMath::Sqrt((float)NewCount)) + 1));
+		}
+	
+		if (bProcessSpawn == true)
+		{
+			FParticleEventInstancePayload* EventPayload = NULL;
+			if (LODLevel->EventGenerator)
+			{
+				EventPayload = (FParticleEventInstancePayload*)GetModuleInstanceData(LODLevel->EventGenerator);
+				if (EventPayload && !EventPayload->bSpawnEventsPresent && !EventPayload->bBurstEventsPresent)
+				{
+					EventPayload = NULL;
+				}
+			}
+	
+			const FVector InitialLocation = EmitterToSimulation.GetTranslationVector();
+	
+			// Spawn particles.
+			SpawnParticles( Number, StartTime, Increment, InitialLocation, FVector::ZeroVector, EventPayload );
+	
+			// Burst particles.
+			// SpawnParticles(BurstCount, BurstStartTime, BurstIncrement, InitialLocation, FVector::ZeroVector, EventPayload);
+	
+			return NewLeftover;
+		}
+		return SafetyLeftover;
+	}
 
 	return SpawnFraction;
 }
@@ -457,25 +386,49 @@ void FParticleEmitterInstance::SpawnParticles(int32 Count, float StartTime, floa
 
     auto SpawnInternal = [&]()
     {
+        if (!(ParticleData && ParticleIndices))
+        {
+            static bool bErrorReported = false;
+            if (!bErrorReported)
+            {
+                UE_LOG(LogLevel::Error, TEXT("Detected null particles. Template: %s"), SpriteTemplate->GetName());
+                bErrorReported = true;
+            }
+            ActiveParticles = 0;
+            Count = 0;
+            return;
+        }
+        
         UParticleLODLevel* HighestLODLevel = SpriteTemplate->LODLevels[0];
         float SpawnTime = StartTime;
         float Interp = 1.0f;
         const float InterpIncrement = (Count > 0 && Increment > 0.0f) ? (1.0f / static_cast<float>(Count)) : 0.0f;
         for (int32 i = 0; i < Count; ++i)
         {
-            if (!(ParticleData && ParticleIndices))
+            uint16 NextFreeIndex = ParticleIndices[ActiveParticles];
+            DECLARE_PARTICLE_PTR(Particle, ParticleData + ParticleStride * NextFreeIndex);
+            const uint32 CurrentParticleIndex = ActiveParticles++;
+
+            PreSpawn(Particle, InitialLocation, InitialVelocity);
+            for (int32 ModuleIndex = 0; ModuleIndex < LODLevel->SpawnModules.Num(); ++ModuleIndex)
             {
-                static bool bErrorReported = false;
-                if (!bErrorReported)
+                UParticleModule* SpawnModule = LODLevel->SpawnModules[ModuleIndex];
+                if (SpawnModule->GetFlag(EModuleFlag::Enabled))
                 {
-                    UE_LOG(LogLevel::Error, TEXT("Detected null particles. Template: %s"), SpriteTemplate->GetName());
-                    bErrorReported = true;
+                    UParticleModule* OffsetModule = HighestLODLevel->SpawnModules[ModuleIndex];
+                    SpawnModule->Spawn(this, GetModuleDataOffset(OffsetModule), SpawnTime, Particle);
                 }
-                ActiveParticles = 0;
-                Count = 0;
-                break;
+            }
+            PostSpawn(Particle, Interp, SpawnTime);
+
+            if (Particle->RelativeTime > 1.0f)
+            {
+                KillParticle(CurrentParticleIndex);
+                continue;
             }
         }
+
+        SpawnInternal();
     };
 
 	// // Ensure we don't access particle beyond what is allocated.
@@ -663,17 +616,17 @@ class UParticleLODLevel* FParticleEmitterInstance::GetCurrentLODLevelChecked()
         return nullptr;
     }
     
-    // UParticleLODLevel* LODLevel = SpriteTemplate->GetCurrentLODLevel(this);
-    // if (LODLevel == nullptr)
-    // {
-    //     return nullptr;
-    // }
-    //
-    // if (LODLevel->RequiredModule == nullptr)
-    // {
-    //     return nullptr;
-    // }
-    // return LODLevel;
+    UParticleLODLevel* LODLevel = SpriteTemplate->GetCurrentLODLevel(this);
+    if (LODLevel == nullptr)
+    {
+        return nullptr;
+    }
+    
+    if (LODLevel->RequiredModule == nullptr)
+    {
+        return nullptr;
+    }
+    return LODLevel;
 }
 
 /**

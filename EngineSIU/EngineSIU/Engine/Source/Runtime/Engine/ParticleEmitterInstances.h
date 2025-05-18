@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "ParticleHelper.h"
 #include "HAL/PlatformType.h"
+#include "Math/Matrix.h"
 
 class UParticleModuleTypeDataMesh;
 class UParticleModule;
@@ -53,6 +54,9 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
     float SecondsSinceCreation;
     float EmitterTime;
     float EmitterDuration;
+
+    FMatrix EmitterToSimulation;
+    FMatrix SimulationToWorld;
 
     virtual void ResetParticleParameters(float DeltaTime);
 

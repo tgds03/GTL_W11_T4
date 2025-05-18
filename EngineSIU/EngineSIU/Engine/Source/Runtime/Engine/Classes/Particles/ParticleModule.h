@@ -69,6 +69,7 @@ public:
      */
     virtual EModuleType	GetModuleType() const	{	return EPMT_General;	}
 
+    virtual void Spawn(FParticleEmitterInstance* Owner, uint32 Offset, float SpawnTime, FBaseParticle* ParticleBase);
     virtual void Update(FParticleEmitterInstance* Owner, uint32 Offset, float DeltaTime);
 
     virtual void FinalUpdate(FParticleEmitterInstance* Owner, uint32 Offset, float DeltaTime);
