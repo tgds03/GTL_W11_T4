@@ -1,4 +1,5 @@
 #pragma once
+#include "EnumAsByte.h"
 #include "ParticleHelper.h"
 #include "UObject/Object.h"
 #include "UObject/ObjectMacros.h"
@@ -149,6 +150,6 @@ public:
     };
 
 protected:
-    EModuleFlag::EModuleFlags Flags = EModuleFlag::None;
+    TEnumAsByte<EModuleFlag::EModuleFlags> Flags = EModuleFlag::None;
 
 };

@@ -102,5 +102,8 @@ public:
      *
      */
     TEnumAsByte<EParticleSortMode> SortMode;
+    
+    int32 SubImages_Horizontal;
+    int32 SubImages_Vertical;
 };
 

@@ -89,7 +89,8 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
     int32 MaxActiveParticles;
     /** The fraction of time left over from spawning.                   */
     uint32 LoopCount;
-    
+    /** The offset to the SubUV payload in the particle data.			*/
+    int32 SubUVDataOffset; 
     float SpawnFraction;
     /** The number of seconds that have passed since the instance was
      *	created.

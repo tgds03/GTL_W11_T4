@@ -4,6 +4,7 @@
 
 #include "ParticleEmitterInstances.h"
 
+class UParticleModuleTypeDataBase;
 class UParticleModuleRequired;
 class UParticleModuleSpawn;
 
@@ -21,19 +22,18 @@ public:
     class UParticleModuleEventGenerator* EventGenerator;
 
     TArray<class UParticleModule*> Modules;
+    /** The required module for this LOD level											*/
+    UParticleModuleRequired* RequiredModule;
+    UParticleModuleSpawn* SpawnModule;
     TArray<class UParticleModule*> SpawnModules;
-
+    UParticleModuleTypeDataBase* TypeDataModule;
+    TArray<class UParticleModule*> UpdateModules;
+    TArray<class UParticleModule*> FinalUpdateModules;
     /** True if the LOD level is enabled, meaning it should be updated and rendered.	*/
     uint8 bEnabled : 1;
     uint8 bUseLocalSpace: 1;
 
-    /** The required module for this LOD level											*/
-    UParticleModuleRequired* RequiredModule;
-
     int32 PeakActiveParticles;
 
-    UParticleModuleSpawn* SpawnModule;
 
-    TArray<class UParticleModule*> UpdateModules;
-    TArray<class UParticleModule*> FinalUpdateModules;
 };

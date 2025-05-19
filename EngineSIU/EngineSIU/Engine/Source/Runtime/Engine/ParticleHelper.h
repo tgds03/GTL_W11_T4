@@ -15,7 +15,10 @@
 
 #define BEGIN_UPDATE_LOOP																								\
 	{																													\
-		if((Owner == NULL) || (Owner->Component == NULL)) continue;														\
+        if((Owner == NULL) || (Owner->Component == NULL)) {                                                             \
+            assert(0);                                                                                                  \
+            return;                                                                                                     \
+        }                                                                                                               \
 		int32&			ActiveParticles = Owner->ActiveParticles;														\
 		uint32			CurrentOffset	= Offset;																		\
 		const uint8*		ParticleData	= Owner->ParticleData;															\
@@ -41,7 +44,7 @@
 
 #define SPAWN_INIT																										\
 	if((Owner == NULL) || (Owner->Component == NULL)) {                                                                 \
-        UE_LOG(LogLevel::Error, "Cannot find Owner or Component");                                                      \
+        assert(0);                                                                                                      \
         return;                                                                                                         \
     }                                                                                                                   \
 	const int32		ActiveParticles	= Owner->ActiveParticles;															\
@@ -861,4 +864,15 @@ public:
 struct FParticleRandomSeedInstancePayload
 {
     FRandomStream	RandomStream;
+};
+
+//
+//	SubUV-related payloads
+//
+struct FFullSubUVPayload
+{
+    // The integer portion indicates the sub-image index.
+    // The fractional portion indicates the lerp factor.
+    float ImageIndex;
+    float RandomImageTime;
 };

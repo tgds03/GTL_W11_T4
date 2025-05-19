@@ -21,4 +21,6 @@ public:
 
     /** UNUSED (the collision module dictates doing collisions) */
     uint8 DoCollisions:1;
+    
+    virtual bool SupportsSubUV() const override { return true; }
 };
