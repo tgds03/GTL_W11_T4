@@ -1,6 +1,7 @@
 #pragma once
 #include "ParticleHelper.h"
 #include "HAL/PlatformType.h"
+#include "Math/Matrix.h"
 
 class UParticleModuleTypeDataMesh;
 class UParticleModule;
@@ -86,6 +87,8 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
      */
     int32 MaxActiveParticles;
     /** The fraction of time left over from spawning.                   */
+    uint32 LoopCount;
+    
     float SpawnFraction;
     /** The number of seconds that have passed since the instance was
      *	created.
@@ -157,6 +160,9 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
 
     virtual uint32 CalculateParticleStride(uint32 ParticleSize);
 
+    FMatrix EmitterToSimulation;
+    FMatrix SimulationToWorld;
+
     virtual void ResetParticleParameters(float DeltaTime);
 
     
@@ -184,6 +190,9 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
      *	@return	float				The SpawnFraction remaining
      */
     virtual float Tick_SpawnParticles(float DeltaTime, UParticleLODLevel* CurrentLODLevel, bool bSuppressSpawning, bool bFirstTime);
+
+    virtual void Tick_ModuleUpdate(float DeltaTime, UParticleLODLevel* CurrentLODLevel);
+    virtual void Tick_ModuleFinalUpdate(float DeltaTime, UParticleLODLevel* CurrentLODLevel);
     
     /** Get offset for particle payload data for a particular module */
     uint32 GetModuleDataOffset(UParticleModule* Module);

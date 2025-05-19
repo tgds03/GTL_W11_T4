@@ -20,7 +20,7 @@ public:
     /** The optional EventGenerator module. */
     class UParticleModuleEventGenerator* EventGenerator;
 
-    /** SpawnModules - These are called when particles are spawned.						*/
+    TArray<class UParticleModule*> Modules;
     TArray<class UParticleModule*> SpawnModules;
 
     /** True if the LOD level is enabled, meaning it should be updated and rendered.	*/
@@ -33,4 +33,6 @@ public:
 
     UParticleModuleSpawn* SpawnModule;
 
+    TArray<class UParticleModule*> UpdateModules;
+    TArray<class UParticleModule*> FinalUpdateModules;
 };

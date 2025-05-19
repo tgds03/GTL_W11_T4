@@ -20,9 +20,6 @@ FParticleEmitterInstance* UParticleEmitter::CreateInstance(UParticleSystemCompon
     return NULL;
 }
 
-UParticleLODLevel* UParticleEmitter::GetCurrentLODLevel(FParticleEmitterInstance* Instance)
-{
-}
 
 UParticleLODLevel* UParticleEmitter::GetLODLevel(int32 LODLevel)
 {
@@ -32,4 +29,10 @@ UParticleLODLevel* UParticleEmitter::GetLODLevel(int32 LODLevel)
     }
 
     return LODLevels[LODLevel];
+}
+
+
+UParticleLODLevel* UParticleEmitter::GetCurrentLODLevel(FParticleEmitterInstance* Instance)
+{
+    return Instance->CurrentLODLevel;
 }

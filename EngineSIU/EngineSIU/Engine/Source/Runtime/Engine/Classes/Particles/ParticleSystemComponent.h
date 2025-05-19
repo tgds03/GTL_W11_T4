@@ -28,7 +28,7 @@ public:
 
     virtual void TickComponent(float DeltaTime) override;
     /** Possibly parallel phase of TickComponent **/
-    void ComputeTickComponent_Concurrent();
+    void ComputeTickComponent();
 
     void InitializeSystem();
 
@@ -66,6 +66,9 @@ protected:
     // virtual void UpdateDynamicData();
 
 
+    float DeltaTime;
+private:
+    uint32 TotalActiveParticles;
 public:
     uint8 bWasDeactivated : 1;
 

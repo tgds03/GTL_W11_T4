@@ -87,6 +87,20 @@ struct FParticleRandomSeedInfo
 
 };
 
+namespace EModuleFlag
+{
+    enum EModuleFlags: uint32
+    {
+        None = 0,
+        Enabled = 1 << 0,
+        Editable = 1 << 1,
+        SpawnModule = 1 << 2,
+        UpdateModule = 1 << 3,
+        FinalUpdateModule = 1 << 4,
+        SupportsRandomSeed = 1 << 5,
+    };
+}
+
 class UParticleModule : public UObject
 {
     DECLARE_CLASS(UParticleModule, UObject)
@@ -123,5 +137,17 @@ public:
     virtual FParticleRandomSeedInfo* GetRandomSeedInfo();
 
     uint32 PrepRandomSeedInstancePayload(FParticleEmitterInstance* Owner, FParticleRandomSeedInstancePayload* InRandSeedPayload, const FParticleRandomSeedInfo& InRandSeedInfo);
+    virtual void Spawn(FParticleEmitterInstance* Owner, uint32 Offset, float SpawnTime, FBaseParticle* ParticleBase);
+    virtual void Update(FParticleEmitterInstance* Owner, uint32 Offset, float DeltaTime);
+
+    virtual void FinalUpdate(FParticleEmitterInstance* Owner, uint32 Offset, float DeltaTime);
+
+    bool GetFlag(EModuleFlag::EModuleFlags Flag)
+    {
+        return (Flags & Flag);
+    };
+
+private:
+    EModuleFlag::EModuleFlags Flags = EModuleFlag::None;
 
 };

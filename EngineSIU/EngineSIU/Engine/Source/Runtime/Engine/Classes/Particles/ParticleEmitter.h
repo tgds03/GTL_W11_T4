@@ -77,7 +77,7 @@ public:
 *	@return NULL if the requested LODLevel is not valid.
 *			The pointer to the requested UParticleLODLevel if valid.
 */
-    //UParticleLODLevel* GetCurrentLODLevel(FParticleEmitterInstance* Instance);
+    UParticleLODLevel* GetCurrentLODLevel(FParticleEmitterInstance* Instance);
     UParticleLODLevel* GetLODLevel(int32 LODLevel);
 
     /**
