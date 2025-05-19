@@ -1,4 +1,7 @@
 #pragma once
+#include "Container/Array.h"
+
+class UParticleEmitter;
 
 class UParticleSystem
 {
@@ -20,4 +23,6 @@ public:
     float WarmupTickRate;
 
     TArray<UParticleEmitter*> Emitters;
+
+    void UpdateAllModuleLists();
 };

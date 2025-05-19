@@ -85,4 +85,6 @@ public:
      */
     int32 InitialAllocationCount;
     float QualityLevelSpawnRateScale;
+
+    void CacheEmitterModuleInfo();
 };

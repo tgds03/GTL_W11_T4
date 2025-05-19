@@ -5,6 +5,7 @@
 #include "UObject/ObjectMacros.h"
 #include "RandomStream.h"
 
+class UParticleModuleTypeDataBase;
 struct FBaseParticle;
 struct FParticleEmitterInstance;
 
@@ -100,6 +101,7 @@ namespace EModuleFlag
         UpdateModule = 1 << 3,
         FinalUpdateModule = 1 << 4,
         SupportsRandomSeed = 1 << 5,
+        RequiresLoopingNotification = 1 << 6,
     };
 }
 
@@ -141,9 +143,10 @@ public:
     uint32 PrepRandomSeedInstancePayload(FParticleEmitterInstance* Owner, FParticleRandomSeedInstancePayload* InRandSeedPayload, const FParticleRandomSeedInfo& InRandSeedInfo);
     virtual void Spawn(FParticleEmitterInstance* Owner, uint32 Offset, float SpawnTime, FBaseParticle* ParticleBase);
     virtual void Update(FParticleEmitterInstance* Owner, uint32 Offset, float DeltaTime);
-
     virtual void FinalUpdate(FParticleEmitterInstance* Owner, uint32 Offset, float DeltaTime);
-
+    virtual uint32 RequiredBytes(UParticleModuleTypeDataBase* TypeData);
+    virtual uint32 RequiredBytesPerInstance();
+    
     bool GetFlag(EModuleFlag::EModuleFlags Flag)
     {
         return (Flags & Flag);

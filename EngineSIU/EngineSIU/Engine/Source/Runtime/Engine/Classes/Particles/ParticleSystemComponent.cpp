@@ -15,7 +15,22 @@ void UParticleSystemComponent::TickComponent(float DeltaTime)
 {
     TotalActiveParticles = 0;
     this->DeltaTime = DeltaTime;
+
+    bool bRequiresReset = bResetTriggered;
+    bResetTriggered = false;
+    if (bRequiresReset)
+    {
+        ForceReset();
+    }
     ComputeTickComponent();
+}
+
+void UParticleSystemComponent::ForceReset()
+{
+    if (Template != nullptr)
+    {
+        Template->UpdateAllModuleLists();
+    }
 }
 
 

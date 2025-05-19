@@ -35,31 +35,31 @@ uint32 UParticleModule::PrepRandomSeedInstancePayload(FParticleEmitterInstance* 
         new(InRandSeedPayload) FParticleRandomSeedInstancePayload();
 
         // See if the parameter is set on the instance...
-        if (InRandSeedInfo.bGetSeedFromInstance == true)
-        {
-            float SeedValue;
-            if (Owner->Component->GetFloatParameter(InRandSeedInfo.ParameterName, SeedValue) == true)
-            {
-                if (InRandSeedInfo.bInstanceSeedIsIndex == false)
-                {
-                    InRandSeedPayload->RandomStream.Initialize(static_cast<int32>(std::round(SeedValue)));
-                }
-                else
-                {
-                    if (InRandSeedInfo.RandomSeeds.Num() > 0)
-                    {
-                        int32 Index = FMath::Min<int32>((InRandSeedInfo.RandomSeeds.Num() - 1), static_cast<int32>(std::trunc(SeedValue)));
-                        InRandSeedPayload->RandomStream.Initialize(InRandSeedInfo.RandomSeeds[Index]);
-                        return 0;
-                    }
-                    else
-                    {
-                        return 0xffffffff;
-                    }
-                }
-                return 0;
-            }
-        }
+        // if (InRandSeedInfo.bGetSeedFromInstance == true)
+        // {
+        //     float SeedValue;
+        //     if (Owner->Component->GetFloatParameter(InRandSeedInfo.ParameterName, SeedValue) == true)
+        //     {
+        //         if (InRandSeedInfo.bInstanceSeedIsIndex == false)
+        //         {
+        //             InRandSeedPayload->RandomStream.Initialize(static_cast<int32>(std::round(SeedValue)));
+        //         }
+        //         else
+        //         {
+        //             if (InRandSeedInfo.RandomSeeds.Num() > 0)
+        //             {
+        //                 int32 Index = FMath::Min<int32>((InRandSeedInfo.RandomSeeds.Num() - 1), static_cast<int32>(std::trunc(SeedValue)));
+        //                 InRandSeedPayload->RandomStream.Initialize(InRandSeedInfo.RandomSeeds[Index]);
+        //                 return 0;
+        //             }
+        //             else
+        //             {
+        //                 return 0xffffffff;
+        //             }
+        //         }
+        //         return 0;
+        //     }
+        // }
 
         // Pick a seed to use and initialize it!!!!
         if (InRandSeedInfo.RandomSeeds.Num() > 0)
@@ -91,6 +91,16 @@ void UParticleModule::Spawn(FParticleEmitterInstance* Owner, uint32 Offset, floa
 
 void UParticleModule::Update(FParticleEmitterInstance* Owner, uint32 Offset, float DeltaTime)
 {
+}
+
+uint32 UParticleModule::RequiredBytes(UParticleModuleTypeDataBase* TypeData)
+{
+    return 0;
+}
+
+uint32 UParticleModule::RequiredBytesPerInstance()
+{
+    return 0;
 }
 
 void UParticleModule::FinalUpdate(FParticleEmitterInstance* Owner, uint32 Offset, float DeltaTime)

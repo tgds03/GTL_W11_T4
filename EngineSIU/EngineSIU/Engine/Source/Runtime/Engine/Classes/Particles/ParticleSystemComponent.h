@@ -1,4 +1,5 @@
 #pragma once
+#include "RandomStream.h"
 #include "Components/PrimitiveComponent.h"
 #include "UObject/ObjectMacros.h"
 
@@ -27,6 +28,8 @@ public:
 
 
     virtual void TickComponent(float DeltaTime) override;
+
+    void ForceReset();
     /** Possibly parallel phase of TickComponent **/
     void ComputeTickComponent();
 
@@ -90,6 +93,7 @@ public:
     /** If true, the ViewRelevanceFlags are dirty and should be recached */
     uint8 bIsViewRelevanceDirty : 1;
 
+    uint8 bResetTriggered = false;
     uint8 bWasCompleted : 1;
 
 public:

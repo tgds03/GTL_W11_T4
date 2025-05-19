@@ -4,7 +4,9 @@
 
 class UParticleModuleTypeDataMesh : public UParticleModuleTypeDataBase
 {
+    DECLARE_CLASS(UParticleModuleTypeDataMesh, UParticleModuleTypeDataBase)
 public:
+    UParticleModuleTypeDataMesh();
     UStaticMesh* Mesh;
 
     /** Random stream for the initial rotation distribution */

@@ -177,6 +177,7 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
 
     virtual void Tick(float DeltaTime, bool bSuppressSpawning);
     
+    virtual float Tick_EmitterTimeSetup(float delta_time, UParticleLODLevel* lod_level);
     /**
      *	Tick sub-function that handles spawning of particles
      *

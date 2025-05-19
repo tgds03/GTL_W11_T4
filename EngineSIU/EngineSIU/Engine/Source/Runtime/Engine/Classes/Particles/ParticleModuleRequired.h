@@ -92,6 +92,7 @@ public:
 
     uint8 bUseLocalSpace: 1;
 
+    uint8 bDurationRecalcEachLoop: 1;
     /**
      *	The sorting mode to use for this emitter.
      *	PSORTMODE_None				- No sorting required.

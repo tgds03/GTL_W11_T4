@@ -63,6 +63,11 @@
 		ActiveParticles--;																								\
 	}
 
+// Special module indices...
+#define INDEX_TYPEDATAMODULE	(INDEX_NONE - 1)
+#define INDEX_REQUIREDMODULE	(INDEX_NONE - 2)
+#define INDEX_SPAWNMODULE		(INDEX_NONE - 3)
+
 struct FParticleMeshEmitterInstance;
 class UStaticMesh;
 

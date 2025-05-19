@@ -22,10 +22,12 @@ public:
     class UParticleModuleEventGenerator* EventGenerator;
 
     TArray<class UParticleModule*> Modules;
+    UParticleModule* GetModuleAtIndex(int32 InIndex);
     /** The required module for this LOD level											*/
     UParticleModuleRequired* RequiredModule;
     UParticleModuleSpawn* SpawnModule;
     TArray<class UParticleModule*> SpawnModules;
+    TArray<class UParticcleModuleSpawnBase*> SpawningModules;
     UParticleModuleTypeDataBase* TypeDataModule;
     TArray<class UParticleModule*> UpdateModules;
     TArray<class UParticleModule*> FinalUpdateModules;
@@ -33,6 +35,7 @@ public:
     uint8 bEnabled : 1;
     uint8 bUseLocalSpace: 1;
 
+    virtual void UpdateModuleLists();
     int32 PeakActiveParticles;
 
 

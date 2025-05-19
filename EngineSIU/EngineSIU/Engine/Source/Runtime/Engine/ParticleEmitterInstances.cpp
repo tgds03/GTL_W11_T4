@@ -78,14 +78,23 @@ void FParticleEmitterInstance::Tick(float DeltaTime, bool bSuppressSpawning)
         return;
     }
 
+    bool bFirstTime = (SecondsSinceCreation > 0.f) ? false : true;
+    
+    // Grab the current LOD level
     UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
-    // if (bEnabled)
+    // Handle EmitterTime setup, looping, etc.
+    float EmitterDelay = Tick_EmitterTimeSetup(DeltaTime, LODLevel);
+    
+    if (bEnabled)
     {
         KillParticles();
         ResetParticleParameters(DeltaTime);
         Tick_ModuleUpdate(DeltaTime, LODLevel);
         Tick_ModuleFinalUpdate(DeltaTime, LODLevel);
+        SpawnFraction = Tick_SpawnParticles(DeltaTime, LODLevel, bSuppressSpawning, bFirstTime);
     }
+
+    EmitterTime += EmitterDelay;
 
     // If this the FirstTime we are being ticked?
     // bool bFirstTime = (SecondsSinceCreation > 0.0f) ? false : true;
@@ -144,6 +153,108 @@ void FParticleEmitterInstance::Tick(float DeltaTime, bool bSuppressSpawning)
     // PositionOffsetThisTick = FVector::ZeroVector;
     //
     // INC_DWORD_STAT_BY(STAT_SpriteParticles, ActiveParticles);
+}
+
+float FParticleEmitterInstance::Tick_EmitterTimeSetup(float DeltaTime, UParticleLODLevel* InCurrentLODLevel)
+{
+    // Make sure we don't try and do any interpolation on the first frame we are attached (OldLocation is not valid in this circumstance)
+	// if (Component->bJustRegistered)
+	// {
+	// 	Location	= Component->GetComponentLocation();
+	// 	OldLocation	= Location;
+	// }
+	// else
+	// {
+	// 	// Keep track of location for world- space interpolation and other effects.
+	// 	OldLocation	= Location;
+	// 	Location	= Component->GetComponentLocation();
+	// }
+	//
+	// UpdateTransforms();
+	SecondsSinceCreation += DeltaTime;
+
+	// Update time within emitter loop.
+	bool bLooped = false;
+	// if (InCurrentLODLevel->RequiredModule->bUseLegacyEmitterTime == false)
+	// {
+	// 	EmitterTime += DeltaTime;
+	// 	bLooped = (EmitterDuration > 0.0f) && (EmitterTime >= EmitterDuration);
+	// }
+	// else
+	{
+		EmitterTime = SecondsSinceCreation;
+		if (EmitterDuration > KINDA_SMALL_NUMBER)
+		{
+			EmitterTime = FMath::Fmod(SecondsSinceCreation, EmitterDuration);
+			bLooped = ((SecondsSinceCreation - (EmitterDuration * LoopCount)) >= EmitterDuration);
+		}
+	}
+
+	// Get the emitter delay time
+	float EmitterDelay = CurrentDelay;
+
+	// Determine if the emitter has looped
+	if (bLooped)
+	{
+		LoopCount++;
+		// ResetBurstList();
+// #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+// 		// Reset the event count each loop...
+// 		if (EventCount > MaxEventCount)
+// 		{
+// 			MaxEventCount = EventCount;
+// 		}
+// 		EventCount = 0;
+// #endif	//#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+
+		// if (InCurrentLODLevel->RequiredModule->bUseLegacyEmitterTime == false)
+		// {
+		// 	EmitterTime -= EmitterDuration;
+		// }
+
+		if ((InCurrentLODLevel->RequiredModule->bDurationRecalcEachLoop == true)
+			|| ((InCurrentLODLevel->RequiredModule->bDelayFirstLoopOnly == true) && (LoopCount == 1))
+			)
+		{
+			SetupEmitterDuration();
+		}
+
+	    // for UParticleModule*_Seeded
+		// if (bRequiresLoopNotification == true)
+		// {
+		// 	for (int32 ModuleIdx = -3; ModuleIdx < InCurrentLODLevel->Modules.Num(); ModuleIdx++)
+		// 	{
+		// 		int32 ModuleFetchIdx;
+		// 		switch (ModuleIdx)
+		// 		{
+		// 		case -3:	ModuleFetchIdx = INDEX_REQUIREDMODULE;	break;
+		// 		case -2:	ModuleFetchIdx = INDEX_SPAWNMODULE;		break;
+		// 		case -1:	ModuleFetchIdx = INDEX_TYPEDATAMODULE;	break;
+		// 		default:	ModuleFetchIdx = ModuleIdx;				break;
+		// 		}
+		//
+		// 		UParticleModule* Module = InCurrentLODLevel->GetModuleAtIndex(ModuleFetchIdx);
+		// 		if (Module != NULL)
+		// 		{
+		// 			if (Module->GetFlag(EModuleFlag::RequiresLoopingNotification))
+		// 			{
+		// 				Module->EmitterLoopingNotify(this);
+		// 			}
+		// 		}
+		// 	}
+		// }
+	}
+
+	// Don't delay unless required
+	if ((InCurrentLODLevel->RequiredModule->bDelayFirstLoopOnly == true) && (LoopCount > 0))
+	{
+		EmitterDelay = 0;
+	}
+
+	// 'Reset' the emitter time so that the modules function correctly
+	EmitterTime -= EmitterDelay;
+
+	return EmitterDelay;
 }
 
 float FParticleEmitterInstance::Tick_SpawnParticles(float DeltaTime, UParticleLODLevel* InCurrentLODLevel, bool bSuppressSpawning, bool bFirstTime)
@@ -551,8 +662,7 @@ void FParticleEmitterInstance::PreSpawn(FBaseParticle* Particle, const FVector& 
     }
 
     // By default, just clear out the particle
-    // FMemory::Memzero(Particle, ParticleSize);
-    
+    FPlatformMemory::Memset(Particle, 0,ParticleSize);
 
     // Initialize the particle location.
     Particle->Location = InitialLocation;
