@@ -1,11 +1,8 @@
 #include "ParticleEmitterInstances.h"
 
 #include "Define.h"
-#include "Engine/Engine.h"
 #include "Particles/ParticleEmitter.h"
 #include "Particles/ParticleLODLevel.h"
-#include "Particles/ParticleSystem.h"
-#include "Particles/ParticleSystemComponent.h"
 #include "Particles/Event/ParticleModuleEventGenerator.h"
 #include "RandomStream.h"
 #include "Core/HAL/PlatformMemory.h"
@@ -14,6 +11,9 @@
 
 #include "Particles/ParticleModuleSpawn.h"
 #include "Particles/ParticleModuleRequired.h"
+#include "Particles/ParticleModuleSpawn.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "UObject/Casts.h"
 
 void FParticleEmitterInstance::ResetParticleParameters(float DeltaTime)
 {
@@ -249,70 +249,63 @@ float FParticleEmitterInstance::Spawn(float DeltaTime)
 
 	bool bProcessSpawnRate = true;
 	bool bProcessBurstList = true;
-	// int32 DetailMode = Component->GetCurrentDetailMode();
-	//
-	// if (SpriteTemplate->QualityLevelSpawnRateScale > 0.0f)
-	// {
-	// 	// Process all Spawning modules that are present in the emitter.
-	// 	for (int32 SpawnModIndex = 0; SpawnModIndex < LODLevel->SpawningModules.Num(); SpawnModIndex++)
-	// 	{
-	// 		UParticleModuleSpawnBase* SpawnModule = LODLevel->SpawningModules[SpawnModIndex];
-	// 		if (SpawnModule && SpawnModule->bEnabled)
-	// 		{
-	// 			UParticleModule* OffsetModule = HighestLODLevel->SpawningModules[SpawnModIndex];
-	// 			uint32 Offset = GetModuleDataOffset(OffsetModule);
-	//
-	// 			// Update the spawn rate
-	// 			int32 Number = 0;
-	// 			float Rate = 0.0f;
-	// 			if (SpawnModule->GetSpawnAmount(this, Offset, OldLeftover, DeltaTime, Number, Rate) == false)
-	// 			{
-	// 				bProcessSpawnRate = false;
-	// 			}
-	//
-	// 			Number = FMath::Max<int32>(0, Number);
-	// 			Rate = FMath::Max<float>(0.0f, Rate);
-	//
-	// 			SpawnCount += Number;
-	// 			SpawnRate += Rate;
-	// 			// Update the burst list
-	// 			int32 BurstNumber = 0;
-	// 			if (SpawnModule->GetBurstCount(this, Offset, OldLeftover, DeltaTime, BurstNumber) == false)
-	// 			{
-	// 				bProcessBurstList = false;
-	// 			}
-	//
-	// 			BurstCount += BurstNumber;
-	// 		}
-	// 	}
-	//
-	// 	// Figure out spawn rate for this tick.
-	// 	if (bProcessSpawnRate)
-	// 	{
-	// 		float RateScale = LODLevel->SpawnModule->RateScale.GetValue(EmitterTime, Component) * LODLevel->SpawnModule->GetGlobalRateScale();
-	// 		SpawnRate += LODLevel->SpawnModule->Rate.GetValue(EmitterTime, Component) * RateScale;
-	// 		SpawnRate = FMath::Max<float>(0.0f, SpawnRate);
-	// 	}
-	//
-	// 	// Take Bursts into account as well...
-	// 	if (bProcessBurstList)
-	// 	{
-	// 		int32 Burst = 0;
-	// 		float BurstTime = GetCurrentBurstRateOffset(DeltaTime, Burst);
-	// 		BurstCount += Burst;
-	// 	}
-	//
-	// 	float QualityMult = SpriteTemplate->GetQualityLevelSpawnRateMult();
-	// 	SpawnRate = FMath::Max<float>(0.0f, SpawnRate * QualityMult);
-	// 	BurstCount = FMath::CeilToInt(BurstCount * QualityMult);
-	// }
-	// else
+	
+
+	// Process all Spawning modules that are present in the emitter.
+	for (int32 SpawnModIndex = 0; SpawnModIndex < LODLevel->SpawnModules.Num(); SpawnModIndex++)
 	{
-		// Disable any spawning if MediumDetailSpawnRateScale is 0 and we are not in high detail mode
-		SpawnRate = 0.0f;
-		SpawnCount = 0;
-		BurstCount = 0;
+		UParticleModuleSpawn* SpawnModule = Cast<UParticleModuleSpawn>(LODLevel->SpawnModules[SpawnModIndex]);
+		if (SpawnModule && SpawnModule->GetFlag(EModuleFlag::Enabled))
+		{
+			UParticleModule* OffsetModule = HighestLODLevel->SpawnModules[SpawnModIndex];
+			uint32 Offset = GetModuleDataOffset(OffsetModule);
+
+			// Update the spawn rate
+			int32 Number = 0;
+			float Rate = 0.0f;
+			if (SpawnModule->GetSpawnAmount(this, Offset, OldLeftover, DeltaTime, Number, Rate) == false)
+			{
+				bProcessSpawnRate = false;
+			}
+
+			Number = FMath::Max<int32>(0, Number);
+			Rate = FMath::Max<float>(0.0f, Rate);
+
+			SpawnCount += Number;
+			SpawnRate += Rate;
+			// Update the burst list
+			// int32 BurstNumber = 0;
+			// if (SpawnModule->GetBurstCount(this, Offset, OldLeftover, DeltaTime, BurstNumber) == false)
+			// {
+			// 	bProcessBurstList = false;
+			// }
+			//
+			// BurstCount += BurstNumber;
+		}
 	}
+
+	// Figure out spawn rate for this tick.
+	if (bProcessSpawnRate)
+	{
+		// float RateScale = LODLevel->SpawnModule->RateScale.GetValue(EmitterTime) * LODLevel->SpawnModule->GetGlobalRateScale();
+		float RateScale = LODLevel->SpawnModule->RateScale.GetValue(EmitterTime);
+		SpawnRate += LODLevel->SpawnModule->Rate.GetValue(EmitterTime) * RateScale;
+		SpawnRate = FMath::Max<float>(0.0f, SpawnRate);
+	}
+
+	// Take Bursts into account as well...
+	// if (bProcessBurstList)
+	// {
+	// 	int32 Burst = 0;
+	// 	float BurstTime = GetCurrentBurstRateOffset(DeltaTime, Burst);
+	// 	BurstCount += Burst;
+	// }
+
+	// float QualityMult = SpriteTemplate->GetQualityLevelSpawnRateMult();
+    float QualityMult = 1.0f;
+	SpawnRate = FMath::Max<float>(0.0f, SpawnRate * QualityMult);
+	BurstCount = FMath::CeilToInt(BurstCount * QualityMult);
+
 
 	// Spawn new particles...
 	if ((SpawnRate > 0.f) || (BurstCount > 0))
@@ -433,10 +426,9 @@ void FParticleEmitterInstance::SpawnParticles(int32 Count, float StartTime, floa
                 continue;
             }
         }
-
-        SpawnInternal();
     };
 
+    SpawnInternal();
 	// // Ensure we don't access particle beyond what is allocated.
 	// ensure( ActiveParticles + Count <= MaxActiveParticles );
 	// Count = FMath::Min<int32>(Count, MaxActiveParticles - ActiveParticles);
@@ -660,22 +652,22 @@ class UParticleLODLevel* FParticleEmitterInstance::GetCurrentLODLevelChecked()
 void FParticleEmitterInstance::PostSpawn(FBaseParticle* Particle, float InterpolationPercentage, float SpawnTime)
 {
     // Interpolate position if using world space.
-    UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
+    // UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
     // if (LODLevel->RequiredModule->bUseLocalSpace == false)
     // {
-    //     if (FVector::DistSquared(OldLocation, Location) > 1.f)
+    //     if (FVector::Distance(OldLocation, Location) > 1.f)
     //     {
     //         Particle->Location += InterpolationPercentage * (OldLocation - Location);	
     //     }
     // }
-    //
-    // // Offset caused by any velocity
-    // Particle->OldLocation = Particle->Location;
-    // Particle->Location   += FVector(Particle->Velocity) * SpawnTime;
-    //
-    // // Store a sequence counter.
-    // Particle->Flags |= ((ParticleCounter++) & STATE_CounterMask);
-    // Particle->Flags |= STATE_Particle_JustSpawned;
+    
+    // Offset caused by any velocity
+    Particle->OldLocation = Particle->Location;
+    Particle->Location   += FVector(Particle->Velocity) * SpawnTime;
+    
+    // Store a sequence counter.
+    Particle->Flags |= ((ParticleCounter++) & STATE_CounterMask);
+    Particle->Flags |= STATE_Particle_JustSpawned;
 }
 
 void FParticleEmitterInstance::InitParameters(UParticleEmitter* InTemplate, UParticleSystemComponent* InComponent)

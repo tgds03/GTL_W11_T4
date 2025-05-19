@@ -6,7 +6,9 @@ struct FParticleEmitterInstance;
 
 class UParticleModuleSpawnBase : public UParticleModule
 {
-
+    DECLARE_CLASS(UParticleModuleSpawnBase, UParticleModule)
+public:
+    UParticleModuleSpawnBase();
     /**
      *	If true, the SpawnRate of the SpawnModule of the emitter will be processed.
      *	If mutliple Spawn modules are 'stacked' in an emitter, if ANY of them

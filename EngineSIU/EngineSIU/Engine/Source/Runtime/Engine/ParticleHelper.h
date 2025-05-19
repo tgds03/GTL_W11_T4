@@ -40,9 +40,12 @@
 		continue;
 
 #define SPAWN_INIT																										\
-	if((Owner == NULL) || (Owner->Component == NULL)) continue;															\
+	if((Owner == NULL) || (Owner->Component == NULL)) {                                                                 \
+        UE_LOG(LogLevel::Error, "Cannot find Owner or Component");                                                      \
+        return;                                                                                                         \
+    }                                                                                                                   \
 	const int32		ActiveParticles	= Owner->ActiveParticles;															\
-	const uint32		ParticleStride	= Owner->ParticleStride;															\
+	const uint32		ParticleStride	= Owner->ParticleStride;														\
 	uint32			CurrentOffset	= Offset;																			\
 	FBaseParticle&	Particle		= *(ParticleBase);
 
@@ -84,13 +87,40 @@ struct FBaseParticle
 
     // 16 bytes
     FVector		    Size;					// Current size, gets reset to BaseSize each frame
-    int32		    Flags;					// Flags indicating various particle states
+    uint32		    Flags;					// Flags indicating various particle states
 
     // 16 bytes
     FLinearColor	Color;					// Current color of particle.
 
     // 16 bytes
     FLinearColor	BaseColor;				// Base color of the particle
+};
+
+/*-----------------------------------------------------------------------------
+    Particle State Flags
+-----------------------------------------------------------------------------*/
+enum EParticleStates: uint32
+{
+    /** Ignore updates to the particle						*/
+    STATE_Particle_JustSpawned			= 0x02000000,
+    /** Ignore updates to the particle						*/
+    STATE_Particle_Freeze				= 0x04000000,
+    /** Ignore collision updates to the particle			*/
+    STATE_Particle_IgnoreCollisions		= 0x08000000,
+    /**	Stop translations of the particle					*/
+    STATE_Particle_FreezeTranslation	= 0x10000000,
+    /**	Stop rotations of the particle						*/
+    STATE_Particle_FreezeRotation		= 0x20000000,
+    /** Combination for a single check of 'ignore' flags	*/
+    STATE_Particle_CollisionIgnoreCheck	= STATE_Particle_Freeze |STATE_Particle_IgnoreCollisions | STATE_Particle_FreezeTranslation| STATE_Particle_FreezeRotation,
+    /** Delay collision updates to the particle				*/
+    STATE_Particle_DelayCollisions		= 0x40000000,
+    /** Flag indicating the particle has had at least one collision	*/
+    STATE_Particle_CollisionHasOccurred	= 0x80000000,
+    /** State mask. */
+    STATE_Mask = 0xFE000000,
+    /** Counter mask. */
+    STATE_CounterMask = (~STATE_Mask)
 };
 
 /**

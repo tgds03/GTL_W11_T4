@@ -1,6 +1,8 @@
 ﻿#include "Distribution.h"
 
-float FDistributionFloat::GetValue(float F) const
+#include "RandomStream.h"
+
+float FDistributionFloat::GetValue(float F, FRandomStream* InRandomStream) const
 {
     return 0.f;
 }
@@ -11,7 +13,7 @@ void FDistributionFloat::GetOutRange(float& Min, float& Max) const
     Max = 0.f;
 }
 
-float FDistributionFloatConstant::GetValue(float F) const
+float FDistributionFloatConstant::GetValue(float F, FRandomStream* InRandomStream) const
 {
     return Constant;
 }
@@ -22,9 +24,10 @@ void FDistributionFloatConstant::GetOutRange(float& Min, float& Max) const
     Max = Constant;
 }
 
-float FDistributionFloatUniform::GetValue(float F) const
+float FDistributionFloatUniform::GetValue(float F, FRandomStream* InRandomStream) const
 {
-    return Min + (Max - Min) * FMath::RandNormalized();
+    float fraction = (InRandomStream == nullptr) ? FMath::RandNormalized() : InRandomStream->GetFraction();
+    return Min + (Max - Min) * fraction;
 }
 
 void FDistributionFloatUniform::GetOutRange(float& Min, float& Max) const
@@ -34,17 +37,18 @@ void FDistributionFloatUniform::GetOutRange(float& Min, float& Max) const
 }
 
 
-FVector FDistributionVector::GetValue(float F) const
+FVector FDistributionVector::GetValue(float F, FRandomStream* InRandomStream) const
 {
     return FVector::ZeroVector;
 }
 
-FVector FDistributionVectorConstant::GetValue(float F) const
+FVector FDistributionVectorConstant::GetValue(float F, FRandomStream* InRandomStream) const
 {
     return Constant;
 }
 
-FVector FDistributionVectorUniform::GetValue(float F) const
+FVector FDistributionVectorUniform::GetValue(float F, FRandomStream* InRandomStream) const
 {
-    return Min + (Max - Min) * FMath::RandNormalized();
+    float fraction = (InRandomStream == nullptr) ? FMath::RandNormalized() : InRandomStream->GetFraction();
+    return Min + (Max - Min) * fraction;
 }
