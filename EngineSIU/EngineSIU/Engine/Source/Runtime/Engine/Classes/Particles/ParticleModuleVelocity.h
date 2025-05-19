@@ -9,6 +9,7 @@ public:
     UParticleModuleVelocity();
 
     FDistributionVector StartVelocity;
+    FDistributionVector StartVelocityRadial;
 
     uint8 bInWorldSpace: 1;
     uint8 bApplyOwnerScale: 1;

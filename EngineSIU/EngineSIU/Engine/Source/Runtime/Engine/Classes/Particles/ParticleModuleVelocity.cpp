@@ -42,7 +42,8 @@ void UParticleModuleVelocity::SpawnEx(FParticleEmitterInstance* Owner, uint32 Of
         {
             Vel = FMatrix::TransformVector(Vel, Owner->EmitterToSimulation);
         }
-
+        Vel = Vel * OwnerScale;
+        Vel += FromOrigin * StartVelocityRadial.GetValue(Owner->EmitterTime, InRandomStream) * OwnerScale;
         Particle.Velocity += Vel;
         Particle.BaseVelocity += Vel;
     }
