@@ -80,4 +80,9 @@ public:
     //UParticleLODLevel* GetCurrentLODLevel(FParticleEmitterInstance* Instance);
     UParticleLODLevel* GetLODLevel(int32 LODLevel);
 
+    /**
+     *	Initial allocation count - overrides calculated peak count if > 0
+     */
+    int32 InitialAllocationCount;
+    float QualityLevelSpawnRateScale;
 };

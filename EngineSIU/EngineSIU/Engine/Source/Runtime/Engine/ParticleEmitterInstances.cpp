@@ -10,6 +10,10 @@
 #include "RandomStream.h"
 #include "ParticleModuleRequired.h"
 #include "Core/HAL/PlatformMemory.h"
+#include "Templates/AlignmentTemplates.h"
+#include "Runtime/Engine/World/World.h"
+
+#include "ParticleModuleSpawn.h"
 
 void FParticleEmitterInstance::ResetParticleParameters(float DeltaTime)
 {
@@ -101,7 +105,7 @@ bool FParticleEmitterInstance::Resize(int32 NewMaxActiveParticles, bool bSetMaxA
 	if (bSetMaxActiveCount)
 	{
 		UParticleLODLevel* LODLevel	= SpriteTemplate->GetLODLevel(0);
-		check(LODLevel);
+		assert(LODLevel);
 		if (MaxActiveParticles > LODLevel->PeakActiveParticles)
 		{
 			LODLevel->PeakActiveParticles = MaxActiveParticles;
@@ -818,7 +822,10 @@ void FParticleEmitterInstance::Init()
     ParticleCounter = 0;
 
     UpdateTransforms();
-    Location = Component->GetComponentLocation();
+    // Begin Test
+    //Location = Component->GetComponentLocation();
+    Location = Component->GetWorldLocation();
+    // End Test
     OldLocation = Location;
 
     TrianglesToRender = 0;
@@ -841,10 +848,11 @@ void FParticleEmitterInstance::Init()
     }
 
     // Resize to sensible default.
-    if (bNeedsInit &&
-        Component->GetWorld()->IsGameWorld() == true &&
-        // Only presize if any particles will be spawned 
-        SpriteTemplate->QualityLevelSpawnRateScale > 0)
+    //if (bNeedsInit &&
+    //    Component->GetWorld()->IsGameWorld() == true &&
+    //    // Only presize if any particles will be spawned 
+    //    SpriteTemplate->QualityLevelSpawnRateScale > 0)
+    if (bNeedsInit && SpriteTemplate->QualityLevelSpawnRateScale > 0)
     {
         if ((HighLODLevel->PeakActiveParticles > 0) || (SpriteTemplate->InitialAllocationCount > 0))
         {
@@ -887,7 +895,7 @@ void FParticleEmitterInstance::Init()
         for (int32 LODIndex = 0; LODIndex < SpriteTemplate->LODLevels.Num(); LODIndex++)
         {
             UParticleLODLevel* LODLevel = SpriteTemplate->LODLevels[LODIndex];
-            check(LODLevel);
+            assert(LODLevel);
             FLODBurstFired& LocalBurstFired = BurstFired[LODIndex];
             if (LocalBurstFired.Fired.Num() < LODLevel->SpawnModule->BurstList.Num())
             {
@@ -984,4 +992,16 @@ uint32 FParticleEmitterInstance::RequiredBytes()
     }
 
     return uiBytes;
+}
+
+/**
+ *	Calculate the stride of a single particle for this instance
+ *
+ *	@param	ParticleSize	The size of the particle
+ *
+ *	@return	uint32			The stride of the particle
+ */
+uint32 FParticleEmitterInstance::CalculateParticleStride(uint32 InParticleSize)
+{
+    return InParticleSize;
 }

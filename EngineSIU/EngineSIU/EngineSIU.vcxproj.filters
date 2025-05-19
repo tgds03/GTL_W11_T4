@@ -861,6 +861,7 @@
     <ClCompile Include="FXSystem.cpp" />
     <ClCompile Include="RandomStream.h" />
     <ClCompile Include="ParticleModuleRequired.cpp" />
+    <ClCompile Include="ParticleModuleSpawn.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="EngineSIU.natvis" />
@@ -1031,6 +1032,10 @@
     <ClInclude Include="FXSystem.h" />
     <ClInclude Include="ParticleModuleRequired.h" />
     <ClInclude Include="EnumAsByte.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Templates\IsIntegral.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Templates\IsPointer.h" />
+    <ClInclude Include="ParticleModuleSpawnBase.h" />
+    <ClInclude Include="ParticleModuleSpawn.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />

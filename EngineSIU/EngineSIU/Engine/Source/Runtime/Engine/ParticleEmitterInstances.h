@@ -8,6 +8,7 @@ class UParticleEmitter;
 class UParticleLODLevel;
 class UParticleSystemComponent;
 
+
 enum EParticleAxisLock
 {
     /** No locking to an axis...							*/
@@ -38,6 +39,11 @@ enum EParticleAxisLock
 struct FParticleEmitterInstanceFixLayout
 {
     virtual ~FParticleEmitterInstanceFixLayout() = default;
+};
+
+struct FLODBurstFired
+{
+    TArray<bool> Fired;
 };
 
 struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
@@ -81,12 +87,34 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
     int32 MaxActiveParticles;
     /** The fraction of time left over from spawning.                   */
     float SpawnFraction;
+    /** The number of seconds that have passed since the instance was
+     *	created.
+     */
+    float SecondsSinceCreation;
+    /** */
+    float EmitterTime;
     /** The current duration fo the emitter instance.					*/
     float EmitterDuration;
     /** The emitter duration at each LOD level for the instance.		*/
     TArray<float> EmitterDurations;
     /** The emitter's delay for the current loop		*/
     float CurrentDelay;
+    /** The location of the emitter instance							*/
+    FVector Location;
+    /** The previous location of the instance.							*/
+    FVector OldLocation;
+    /** The number of triangles to render								*/
+    int32	TrianglesToRender;
+    int32 MaxVertexIndex;
+    /** The bounding box for the particles.								*/
+    FBoundingBox ParticleBoundingBox;
+    /** If true, kill this emitter instance when it is deactivated.		*/
+    uint32 bKillOnDeactivate : 1;
+    /** if true, kill this emitter instance when it has completed.		*/
+    uint32 bKillOnCompleted : 1;
+
+    /** The BurstFire information.										*/
+    TArray<FLODBurstFired> BurstFired;
 
     // Begin Test
     /** The material to render this instance with.						*/
@@ -120,10 +148,14 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
     /** The offset to the TypeData instance payload.					*/
     int32 TypeDataInstanceOffset;
 
+    /** The sort mode to use for this emitter as specified by artist.	*/
+    int32 SortMode;
 
     virtual void Init();
 
     uint32 RequiredBytes();
+
+    virtual uint32 CalculateParticleStride(uint32 ParticleSize);
 
     virtual void ResetParticleParameters(float DeltaTime);
 

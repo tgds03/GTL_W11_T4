@@ -379,6 +379,7 @@ xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configurati
     <ClCompile Include="Engine\Source\Editor\PropertyEditor\SkeletonMeshEditorPanel.cpp" />
     <ClCompile Include="FXSystem.cpp" />
     <ClCompile Include="ParticleModuleRequired.cpp" />
+    <ClCompile Include="ParticleModuleSpawn.cpp" />
     <ClCompile Include="RandomStream.h" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoFrameComponent.cpp" />
@@ -477,6 +478,8 @@ xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configurati
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Source\Runtime\Core\Templates\IsIntegral.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Templates\IsPointer.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Character.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Container\Queue.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Pawn.h" />
@@ -734,6 +737,8 @@ xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configurati
     <ClInclude Include="EnumAsByte.h" />
     <ClInclude Include="FXSystem.h" />
     <ClInclude Include="ParticleModuleRequired.h" />
+    <ClInclude Include="ParticleModuleSpawn.h" />
+    <ClInclude Include="ParticleModuleSpawnBase.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoFrameComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoJointComponent.h" />

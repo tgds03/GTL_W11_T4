@@ -4,6 +4,9 @@
 
 #include "ParticleEmitterInstances.h"
 
+class UParticleModuleRequired;
+class UParticleModuleSpawn;
+
 class UParticleLODLevel : public UObject
 {
     DECLARE_CLASS(UParticleLODLevel, UObject)
@@ -25,4 +28,9 @@ public:
 
     /** The required module for this LOD level											*/
     UParticleModuleRequired* RequiredModule;
+
+    int32 PeakActiveParticles;
+
+    UParticleModuleSpawn* SpawnModule;
+
 };
