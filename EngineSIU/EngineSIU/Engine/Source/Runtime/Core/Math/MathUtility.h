@@ -364,6 +364,13 @@ struct FMath
         return dist(rng);
     }
 
+    static float RandNormalized()
+    {
+        static std::mt19937 rng(std::random_device{}());
+        std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+        return dist(rng);
+    }
+
     static const int p[512];
 
     static float fade(float t) {
