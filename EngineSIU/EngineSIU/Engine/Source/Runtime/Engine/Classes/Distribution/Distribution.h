@@ -36,6 +36,7 @@ struct FDistributionFloatUniform: public FDistributionFloat
 struct FDistributionVector: public FDistribution
 {
     virtual FVector GetValue(float F = 0.f, FRandomStream* InRandomStream = nullptr) const;
+    virtual void GetOutRange(FVector& Min, FVector& Max) const;
 };
 
 struct FDistributionVectorConstant: public FDistributionVector
@@ -43,6 +44,7 @@ struct FDistributionVectorConstant: public FDistributionVector
     FVector Constant;
 
     virtual FVector GetValue(float F = 0.f, FRandomStream* InRandomStream = nullptr) const override;
+    virtual void GetOutRange(FVector& Min, FVector& Max) const override;
 };
 
 struct FDistributionVectorUniform: public FDistributionVector
@@ -51,4 +53,5 @@ struct FDistributionVectorUniform: public FDistributionVector
     FVector Max;
 
     virtual FVector GetValue(float F = 0.f, FRandomStream* InRandomStream = nullptr) const override;
+    virtual void GetOutRange(FVector& Min, FVector& Max) const override;
 };

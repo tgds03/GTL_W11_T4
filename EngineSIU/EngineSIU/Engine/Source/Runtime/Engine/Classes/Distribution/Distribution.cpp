@@ -42,13 +42,31 @@ FVector FDistributionVector::GetValue(float F, FRandomStream* InRandomStream) co
     return FVector::ZeroVector;
 }
 
+void FDistributionVector::GetOutRange(FVector& Min, FVector& Max) const
+{
+    Min = FVector::ZeroVector;
+    Max = FVector::ZeroVector;
+}
+
 FVector FDistributionVectorConstant::GetValue(float F, FRandomStream* InRandomStream) const
 {
     return Constant;
+}
+
+void FDistributionVectorConstant::GetOutRange(FVector& Min, FVector& Max) const
+{
+    Min = Constant;
+    Max = Constant;
 }
 
 FVector FDistributionVectorUniform::GetValue(float F, FRandomStream* InRandomStream) const
 {
     float fraction = (InRandomStream == nullptr) ? FMath::RandNormalized() : InRandomStream->GetFraction();
     return Min + (Max - Min) * fraction;
+}
+
+void FDistributionVectorUniform::GetOutRange(FVector& Min, FVector& Max) const
+{
+    Min = this->Min;
+    Max = this->Max;
 }
