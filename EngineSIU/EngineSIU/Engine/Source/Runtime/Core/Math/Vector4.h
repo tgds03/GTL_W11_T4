@@ -22,6 +22,12 @@ struct FVector4
         InitFromString(SourceString);
     }
 
+    // Vector(0, 0, 0)
+    static const FVector4 ZeroVector;
+
+    // Vector(1, 1, 1)
+    static const FVector4 OneVector;
+
     FVector4 operator+(const FVector4& Other) const;
     FVector4 operator-(const FVector4& Other) const;
 

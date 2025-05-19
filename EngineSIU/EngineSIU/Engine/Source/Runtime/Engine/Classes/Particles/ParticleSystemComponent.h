@@ -27,7 +27,8 @@ public:
     /** Possibly parallel phase of TickComponent **/
     void ComputeTickComponent();
 
-protected:
+    // 임시임
+public:
 
     /**
      * Static: Supplied with a chunk of replay data, this method will create dynamic emitter data that can
@@ -69,4 +70,6 @@ public:
 
     // mutable TArray<FDynamicEmitterDataBase*> DynamicDataForThisFrame;
     TArray<FDynamicEmitterDataBase*> EmitterRenderData;
+
+    TArray<FDynamicEmitterDataBase*> TempTestEmitterRenderData;
 };

@@ -187,6 +187,7 @@ public:
     bool InitFromString(const FString& InSourceString);
 
     FVector GetClampedToMaxSize(float MaxSize) const;
+    void ToDirectionAndLength(FVector& OutDir, float& OutLength) const;
 };
 
 inline FVector::FVector(const FRotator& InRotator)

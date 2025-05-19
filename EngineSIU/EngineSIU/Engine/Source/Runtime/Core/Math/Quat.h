@@ -67,6 +67,8 @@ struct FQuat
         return W * Other.W + X * Other.X + Y * Other.Y + Z * Other.Z;
     }
 
+    static FQuat FindBetweenNormals(const FVector& A, const FVector& B);
+
     // 반대 방향의 쿼터니언 생성을 위한 단항 연산자
     FQuat operator-() const
     {

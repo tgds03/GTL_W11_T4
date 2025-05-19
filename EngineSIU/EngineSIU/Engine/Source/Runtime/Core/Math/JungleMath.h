@@ -24,4 +24,7 @@ public:
     static FMatrix CreateRotationMatrix(FVector rotation);
     static FQuat EulerToQuaternion(const FVector& eulerDegrees);
     static FVector QuaternionToEuler(const FQuat& quat);
+
+    static FQuat FindBetween_Helper(const FVector& A, const FVector& B, float NormAB);
+    
 };

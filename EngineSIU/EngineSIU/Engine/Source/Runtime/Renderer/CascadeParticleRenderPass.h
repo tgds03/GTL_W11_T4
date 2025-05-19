@@ -22,10 +22,15 @@ private:
     void CreateShader();
     void ReleaseShader();
     
-    void PrepareRenderState();
-    void RenderParticles();
-    void ReleaseResources();
+    void PrepareRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport);
+    void RenderParticles(const std::shared_ptr<FEditorViewportClient>& Viewport);
 
 private:
     TArray<UParticleSystemComponent*> ParticleSystemComponents;
+
+    
+
+    FDXDBufferManager* BufferManager;
+    FGraphicsDevice* Graphics;
+    FDXDShaderManager* ShaderManager;
 };

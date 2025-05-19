@@ -68,7 +68,7 @@ protected:
     void PrepareRender(FViewportResource* ViewportResource) const;
     void PrepareRenderPass() const;
     void RenderWorldScene(const std::shared_ptr<FEditorViewportClient>& Viewport) const;
-    //void RenderTranslucency(const std::shared_ptr<FEditorViewportClient>& Viewport) const;
+    void RenderTranslucency(const std::shared_ptr<FEditorViewportClient>& Viewport) const;
     void RenderPostProcess(const std::shared_ptr<FEditorViewportClient>& Viewport) const;
     void RenderEditorOverlay(const std::shared_ptr<FEditorViewportClient>& Viewport) const;
 
