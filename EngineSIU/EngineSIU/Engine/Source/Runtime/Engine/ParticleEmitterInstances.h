@@ -1,4 +1,5 @@
 #pragma once
+#include "EnumAsByte.h"
 #include "ParticleHelper.h"
 #include "HAL/PlatformType.h"
 #include "Math/Matrix.h"
@@ -110,7 +111,7 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
     int32	TrianglesToRender;
     int32 MaxVertexIndex;
     /** The bounding box for the particles.								*/
-    FBoundingBox ParticleBoundingBox;
+    // FBoundingBox ParticleBoundingBox;
     /** If true, kill this emitter instance when it is deactivated.		*/
     uint32 bKillOnDeactivate : 1;
     /** if true, kill this emitter instance when it has completed.		*/
@@ -121,12 +122,9 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
 
     // Begin Test
     /** The material to render this instance with.						*/
-    UMaterialInterface* CurrentMaterial;
+    // UMaterialInterface* CurrentMaterial;
     // End Test
-
-    /** The number of loops completed by the instance.					*/
-    int32 LoopCount;
-
+    
     /////
 
     /** If true, the emitter has modules that require loop notification.*/
@@ -142,8 +140,7 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
     float LightVolumetricScatteringIntensity;
     /** The offset to the Camera payload in the particle data.			*/
     int32 CameraPayloadOffset;
-    /** The total size of a particle (in bytes).						*/
-    int32 ParticleSize;
+
     /** The PivotOffset applied to the vertex positions 			*/
     FVector2D PivotOffset;
     /** The offset to the TypeData payload in the particle data.		*/
@@ -258,6 +255,9 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
         bHaltSpawningExternal = bInHaltSpawning;
     }
 
+	virtual void GetAllocatedSize(int32& OutNum, int32& OutMax);
+    
+	virtual FDynamicEmitterDataBase* GetDynamicData(bool bSelected);
     
     /**
     * Retrieves the current LOD level and asserts that it is valid.
@@ -280,29 +280,29 @@ struct FParticleMeshEmitterInstance : public FParticleEmitterInstance
 	int32 MeshMotionBlurOffset;
 
 	/** The materials to render this instance with.	*/
-	TArray<UMaterialInterface*> CurrentMaterials;
+	// TArray<UMaterialInterface*> CurrentMaterials;
 
 	/** Constructor	*/
 	FParticleMeshEmitterInstance();
 
-	virtual void InitParameters(UParticleEmitter* InTemplate, UParticleSystemComponent* InComponent) override;
+	// virtual void InitParameters(UParticleEmitter* InTemplate, UParticleSystemComponent* InComponent) override;
 	virtual void Init() override;
 	virtual bool Resize(int32 NewMaxActiveParticles, bool bSetMaxActiveCount = true) override;
 	virtual void Tick(float DeltaTime, bool bSuppressSpawning) override;
-	virtual void UpdateBoundingBox(float DeltaTime) override;
-	virtual uint32 RequiredBytes() override;
+	// virtual void UpdateBoundingBox(float DeltaTime) override;
+	// virtual uint32 RequiredBytes() override;
 	virtual void PostSpawn(FBaseParticle* Particle, float InterpolationPercentage, float SpawnTime) override;
-	virtual FDynamicEmitterDataBase* GetDynamicData(bool bSelected, ERHIFeatureLevel::Type InFeatureLevel) override;
-	virtual bool IsDynamicDataRequired(UParticleLODLevel* CurrentLODLevel) override;
+	virtual FDynamicEmitterDataBase* GetDynamicData(bool bSelected) override;
+	// virtual bool IsDynamicDataRequired(UParticleLODLevel* CurrentLODLevel) override;
 
-	virtual void Tick_MaterialOverrides(int32 EmitterIndex) override;
+	// virtual void Tick_MaterialOverrides(int32 EmitterIndex) override;
 
 	/**
 	 *	Retrieves replay data for the emitter
 	 *
 	 *	@return	The replay data, or NULL on failure
 	 */
-	ENGINE_API virtual FDynamicEmitterReplayDataBase* GetReplayData() override;
+	// ENGINE_API virtual FDynamicEmitterReplayDataBase* GetReplayData() override;
 
 	/**
 	 *	Retrieve the allocated size of this instance.
@@ -310,7 +310,7 @@ struct FParticleMeshEmitterInstance : public FParticleEmitterInstance
 	 *	@param	OutNum			The size of this instance
 	 *	@param	OutMax			The maximum size of this instance
 	 */
-	ENGINE_API virtual void GetAllocatedSize(int32& OutNum, int32& OutMax) override;
+	virtual void GetAllocatedSize(int32& OutNum, int32& OutMax) override;
 
 	/**
 	 * Returns the size of the object/ resource for display to artists/ LDs in the Editor.
@@ -318,41 +318,41 @@ struct FParticleMeshEmitterInstance : public FParticleEmitterInstance
 	 * @param	Mode	Specifies which resource size should be displayed. ( see EResourceSizeMode::Type )
 	 * @return  Size of resource as to be displayed to artists/ LDs in the Editor.
 	 */
-	ENGINE_API virtual void GetResourceSizeEx(FResourceSizeEx& CumulativeResourceSize) override;
+	// ENGINE_API virtual void GetResourceSizeEx(FResourceSizeEx& CumulativeResourceSize) override;
 
 	/**
 	 * Returns the offset to the mesh rotation payload, if any.
 	 */
-	virtual int32 GetMeshRotationOffset() const override
-	{
-		return MeshRotationOffset;
-	}
+	// virtual int32 GetMeshRotationOffset() const override
+	// {
+	// 	return MeshRotationOffset;
+	// }
 
 	/**
 	 * Returns true if mesh rotation is active.
 	 */
-	virtual bool IsMeshRotationActive() const override
-	{
-		return MeshRotationActive;
-	}
+	// virtual bool IsMeshRotationActive() const override
+	// {
+	// 	return MeshRotationActive;
+	// }
 
 	/**
 	 * Sets the materials with which mesh particles should be rendered.
 	 * @param InMaterials - The materials.
 	 */
-	ENGINE_API virtual void SetMeshMaterials( const TArray<UMaterialInterface*>& InMaterials ) override;
+	// ENGINE_API virtual void SetMeshMaterials( const TArray<UMaterialInterface*>& InMaterials ) override;
 
 	/**
 	 * Gathers material relevance flags for this emitter instance.
 	 * @param OutMaterialRelevance - Pointer to where material relevance flags will be stored.
 	 * @param LODLevel - The LOD level for which to compute material relevance flags.
 	 */
-	ENGINE_API virtual void GatherMaterialRelevance(FMaterialRelevance* OutMaterialRelevance, const UParticleLODLevel* LODLevel, ERHIFeatureLevel::Type InFeatureLevel) const override;
+	// ENGINE_API virtual void GatherMaterialRelevance(FMaterialRelevance* OutMaterialRelevance, const UParticleLODLevel* LODLevel, ERHIFeatureLevel::Type InFeatureLevel) const override;
 
 	/**
 	 * Gets the materials applied to each section of a mesh.
 	 */
-	ENGINE_API void GetMeshMaterials(TArray<UMaterialInterface*,TInlineAllocator<2> >& OutMaterials, const UParticleLODLevel* LODLevel, ERHIFeatureLevel::Type InFeatureLevel, bool bLogWarnings = false) const;
+	// ENGINE_API void GetMeshMaterials(TArray<UMaterialInterface*,TInlineAllocator<2> >& OutMaterials, const UParticleLODLevel* LODLevel, ERHIFeatureLevel::Type InFeatureLevel, bool bLogWarnings = false) const;
 
 protected:
 
@@ -363,7 +363,7 @@ protected:
 	 *
 	 * @return Returns true if successful
 	 */
-	ENGINE_API virtual bool FillReplayData( FDynamicEmitterReplayDataBase& OutData ) override;
+	// virtual bool FillReplayData( FDynamicEmitterReplayDataBase& OutData ) override;
 };
 
 // struct FParticleBeam2EmitterInstance : public FParticleEmitterInstance

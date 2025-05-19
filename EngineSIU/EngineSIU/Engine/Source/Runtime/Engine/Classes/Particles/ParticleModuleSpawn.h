@@ -25,13 +25,13 @@ public:
     FDistributionFloat RateScale;
 
     /** The array of burst entries. */
-    TArray<FParticleBurst> BurstList;
+    // TArray<FParticleBurst> BurstList;
 
     /** Scale all burst entries by this amount. */
-    FDistributionFloat BurstScale;
+    // FDistributionFloat BurstScale;
 
     /** The method to utilize when burst-emitting particles. */
-    TEnumAsByte<EParticleBurstMethod> ParticleBurstMethod;
+    // TEnumAsByte<EParticleBurstMethod> ParticleBurstMethod;
 
     /**	If true, the SpawnRate will be scaled by the global CVar r.EmitterSpawnRateScale */
     uint32 bApplyGlobalSpawnRateScale : 1;
@@ -39,27 +39,19 @@ public:
     /** Initializes the default values for this property */
     void InitializeDefaults();
 
-    //~ Begin UObject Interface
-#if WITH_EDITOR
-    virtual void	PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-#endif // WITH_EDITOR
-    virtual void	PostInitProperties() override;
-    virtual void	PostLoad() override;
-    //~ End UObject Interface
-
     //~ Begin UParticleModule Interface
-    virtual bool	GenerateLODModuleValues(UParticleModule* SourceModule, float Percentage, UParticleLODLevel* LODLevel) override;
+    // virtual bool	GenerateLODModuleValues(UParticleModule* SourceModule, float Percentage, UParticleLODLevel* LODLevel) override;
     //~ End UParticleModule Interface
 
     //~ Begin UParticleModuleSpawnBase Interface
     virtual bool GetSpawnAmount(FParticleEmitterInstance* Owner, int32 Offset, float OldLeftover,
         float DeltaTime, int32& Number, float& Rate) override;
     virtual float GetMaximumSpawnRate() override;
-    virtual float GetEstimatedSpawnRate() override;
-    virtual int32 GetMaximumBurstCount() override;
+    // virtual float GetEstimatedSpawnRate() override;
+    // virtual int32 GetMaximumBurstCount() override;
     //~ End UParticleModuleSpawnBase Interface
 
-    float GetGlobalRateScale()const;
+    float GetGlobalRateScale() const;
 };
 
 

@@ -46,7 +46,7 @@ public:
     /** Whether axis lock is enabled, cached here to avoid finding it from the module each frame */
     uint32 bAxisLockEnabled : 1;
     /** Axis lock flags, cached here to avoid finding it from the module each frame */
-    TEnumAsByte<EParticleAxisLock> LockAxisFlags;
+    // TEnumAsByte<EParticleAxisLock> LockAxisFlags;
     /** The offset to the dynamic parameter payload in the particle data*/
     int32 DynamicParameterDataOffset;
     /** Offset to the light module data payload.						*/

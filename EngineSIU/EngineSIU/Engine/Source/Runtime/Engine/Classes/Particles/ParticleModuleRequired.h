@@ -1,6 +1,7 @@
 #pragma once
 #include "Classes/Particles/ParticleModule.h"
 #include "EnumAsByte.h"
+#include "ParticleEmitter.h"
 
 enum EParticleSortMode
 {

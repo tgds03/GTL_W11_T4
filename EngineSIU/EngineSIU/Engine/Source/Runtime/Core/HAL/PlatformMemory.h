@@ -58,9 +58,6 @@ public:
     static void* Malloc(size_t Size);
 
     template <EAllocationType AllocType>
-    static void* Realloc(void* Original, size_t Size);
-
-    template <EAllocationType AllocType>
     static void* AlignedMalloc(size_t Size, size_t Alignment);
 
     template <EAllocationType AllocType>
@@ -201,17 +198,6 @@ template <EAllocationType AllocType>
 void* FPlatformMemory::Malloc(size_t Size)
 {
     void* Ptr = std::malloc(Size);
-    if (Ptr)
-    {
-        IncrementStats<AllocType>(Size);
-    }
-    return Ptr;
-}
-
-template <EAllocationType AllocType>
-void* FPlatformMemory::Realloc(void* Original, size_t Size)
-{
-    void* Ptr = std::realloc(Original, Size);
     if (Ptr)
     {
         IncrementStats<AllocType>(Size);

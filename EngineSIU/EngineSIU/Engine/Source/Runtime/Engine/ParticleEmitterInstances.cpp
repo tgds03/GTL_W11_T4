@@ -12,7 +12,7 @@
 #include "Templates/AlignmentTemplates.h"
 #include "Runtime/Engine/World/World.h"
 
-#include "ParticleModuleSpawn.h"
+#include "Particles/ParticleModuleSpawn.h"
 #include "Particles/ParticleModuleRequired.h"
 
 void FParticleEmitterInstance::ResetParticleParameters(float DeltaTime)
@@ -702,7 +702,7 @@ void FParticleEmitterInstance::SetupEmitterDuration()
     {
         EmitterDurations.Empty();
         // 이후에 바로 채워야 함. uninitialized value가 채워져있음.
-        EmitterDurations.InsertUninitialized(0, SpriteTemplate->LODLevels.Num());
+        EmitterDurations.AddUninitialized(SpriteTemplate->LODLevels.Num());
     }
 
     // Calculate the duration for each LOD level
@@ -755,8 +755,8 @@ void FParticleEmitterInstance::Init()
     UParticleLODLevel* HighLODLevel = SpriteTemplate->LODLevels[0];
 
     // Set the current material
-    assert(HighLODLevel->RequiredModule);
-    CurrentMaterial = HighLODLevel->RequiredModule->Material;
+    // assert(HighLODLevel->RequiredModule);
+    // CurrentMaterial = HighLODLevel->RequiredModule->Material;
 
     // If we already have a non-zero ParticleSize, don't need to do most allocation work again
     bool bNeedsInit = (ParticleSize == 0);
@@ -766,7 +766,7 @@ void FParticleEmitterInstance::Init()
         // Copy pre-calculated info
         bRequiresLoopNotification = SpriteTemplate->bRequiresLoopNotification;
         bAxisLockEnabled = SpriteTemplate->bAxisLockEnabled;
-        LockAxisFlags = SpriteTemplate->LockAxisFlags;
+        // LockAxisFlags = SpriteTemplate->LockAxisFlags;
         DynamicParameterDataOffset = SpriteTemplate->DynamicParameterDataOffset;
         LightDataOffset = SpriteTemplate->LightDataOffset;
         LightVolumetricScatteringIntensity = SpriteTemplate->LightVolumetricScatteringIntensity;
@@ -826,7 +826,7 @@ void FParticleEmitterInstance::Init()
     }
 
     // Setup the emitter instance material array...
-    SetMeshMaterials(SpriteTemplate->MeshMaterials);
+    // SetMeshMaterials(SpriteTemplate->MeshMaterials);
 
     // Set initial values.
     SpawnFraction = 0;
@@ -834,7 +834,7 @@ void FParticleEmitterInstance::Init()
     EmitterTime = 0;
     ParticleCounter = 0;
 
-    UpdateTransforms();
+    // UpdateTransforms();
     // Begin Test
     //Location = Component->GetComponentLocation();
     Location = Component->GetWorldLocation();
@@ -850,7 +850,7 @@ void FParticleEmitterInstance::Init()
         ActiveParticles = 0;
     }
 
-    ParticleBoundingBox.Init();
+    // ParticleBoundingBox.Init();
     if (HighLODLevel->RequiredModule->RandomImageChanges == 0)
     {
         HighLODLevel->RequiredModule->RandomImageTime = 1.0f;
@@ -900,24 +900,24 @@ void FParticleEmitterInstance::Init()
         SortMode = HighLODLevel->RequiredModule->SortMode;
 
         // Reset the burst lists
-        if (BurstFired.Num() < SpriteTemplate->LODLevels.Num())
-        {
-            BurstFired.AddZeroed(SpriteTemplate->LODLevels.Num() - BurstFired.Num());
-        }
+        // if (BurstFired.Num() < SpriteTemplate->LODLevels.Num())
+        // {
+        //     BurstFired.AddZeroed(SpriteTemplate->LODLevels.Num() - BurstFired.Num());
+        // }
 
-        for (int32 LODIndex = 0; LODIndex < SpriteTemplate->LODLevels.Num(); LODIndex++)
-        {
-            UParticleLODLevel* LODLevel = SpriteTemplate->LODLevels[LODIndex];
-            assert(LODLevel);
-            FLODBurstFired& LocalBurstFired = BurstFired[LODIndex];
-            if (LocalBurstFired.Fired.Num() < LODLevel->SpawnModule->BurstList.Num())
-            {
-                LocalBurstFired.Fired.AddZeroed(LODLevel->SpawnModule->BurstList.Num() - LocalBurstFired.Fired.Num());
-            }
-        }
+        // for (int32 LODIndex = 0; LODIndex < SpriteTemplate->LODLevels.Num(); LODIndex++)
+        // {
+        //     UParticleLODLevel* LODLevel = SpriteTemplate->LODLevels[LODIndex];
+        //     assert(LODLevel);
+        //     FLODBurstFired& LocalBurstFired = BurstFired[LODIndex];
+        //     if (LocalBurstFired.Fired.Num() < LODLevel->SpawnModule->BurstList.Num())
+        //     {
+        //         LocalBurstFired.Fired.AddZeroed(LODLevel->SpawnModule->BurstList.Num() - LocalBurstFired.Fired.Num());
+        //     }
+        // }
     }
 
-    ResetBurstList();
+    // ResetBurstList();
 
 #if WITH_EDITORONLY_DATA
     //Check for SubUV module to see if it has SubUVAnimation to move data to required module
@@ -944,9 +944,9 @@ void FParticleEmitterInstance::Init()
 #endif //WITH_EDITORONLY_DATA
 
     // Tag it as dirty w.r.t. the renderer
-    IsRenderDataDirty = 1;
-
-    bEmitterIsDone = false;
+    // IsRenderDataDirty = 1;
+    //
+    // bEmitterIsDone = false;
 }
 
 /**
@@ -998,11 +998,11 @@ uint32 FParticleEmitterInstance::RequiredBytes()
         }
     }
 
-    if (bHasSubUV)
-    {
-        SubUVDataOffset = PayloadOffset;
-        uiBytes = sizeof(FFullSubUVPayload);
-    }
+    // if (bHasSubUV)
+    // {
+    //     SubUVDataOffset = PayloadOffset;
+    //     uiBytes = sizeof(FFullSubUVPayload);
+    // }
 
     return uiBytes;
 }
