@@ -189,6 +189,7 @@ xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configurati
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Source\Runtime\Core\Math\Transform.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Character.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Pawn.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Animation\AnimationStateMachine.cpp" />
@@ -629,6 +630,7 @@ xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configurati
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Source\Runtime\Core\Math\Transform.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Templates\IsIntegral.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Templates\IsPointer.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Character.h" />
@@ -891,6 +893,7 @@ xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configurati
     <ClInclude Include="Engine\Source\Editor\PropertyEditor\SkeletonMeshEditorPanel.h" />
     <ClInclude Include="EnumAsByte.h" />
     <ClInclude Include="FXSystem.h" />
+    <ClInclude Include="MakeUnsigned.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoFrameComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoJointComponent.h" />

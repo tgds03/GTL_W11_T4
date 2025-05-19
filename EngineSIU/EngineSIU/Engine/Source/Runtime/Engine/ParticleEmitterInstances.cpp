@@ -12,7 +12,7 @@
 #include "Templates/AlignmentTemplates.h"
 #include "Runtime/Engine/World/World.h"
 
-#include "ParticleModuleSpawn.h"
+#include "Particles/ParticleModuleSpawn.h"
 #include "Particles/ParticleModuleRequired.h"
 
 void FParticleEmitterInstance::ResetParticleParameters(float DeltaTime)
@@ -701,8 +701,9 @@ void FParticleEmitterInstance::SetupEmitterDuration()
     if ((EDCount == 0) || (EDCount != SpriteTemplate->LODLevels.Num()))
     {
         EmitterDurations.Empty();
-        // 이후에 바로 채워야 함. uninitialized value가 채워져있음.
-        EmitterDurations.InsertUninitialized(0, SpriteTemplate->LODLevels.Num());
+        //EmitterDurations.InsertUninitialized(0, SpriteTemplate->LODLevels.Num());
+        // 만약 퍼포먼스적으로 문제가 발생할 경우 아래 코드를 우선적으로 수정할 것.
+        EmitterDurations.AddUninitialized(SpriteTemplate->LODLevels.Num());
     }
 
     // Calculate the duration for each LOD level
@@ -744,6 +745,10 @@ void FParticleEmitterInstance::SetupEmitterDuration()
     EmitterDuration = EmitterDurations[CurrentLODLevelIndex];
 }
 
+void FParticleEmitterInstance::SetMeshMaterials(const TArray<UMaterial*>& InMaterials)
+{
+}
+
 /**
  *	Initialize the instance
  */
@@ -778,20 +783,8 @@ void FParticleEmitterInstance::Init()
 
         if ((InstanceData == NULL) || (SpriteTemplate->ReqInstanceBytes > InstancePayloadSize))
         {
-            //InstanceData = (uint8*)(FPlatformMemory::Realloc(InstanceData, SpriteTemplate->ReqInstanceBytes));
-            //InstancePayloadSize = SpriteTemplate->ReqInstanceBytes;
-            ///////////////
-            void* NewInstanceData = FPlatformMemory::Realloc<EAT_Object>(InstanceData, SpriteTemplate->ReqInstanceBytes, InstancePayloadSize);
-            if (NewInstanceData) // Realloc 성공 시에만 업데이트
-            {
-                InstanceData = static_cast<uint8*>(NewInstanceData);
-                InstancePayloadSize = SpriteTemplate->ReqInstanceBytes;
-            }
-            else if (SpriteTemplate->ReqInstanceBytes > 0)
-            {
-                // Realloc 실패 처리 (예: 에러 로그, 프로그램 종료)
-                // InstanceData는 이전 상태 그대로 유지됨
-            }
+            InstanceData = (uint8*)(FPlatformMemory::Realloc<EAT_Object>(InstanceData, SpriteTemplate->ReqInstanceBytes));
+            InstancePayloadSize = SpriteTemplate->ReqInstanceBytes;
         }
         FPlatformMemory::Memzero(InstanceData, InstancePayloadSize);
 
@@ -835,10 +828,12 @@ void FParticleEmitterInstance::Init()
     ParticleCounter = 0;
 
     UpdateTransforms();
+
     // Begin Test
     //Location = Component->GetComponentLocation();
-    Location = Component->GetWorldLocation();
+    Location = Component->GetWorldLocation(); // Location=Component->GetRelativeLocation();
     // End Test
+
     OldLocation = Location;
 
     TrianglesToRender = 0;
@@ -860,12 +855,11 @@ void FParticleEmitterInstance::Init()
         HighLODLevel->RequiredModule->RandomImageTime = 0.99f / (HighLODLevel->RequiredModule->RandomImageChanges + 1);
     }
 
-    // Resize to sensible default.
     //if (bNeedsInit &&
     //    Component->GetWorld()->IsGameWorld() == true &&
     //    // Only presize if any particles will be spawned 
     //    SpriteTemplate->QualityLevelSpawnRateScale > 0)
-    if (bNeedsInit && SpriteTemplate->QualityLevelSpawnRateScale > 0)
+    if (bNeedsInit && SpriteTemplate->QualityLevelSpawnRateScale > 0) // Resize to sensible default.
     {
         if ((HighLODLevel->PeakActiveParticles > 0) || (SpriteTemplate->InitialAllocationCount > 0))
         {
@@ -1017,4 +1011,54 @@ uint32 FParticleEmitterInstance::RequiredBytes()
 uint32 FParticleEmitterInstance::CalculateParticleStride(uint32 InParticleSize)
 {
     return InParticleSize;
+}
+
+
+void FParticleEmitterInstance::UpdateTransforms()
+{
+    //QUICK_SCOPE_CYCLE_COUNTER(STAT_EmitterInstance_UpdateTransforms);
+
+    assert(SpriteTemplate != NULL);
+
+    UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
+    FMatrix ComponentToWorld = Component != NULL ?
+        Component->GetComponentTransform().ToMatrixNoScale() : FMatrix::Identity;
+    FMatrix EmitterToComponent = FMatrix::CreateRotationTranslationMatrix(
+        LODLevel->RequiredModule->EmitterRotation,
+        LODLevel->RequiredModule->EmitterOrigin
+    );
+    if (LODLevel->RequiredModule->bUseLocalSpace)
+    {
+        EmitterToSimulation = EmitterToComponent;
+        SimulationToWorld = ComponentToWorld;
+#if ENABLE_NAN_DIAGNOSTIC
+        if (SimulationToWorld.ContainsNaN())
+        {
+            logOrEnsureNanError(TEXT("FParticleEmitterInstance::UpdateTransforms() - SimulationToWorld contains NaN!"));
+            SimulationToWorld = FMatrix::Identity;
+        }
+#endif
+    }
+    else
+    {
+        EmitterToSimulation = EmitterToComponent * ComponentToWorld;
+        SimulationToWorld = FMatrix::Identity;
+    }
+}
+
+/**
+ *	Reset the burst list information for the instance
+ */
+void FParticleEmitterInstance::ResetBurstList()
+{
+    //QUICK_SCOPE_CYCLE_COUNTER(STAT_ResetBurstLists);
+
+    for (int32 BurstIndex = 0; BurstIndex < BurstFired.Num(); BurstIndex++)
+    {
+        FLODBurstFired& CurrBurstFired = BurstFired[BurstIndex];
+        for (int32 FiredIndex = 0; FiredIndex < CurrBurstFired.Fired.Num(); FiredIndex++)
+        {
+            CurrBurstFired.Fired[FiredIndex] = false;
+        }
+    }
 }

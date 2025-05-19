@@ -341,6 +341,15 @@ void USceneComponent::SetRelativeRotation(const FQuat& InQuat)
     RelativeRotation.Normalize();
 }
 
+FTransform USceneComponent::GetComponentTransform() const
+{
+    FQuat Rotation = GetWorldRotation().ToQuaternion();
+    FVector Location = GetWorldLocation();
+    FVector Scale = GetRelativeScale3D();
+
+    return FTransform(Rotation, Location, Scale);
+}
+
 void USceneComponent::UpdateOverlaps(const TArray<FOverlapInfo>* PendingOverlaps, bool bDoNotifies, const TArray<const FOverlapInfo>* OverlapsAtEndLocation)
 {
     UpdateOverlapsImpl(PendingOverlaps, bDoNotifies, OverlapsAtEndLocation);
