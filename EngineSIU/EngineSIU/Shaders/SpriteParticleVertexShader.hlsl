@@ -65,7 +65,7 @@ PS_INPUT_SpriteParticle mainVS(VS_INPUT_SpriteParticle Input)
     float3 CameraForward = InvViewMatrix[2].xyz;
     
     // Billboard axis-aligned 위치 계산
-    float3 worldPos = Input.Instance.Position * 3 + Rotated.x * CameraRight + Rotated.y * CameraUp;
+    float3 worldPos = Input.Instance.Position + Rotated.x * CameraRight + Rotated.y * CameraUp;
     Output.Position = float4(worldPos, 1.0);
     Output.Position = mul(Output.Position, ViewMatrix);
     Output.Position = mul(Output.Position, ProjectionMatrix);

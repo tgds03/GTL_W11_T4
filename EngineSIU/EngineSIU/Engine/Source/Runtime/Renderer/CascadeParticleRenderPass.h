@@ -23,13 +23,13 @@ private:
     void ReleaseShader();
     
     void PrepareRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport);
-    void RenderParticles(const std::shared_ptr<FEditorViewportClient>& Viewport);
+    void RenderParticles(const std::shared_ptr<FEditorViewportClient>& Viewport) const;
 
 private:
     TArray<UParticleSystemComponent*> ParticleSystemComponents;
 
     
-
+    struct ID3D11SamplerState* SamplerState;
     FDXDBufferManager* BufferManager;
     FGraphicsDevice* Graphics;
     FDXDShaderManager* ShaderManager;

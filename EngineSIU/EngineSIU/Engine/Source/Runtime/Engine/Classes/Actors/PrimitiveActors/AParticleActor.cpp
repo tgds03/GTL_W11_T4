@@ -10,22 +10,23 @@ AParticleActor::AParticleActor()
     RootComponent = ParticleSystemComponent;
 
 
-    FResourceManager::CreateStaticMesh("Contents/Reference/Reference.obj");
-    FDynamicSpriteEmitterData* TempEmitterData = new FDynamicSpriteEmitterData(nullptr);
-    // TempEmitterData->StaticMesh = FResourceManager::GetStaticMesh(L"Contents/Reference/Reference.obj");
-    TempEmitterData->Source = FDynamicSpriteEmitterReplayData();
-    TempEmitterData->Source.ActiveParticleCount = 100;
-    TempEmitterData->Source.MaxDrawCount = 100;
+    {
+        FDynamicSpriteEmitterData* TempEmitterData = new FDynamicSpriteEmitterData(nullptr);
+        TempEmitterData->Source = FDynamicSpriteEmitterReplayData();
+        TempEmitterData->Source.ActiveParticleCount = 100;
+        TempEmitterData->Source.MaxDrawCount = 100;
     
-    ParticleSystemComponent->TempTestEmitterRenderData.Add(TempEmitterData);
+        ParticleSystemComponent->TempTestEmitterRenderData.Add(TempEmitterData);
+    }
     
-    
-    // FResourceManager::CreateStaticMesh("Contents/Reference/Reference.obj");
-    // FDynamicMeshEmitterData* TempEmitterData = new FDynamicMeshEmitterData(nullptr);
-    // TempEmitterData->StaticMesh = FResourceManager::GetStaticMesh(L"Contents/Reference/Reference.obj");
-    // TempEmitterData->Source = FDynamicMeshEmitterReplayData();
-    // TempEmitterData->Source.ActiveParticleCount = 100;
-    // TempEmitterData->Source.MaxDrawCount = 100;
-    //
-    // ParticleSystemComponent->TempTestEmitterRenderData.Add(TempEmitterData);
+    {
+        FResourceManager::CreateStaticMesh("Contents/Reference/Reference.obj");
+        FDynamicMeshEmitterData* TempEmitterData = new FDynamicMeshEmitterData(nullptr);
+        TempEmitterData->StaticMesh = FResourceManager::GetStaticMesh(L"Contents/Reference/Reference.obj");
+        TempEmitterData->Source = FDynamicMeshEmitterReplayData();
+        TempEmitterData->Source.ActiveParticleCount = 100;
+        TempEmitterData->Source.MaxDrawCount = 100;
+        
+        ParticleSystemComponent->TempTestEmitterRenderData.Add(TempEmitterData);
+    }
 }

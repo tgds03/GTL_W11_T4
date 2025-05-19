@@ -14,7 +14,7 @@ struct InstanceData
     float RelativeTime : RELATIVE_TIME;    
 };
 
-struct VS_INPUT_StaticMeshParticle
+struct VS_INPUT_MeshParticle
 {
     // Slot 0 - Vertex Data
     VS_INPUT_StaticMesh MeshData;
@@ -23,14 +23,20 @@ struct VS_INPUT_StaticMeshParticle
     InstanceData Instance;
 };
 
-struct PS_INPUT_StaticMeshParticle
+struct PS_INPUT_MeshParticle
 {
     float4 Position : SV_POSITION;
+    float4 Color : COLOR;
+    float2 UV : TEXCOORD0;
+    float3 WorldNormal : TEXCOORD1;
+    float4 WorldTangent : TEXCOORD2;
+    float3 WorldPosition : TEXCOORD3;
+    nointerpolation uint MaterialIndex : MATERIAL_INDEX;
 };
 
-PS_INPUT_StaticMeshParticle mainVS(VS_INPUT_StaticMeshParticle Input)
+PS_INPUT_MeshParticle mainVS(VS_INPUT_MeshParticle Input)
 {
-    PS_INPUT_StaticMeshParticle Output;
+    PS_INPUT_MeshParticle Output;
 
     float4x4 ModelMatrix = float4x4(
         float4(Input.Instance.Transform1.x, Input.Instance.Transform2.x, Input.Instance.Transform3.x, 0),
@@ -56,8 +62,8 @@ PS_INPUT_StaticMeshParticle mainVS(VS_INPUT_StaticMeshParticle Input)
     // Output.WorldTangent = float4(WorldTangent, Input.Tangent.w);
     // End Tangent
     
-    // Output.UV = Input.UV;
-    // Output.MaterialIndex = Input.MaterialIndex;
-    // Output.Color = Input.Color;
+    Output.UV = Input.MeshData.UV;
+    Output.MaterialIndex = Input.MeshData.MaterialIndex;
+    Output.Color = Input.MeshData.Color;
     return Output;
 }

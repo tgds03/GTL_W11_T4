@@ -349,6 +349,12 @@ void FDXDBufferManager::UpdateDynamicVertexBuffer(const FString& KeyName, const 
         UE_LOG(LogLevel::Error, TEXT("VertexBuffer Map 실패, HRESULT: 0x%X"), hr);
         return;
     }
+    const size_t RequiredSize = sizeof(T) * vertices.Num();
+    if (RequiredSize > vbInfo.NumVertices * vbInfo.Stride) // 직접 저장한 크기
+    {
+        MessageBox(nullptr, L"BufferSize Error", L"Error", MB_OK | MB_ICONERROR);
+        return;
+    }
 
     memcpy(mapped.pData, vertices.GetData(), sizeof(T) * vertices.Num());
     DXDeviceContext->Unmap(vbInfo.VertexBuffer, 0);

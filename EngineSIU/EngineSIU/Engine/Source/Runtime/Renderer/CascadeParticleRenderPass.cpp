@@ -1,13 +1,16 @@
 ﻿#include "CascadeParticleRenderPass.h"
 
+#include "ParticleEmitterInstances.h"
 #include "Engine/Engine.h"
 #include "GameFramework/Actor.h"
 #include "UObject/UObjectIterator.h"
 #include "ParticleHelper.h"
+#include "RendererHelpers.h"
 #include "UnrealClient.h"
 #include "Asset/StaticMeshAsset.h"
 #include "Components/Mesh/StaticMeshRenderData.h"
 #include "D3D11RHI/DXDShaderManager.h"
+#include "Particles/ParticleLODLevel.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "UnrealEd/EditorViewportClient.h"
 
@@ -114,6 +117,17 @@ void FCascadeParticleRenderPass::CreateShader()
         MessageBox(nullptr, L"Sprite Particle Pixel Shader - Create Error", L"Error", MB_OK | MB_ICONERROR);
         return;
     }
+
+    D3D11_SAMPLER_DESC SamplerDesc = {};
+    SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+    SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+    SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+    SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    SamplerDesc.MinLOD = 0;
+    SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    
+    Graphics->Device->CreateSamplerState(&SamplerDesc, &SamplerState);
 }
 
 void FCascadeParticleRenderPass::ReleaseShader()
@@ -132,14 +146,15 @@ void FCascadeParticleRenderPass::PrepareRenderState(const std::shared_ptr<FEdito
     Graphics->DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorViewportClient>& Viewport)
+void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorViewportClient>& Viewport) const
 {
     for (auto& ParticleSystemComponent : ParticleSystemComponents)
     {
         // FParticleDynamicData* DynamicData = ParticleSystemComponent->GetDynamicData();
         // for (FDynamicEmitterDataBase* DynamicEmitterData : DynamicData->DynamicEmitterDataArray)
-        for (FDynamicEmitterDataBase* DynamicEmitterData : ParticleSystemComponent->TempTestEmitterRenderData)
+        for (int i = 0; i < ParticleSystemComponent->TempTestEmitterRenderData.Num(); i++)
         {
+            FDynamicEmitterDataBase* DynamicEmitterData = ParticleSystemComponent->TempTestEmitterRenderData[i];
             if (FDynamicSpriteEmitterData* DynamicSpriteEmitterData = dynamic_cast<FDynamicSpriteEmitterData*>(DynamicEmitterData))
             {
                 ID3D11InputLayout* InputLayout = ShaderManager->GetInputLayoutByKey(L"SpriteParticleVertexShader");
@@ -167,7 +182,7 @@ void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorVi
                 for (auto& Instance : InstanceData)
                 {
                     Instance.OldPosition = Instance.Position;
-                    Instance.Position = ParticleSystemComponent->GetWorldLocation() + FVector(FMath::RandHelper(10), FMath::RandHelper(10), FMath::RandHelper(10));
+                    Instance.Position = ParticleSystemComponent->GetWorldLocation() + FVector(FMath::RandHelper(100), FMath::RandHelper(100), FMath::RandHelper(100));
                     Instance.RelativeTime = 0.5f;
                     Instance.ParticleId = 0;
                     Instance.Size = FVector2D(1, 1);
@@ -194,7 +209,7 @@ void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorVi
                 BufferManager->GetQuadBuffer(VertexInfo, IndexInfo);                
             
             
-                FString ParticleSystemVertexBufferName = ParticleSystemComponent->GetName() + FString::FromInt(ParticleSystemComponent->GetUUID());
+                FString ParticleSystemVertexBufferName = ParticleSystemComponent->GetName() + FString::FromInt(i) + "," + FString::FromInt(ParticleSystemComponent->GetUUID());
                 FVertexInfo ParticleVertexInfo;
                 BufferManager->CreateVertexBuffer(ParticleSystemVertexBufferName, InstanceData, ParticleVertexInfo, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
                 BufferManager->UpdateDynamicVertexBuffer(ParticleSystemVertexBufferName, InstanceData);
@@ -217,6 +232,7 @@ void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorVi
                     Graphics->DeviceContext->PSSetSamplers(0, 1, &Texture->SamplerState);
                 }
                 Graphics->DeviceContext->DrawIndexedInstanced(IndexInfo.NumIndices, InstanceCount, 0, 0, 0);
+                InstanceData.Empty();
             }
             else if (FDynamicMeshEmitterData* DynamicMeshEmitterData = dynamic_cast<FDynamicMeshEmitterData*>(DynamicEmitterData))
             {
@@ -281,7 +297,7 @@ void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorVi
                 // DynamicMeshEmitterData->GetInstanceData(InstanceData.GetData(), ParticleSystemComponent->GetWorldMatrix());
                 
                 // VertexBuffer 구조체로 들어오는 MainVs -> VSINPUT 구조체에 이어 붙이면 됨.
-                FString ParticleSystemVertexBufferName = ParticleSystemComponent->GetName() + FString::FromInt(ParticleSystemComponent->GetUUID());
+                FString ParticleSystemVertexBufferName = ParticleSystemComponent->GetName() + FString::FromInt(i) + "," + FString::FromInt(ParticleSystemComponent->GetUUID());
                 FVertexInfo ParticleVertexInfo;
                 BufferManager->CreateVertexBuffer(ParticleSystemVertexBufferName, InstanceData, ParticleVertexInfo, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
                 BufferManager->UpdateDynamicVertexBuffer(ParticleSystemVertexBufferName, InstanceData);
@@ -291,31 +307,19 @@ void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorVi
                 BufferManager->CreateIndexBuffer(RenderData->ObjectName, RenderData->Indices, ParticleIndexInfo);
                 Graphics->DeviceContext->IASetIndexBuffer(ParticleIndexInfo.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
-                // TODO What
-                // BufferManager->UpdateDynamicIndexBuffer(ParticleSystemVertexBufferName, );
-
-
-                // TODO Material Section에 따라 분리 IndexCount, StartLocation 설정으로
-                // Set Material, Set Section, Set Sampler, Set PSResources
-
                 for (int SubMeshIndex = 0; SubMeshIndex < RenderData->MaterialSubsets.Num(); SubMeshIndex++)
                 {
-                    // uint32 MaterialIndex = RenderData->MaterialSubsets[SubMeshIndex].MaterialIndex;
-                    // FSubMeshConstants SubMeshData = FSubMeshConstants(false);
+                    uint32 MaterialIndex = RenderData->MaterialSubsets[SubMeshIndex].MaterialIndex;
 
-                    // if (OverrideMaterials[MaterialIndex] != nullptr)
-                    // {
-                    //     MaterialUtils::UpdateMaterial(BufferManager, Graphics, OverrideMaterials[MaterialIndex]->GetMaterialInfo());
-                    // }
-                    // else
-                    // {
-                    //     MaterialUtils::UpdateMaterial(BufferManager, Graphics, Materials[MaterialIndex]->Material->GetMaterialInfo());
-                    // }
+                    BufferManager->BindConstantBuffer(TEXT("FMaterialConstants"), 1, EShaderStage::Pixel);
+                    MaterialUtils::UpdateMaterial(BufferManager, Graphics, RenderData->Materials[MaterialIndex]);
+                    Graphics->DeviceContext->PSSetSamplers(0, 1, &SamplerState);
                     
                     uint32 StartIndex = RenderData->MaterialSubsets[SubMeshIndex].IndexStart;
                     uint32 IndexCount = RenderData->MaterialSubsets[SubMeshIndex].IndexCount;
                     Graphics->DeviceContext->DrawIndexedInstanced(IndexCount, InstanceCount, StartIndex, 0, 0);
                 }
+                InstanceData.Empty();
             }
         }
     }
