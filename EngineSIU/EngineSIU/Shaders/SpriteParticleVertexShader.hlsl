@@ -1,40 +1,37 @@
 #include "ShaderRegisters.hlsl"
 
+struct VS_INPUT_Billboard
+{
+    float3 Position : POSITION0;
+    float2 UV : TEXCOORD0;
+};
+
 struct InstanceData
 {
-    // /** The position of the particle. */
-    // float4 Position;
-    // /** The relative time of the particle. */
-    // float RelativeTime;
-    // /** The previous position of the particle. */
-    // FVector	OldPosition;
-    // /** Value that remains constant over the lifetime of a particle. */
-    // float ParticleId;
-    // /** The size of the particle. */
-    // FVector2D Size;
-    // /** The rotation of the particle. */
-    // float Rotation;
-    // /** The sub-image index for the particle. */
-    // float SubImageIndex;
-    // /** The color of the particle. */
-    // FLinearColor Color;
-    //
-    // float4 ParticleColor : TEXCOORD1;
-    //
-    // /** The instance to world transform of the particle. Translation vector is packed into W components. */
-    // float4 Transform1 : TEXCOORD2;
-    // float4 Transform2 : TEXCOORD3;
-    // float4 Transform3 : TEXCOORD4;
-    //
-    // /** The velocity of the particle, XYZ: direction, W: speed. */
-    // float4 Velocity : TEXCOORD5;
-    // float RelativeTime : RELATIVE_TIME;    
+    /** The position of the particle. */
+    float3 Position : POSITION1;
+    /** The relative time of the particle. */
+    float RelativeTime : RELATIVE_TIME;
+    /** The previous position of the particle. */
+    float3	OldPosition : POSITION2;
+    /** Value that remains constant over the lifetime of a particle. */
+    float ParticleId : PARTICLE_ID;
+    /** The size of the particle. */
+    float2 Size : TEXCOORD1;
+    /** The rotation of the particle. */
+    float Rotation : ROTATION;
+    /** The sub-image index for the particle. */
+    float SubImageIndex : SUB_IMAGE_INDEX;
+    float SubImagesHorizontal : SUB_IMAGE_Horizontal;
+    float SubImagesVertical : SUB_IMAGE_Vertical;
+    /** The color of the particle. */
+    float4 Color : TEXCOORD2;    
 };
 
 struct VS_INPUT_SpriteParticle
 {
     // Slot 0 - Vertex Data
-    VS_INPUT_StaticMesh MeshData;
+    VS_INPUT_Billboard VertexData;
     
     // Slot 1 - Instance Data
     InstanceData Instance;
@@ -43,38 +40,45 @@ struct VS_INPUT_SpriteParticle
 struct PS_INPUT_SpriteParticle
 {
     float4 Position : SV_POSITION;
+    float2 UV : TEXCOORD;
+    float3 Color : COLOR;
+
+    float SubImageIndex : SUB_IMAGE_INDEX;             
+    float SubImagesHorizontal : SUB_IMAGE_Horizontal;  
+    float SubImagesVertical : SUB_IMAGE_Vertical;      
 };
 
 PS_INPUT_SpriteParticle mainVS(VS_INPUT_SpriteParticle Input)
 {
     PS_INPUT_SpriteParticle Output;
 
-    // float4x4 ModelMatrix = float4x4(
-    //     float4(Input.Instance.Transform1.x, Input.Instance.Transform2.x, Input.Instance.Transform3.x, 0),
-    //     float4(Input.Instance.Transform1.y, Input.Instance.Transform2.y, Input.Instance.Transform3.y, 0),
-    //     float4(Input.Instance.Transform1.z, Input.Instance.Transform2.z, Input.Instance.Transform3.z, 0),
-    //     float4(Input.Instance.Transform1.w, Input.Instance.Transform2.w, Input.Instance.Transform3.w, 1));
-    //
-    //
-    // Output.Position = float4(Input.MeshData.Position, 1.0);
-    // Output.Position = mul(Output.Position, ModelMatrix);
-    // //Output.WorldPosition = Output.Position.xyz;
-    //
-    // Output.Position = mul(Output.Position, ViewMatrix);
-    // Output.Position = mul(Output.Position, ProjectionMatrix);
-    
-    //Output.WorldNormal = mul(Input.Normal, (float3x3)InverseTransposedWorld);
+    float CosR = cos(Input.Instance.Rotation);
+    float SinR = sin(Input.Instance.Rotation);
 
-    // Begin Tangent
-    // float3 WorldTangent = mul(Input.Tangent.xyz, (float3x3)WorldMatrix);
-    // WorldTangent = normalize(WorldTangent);
-    // WorldTangent = normalize(WorldTangent - Output.WorldNormal * dot(Output.WorldNormal, WorldTangent));
+    float2 Rotated = float2(
+        Input.VertexData.Position.x * CosR - Input.VertexData.Position.y * SinR,
+        Input.VertexData.Position.x * SinR + Input.VertexData.Position.y * CosR
+    );
 
-    // Output.WorldTangent = float4(WorldTangent, Input.Tangent.w);
-    // End Tangent
+    float3 CameraRight = InvViewMatrix[0].xyz;
+    float3 CameraUp = InvViewMatrix[1].xyz;
+    float3 CameraForward = InvViewMatrix[2].xyz;
     
-    // Output.UV = Input.UV;
-    // Output.MaterialIndex = Input.MaterialIndex;
-    // Output.Color = Input.Color;
+    // Billboard axis-aligned 위치 계산
+    float3 worldPos = Input.Instance.Position * 3 + Rotated.x * CameraRight + Rotated.y * CameraUp;
+    Output.Position = float4(worldPos, 1.0);
+    Output.Position = mul(Output.Position, ViewMatrix);
+    Output.Position = mul(Output.Position, ProjectionMatrix);
+
+
+
+    //Output.UV = Input.VertexData.UV * uvScale + uvOffset;
+    Output.UV = Input.VertexData.UV;
+    Output.Color = Input.Instance.Color;
+    Output.SubImageIndex = Input.Instance.SubImageIndex;
+    Output.SubImagesHorizontal = Input.Instance.SubImagesHorizontal;
+    Output.SubImagesVertical = Input.Instance.SubImagesVertical;
+    // Input.Instance.SubImageIndex
+
     return Output;
 }

@@ -111,6 +111,8 @@ struct FParticleSpriteVertex
     float Rotation;
     /** The sub-image index for the particle. */
     float SubImageIndex;
+    float SubImagesHorizontal;
+    float SubImagesVertical;
     /** The color of the particle. */
     FLinearColor Color;
 };
@@ -558,6 +560,8 @@ struct FDynamicSpriteEmitterData : public FDynamicSpriteEmitterDataBase
     {
         return Source;
     }
+
+    virtual void GetIndexAllocInfo(int32& OutNumIndices, int32& OutStride ) const override {};
     
     /** The frame source data for this particle system.  This is everything needed to represent this
         this particle system frame.  It does not include any transient rendering thread data.  Also, for

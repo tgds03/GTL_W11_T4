@@ -83,6 +83,37 @@ void FCascadeParticleRenderPass::CreateShader()
         MessageBox(nullptr, L"Mesh Particle Pixel Shader - Create Error", L"Error", MB_OK | MB_ICONERROR);
         return;
     }
+
+
+    D3D11_INPUT_ELEMENT_DESC SpriteParticleLayoutDesc[] = {
+        {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0},
+        {"POSITION", 1, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+        {"RELATIVE_TIME", 0, DXGI_FORMAT_R32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+        {"POSITION", 2, DXGI_FORMAT_R32G32B32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+        {"PARTICLE_ID", 0, DXGI_FORMAT_R32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+        {"TEXCOORD", 1, DXGI_FORMAT_R32G32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+        {"ROTATION", 0, DXGI_FORMAT_R32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+        {"SUB_IMAGE_INDEX", 0, DXGI_FORMAT_R32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+        {"SUB_IMAGE_Horizontal", 0, DXGI_FORMAT_R32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+        {"SUB_IMAGE_Vertical", 0, DXGI_FORMAT_R32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+        {"TEXCOORD", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+    };
+
+    hr = ShaderManager->AddVertexShaderAndInputLayout(L"SpriteParticleVertexShader", L"Shaders/SpriteParticleVertexShader.hlsl", "mainVS", SpriteParticleLayoutDesc, ARRAYSIZE(SpriteParticleLayoutDesc));
+    if (FAILED(hr))
+    {
+        MessageBox(nullptr, L"Sprite Particle Layout & Vertex Shader - Create Error", L"Error", MB_OK | MB_ICONERROR);
+        return;
+    }
+
+    hr = ShaderManager->AddPixelShader(L"SpriteParticlePixelShader", L"Shaders/SpriteParticlePixelShader.hlsl", "mainPS");
+
+    if (FAILED(hr))
+    {
+        MessageBox(nullptr, L"Sprite Particle Pixel Shader - Create Error", L"Error", MB_OK | MB_ICONERROR);
+        return;
+    }
 }
 
 void FCascadeParticleRenderPass::ReleaseShader()
@@ -111,8 +142,16 @@ void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorVi
         {
             if (FDynamicSpriteEmitterData* DynamicSpriteEmitterData = dynamic_cast<FDynamicSpriteEmitterData*>(DynamicEmitterData))
             {
-                int32 InstanceCount = DynamicSpriteEmitterData->GetSource().ActiveParticleCount;
+                ID3D11InputLayout* InputLayout = ShaderManager->GetInputLayoutByKey(L"SpriteParticleVertexShader");
+                ID3D11PixelShader* PixelShader = ShaderManager->GetPixelShaderByKey(L"SpriteParticlePixelShader");
+                ID3D11VertexShader* VertexShader = ShaderManager->GetVertexShaderByKey(L"SpriteParticleVertexShader");
+
+                Graphics->DeviceContext->IASetInputLayout(InputLayout);
+                Graphics->DeviceContext->VSSetShader(VertexShader, nullptr, 0);
+                Graphics->DeviceContext->PSSetShader(PixelShader, nullptr, 0);
+                
                 const FDynamicSpriteEmitterReplayData& Source = (const FDynamicSpriteEmitterReplayData&)DynamicSpriteEmitterData->GetSource();
+                int32 InstanceCount = Source.ActiveParticleCount;
                 if ((Source.MaxDrawCount >= 0) && (Source.ActiveParticleCount > Source.MaxDrawCount))
                 {
                     InstanceCount = Source.MaxDrawCount;
@@ -122,9 +161,27 @@ void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorVi
                 // {
                 //     DynamicSpriteEmitterData->Sort();
                 // }
+
                 TArray<FParticleSpriteVertex> InstanceData;
                 InstanceData.SetNum(InstanceCount);
-                // 각 파티클 개체(각 입자)의 Instnace 데이터를 얻음. (Per Particle)
+                for (auto& Instance : InstanceData)
+                {
+                    Instance.OldPosition = Instance.Position;
+                    Instance.Position = ParticleSystemComponent->GetWorldLocation() + FVector(FMath::RandHelper(10), FMath::RandHelper(10), FMath::RandHelper(10));
+                    Instance.RelativeTime = 0.5f;
+                    Instance.ParticleId = 0;
+                    Instance.Size = FVector2D(1, 1);
+                    Instance.Rotation = 0;
+                    Instance.SubImageIndex = FMath::RandHelper(36);
+                    Instance.SubImagesHorizontal = 6;
+                    Instance.SubImagesVertical = 6;
+                    Instance.Color = FLinearColor::Red;
+                } 
+
+                
+                // TArray<FParticleSpriteVertex> InstanceData;
+                // InstanceData.SetNum(InstanceCount);
+                // TODO 각 파티클 개체(각 입자)의 Instnace 데이터를 얻음. (Per Particle)
                 // DynamicSpriteEmitterData->GetVertexAndIndexData(InstanceData.GetData(), ParticleOrder, Viewport->GetCameraLocation(), ParticleSystemComponent->GetWorldMatrix());
             
                 UINT Offset = 0;
@@ -134,24 +191,31 @@ void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorVi
             
                 FVertexInfo VertexInfo;
                 FIndexInfo IndexInfo;
-                BufferManager->GetQuadBuffer(VertexInfo, IndexInfo);
-                
-                Graphics->DeviceContext->IASetVertexBuffers(0, 1, &VertexInfo.VertexBuffer, &VertexInfo.Stride, &Offset);
+                BufferManager->GetQuadBuffer(VertexInfo, IndexInfo);                
             
             
                 FString ParticleSystemVertexBufferName = ParticleSystemComponent->GetName() + FString::FromInt(ParticleSystemComponent->GetUUID());
                 FVertexInfo ParticleVertexInfo;
-                BufferManager->CreateVertexBuffer(ParticleSystemVertexBufferName, InstanceData, ParticleVertexInfo);
+                BufferManager->CreateVertexBuffer(ParticleSystemVertexBufferName, InstanceData, ParticleVertexInfo, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
                 BufferManager->UpdateDynamicVertexBuffer(ParticleSystemVertexBufferName, InstanceData);
+
+                Graphics->DeviceContext->IASetVertexBuffers(0, 1, &VertexInfo.VertexBuffer, &VertexInfo.Stride, &Offset);
                 Graphics->DeviceContext->IASetVertexBuffers(1, 1, &ParticleVertexInfo.VertexBuffer, &ParticleVertexInfo.Stride, &InstanceOffset);
                 //Graphics->DeviceContext->IASetVertexBuffers(1, 1, &InstanceBuffer, &InstanceStride, &InstanceOffset);
             
             
-                Graphics->DeviceContext->IASetIndexBuffer(IndexInfo.IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+                Graphics->DeviceContext->IASetIndexBuffer(IndexInfo.IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
             
             
                 // TODO Set Material
-                
+
+
+                std::shared_ptr<FTexture> Texture = FEngineLoop::ResourceManager.GetTexture(L"Assets/Texture/T_Explosion_SubUV.png");
+                if (Texture)
+                {
+                    Graphics->DeviceContext->PSSetShaderResources(0, 1, &Texture->TextureSRV);
+                    Graphics->DeviceContext->PSSetSamplers(0, 1, &Texture->SamplerState);
+                }
                 Graphics->DeviceContext->DrawIndexedInstanced(IndexInfo.NumIndices, InstanceCount, 0, 0, 0);
             }
             else if (FDynamicMeshEmitterData* DynamicMeshEmitterData = dynamic_cast<FDynamicMeshEmitterData*>(DynamicEmitterData))

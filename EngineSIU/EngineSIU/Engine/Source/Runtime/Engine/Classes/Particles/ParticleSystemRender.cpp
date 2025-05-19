@@ -64,6 +64,8 @@ bool FDynamicSpriteEmitterData::GetVertexAndIndexData(void* VertexData, FParticl
         {
             int32 NextIndex = OrderedIndices ? OrderedIndices[i+1].ParticleIndex : (i + 1);
             DECLARE_PARTICLE_CONST(NextParticle, ParticleData + Source.ParticleStride * ParticleIndices[NextIndex]);
+
+            // 단순 cpu 캐싱 미리 해두기            
             // FPlatformMisc::Prefetch(&NextParticle);
         }
  
