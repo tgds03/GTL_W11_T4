@@ -3,6 +3,12 @@
 #include "ParticleEmitterInstances.h"
 #include "ParticleHelper.h"
 
+UParticleModuleColor::UParticleModuleColor()
+{
+    Flags = static_cast<EModuleFlag::EModuleFlags>(EModuleFlag::SpawnModule | EModuleFlag::UpdateModule);
+    bClampAlpha = true;
+}
+
 void UParticleModuleColor::Spawn(FParticleEmitterInstance* Owner, uint32 Offset, float SpawnTime, FBaseParticle* ParticleBase)
 {
     SpawnEx(Owner, Offset, SpawnTime, &GetRandomStream(Owner), ParticleBase);

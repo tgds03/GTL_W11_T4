@@ -1,4 +1,5 @@
 #pragma once
+#include "ParticleHelper.h"
 #include "UObject/Object.h"
 #include "UObject/ObjectMacros.h"
 #include "RandomStream.h"
@@ -147,7 +148,7 @@ public:
         return (Flags & Flag);
     };
 
-private:
+protected:
     EModuleFlag::EModuleFlags Flags = EModuleFlag::None;
 
 };

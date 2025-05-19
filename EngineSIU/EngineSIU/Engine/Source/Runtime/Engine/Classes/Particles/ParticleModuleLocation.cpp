@@ -2,6 +2,12 @@
 #include "ParticleEmitterInstances.h"
 #include "ParticleHelper.h"
 
+UParticleModuleLocation::UParticleModuleLocation()
+{
+    Flags = EModuleFlag::SpawnModule;
+    DistributeOverNPoints = 0.f;
+}
+
 void UParticleModuleLocation::InitializeDefaults()
 {
 }

@@ -2,6 +2,11 @@
 #include "ParticleEmitterInstances.h"
 #include "ParticleHelper.h"
 
+UParticleModuleLifetime::UParticleModuleLifetime()
+{
+    Flags = EModuleFlag::SpawnModule;
+}
+
 void UParticleModuleLifetime::Spawn(FParticleEmitterInstance* Owner, uint32 Offset, float SpawnTime, FBaseParticle* ParticleBase)
 {
     SpawnEx(Owner, Offset, SpawnTime, &GetRandomStream(Owner), ParticleBase);

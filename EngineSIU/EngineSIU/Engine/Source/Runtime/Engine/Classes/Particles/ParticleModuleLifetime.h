@@ -6,7 +6,7 @@ class UParticleModuleLifetime: public UParticleModule
 {
     DECLARE_CLASS(UParticleModuleLifetime, UParticleModule)
 public:
-    UParticleModuleLifetime() = default;
+    UParticleModuleLifetime();
 
     FDistributionFloat Lifetime;
 
@@ -15,5 +15,6 @@ public:
     virtual float GetMaxLifetime();
     virtual float GetLifetimeValue(FParticleEmitterInstance* Owner, float InTime);
 
+protected:
     void SpawnEx(FParticleEmitterInstance* Owner, uint32 Offset, float SpawnTime, FRandomStream* InRandomStream, FBaseParticle* ParticleBase);
 };

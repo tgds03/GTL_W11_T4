@@ -7,6 +7,11 @@
 #include "ParticleModuleRequired.h"
 #include "ParticleSystemComponent.h"
 
+UParticleModuleVelocity::UParticleModuleVelocity()
+{
+    Flags = EModuleFlag::SpawnModule;
+}
+
 void UParticleModuleVelocity::Spawn(FParticleEmitterInstance* Owner, uint32 Offset, float SpawnTime, FBaseParticle* ParticleBase)
 {
     SpawnEx(Owner, Offset, SpawnTime, &GetRandomStream(Owner), ParticleBase);
