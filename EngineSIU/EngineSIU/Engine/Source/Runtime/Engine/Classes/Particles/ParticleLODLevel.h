@@ -24,7 +24,8 @@ public:
     TArray<class UParticleModule*> SpawnModules;
 
     /** True if the LOD level is enabled, meaning it should be updated and rendered.	*/
-    uint32 bEnabled : 1;
+    uint8 bEnabled : 1;
+    uint8 bUseLocalSpace: 1;
 
     /** The required module for this LOD level											*/
     UParticleModuleRequired* RequiredModule;

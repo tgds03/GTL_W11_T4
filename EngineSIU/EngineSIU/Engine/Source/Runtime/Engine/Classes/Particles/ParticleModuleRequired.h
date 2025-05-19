@@ -90,6 +90,8 @@ public:
     /** If true, kill the emitter when it completes										*/
     uint8 bKillOnCompleted : 1;
 
+    uint8 bUseLocalSpace: 1;
+
     /**
      *	The sorting mode to use for this emitter.
      *	PSORTMODE_None				- No sorting required.
