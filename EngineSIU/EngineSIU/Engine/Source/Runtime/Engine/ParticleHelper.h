@@ -1,7 +1,8 @@
-﻿#pragma once
+#pragma once
 #include "Container/Array.h"
 #include "Math/Color.h"
 #include "Math/Vector.h"
+#include "RandomStream.h"
 
 #define DECLARE_PARTICLE(Name,Address)		\
 	FBaseParticle& Name = *((FBaseParticle*) (Address));
@@ -14,7 +15,10 @@
 
 #define BEGIN_UPDATE_LOOP																								\
 	{																													\
-		if((Owner == NULL) || (Owner->Component == NULL)) continue;														\
+        if((Owner == NULL) || (Owner->Component == NULL)) {                                                             \
+            assert(0);                                                                                                  \
+            return;                                                                                                     \
+        }                                                                                                               \
 		int32&			ActiveParticles = Owner->ActiveParticles;														\
 		uint32			CurrentOffset	= Offset;																		\
 		const uint8*		ParticleData	= Owner->ParticleData;															\
@@ -39,9 +43,12 @@
 		continue;
 
 #define SPAWN_INIT																										\
-	if((Owner == NULL) || (Owner->Component == NULL)) continue;															\
+	if((Owner == NULL) || (Owner->Component == NULL)) {                                                                 \
+        assert(0);                                                                                                      \
+        return;                                                                                                         \
+    }                                                                                                                   \
 	const int32		ActiveParticles	= Owner->ActiveParticles;															\
-	const uint32		ParticleStride	= Owner->ParticleStride;															\
+	const uint32		ParticleStride	= Owner->ParticleStride;														\
 	uint32			CurrentOffset	= Offset;																			\
 	FBaseParticle&	Particle		= *(ParticleBase);
 
@@ -55,6 +62,11 @@
 		ParticleIndices[ActiveParticles-1]	= CurrentIndex;																\
 		ActiveParticles--;																								\
 	}
+
+// Special module indices...
+#define INDEX_TYPEDATAMODULE	(INDEX_NONE - 1)
+#define INDEX_REQUIREDMODULE	(INDEX_NONE - 2)
+#define INDEX_SPAWNMODULE		(INDEX_NONE - 3)
 
 struct FParticleMeshEmitterInstance;
 class UStaticMesh;
@@ -83,13 +95,40 @@ struct FBaseParticle
 
     // 16 bytes
     FVector		    Size;					// Current size, gets reset to BaseSize each frame
-    int32		    Flags;					// Flags indicating various particle states
+    uint32		    Flags;					// Flags indicating various particle states
 
     // 16 bytes
     FLinearColor	Color;					// Current color of particle.
 
     // 16 bytes
     FLinearColor	BaseColor;				// Base color of the particle
+};
+
+/*-----------------------------------------------------------------------------
+    Particle State Flags
+-----------------------------------------------------------------------------*/
+enum EParticleStates: uint32
+{
+    /** Ignore updates to the particle						*/
+    STATE_Particle_JustSpawned			= 0x02000000,
+    /** Ignore updates to the particle						*/
+    STATE_Particle_Freeze				= 0x04000000,
+    /** Ignore collision updates to the particle			*/
+    STATE_Particle_IgnoreCollisions		= 0x08000000,
+    /**	Stop translations of the particle					*/
+    STATE_Particle_FreezeTranslation	= 0x10000000,
+    /**	Stop rotations of the particle						*/
+    STATE_Particle_FreezeRotation		= 0x20000000,
+    /** Combination for a single check of 'ignore' flags	*/
+    STATE_Particle_CollisionIgnoreCheck	= STATE_Particle_Freeze |STATE_Particle_IgnoreCollisions | STATE_Particle_FreezeTranslation| STATE_Particle_FreezeRotation,
+    /** Delay collision updates to the particle				*/
+    STATE_Particle_DelayCollisions		= 0x40000000,
+    /** Flag indicating the particle has had at least one collision	*/
+    STATE_Particle_CollisionHasOccurred	= 0x80000000,
+    /** State mask. */
+    STATE_Mask = 0xFE000000,
+    /** Counter mask. */
+    STATE_CounterMask = (~STATE_Mask)
 };
 
 /**
@@ -572,6 +611,21 @@ struct FDynamicSpriteEmitterData : public FDynamicSpriteEmitterDataBase
     // // FParticleSpriteUniformParameters UniformParameters;
 };
 
+//
+//	Helper structures for payload data...
+//
+
+//
+//	SubUV-related payloads
+//
+struct FFullSubUVPayload
+{
+    // The integer portion indicates the sub-image index.
+    // The fractional portion indicates the lerp factor.
+    float ImageIndex;
+    float RandomImageTime;
+};
+
 /** Source data for Mesh emitters */
 struct FDynamicMeshEmitterReplayData : public FDynamicSpriteEmitterReplayDataBase
 {
@@ -832,4 +886,21 @@ public:
 #if WITH_PARTICLE_PERF_STATS
     FParticlePerfStatsContext PerfStatContext;
 #endif
+};
+
+/** Random-seed instance payload */
+struct FParticleRandomSeedInstancePayload
+{
+    FRandomStream	RandomStream;
+};
+
+//
+//	SubUV-related payloads
+//
+struct FFullSubUVPayload
+{
+    // The integer portion indicates the sub-image index.
+    // The fractional portion indicates the lerp factor.
+    float ImageIndex;
+    float RandomImageTime;
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include "ActorComponent.h"
 #include "Math/Rotator.h"
+#include "Math/Transform.h"
 #include "UObject/ObjectMacros.h"
 
 struct FHitResult;
@@ -62,6 +63,10 @@ public:
     FMatrix GetTranslationMatrix() const;
 
     FMatrix GetWorldMatrix() const;
+
+    // FIX-ME
+    // Added const to make the function const-correct
+    FTransform GetComponentTransform() const; 
 
     void UpdateOverlaps(const TArray<FOverlapInfo>* PendingOverlaps = nullptr, bool bDoNotifies = true, const TArray<const FOverlapInfo>* OverlapsAtEndLocation = nullptr);
 

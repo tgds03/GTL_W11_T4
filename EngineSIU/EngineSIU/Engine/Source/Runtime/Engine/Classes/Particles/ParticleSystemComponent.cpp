@@ -1,4 +1,4 @@
-﻿#include "ParticleSystemComponent.h"
+#include "ParticleSystemComponent.h"
 
 #include "ParticleEmitterInstances.h"
 #include "ParticleLODLevel.h"
@@ -6,12 +6,31 @@
 #include "GameFramework/PlayerController.h"
 #include "TypeData/ParticleModuleTypeDataMesh.h"
 #include "World/World.h"
+#include "RandomStream.h"
+#include "ParticleEmitter.h"
+
+bool GIsAllowingParticles = true;
 
 void UParticleSystemComponent::TickComponent(float DeltaTime)
 {
     TotalActiveParticles = 0;
     this->DeltaTime = DeltaTime;
+
+    bool bRequiresReset = bResetTriggered;
+    bResetTriggered = false;
+    if (bRequiresReset)
+    {
+        ForceReset();
+    }
     ComputeTickComponent();
+}
+
+void UParticleSystemComponent::ForceReset()
+{
+    if (Template != nullptr)
+    {
+        Template->UpdateAllModuleLists();
+    }
 }
 
 
@@ -33,6 +52,148 @@ void UParticleSystemComponent::ComputeTickComponent()
     // }
 }
 
+void UParticleSystemComponent::InitializeSystem()
+{
+    assert(GetWorld());
+    UE_LOG(LogLevel::Display, TEXT("InitializeSystem @ %fs Component=0x%p FXSystem=0x%p"), GetWorld()->TimeSeconds, this, FXSystem);
+    
+    if (GIsAllowingParticles)
+    {
+        //if (IsTemplate() == true)
+        //{
+        //    return;
+        //}
+
+        if (Template != NULL)
+        {
+            EmitterDelay = Template->Delay;
+
+            if (Template->bUseDelayRange)
+            {
+                const float	Rand = RandomStream.FRand();
+                EmitterDelay = Template->DelayLow + ((Template->Delay - Template->DelayLow) * Rand);
+            }
+        }
+
+        // Allocate the emitter instances and particle data
+        InitParticles();
+        AccumTickTime = 0.0;
+        // BeginTest
+        // bAutoActivate가 들어가야할지 bAutoActive
+        if ((IsActive() == false) && (bAutoActive == true) && (bWasDeactivated == false))
+        {
+            SetActive(true);
+        }
+    }
+}
+
+void UParticleSystemComponent::InitParticles()
+{
+    assert(GetWorld());
+
+    if (Template != NULL)
+    {
+        WarmupTime = Template->WarmupTime;
+        WarmupTickRate = Template->WarmupTickRate;
+        bIsViewRelevanceDirty = true;
+        //const int32 GlobalDetailMode = GetCurrentDetailMode();
+        const bool bCanEverRender = CanEverRender();
+
+        //simplified version.
+        int32 NumInstances = EmitterInstances.Num();
+        int32 NumEmitters = Template->Emitters.Num();
+        const bool bIsFirstCreate = NumInstances == 0;
+        // 임의로 false를 박아뒀음.
+        EmitterInstances.SetNumZeroed(NumEmitters, false);
+
+        bWasCompleted = bIsFirstCreate ? false : bWasCompleted;
+
+        bool bClearDynamicData = false;
+        int32 PreferredLODLevel = LODLevel;
+        bool bSetLodLevels = LODLevel > 0; //We should set the lod level even when creating all emitters if the requested LOD is not 0. 
+
+        for (int32 Idx = 0; Idx < NumEmitters; Idx++)
+        {
+            UParticleEmitter* Emitter = Template->Emitters[Idx];
+            if (Emitter)
+            {
+                FParticleEmitterInstance* Instance = NumInstances == 0 ? NULL : EmitterInstances[Idx];
+                //const bool bDetailModeAllowsRendering = DetailMode <= GlobalDetailMode && (Emitter->DetailModeBitmask & (1 << GlobalDetailMode));
+                const bool bShouldCreateAndOrInit = Emitter->HasAnyEnabledLODs() && bCanEverRender;
+
+                if (bShouldCreateAndOrInit)
+                {
+                    if (Instance)
+                    {
+                        Instance->SetHaltSpawning(false);
+                        Instance->SetHaltSpawningExternal(false);
+                    }
+                    else
+                    {
+                        Instance = Emitter->CreateInstance(this);
+                        EmitterInstances[Idx] = Instance;
+                    }
+
+                    if (Instance)
+                    {
+                        Instance->bEnabled = true;
+                        Instance->InitParameters(Emitter, this);
+                        Instance->Init();
+
+                        PreferredLODLevel = FMath::Min(PreferredLODLevel, Emitter->LODLevels.Num());
+                        bSetLodLevels |= !bIsFirstCreate;//Only set lod levels if we init any instances and it's not the first creation time.
+                    }
+                }
+                else
+                {
+                    if (Instance)
+                    {
+#if STATS
+                        Instance->PreDestructorCall();
+#endif
+                        delete Instance;
+                        EmitterInstances[Idx] = NULL;
+                        bClearDynamicData = true;
+                    }
+                }
+            }
+        }
+
+        if (bClearDynamicData)
+        {
+            ClearDynamicData();
+        }
+
+        if (bSetLodLevels)
+        {
+            if (PreferredLODLevel != LODLevel)
+            {
+                // This should never be higher...
+                assert(PreferredLODLevel < LODLevel);
+                LODLevel = PreferredLODLevel;
+            }
+
+            for (int32 Idx = 0; Idx < EmitterInstances.Num(); Idx++)
+            {
+                FParticleEmitterInstance* Instance = EmitterInstances[Idx];
+                // set the LOD levels here
+                if (Instance)
+                {
+                    Instance->CurrentLODLevelIndex = LODLevel;
+
+                    // small safety net for OR-11322; can be removed if the ensure never fires after the change in SetTemplate (reset all instances LOD indices to 0)
+                    if (Instance->CurrentLODLevelIndex >= Instance->SpriteTemplate->LODLevels.Num())
+                    {
+                        Instance->CurrentLODLevelIndex = Instance->SpriteTemplate->LODLevels.Num() - 1;
+                        //assert(false, TEXT("LOD access out of bounds (OR-11322). Please let olaf.piesche or simon.tovey know."));
+                    }
+                    Instance->CurrentLODLevel = Instance->SpriteTemplate->LODLevels[Instance->CurrentLODLevelIndex];
+                }
+            }
+        }
+    }
+
+}
 
 // 	FInGameScopedCycleCounter InGameCycleCounter(GetWorld(), EInGamePerfTrackers::VFXSignificance, IsInGameThread() ? EInGamePerfTrackerThreads::GameThread : EInGamePerfTrackerThreads::OtherThread, bIsManagingSignificance);
 //

@@ -1,13 +1,21 @@
-﻿#include "ParticleEmitterInstances.h"
+#include "ParticleEmitterInstances.h"
 
 #include "Define.h"
-#include "Engine/Engine.h"
 #include "Particles/ParticleEmitter.h"
 #include "Particles/ParticleLODLevel.h"
 #include "Particles/ParticleModuleRequired.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Particles/Event/ParticleModuleEventGenerator.h"
+#include "RandomStream.h"
+#include "Core/HAL/PlatformMemory.h"
+#include "Templates/AlignmentTemplates.h"
+#include "Runtime/Engine/World/World.h"
+
+#include "Particles/ParticleModuleSpawn.h"
 #include "Particles/TypeData/ParticleModuleTypeDataMesh.h"
+#include "Particles/ParticleModuleSpawn.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "UObject/Casts.h"
 
 void FParticleEmitterInstance::ResetParticleParameters(float DeltaTime)
 {
@@ -72,14 +80,23 @@ void FParticleEmitterInstance::Tick(float DeltaTime, bool bSuppressSpawning)
         return;
     }
 
+    bool bFirstTime = (SecondsSinceCreation > 0.f) ? false : true;
+    
+    // Grab the current LOD level
     UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
-    // if (bEnabled)
+    // Handle EmitterTime setup, looping, etc.
+    float EmitterDelay = Tick_EmitterTimeSetup(DeltaTime, LODLevel);
+    
+    if (bEnabled)
     {
         KillParticles();
         ResetParticleParameters(DeltaTime);
         Tick_ModuleUpdate(DeltaTime, LODLevel);
         Tick_ModuleFinalUpdate(DeltaTime, LODLevel);
+        SpawnFraction = Tick_SpawnParticles(DeltaTime, LODLevel, bSuppressSpawning, bFirstTime);
     }
+
+    EmitterTime += EmitterDelay;
 
     // If this the FirstTime we are being ticked?
     // bool bFirstTime = (SecondsSinceCreation > 0.0f) ? false : true;
@@ -138,6 +155,108 @@ void FParticleEmitterInstance::Tick(float DeltaTime, bool bSuppressSpawning)
     // PositionOffsetThisTick = FVector::ZeroVector;
     //
     // INC_DWORD_STAT_BY(STAT_SpriteParticles, ActiveParticles);
+}
+
+float FParticleEmitterInstance::Tick_EmitterTimeSetup(float DeltaTime, UParticleLODLevel* InCurrentLODLevel)
+{
+    // Make sure we don't try and do any interpolation on the first frame we are attached (OldLocation is not valid in this circumstance)
+	// if (Component->bJustRegistered)
+	// {
+	// 	Location	= Component->GetComponentLocation();
+	// 	OldLocation	= Location;
+	// }
+	// else
+	// {
+	// 	// Keep track of location for world- space interpolation and other effects.
+	// 	OldLocation	= Location;
+	// 	Location	= Component->GetComponentLocation();
+	// }
+	//
+	// UpdateTransforms();
+	SecondsSinceCreation += DeltaTime;
+
+	// Update time within emitter loop.
+	bool bLooped = false;
+	// if (InCurrentLODLevel->RequiredModule->bUseLegacyEmitterTime == false)
+	// {
+	// 	EmitterTime += DeltaTime;
+	// 	bLooped = (EmitterDuration > 0.0f) && (EmitterTime >= EmitterDuration);
+	// }
+	// else
+	{
+		EmitterTime = SecondsSinceCreation;
+		if (EmitterDuration > KINDA_SMALL_NUMBER)
+		{
+			EmitterTime = FMath::Fmod(SecondsSinceCreation, EmitterDuration);
+			bLooped = ((SecondsSinceCreation - (EmitterDuration * LoopCount)) >= EmitterDuration);
+		}
+	}
+
+	// Get the emitter delay time
+	float EmitterDelay = CurrentDelay;
+
+	// Determine if the emitter has looped
+	if (bLooped)
+	{
+		LoopCount++;
+		// ResetBurstList();
+// #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+// 		// Reset the event count each loop...
+// 		if (EventCount > MaxEventCount)
+// 		{
+// 			MaxEventCount = EventCount;
+// 		}
+// 		EventCount = 0;
+// #endif	//#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
+
+		// if (InCurrentLODLevel->RequiredModule->bUseLegacyEmitterTime == false)
+		// {
+		// 	EmitterTime -= EmitterDuration;
+		// }
+
+		if ((InCurrentLODLevel->RequiredModule->bDurationRecalcEachLoop == true)
+			|| ((InCurrentLODLevel->RequiredModule->bDelayFirstLoopOnly == true) && (LoopCount == 1))
+			)
+		{
+			SetupEmitterDuration();
+		}
+
+	    // for UParticleModule*_Seeded
+		// if (bRequiresLoopNotification == true)
+		// {
+		// 	for (int32 ModuleIdx = -3; ModuleIdx < InCurrentLODLevel->Modules.Num(); ModuleIdx++)
+		// 	{
+		// 		int32 ModuleFetchIdx;
+		// 		switch (ModuleIdx)
+		// 		{
+		// 		case -3:	ModuleFetchIdx = INDEX_REQUIREDMODULE;	break;
+		// 		case -2:	ModuleFetchIdx = INDEX_SPAWNMODULE;		break;
+		// 		case -1:	ModuleFetchIdx = INDEX_TYPEDATAMODULE;	break;
+		// 		default:	ModuleFetchIdx = ModuleIdx;				break;
+		// 		}
+		//
+		// 		UParticleModule* Module = InCurrentLODLevel->GetModuleAtIndex(ModuleFetchIdx);
+		// 		if (Module != NULL)
+		// 		{
+		// 			if (Module->GetFlag(EModuleFlag::RequiresLoopingNotification))
+		// 			{
+		// 				Module->EmitterLoopingNotify(this);
+		// 			}
+		// 		}
+		// 	}
+		// }
+	}
+
+	// Don't delay unless required
+	if ((InCurrentLODLevel->RequiredModule->bDelayFirstLoopOnly == true) && (LoopCount > 0))
+	{
+		EmitterDelay = 0;
+	}
+
+	// 'Reset' the emitter time so that the modules function correctly
+	EmitterTime -= EmitterDelay;
+
+	return EmitterDelay;
 }
 
 float FParticleEmitterInstance::Tick_SpawnParticles(float DeltaTime, UParticleLODLevel* InCurrentLODLevel, bool bSuppressSpawning, bool bFirstTime)
@@ -243,70 +362,63 @@ float FParticleEmitterInstance::Spawn(float DeltaTime)
 
 	bool bProcessSpawnRate = true;
 	bool bProcessBurstList = true;
-	// int32 DetailMode = Component->GetCurrentDetailMode();
-	//
-	// if (SpriteTemplate->QualityLevelSpawnRateScale > 0.0f)
-	// {
-	// 	// Process all Spawning modules that are present in the emitter.
-	// 	for (int32 SpawnModIndex = 0; SpawnModIndex < LODLevel->SpawningModules.Num(); SpawnModIndex++)
-	// 	{
-	// 		UParticleModuleSpawnBase* SpawnModule = LODLevel->SpawningModules[SpawnModIndex];
-	// 		if (SpawnModule && SpawnModule->bEnabled)
-	// 		{
-	// 			UParticleModule* OffsetModule = HighestLODLevel->SpawningModules[SpawnModIndex];
-	// 			uint32 Offset = GetModuleDataOffset(OffsetModule);
-	//
-	// 			// Update the spawn rate
-	// 			int32 Number = 0;
-	// 			float Rate = 0.0f;
-	// 			if (SpawnModule->GetSpawnAmount(this, Offset, OldLeftover, DeltaTime, Number, Rate) == false)
-	// 			{
-	// 				bProcessSpawnRate = false;
-	// 			}
-	//
-	// 			Number = FMath::Max<int32>(0, Number);
-	// 			Rate = FMath::Max<float>(0.0f, Rate);
-	//
-	// 			SpawnCount += Number;
-	// 			SpawnRate += Rate;
-	// 			// Update the burst list
-	// 			int32 BurstNumber = 0;
-	// 			if (SpawnModule->GetBurstCount(this, Offset, OldLeftover, DeltaTime, BurstNumber) == false)
-	// 			{
-	// 				bProcessBurstList = false;
-	// 			}
-	//
-	// 			BurstCount += BurstNumber;
-	// 		}
-	// 	}
-	//
-	// 	// Figure out spawn rate for this tick.
-	// 	if (bProcessSpawnRate)
-	// 	{
-	// 		float RateScale = LODLevel->SpawnModule->RateScale.GetValue(EmitterTime, Component) * LODLevel->SpawnModule->GetGlobalRateScale();
-	// 		SpawnRate += LODLevel->SpawnModule->Rate.GetValue(EmitterTime, Component) * RateScale;
-	// 		SpawnRate = FMath::Max<float>(0.0f, SpawnRate);
-	// 	}
-	//
-	// 	// Take Bursts into account as well...
-	// 	if (bProcessBurstList)
-	// 	{
-	// 		int32 Burst = 0;
-	// 		float BurstTime = GetCurrentBurstRateOffset(DeltaTime, Burst);
-	// 		BurstCount += Burst;
-	// 	}
-	//
-	// 	float QualityMult = SpriteTemplate->GetQualityLevelSpawnRateMult();
-	// 	SpawnRate = FMath::Max<float>(0.0f, SpawnRate * QualityMult);
-	// 	BurstCount = FMath::CeilToInt(BurstCount * QualityMult);
-	// }
-	// else
+	
+
+	// Process all Spawning modules that are present in the emitter.
+	for (int32 SpawnModIndex = 0; SpawnModIndex < LODLevel->SpawnModules.Num(); SpawnModIndex++)
 	{
-		// Disable any spawning if MediumDetailSpawnRateScale is 0 and we are not in high detail mode
-		SpawnRate = 0.0f;
-		SpawnCount = 0;
-		BurstCount = 0;
+		UParticleModuleSpawn* SpawnModule = Cast<UParticleModuleSpawn>(LODLevel->SpawnModules[SpawnModIndex]);
+		if (SpawnModule && SpawnModule->GetFlag(EModuleFlag::Enabled))
+		{
+			UParticleModule* OffsetModule = HighestLODLevel->SpawnModules[SpawnModIndex];
+			uint32 Offset = GetModuleDataOffset(OffsetModule);
+
+			// Update the spawn rate
+			int32 Number = 0;
+			float Rate = 0.0f;
+			if (SpawnModule->GetSpawnAmount(this, Offset, OldLeftover, DeltaTime, Number, Rate) == false)
+			{
+				bProcessSpawnRate = false;
+			}
+
+			Number = FMath::Max<int32>(0, Number);
+			Rate = FMath::Max<float>(0.0f, Rate);
+
+			SpawnCount += Number;
+			SpawnRate += Rate;
+			// Update the burst list
+			// int32 BurstNumber = 0;
+			// if (SpawnModule->GetBurstCount(this, Offset, OldLeftover, DeltaTime, BurstNumber) == false)
+			// {
+			// 	bProcessBurstList = false;
+			// }
+			//
+			// BurstCount += BurstNumber;
+		}
 	}
+
+	// Figure out spawn rate for this tick.
+	if (bProcessSpawnRate)
+	{
+		// float RateScale = LODLevel->SpawnModule->RateScale.GetValue(EmitterTime) * LODLevel->SpawnModule->GetGlobalRateScale();
+		float RateScale = LODLevel->SpawnModule->RateScale.GetValue(EmitterTime);
+		SpawnRate += LODLevel->SpawnModule->Rate.GetValue(EmitterTime) * RateScale;
+		SpawnRate = FMath::Max<float>(0.0f, SpawnRate);
+	}
+
+	// Take Bursts into account as well...
+	// if (bProcessBurstList)
+	// {
+	// 	int32 Burst = 0;
+	// 	float BurstTime = GetCurrentBurstRateOffset(DeltaTime, Burst);
+	// 	BurstCount += Burst;
+	// }
+
+	// float QualityMult = SpriteTemplate->GetQualityLevelSpawnRateMult();
+    float QualityMult = 1.0f;
+	SpawnRate = FMath::Max<float>(0.0f, SpawnRate * QualityMult);
+	BurstCount = FMath::CeilToInt(BurstCount * QualityMult);
+
 
 	// Spawn new particles...
 	if ((SpawnRate > 0.f) || (BurstCount > 0))
@@ -427,10 +539,10 @@ void FParticleEmitterInstance::SpawnParticles(int32 Count, float StartTime, floa
                 continue;
             }
         }
-
-        // SpawnInternal();
     };
 
+    // SpawnInternal();
+    
 	// // Ensure we don't access particle beyond what is allocated.
 	// ensure( ActiveParticles + Count <= MaxActiveParticles );
 	// Count = FMath::Min<int32>(Count, MaxActiveParticles - ActiveParticles);
@@ -553,8 +665,7 @@ void FParticleEmitterInstance::PreSpawn(FBaseParticle* Particle, const FVector& 
     }
 
     // By default, just clear out the particle
-    // FMemory::Memzero(Particle, ParticleSize);
-    
+    FPlatformMemory::Memset(Particle, 0,ParticleSize);
 
     // Initialize the particle location.
     Particle->Location = InitialLocation;
@@ -607,6 +718,21 @@ void FParticleEmitterInstance::KillParticle(int32 Index)
 
         // INC_DWORD_STAT(STAT_SpriteParticlesKilled);
     }
+}
+
+FParticleRandomSeedInstancePayload* FParticleEmitterInstance::GetModuleRandomSeedInstanceData(UParticleModule* Module)
+{
+    // If there is instance data present, look up the modules offset
+    if (InstanceData)
+    {
+        uint32* Offset = SpriteTemplate->ModuleRandomSeedInstanceOffsetMap.Find(Module);
+        if (Offset)
+        {
+            assert(*Offset < (uint32)InstancePayloadSize);
+            return (FParticleRandomSeedInstancePayload*)&(InstanceData[*Offset]);
+        }
+    }
+    return NULL;
 }
 
 /**
@@ -905,20 +1031,405 @@ class UParticleLODLevel* FParticleEmitterInstance::GetCurrentLODLevelChecked()
 void FParticleEmitterInstance::PostSpawn(FBaseParticle* Particle, float InterpolationPercentage, float SpawnTime)
 {
     // Interpolate position if using world space.
-    UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
+    // UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
     // if (LODLevel->RequiredModule->bUseLocalSpace == false)
     // {
-    //     if (FVector::DistSquared(OldLocation, Location) > 1.f)
+    //     if (FVector::Distance(OldLocation, Location) > 1.f)
     //     {
     //         Particle->Location += InterpolationPercentage * (OldLocation - Location);	
     //     }
     // }
+    
+    // Offset caused by any velocity
+    Particle->OldLocation = Particle->Location;
+    Particle->Location   += FVector(Particle->Velocity) * SpawnTime;
+    
+    // Store a sequence counter.
+    Particle->Flags |= ((ParticleCounter++) & STATE_CounterMask);
+    Particle->Flags |= STATE_Particle_JustSpawned;
+}
+
+void FParticleEmitterInstance::InitParameters(UParticleEmitter* InTemplate, UParticleSystemComponent* InComponent)
+{
+    SpriteTemplate = InTemplate;
+    Component = InComponent;
+    SetupEmitterDuration();
+}
+
+/**
+ *	Calculates the emitter duration for the instance.
+ */
+void FParticleEmitterInstance::SetupEmitterDuration()
+{
+    // Validity check
+    if (SpriteTemplate == NULL)
+    {
+        return;
+    }
+
+    // Set up the array for each LOD level
+    int32 EDCount = EmitterDurations.Num();
+    if ((EDCount == 0) || (EDCount != SpriteTemplate->LODLevels.Num()))
+    {
+        EmitterDurations.Empty();
+        //EmitterDurations.InsertUninitialized(0, SpriteTemplate->LODLevels.Num());
+        // 만약 퍼포먼스적으로 문제가 발생할 경우 아래 코드를 우선적으로 수정할 것.
+        EmitterDurations.AddUninitialized(SpriteTemplate->LODLevels.Num());
+    }
+
+    // Calculate the duration for each LOD level
+    for (int32 LODIndex = 0; LODIndex < SpriteTemplate->LODLevels.Num(); LODIndex++)
+    {
+        UParticleLODLevel* TempLOD = SpriteTemplate->LODLevels[LODIndex];
+        UParticleModuleRequired* RequiredModule = TempLOD->RequiredModule;
+
+        FRandomStream& RandomStream = RequiredModule->GetRandomStream(this);
+
+        CurrentDelay = RequiredModule->EmitterDelay + Component->EmitterDelay;
+        if (RequiredModule->bEmitterDelayUseRange)
+        {
+            const float	Rand = RandomStream.FRand();
+            CurrentDelay = RequiredModule->EmitterDelayLow +
+                ((RequiredModule->EmitterDelay - RequiredModule->EmitterDelayLow) * Rand) + Component->EmitterDelay;
+        }
+
+        if (RequiredModule->bEmitterDurationUseRange)
+        {
+            const float	Rand = RandomStream.FRand();
+            const float	Duration = RequiredModule->EmitterDurationLow +
+                ((RequiredModule->EmitterDuration - RequiredModule->EmitterDurationLow) * Rand);
+            EmitterDurations[TempLOD->Level] = Duration + CurrentDelay;
+        }
+        else
+        {
+            EmitterDurations[TempLOD->Level] = RequiredModule->EmitterDuration + CurrentDelay;
+        }
+
+        if ((LoopCount == 1) && (RequiredModule->bDelayFirstLoopOnly == true) &&
+            ((RequiredModule->EmitterLoops == 0) || (RequiredModule->EmitterLoops > 1)))
+        {
+            EmitterDurations[TempLOD->Level] -= CurrentDelay;
+        }
+    }
+
+    // Set the current duration
+    EmitterDuration = EmitterDurations[CurrentLODLevelIndex];
+}
+
+void FParticleEmitterInstance::SetMeshMaterials(const TArray<UMaterial*>& InMaterials)
+{
+}
+
+/**
+ *	Initialize the instance
+ */
+void FParticleEmitterInstance::Init()
+{
+    assert(SpriteTemplate != nullptr);
+
+    // Use highest LOD level for init'ing data, will contain all module types.
+    UParticleLODLevel* HighLODLevel = SpriteTemplate->LODLevels[0];
+
+    // Set the current material
+    // assert(HighLODLevel->RequiredModule);
+    // CurrentMaterial = HighLODLevel->RequiredModule->Material;
+
+    // If we already have a non-zero ParticleSize, don't need to do most allocation work again
+    bool bNeedsInit = (ParticleSize == 0);
+
+    if (bNeedsInit)
+    {
+        // Copy pre-calculated info
+        bRequiresLoopNotification = SpriteTemplate->bRequiresLoopNotification;
+        bAxisLockEnabled = SpriteTemplate->bAxisLockEnabled;
+        // LockAxisFlags = SpriteTemplate->LockAxisFlags;
+        DynamicParameterDataOffset = SpriteTemplate->DynamicParameterDataOffset;
+        LightDataOffset = SpriteTemplate->LightDataOffset;
+        LightVolumetricScatteringIntensity = SpriteTemplate->LightVolumetricScatteringIntensity;
+        CameraPayloadOffset = SpriteTemplate->CameraPayloadOffset;
+        ParticleSize = SpriteTemplate->ParticleSize;
+        PivotOffset = SpriteTemplate->PivotOffset;
+        TypeDataOffset = SpriteTemplate->TypeDataOffset;
+        TypeDataInstanceOffset = SpriteTemplate->TypeDataInstanceOffset;
+
+        if ((InstanceData == NULL) || (SpriteTemplate->ReqInstanceBytes > InstancePayloadSize))
+        {
+            InstanceData = (uint8*)(FPlatformMemory::Realloc<EAT_Object>(InstanceData, SpriteTemplate->ReqInstanceBytes));
+            InstancePayloadSize = SpriteTemplate->ReqInstanceBytes;
+        }
+        FPlatformMemory::Memzero(InstanceData, InstancePayloadSize);
+
+        for (UParticleModule* ParticleModule : SpriteTemplate->ModulesNeedingInstanceData)
+        {
+            assert(ParticleModule);
+            uint8* PrepInstData = GetModuleInstanceData(ParticleModule);
+            assert(PrepInstData != nullptr); // Shouldn't be in the list if it doesn't have data
+            ParticleModule->PrepPerInstanceBlock(this, (void*)PrepInstData);
+        }
+
+        for (UParticleModule* ParticleModule : SpriteTemplate->ModulesNeedingRandomSeedInstanceData)
+        {
+            assert(ParticleModule);
+            FParticleRandomSeedInstancePayload* SeedInstancePayload = GetModuleRandomSeedInstanceData(ParticleModule);
+            assert(SeedInstancePayload != nullptr); // Shouldn't be in the list if it doesn't have data
+            FParticleRandomSeedInfo* RandomSeedInfo = ParticleModule->GetRandomSeedInfo();
+            ParticleModule->PrepRandomSeedInstancePayload(this, SeedInstancePayload, RandomSeedInfo ? *RandomSeedInfo : FParticleRandomSeedInfo());
+        }
+
+        // Offset into emitter specific payload (e.g. TrailComponent requires extra bytes).
+        PayloadOffset = ParticleSize;
+
+        // Update size with emitter specific size requirements.
+        ParticleSize += RequiredBytes();
+
+        // Make sure everything is at least 16 byte aligned so we can use SSE for FVector.
+        ParticleSize = Align(ParticleSize, 16);
+
+        // E.g. trail emitters store trailing particles directly after leading one.
+        ParticleStride = CalculateParticleStride(ParticleSize);
+    }
+
+    // Setup the emitter instance material array...
+    // SetMeshMaterials(SpriteTemplate->MeshMaterials);
+
+    // Set initial values.
+    SpawnFraction = 0;
+    SecondsSinceCreation = 0;
+    EmitterTime = 0;
+    ParticleCounter = 0;
+
+    UpdateTransforms();
+
+    // Begin Test
+    //Location = Component->GetComponentLocation();
+    Location = Component->GetWorldLocation(); // Location=Component->GetRelativeLocation();
+    // End Test
+
+    OldLocation = Location;
+
+    TrianglesToRender = 0;
+    MaxVertexIndex = 0;
+
+    if (ParticleData == NULL)
+    {
+        MaxActiveParticles = 0;
+        ActiveParticles = 0;
+    }
+
+    // ParticleBoundingBox.Init();
+    if (HighLODLevel->RequiredModule->RandomImageChanges == 0)
+    {
+        HighLODLevel->RequiredModule->RandomImageTime = 1.0f;
+    }
+    else
+    {
+        HighLODLevel->RequiredModule->RandomImageTime = 0.99f / (HighLODLevel->RequiredModule->RandomImageChanges + 1);
+    }
+
+    //if (bNeedsInit &&
+    //    Component->GetWorld()->IsGameWorld() == true &&
+    //    // Only presize if any particles will be spawned 
+    //    SpriteTemplate->QualityLevelSpawnRateScale > 0)
+    if (bNeedsInit && SpriteTemplate->QualityLevelSpawnRateScale > 0) // Resize to sensible default.
+    {
+        if ((HighLODLevel->PeakActiveParticles > 0) || (SpriteTemplate->InitialAllocationCount > 0))
+        {
+            // In-game... we assume the editor has set this properly, but still clamp at 100 to avoid wasting
+            // memory.
+            if (SpriteTemplate->InitialAllocationCount > 0)
+            {
+                Resize(FMath::Min(SpriteTemplate->InitialAllocationCount, 100));
+            }
+            else
+            {
+                Resize(FMath::Min(HighLODLevel->PeakActiveParticles, 100));
+            }
+        }
+        else
+        {
+            // This is to force the editor to 'select' a value
+            Resize(10);
+        }
+    }
+
+    LoopCount = 0;
+
+    if (bNeedsInit)
+    {
+        //QUICK_SCOPE_CYCLE_COUNTER(STAT_AllocateBurstLists);
+    // Propagate killon flags
+        bKillOnDeactivate = HighLODLevel->RequiredModule->bKillOnDeactivate;
+        bKillOnCompleted = HighLODLevel->RequiredModule->bKillOnCompleted;
+
+        // Propagate sorting flag.
+        SortMode = HighLODLevel->RequiredModule->SortMode;
+
+        // Reset the burst lists
+        // if (BurstFired.Num() < SpriteTemplate->LODLevels.Num())
+        // {
+        //     BurstFired.AddZeroed(SpriteTemplate->LODLevels.Num() - BurstFired.Num());
+        // }
+
+        // for (int32 LODIndex = 0; LODIndex < SpriteTemplate->LODLevels.Num(); LODIndex++)
+        // {
+        //     UParticleLODLevel* LODLevel = SpriteTemplate->LODLevels[LODIndex];
+        //     assert(LODLevel);
+        //     FLODBurstFired& LocalBurstFired = BurstFired[LODIndex];
+        //     if (LocalBurstFired.Fired.Num() < LODLevel->SpawnModule->BurstList.Num())
+        //     {
+        //         LocalBurstFired.Fired.AddZeroed(LODLevel->SpawnModule->BurstList.Num() - LocalBurstFired.Fired.Num());
+        //     }
+        // }
+    }
+
+    // ResetBurstList();
+
+#if WITH_EDITORONLY_DATA
+    //Check for SubUV module to see if it has SubUVAnimation to move data to required module
+    for (auto CurrModule : HighLODLevel->Modules)
+    {
+        if (CurrModule->IsA(UParticleModuleSubUV::StaticClass()))
+        {
+            UParticleModuleSubUV* SubUVModule = (UParticleModuleSubUV*)CurrModule;
+
+            if (SubUVModule->Animation)
+            {
+                HighLODLevel->RequiredModule->AlphaThreshold = SubUVModule->Animation->AlphaThreshold;
+                HighLODLevel->RequiredModule->BoundingMode = SubUVModule->Animation->BoundingMode;
+                HighLODLevel->RequiredModule->OpacitySourceMode = SubUVModule->Animation->OpacitySourceMode;
+                HighLODLevel->RequiredModule->CutoutTexture = SubUVModule->Animation->SubUVTexture;
+
+                SubUVModule->Animation = nullptr;
+
+                HighLODLevel->RequiredModule->CacheDerivedData();
+                HighLODLevel->RequiredModule->InitBoundingGeometryBuffer();
+            }
+        }
+    }
+#endif //WITH_EDITORONLY_DATA
+
+    // Tag it as dirty w.r.t. the renderer
+    // IsRenderDataDirty = 1;
     //
-    // // Offset caused by any velocity
-    // Particle->OldLocation = Particle->Location;
-    // Particle->Location   += FVector(Particle->Velocity) * SpawnTime;
-    //
-    // // Store a sequence counter.
-    // Particle->Flags |= ((ParticleCounter++) & STATE_CounterMask);
-    // Particle->Flags |= STATE_Particle_JustSpawned;
+    // bEmitterIsDone = false;
+}
+
+/**
+ *	Retrieved the per-particle bytes that this emitter type requires.
+ *
+ *	@return	uint32	The number of required bytes for particles in the instance
+ */
+uint32 FParticleEmitterInstance::RequiredBytes()
+{
+    // If ANY LOD level has subUV, the size must be taken into account.
+    uint32 uiBytes = 0;
+    bool bHasSubUV = false;
+    for (int32 LODIndex = 0; (LODIndex < SpriteTemplate->LODLevels.Num()) && !bHasSubUV; LODIndex++)
+    {
+        // This code assumes that the module stacks are identical across LOD levevls...
+        UParticleLODLevel* LODLevel = SpriteTemplate->GetLODLevel(LODIndex);
+
+        if (LODLevel)
+        {
+            EParticleSubUVInterpMethod	InterpolationMethod = (EParticleSubUVInterpMethod)LODLevel->RequiredModule->InterpolationMethod;
+            //if (LODIndex > 0)
+            //{
+            //    if ((InterpolationMethod != PSUVIM_None) && (bHasSubUV == false))
+            //    {
+            //        UE_LOG(LogParticles, Warning, TEXT("Emitter w/ mismatched SubUV settings: %s"),
+            //            Component ?
+            //            Component->Template ?
+            //            *(Component->Template->GetPathName()) :
+            //            *(Component->GetFullName()) :
+            //            TEXT("INVALID PSYS!"));
+            //    }
+
+            //    if ((InterpolationMethod == PSUVIM_None) && (bHasSubUV == true))
+            //    {
+            //        UE_LOG(LogParticles, Warning, TEXT("Emitter w/ mismatched SubUV settings: %s"),
+            //            Component ?
+            //            Component->Template ?
+            //            *(Component->Template->GetPathName()) :
+            //            *(Component->GetFullName()) :
+            //            TEXT("INVALID PSYS!"));
+            //    }
+            //}
+            
+            // Check for SubUV utilization, and update the required bytes accordingly
+            if (InterpolationMethod != PSUVIM_None)
+            {
+                bHasSubUV = true;
+            }
+        }
+    }
+
+    // if (bHasSubUV)
+    // {
+    //     SubUVDataOffset = PayloadOffset;
+    //     uiBytes = sizeof(FFullSubUVPayload);
+    // }
+
+    return uiBytes;
+}
+
+/**
+ *	Calculate the stride of a single particle for this instance
+ *
+ *	@param	ParticleSize	The size of the particle
+ *
+ *	@return	uint32			The stride of the particle
+ */
+uint32 FParticleEmitterInstance::CalculateParticleStride(uint32 InParticleSize)
+{
+    return InParticleSize;
+}
+
+
+void FParticleEmitterInstance::UpdateTransforms()
+{
+    //QUICK_SCOPE_CYCLE_COUNTER(STAT_EmitterInstance_UpdateTransforms);
+
+    assert(SpriteTemplate != NULL);
+
+    UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
+    FMatrix ComponentToWorld = Component != NULL ?
+        Component->GetComponentTransform().ToMatrixNoScale() : FMatrix::Identity;
+    FMatrix EmitterToComponent = FMatrix::CreateRotationTranslationMatrix(
+        LODLevel->RequiredModule->EmitterRotation,
+        LODLevel->RequiredModule->EmitterOrigin
+    );
+    if (LODLevel->RequiredModule->bUseLocalSpace)
+    {
+        EmitterToSimulation = EmitterToComponent;
+        SimulationToWorld = ComponentToWorld;
+#if ENABLE_NAN_DIAGNOSTIC
+        if (SimulationToWorld.ContainsNaN())
+        {
+            logOrEnsureNanError(TEXT("FParticleEmitterInstance::UpdateTransforms() - SimulationToWorld contains NaN!"));
+            SimulationToWorld = FMatrix::Identity;
+        }
+#endif
+    }
+    else
+    {
+        EmitterToSimulation = EmitterToComponent * ComponentToWorld;
+        SimulationToWorld = FMatrix::Identity;
+    }
+}
+
+/**
+ *	Reset the burst list information for the instance
+ */
+void FParticleEmitterInstance::ResetBurstList()
+{
+    //QUICK_SCOPE_CYCLE_COUNTER(STAT_ResetBurstLists);
+
+    for (int32 BurstIndex = 0; BurstIndex < BurstFired.Num(); BurstIndex++)
+    {
+        FLODBurstFired& CurrBurstFired = BurstFired[BurstIndex];
+        for (int32 FiredIndex = 0; FiredIndex < CurrBurstFired.Fired.Num(); FiredIndex++)
+        {
+            CurrBurstFired.Fired[FiredIndex] = false;
+        }
+    }
 }

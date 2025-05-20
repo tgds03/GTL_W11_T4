@@ -64,11 +64,13 @@ public:
     /** Component가 현재 활성화 중인지 여부를 반환합니다. */
     bool IsActive() const { return bIsActive; }
 
+    virtual void SetActive(bool bNewActive);
     void Activate();
     void Deactivate();
 
 private:
     AActor* OwnerPrivate;
+
 
     /** InitializeComponent가 호출 되었는지 여부 */
     uint8 bHasBeenInitialized : 1 = false;
@@ -85,4 +87,5 @@ private:
 public:
     /** Component가 초기화 되었을 때, 자동으로 활성화할지 여부 */
     uint8 bAutoActive : 1 = true;
+
 };

@@ -6,6 +6,9 @@
 #include "ContainerAllocator.h"
 #include "Serialization/Archive.h"
 
+#include "MakeUnsigned.h"
+// #include "UserInterface/Console.h"
+
 
 template <typename T, typename Allocator = FDefaultAllocator<T>>
 class TArray
@@ -17,6 +20,19 @@ public:
 
 private:
     ArrayType ContainerPrivate;
+
+    using USizeType = typename TMakeUnsigned<SizeType>::Type;
+
+    FORCENOINLINE static void OnInvalidNum(USizeType NewNum)
+    {
+        const TCHAR* ArrayNameSuffix = TEXT("");
+        if constexpr (sizeof(SizeType) == 8)
+        {
+            ArrayNameSuffix = TEXT("64");
+        }
+
+        // UE_LOG(LogLevel::Error, TEXT("Trying to resize TArray%s to an invalid size of %llu"), ArrayNameSuffix, (unsigned long long)NewNum);
+    }
 
 public:
     // Iterator를 사용하기 위함
@@ -78,6 +94,8 @@ public:
 
     /** 특정 위치에 있는 요소를 제거합니다. */
     void RemoveAt(SizeType Index);
+
+    void RemoveAt(SizeType Index, SizeType Count = 1, bool bAllowShrinking = true);
 
     /** Predicate에 부합하는 모든 요소를 제거합니다. */
     template <typename Predicate>
@@ -155,6 +173,56 @@ public:
     }
 
     ElementType Pop();
+
+    //void SetNumZeroed(SizeType NewNum, bool bAllowShrinking);
+
+    /**
+     * Resizes array to given number of elements, optionally shrinking it.
+     * New elements will be zeroed.
+     *
+     * @param NewNum New size of the array.
+     * @param bAllowShrinking Tell if this function can shrink the memory in-use if suitable.
+     */
+    void SetNumZeroed(SizeType NewNum, bool bAllowShrinking = true)
+    {
+        if (NewNum > Num())
+        {
+            AddZeroed(NewNum - Num());
+        }
+        else if (NewNum < 0)
+        {
+            OnInvalidNum((USizeType)NewNum);
+        }
+        else if (NewNum < Num())
+        {
+            RemoveAt(NewNum, Num() - NewNum, bAllowShrinking);
+        }
+    }
+
+    /**
+     * Adds new items to the end of the array, possibly reallocating the whole
+     * array to fit. The new items will be zeroed.
+     *
+     * Caution, AddZeroed() will create elements without calling the
+     * constructor and this is not appropriate for element types that require
+     * a constructor to function properly.
+     *
+     * @param  Count  The number of new items to add.
+     * @return Index to the first of the new items.
+     * @see Add, AddDefaulted, AddUnique, Append, Insert
+     */
+    SizeType AddZeroed()
+    {
+        const SizeType Index = AddUninitialized();
+        FPlatformMemory::Memzero((uint8*)GetData() + Index * sizeof(ElementType), sizeof(ElementType));
+        return Index;
+    }
+    SizeType AddZeroed(SizeType Count)
+    {
+        const SizeType Index = AddUninitialized(Count);
+        FPlatformMemory::Memzero((uint8*)GetData() + Index * sizeof(ElementType), Count * sizeof(ElementType));
+        return Index;
+    }
 };
 
 
@@ -297,6 +365,27 @@ void TArray<T, Allocator>::RemoveAt(SizeType Index)
     }
 }
 
+// 지정된 범위의 요소 제거
+template<typename T, typename Allocator>
+inline void TArray<T, Allocator>::RemoveAt(SizeType Index, SizeType Count, bool bAllowShrinking)
+{
+    if (Count <= 0)
+    {
+        return;
+    }
+
+    SizeType CurrentSize = ContainerPrivate.size();
+    if (Index >= 0 && static_cast<SizeType>(Index) < CurrentSize && (static_cast<SizeType>(Index) + Count) <= CurrentSize)
+    {
+        ContainerPrivate.erase(ContainerPrivate.begin() + Index, ContainerPrivate.begin() + Index + Count);
+
+        if (bAllowShrinking)
+        {
+            ContainerPrivate.shrink_to_fit();
+        }
+    }
+}
+
 template <typename T, typename Allocator>
 template <typename Predicate>
     requires std::is_invocable_r_v<bool, Predicate, const T&>
@@ -433,3 +522,51 @@ FArchive& operator<<(FArchive& Ar, TArray<ElementType, Allocator>& Array)
 
     return Ar;
 }
+
+//template <typename T, typename Allocator>
+//void TArray<T, Allocator>::SetNumZeroed(SizeType NewNum, bool bAllowShrinking)
+//{
+//    if (NewNum < 0)
+//    {
+//        assert(false && "Invalid size for SetNumZeroed");
+//        return;
+//    }
+//
+//    SizeType CurrentNum = Num();
+//
+//    if (NewNum > CurrentNum)
+//    {
+//        // 배열 확장
+//        // std::vector::resize는 새로 추가된 요소를 값 초기화합니다.
+//        // 기본 타입(int, float)은 0으로, 클래스는 기본 생성자 호출.
+//        // 만약 클래스 T가 기본 생성자에서 멤버를 0으로 초기화하지 않는다면,
+//        // 수동으로 0으로 채워주는 과정이 필요할 수 있습니다.
+//        ContainerPrivate.resize(NewNum);
+//
+//        // 만약 T가 기본 타입이 아니고, 기본 생성자가 0으로 초기화하지 않는다면,
+//        // 새로 추가된 부분만 명시적으로 0으로 초기화하는 로직이 필요합니다.
+//        // 예를 들어, T가 복잡한 구조체이고 모든 멤버를 0으로 만들고 싶다면:
+//        if constexpr (!std::is_fundamental_v<T> && !std::is_pointer_v<T>)
+//        {
+//            for (SizeType i = CurrentNum; i < NewNum; ++i)
+//            {
+//                // ContainerPrivate[i] = {}; // 값 초기화 (C++11 이상)
+//                // 또는 memset(&ContainerPrivate[i], 0, sizeof(T)); // POD 타입에만 주의해서 사용
+//                // 또는 T 타입에 적절한 Clear() 또는 Zero() 멤버 함수가 있다면 호출
+//            }
+//        }
+//    }
+//    else if (NewNum < CurrentNum)
+//    {
+//        // 배열 축소
+//        ContainerPrivate.resize(NewNum); // 요소 제거
+//        if (bAllowShrinking)
+//        {
+//            // std::vector는 resize만으로는 capacity를 줄이지 않을 수 있음.
+//            // 명시적으로 shrink_to_fit() 호출 (C++11 이상)
+//            ContainerPrivate.shrink_to_fit();
+//        }
+//    }
+//    else 
+//        NewNum == CurrentNum;
+//}

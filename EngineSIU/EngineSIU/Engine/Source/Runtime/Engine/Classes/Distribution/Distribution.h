@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "RandomStream.h"
 #include "Math/Vector.h"
 
 struct FDistribution
@@ -9,7 +10,7 @@ struct FDistribution
 
 struct FDistributionFloat: public FDistribution
 {
-    virtual float GetValue(float F = 0.f) const;
+    virtual float GetValue(float F = 0.f, FRandomStream* InRandomStream = nullptr) const;
     virtual void GetOutRange(float& Min, float& Max) const;
 };
 
@@ -17,7 +18,7 @@ struct FDistributionFloatConstant: public FDistributionFloat
 {
     float Constant;
 
-    virtual float GetValue(float F = 0.f) const override;
+    virtual float GetValue(float F = 0.f, FRandomStream* InRandomStream = nullptr) const override;
     virtual void GetOutRange(float& Min, float& Max) const override;
 };
 
@@ -26,7 +27,7 @@ struct FDistributionFloatUniform: public FDistributionFloat
     float Min;
     float Max;
 
-    virtual float GetValue(float F = 0.f) const override;
+    virtual float GetValue(float F = 0.f, FRandomStream* InRandomStream = nullptr) const override;
     virtual void GetOutRange(float& Min, float& Max) const override;
 };
 
@@ -34,14 +35,16 @@ struct FDistributionFloatUniform: public FDistributionFloat
 
 struct FDistributionVector: public FDistribution
 {
-    virtual FVector GetValue(float F = 0.f) const;
+    virtual FVector GetValue(float F = 0.f, FRandomStream* InRandomStream = nullptr) const;
+    virtual void GetOutRange(FVector& Min, FVector& Max) const;
 };
 
 struct FDistributionVectorConstant: public FDistributionVector
 {
     FVector Constant;
 
-    virtual FVector GetValue(float F = 0.f) const override;
+    virtual FVector GetValue(float F = 0.f, FRandomStream* InRandomStream = nullptr) const override;
+    virtual void GetOutRange(FVector& Min, FVector& Max) const override;
 };
 
 struct FDistributionVectorUniform: public FDistributionVector
@@ -49,5 +52,6 @@ struct FDistributionVectorUniform: public FDistributionVector
     FVector Min;
     FVector Max;
 
-    virtual FVector GetValue(float F = 0.f) const override;
+    virtual FVector GetValue(float F = 0.f, FRandomStream* InRandomStream = nullptr) const override;
+    virtual void GetOutRange(FVector& Min, FVector& Max) const override;
 };

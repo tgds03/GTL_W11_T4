@@ -184,6 +184,13 @@ struct FBoundingBox
     FVector MaxLocation; // Maximum extents
     float pad1;
 
+    void Init()
+    {
+        MinLocation = MaxLocation = FVector::Zero();
+        // 상단에서 uint8 IsValid;로 플래그를 둔다.
+        // IsValid=0;
+    }
+
     bool IsValidBox() const
     {
         return MinLocation.X <= MaxLocation.X && MinLocation.Y <= MaxLocation.Y && MinLocation.Z <= MaxLocation.Z;

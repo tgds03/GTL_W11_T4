@@ -189,6 +189,7 @@ xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configurati
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Source\Runtime\Core\Math\Transform.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Character.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Pawn.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\PrimitiveActors\AParticleActor.cpp" />
@@ -202,7 +203,88 @@ xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configurati
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\Event\ParticleModuleEventGenerator.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleLODLevel.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModule.cpp" />
-    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSpawn.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleColor.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleLifetime.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleLocation.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSize.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSpawn.cpp">
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <Optimization>Disabled</Optimization>
+      <SupportJustMyCode>true</SupportJustMyCode>
+      <AssemblerOutput>NoListing</AssemblerOutput>
+      <AssemblerListingLocation>C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\Intermediate\Build\x64\Debug\</AssemblerListingLocation>
+      <UndefineAllPreprocessorDefinitions>false</UndefineAllPreprocessorDefinitions>
+      <BrowseInformation>false</BrowseInformation>
+      <BrowseInformationFile>C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\Intermediate\Build\x64\Debug\</BrowseInformationFile>
+      <CompileAs>Default</CompileAs>
+      <ConformanceMode>true</ConformanceMode>
+      <DiagnosticsFormat>Column</DiagnosticsFormat>
+      <DisableLanguageExtensions>false</DisableLanguageExtensions>
+      <ErrorReporting>Prompt</ErrorReporting>
+      <ExpandAttributedSource>false</ExpandAttributedSource>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <EnableASAN>false</EnableASAN>
+      <EnableFuzzer>false</EnableFuzzer>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <GenerateModuleDependencies>false</GenerateModuleDependencies>
+      <GenerateSourceDependencies>false</GenerateSourceDependencies>
+      <GenerateXMLDocumentationFiles>false</GenerateXMLDocumentationFiles>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <IgnoreStandardIncludePath>false</IgnoreStandardIncludePath>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <LanguageStandard_C>Default</LanguageStandard_C>
+      <MinimalRebuild>false</MinimalRebuild>
+      <ModuleDependenciesFile>C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\Intermediate\Build\x64\Debug\</ModuleDependenciesFile>
+      <ModuleOutputFile>C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\Intermediate\Build\x64\Debug\</ModuleOutputFile>
+      <OmitDefaultLibName>false</OmitDefaultLibName>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <ObjectFileName>C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\Intermediate\Build\x64\Debug\</ObjectFileName>
+      <CallingConvention>Cdecl</CallingConvention>
+      <ProgramDataBaseFileName>C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\Intermediate\Build\x64\Debug\vc143.pdb</ProgramDataBaseFileName>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\Intermediate\Build\x64\Debug\EngineSIU.pch</PrecompiledHeaderOutputFile>
+      <PreprocessToFile>false</PreprocessToFile>
+      <PreprocessKeepComments>false</PreprocessKeepComments>
+      <PreprocessSuppressLineNumbers>false</PreprocessSuppressLineNumbers>
+      <RemoveUnreferencedCodeData>true</RemoveUnreferencedCodeData>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+      <ShowIncludes>false</ShowIncludes>
+      <SourceDependenciesFile>C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\Intermediate\Build\x64\Debug\</SourceDependenciesFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <BufferSecurityCheck>true</BufferSecurityCheck>
+      <SmallerTypeCheck>false</SmallerTypeCheck>
+      <SpectreMitigation>false</SpectreMitigation>
+      <StructMemberAlignment>Default</StructMemberAlignment>
+      <TrackerLogDirectory>C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\Intermediate\Build\x64\Debug\EngineSIU.tlog\</TrackerLogDirectory>
+      <TranslateIncludes>false</TranslateIncludes>
+      <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <UseFullPaths>true</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <XMLDocumentationFileName>C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\Intermediate\Build\x64\Debug\</XMLDocumentationFileName>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <IntelJCCErratum>false</IntelJCCErratum>
+      <BuildStlModules>false</BuildStlModules>
+      <TreatAngleIncludeAsExternal>false</TreatAngleIncludeAsExternal>
+      <ExternalWarningLevel>InheritWarningLevel</ExternalWarningLevel>
+      <TreatExternalTemplatesAsInternal>true</TreatExternalTemplatesAsInternal>
+      <DisableAnalyzeExternal>false</DisableAnalyzeExternal>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;FBXSDK_SHARED;_UNICODE;UNICODE;</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\Runtime\Physics;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\ThirdParty\include\Lua;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\ThirdParty\include;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\ThirdParty\DirectXTK\Include;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\ThirdParty\FBX_SDK\include;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\ThirdParty\FMOD_API\studio\inc;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Shaders;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\ThirdParty\FMOD_API\core\inc;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\Runtime\InteractiveToolsFramework;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\ThirdParty;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\Runtime;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\Runtime\Windows;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\Editor;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\Runtime\CoreUObject;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\Runtime\Core;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\Runtime\Launch;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\Runtime\Engine;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source\Runtime\Engine\Classes;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\\Engine\Source;C:\Users\Jungle\Documents\GitHub\GTL_W11_T4\EngineSIU\EngineSIU\;</AdditionalIncludeDirectories>
+      <AdditionalOptions>/utf-8 </AdditionalOptions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <LinkCompiled>true</LinkCompiled>
+    </ClCompile>
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSubUV.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleVelocity.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleSystem.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleSystemComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleEmitter.cpp" />
@@ -382,6 +464,8 @@ xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configurati
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\PlayerCameraManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Camera\PerlinNoiseCameraShakePattern.cpp" />
     <ClCompile Include="Engine\Source\Editor\PropertyEditor\SkeletonMeshEditorPanel.cpp" />
+    <ClCompile Include="FXSystem.cpp" />
+    <ClCompile Include="RandomStream.h" />
     <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoFrameComponent.cpp" />
     <ClCompile Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoJointComponent.cpp" />
@@ -495,6 +579,9 @@ xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configurati
       </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Source\Runtime\Core\Math\Transform.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Templates\IsIntegral.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Templates\IsPointer.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Character.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Container\Queue.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\Character\Pawn.h" />
@@ -511,13 +598,20 @@ xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configurati
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\Event\ParticleModuleEventGenerator.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleLODLevel.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModule.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleColor.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleLifetime.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleLocation.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleRequired.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSize.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSpawn.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSpawnBase.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSubUV.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleVelocity.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleSystem.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleSystemComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleEmitter.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\TypeData\ParticleModuleTypeDataBase.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\TypeData\ParticleModuleTypeDataMesh.h" />
-    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleRequired.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\ParticleEmitterInstances.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\ParticleHelper.h" />
     <ClInclude Include="Engine\Source\Runtime\Launch\BoneDefine.h" />
@@ -753,6 +847,9 @@ xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configurati
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\PlayerCameraManager.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Camera\PerlinNoiseCameraShakePattern.h" />
     <ClInclude Include="Engine\Source\Editor\PropertyEditor\SkeletonMeshEditorPanel.h" />
+    <ClInclude Include="EnumAsByte.h" />
+    <ClInclude Include="FXSystem.h" />
+    <ClInclude Include="MakeUnsigned.h" />
     <ClInclude Include="SoundManager.h" />
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoFrameComponent.h" />
     <ClInclude Include="Engine\Source\Runtime\InteractiveToolsFramework\BoneGizmos\UGizmoJointComponent.h" />
