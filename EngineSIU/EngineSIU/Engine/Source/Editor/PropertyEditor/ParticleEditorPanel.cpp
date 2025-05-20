@@ -24,8 +24,13 @@ ParticleEditorPanel::ParticleEditorPanel()
 
     // TEST
     UParticleEmitter* Emmitter = FObjectFactory::ConstructObject<UParticleEmitter>(nullptr);
-    Emmitter->LODLevels.Add(FObjectFactory::ConstructObject<UParticleLODLevel>(nullptr));
-    Emmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleRequired>(nullptr));
+    Emmitter->LODLevels.Add(FObjectFactory::ConstructObject<UParticleLODLevel>(Emmitter));
+    Emmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleRequired>(Emmitter->LODLevels[0]));
+    Emmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleSpawn>(Emmitter->LODLevels[0]));
+    Emmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleLifetime>(Emmitter->LODLevels[0]));
+    Emmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleSize>(Emmitter->LODLevels[0]));
+    Emmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleVelocity>(Emmitter->LODLevels[0]));
+    Emmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleColor>(Emmitter->LODLevels[0]));
 
     TargetParticleSystem = FObjectFactory::ConstructObject<UParticleSystem>(nullptr);
     TargetParticleSystem->Emitters.Add(Emmitter);
@@ -133,7 +138,7 @@ void ParticleEditorPanel::RenderEmitterInfos()
     for (int i = 0; i < TargetParticleSystem->Emitters.Num(); ++i)
     {
         UParticleEmitter* Emitter = TargetParticleSystem->Emitters[i];
-        ImGui::BeginChild("EmitterInfo##", ImVec2(100, 0));
+        ImGui::BeginChild("EmitterInfo##", ImVec2(200, 0));
 
         TArray<UParticleModule*>& Modules = Emitter->LODLevels[0]->Modules;
         for (int j = 0; j < Modules.Num(); ++j)
@@ -155,7 +160,7 @@ void ParticleEditorPanel::RenderDetailInfos()
     if (SelectedModule == nullptr)
     {
         return;
-    } else if (UParticleModuleRequired* module = Cast<UParticleModuleRequired>(SelectedModule))
+    } else if (UParticleModuleRequired* RequiredModule = Cast<UParticleModuleRequired>(SelectedModule))
     {
         ImGui::SetItemDefaultFocus();
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -163,56 +168,56 @@ void ParticleEditorPanel::RenderDetailInfos()
         ImGui::Text("Required");
         if (ImGui::TreeNodeEx("Emitter", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) 
         {
-            FVector Origin = module->EmitterOrigin;
+            FVector Origin = RequiredModule->EmitterOrigin;
             FImGuiWidget::DrawVec3Control("Origin", Origin, 0, 85);
-            module->EmitterOrigin = Origin;
+            RequiredModule->EmitterOrigin = Origin;
             ImGui::Spacing();
     
-            FRotator Rotation = module->EmitterRotation;
+            FRotator Rotation = RequiredModule->EmitterRotation;
             FImGuiWidget::DrawRot3Control("Rotation", Rotation, 0, 85);
-            module->EmitterRotation = Rotation;
+            RequiredModule->EmitterRotation = Rotation;
             ImGui::Spacing();
 
-            bool bUseLocalSpace = module->bUseLocalSpace;
+            bool bUseLocalSpace = RequiredModule->bUseLocalSpace;
             ImGui::Checkbox("Use Local Space", &bUseLocalSpace);
-            module->bUseLocalSpace = bUseLocalSpace;
+            RequiredModule->bUseLocalSpace = bUseLocalSpace;
 
-            bool bKillOnDeactive = module->bKillOnDeactivate;
+            bool bKillOnDeactive = RequiredModule->bKillOnDeactivate;
             ImGui::Checkbox("Kill On Deactive", &bKillOnDeactive);
-            module->bKillOnDeactivate = bKillOnDeactive;
+            RequiredModule->bKillOnDeactivate = bKillOnDeactive;
             
-            bool bKillOnCompleted = module->bKillOnCompleted;
+            bool bKillOnCompleted = RequiredModule->bKillOnCompleted;
             ImGui::Checkbox("Kill On Completed", &bKillOnCompleted);
-            module->bKillOnCompleted = bKillOnCompleted;
+            RequiredModule->bKillOnCompleted = bKillOnCompleted;
 
             const char* Label[5] = {"None", "ViewProjDepth", "DistanceToView", "Age_OldestFirst", "Age_NewestFirst"};
-            int SortMode = module->SortMode;
+            int SortMode = RequiredModule->SortMode;
             ImGui::Combo("Sorting Mode", &SortMode, Label, 5);
-            module->SortMode = TEnumAsByte<EParticleSortMode>(SortMode);
+            RequiredModule->SortMode = TEnumAsByte<EParticleSortMode>(SortMode);
             
             ImGui::TreePop();
         }
     
         if (ImGui::TreeNodeEx("Elapsed Time", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
         {
-            bool bEmitterDurationUseRange = module->bEmitterDurationUseRange;
+            bool bEmitterDurationUseRange = RequiredModule->bEmitterDurationUseRange;
             ImGui::Checkbox("Use Emitter Duration with Range", &bEmitterDurationUseRange);
-            module->bEmitterDurationUseRange = bEmitterDurationUseRange;
+            RequiredModule->bEmitterDurationUseRange = bEmitterDurationUseRange;
 
-            ImGui::InputFloat("Duration##", &module->EmitterDuration);
-            ImGui::InputFloat("Duration Low##", &module->EmitterDurationLow);
+            ImGui::InputFloat("Duration##", &RequiredModule->EmitterDuration);
+            ImGui::InputFloat("Duration Low##", &RequiredModule->EmitterDurationLow);
 
             ImGui::TreePop();
         }
         
         if (ImGui::TreeNodeEx("Delay Time", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
         {
-            bool bEmitterDelayUseRange = module->bEmitterDelayUseRange;
+            bool bEmitterDelayUseRange = RequiredModule->bEmitterDelayUseRange;
             ImGui::Checkbox("Use Emitter Delay with Range", &bEmitterDelayUseRange);
-            module->bEmitterDelayUseRange = bEmitterDelayUseRange;
+            RequiredModule->bEmitterDelayUseRange = bEmitterDelayUseRange;
 
-            ImGui::InputFloat("Delay##", &module->EmitterDelay);
-            ImGui::InputFloat("Delay Low##", &module->EmitterDelayLow);
+            ImGui::InputFloat("Delay##", &RequiredModule->EmitterDelay);
+            ImGui::InputFloat("Delay Low##", &RequiredModule->EmitterDelayLow);
 
             ImGui::TreePop();
         }
@@ -220,34 +225,90 @@ void ParticleEditorPanel::RenderDetailInfos()
         if (ImGui::TreeNodeEx("Sub UV", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
         {
             const char* Label[5] = {"None", "Linear", "Linear Blend", "Random", "Random_blend"};
-            int selected = module->InterpolationMethod;
+            int selected = RequiredModule->InterpolationMethod;
             ImGui::Combo("Interpolation Method", &selected, Label, 5);
-            module->InterpolationMethod = TEnumAsByte<EParticleSubUVInterpMethod>(selected);
+            RequiredModule->InterpolationMethod = TEnumAsByte<EParticleSubUVInterpMethod>(selected);
 
             // bool bUseScaleUV;
 
-            ImGui::InputInt("Horizontal SubImage", &module->SubImages_Horizontal);
-            ImGui::InputInt("Vertical SubImage", &module->SubImages_Vertical);
+            ImGui::InputInt("Horizontal SubImage", &RequiredModule->SubImages_Horizontal);
+            ImGui::InputInt("Vertical SubImage", &RequiredModule->SubImages_Vertical);
             
             ImGui::TreePop();
         }
         
         ImGui::PopStyleColor();
         
-    } else if (UParticleModuleSpawn* module = Cast<UParticleModuleSpawn>(SelectedModule))
+    } else if (UParticleModuleSpawn* SpawnModule = Cast<UParticleModuleSpawn>(SelectedModule))
     {
         ImGui::SetItemDefaultFocus();
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
         
         ImGui::Text("Spawn");
-        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
+        if (ImGui::TreeNodeEx("Spawn", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
         {
-             
+            if (ImGui::TreeNodeEx("Rate", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                const char* Label[3] = {"None", "FloatConstant", "FloatUniform"};
+                FDistributionFloat& dist = SpawnModule->Rate;
+                EDistributionType DistributionType = SpawnModule->Rate.GetType();
+                int DistributionTypeIndex = static_cast<int>(DistributionType);
+                ImGui::Combo("Distribution", &DistributionTypeIndex, Label, 3);
+                if (DistributionTypeIndex != static_cast<int>(DistributionType))
+                {
+                    switch (static_cast<EDistributionType>(DistributionTypeIndex))
+                    {
+                    case EDistributionType::FloatConstant:
+                        SpawnModule->Rate = FDistributionFloatConstant();
+                        break;
+                    case EDistributionType::FloatUniform:
+                        SpawnModule->Rate = FDistributionFloatUniform();
+                        break;
+                    default:
+                        assert(0);
+                    }
+                }
+                SpawnModule->Rate.RenderProperty();
+                ImGui::TreePop();
+            }
+    
+            if (ImGui::TreeNodeEx("Rate Scale", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
+            {
+                const char* Label[3] = {"None", "FloatConstant", "FloatUniform"};
+            
+                EDistributionType DistributionType = SpawnModule->RateScale.GetType();
+                int DistributionTypeIndex = static_cast<int>(DistributionType);
+                ImGui::Combo("Distribution", &DistributionTypeIndex, Label, 3);
+                if (DistributionTypeIndex != static_cast<int>(DistributionType))
+                {
+                    switch (static_cast<EDistributionType>(DistributionTypeIndex))
+                    {
+                    case EDistributionType::FloatConstant:
+                        SpawnModule->RateScale = FDistributionFloatConstant();
+                        break;
+                    case EDistributionType::FloatUniform:
+                        SpawnModule->RateScale = FDistributionFloatUniform();
+                        break;
+                    default:
+                        assert(0);
+                    }
+                }
+                SpawnModule->RateScale.RenderProperty();
+                ImGui::TreePop();
+            }
+
+            bool bApplyGlobalSpawnRateScale = SpawnModule->bApplyGlobalSpawnRateScale;
+            ImGui::Checkbox("Apply Global Spawn Rate", &bApplyGlobalSpawnRateScale);
+            SpawnModule->bApplyGlobalSpawnRateScale = bApplyGlobalSpawnRateScale;
+
+            bool bProcessSpawnRate = SpawnModule->bProcessSpawnRate;
+            ImGui::Checkbox("Process Spawn Rate", &bProcessSpawnRate);
+            SpawnModule->bProcessSpawnRate = bProcessSpawnRate;
+            
             ImGui::TreePop();
         }
-    
         ImGui::PopStyleColor(); 
-    } else if (UParticleModuleLocation* module = Cast<UParticleModuleLocation>(SelectedModule))
+    } else if (UParticleModuleLocation* LocationModule = Cast<UParticleModuleLocation>(SelectedModule))
     {
         ImGui::SetItemDefaultFocus();
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -260,7 +321,7 @@ void ParticleEditorPanel::RenderDetailInfos()
         }
     
         ImGui::PopStyleColor(); 
-    } else if (UParticleModuleVelocity* module = Cast<UParticleModuleVelocity>(SelectedModule))
+    } else if (UParticleModuleVelocity* VelocityModule = Cast<UParticleModuleVelocity>(SelectedModule))
     {
         ImGui::SetItemDefaultFocus();
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -273,7 +334,7 @@ void ParticleEditorPanel::RenderDetailInfos()
         }
     
         ImGui::PopStyleColor(); 
-    } else if (UParticleModuleSize* module = Cast<UParticleModuleSize>(SelectedModule))
+    } else if (UParticleModuleSize* SizeModule = Cast<UParticleModuleSize>(SelectedModule))
     {
         ImGui::SetItemDefaultFocus();
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -286,7 +347,7 @@ void ParticleEditorPanel::RenderDetailInfos()
         }
     
         ImGui::PopStyleColor(); 
-    } else if (UParticleModuleLifetime* module = Cast<UParticleModuleLifetime>(SelectedModule))
+    } else if (UParticleModuleLifetime* LifetimeModule = Cast<UParticleModuleLifetime>(SelectedModule))
     {
         ImGui::SetItemDefaultFocus();
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -299,7 +360,7 @@ void ParticleEditorPanel::RenderDetailInfos()
         }
     
         ImGui::PopStyleColor(); 
-    } else if (UParticleModuleColor* module = Cast<UParticleModuleColor>(SelectedModule))
+    } else if (UParticleModuleColor* ColorModule = Cast<UParticleModuleColor>(SelectedModule))
     {
         ImGui::SetItemDefaultFocus();
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -312,7 +373,7 @@ void ParticleEditorPanel::RenderDetailInfos()
         }
     
         ImGui::PopStyleColor(); 
-    } else if (UParticleModuleSubUV* module = Cast<UParticleModuleSubUV>(SelectedModule))
+    } else if (UParticleModuleSubUV* SubUVModule = Cast<UParticleModuleSubUV>(SelectedModule))
     {
         ImGui::SetItemDefaultFocus();
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -325,7 +386,7 @@ void ParticleEditorPanel::RenderDetailInfos()
         }
     
         ImGui::PopStyleColor(); 
-    } else if (UParticleModuleTypeDataMesh* module = Cast<UParticleModuleTypeDataMesh>(SelectedModule))
+    } else if (UParticleModuleTypeDataMesh* TypeDataMeshModule = Cast<UParticleModuleTypeDataMesh>(SelectedModule))
     {
         ImGui::SetItemDefaultFocus();
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));

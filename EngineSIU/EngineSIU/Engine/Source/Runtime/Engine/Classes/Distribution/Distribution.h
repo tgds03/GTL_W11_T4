@@ -2,9 +2,21 @@
 #include "RandomStream.h"
 #include "Math/Vector.h"
 
+enum class EDistributionType: uint8
+{
+    None,
+    FloatConstant,
+    FloatUniform,
+    VectorConstant,
+    VectorUniform
+};
+
 struct FDistribution
 {
     static const float DefaultValue;
+    
+    virtual void RenderProperty() {};
+    virtual EDistributionType GetType() { return EDistributionType::None; }   
 };
 
 
@@ -12,6 +24,7 @@ struct FDistributionFloat: public FDistribution
 {
     virtual float GetValue(float F = 0.f, FRandomStream* InRandomStream = nullptr) const;
     virtual void GetOutRange(float& Min, float& Max) const;
+
 };
 
 struct FDistributionFloatConstant: public FDistributionFloat
@@ -20,6 +33,8 @@ struct FDistributionFloatConstant: public FDistributionFloat
 
     virtual float GetValue(float F = 0.f, FRandomStream* InRandomStream = nullptr) const override;
     virtual void GetOutRange(float& Min, float& Max) const override;
+    virtual void RenderProperty() override;
+    virtual EDistributionType GetType() override { return EDistributionType::FloatConstant; }   
 };
 
 struct FDistributionFloatUniform: public FDistributionFloat
@@ -29,6 +44,8 @@ struct FDistributionFloatUniform: public FDistributionFloat
 
     virtual float GetValue(float F = 0.f, FRandomStream* InRandomStream = nullptr) const override;
     virtual void GetOutRange(float& Min, float& Max) const override;
+    virtual void RenderProperty() override;
+    virtual EDistributionType GetType() override { return EDistributionType::FloatUniform; }   
 };
 
 
@@ -45,6 +62,8 @@ struct FDistributionVectorConstant: public FDistributionVector
 
     virtual FVector GetValue(float F = 0.f, FRandomStream* InRandomStream = nullptr) const override;
     virtual void GetOutRange(FVector& Min, FVector& Max) const override;
+    virtual void RenderProperty() override;
+    virtual EDistributionType GetType() override { return EDistributionType::VectorConstant; }   
 };
 
 struct FDistributionVectorUniform: public FDistributionVector
@@ -54,4 +73,6 @@ struct FDistributionVectorUniform: public FDistributionVector
 
     virtual FVector GetValue(float F = 0.f, FRandomStream* InRandomStream = nullptr) const override;
     virtual void GetOutRange(FVector& Min, FVector& Max) const override;
+    virtual void RenderProperty() override;
+    virtual EDistributionType GetType() override { return EDistributionType::VectorUniform; }   
 };
