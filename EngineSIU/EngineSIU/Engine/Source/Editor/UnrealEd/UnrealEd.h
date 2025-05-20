@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Container/Map.h"
 #include "Container/String.h"
 
@@ -16,6 +16,8 @@ public:
     
     void AddEditorPanel(const FString& PanelId, const std::shared_ptr<UEditorPanel>& EditorPanel);
     std::shared_ptr<UEditorPanel> GetEditorPanel(const FString& PanelId);
+
+    bool bShowParticlePanel = true;
 
 private:
     TMap<FString, std::shared_ptr<UEditorPanel>> Panels;

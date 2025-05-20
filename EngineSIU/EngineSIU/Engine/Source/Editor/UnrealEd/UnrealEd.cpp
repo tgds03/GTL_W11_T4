@@ -5,6 +5,7 @@
 #include "PropertyEditor/OutlinerEditorPanel.h"
 #include "PropertyEditor/PropertyEditorPanel.h"
 #include "PropertyEditor/SkeletonMeshEditorPanel.h"
+#include "PropertyEditor/ParticleEditorPanel.h"
 
 #include "Engine/EditorEngine.h"
 #include "Engine/World/World.h"
@@ -26,6 +27,10 @@ void UnrealEd::Initialize()
     auto SkeletonPanel = std::make_shared<SkeletonMeshEditorPanel>();
     SkeletonPanel->SetVisibleInWorldType(EWorldType::EditorPreview);
     Panels["SkeletonPanel"] = SkeletonPanel;
+
+    auto ParticlePanel = std::make_shared<ParticleEditorPanel>();
+    ParticlePanel->SetVisibleInWorldType(EWorldType::Editor);
+    Panels["ParticlePanel"] = ParticlePanel;
 }
 
 void UnrealEd::Render() const
@@ -35,9 +40,25 @@ void UnrealEd::Render() const
     for (const auto& Panel : Panels)
     {
         // TODO : Panel을 새로 만들지 Render할때 Type을 넣어서 분기 할지 고민
-        if (ActiveWorldType == Panel.Value->VisibleInWorldType ||
-            Panel.Value->VisibleInWorldType == EWorldType::None)
-            Panel.Value->Render();
+        if (Panel.Key == "ParticlePanel")
+        {
+            if (bShowParticlePanel)
+            {
+                if (ActiveWorldType == Panel.Value->VisibleInWorldType ||
+                    Panel.Value->VisibleInWorldType == EWorldType::None)
+                {
+                    Panel.Value->Render();
+                }
+            }
+        }
+        else
+        {
+            if(ActiveWorldType == Panel.Value->VisibleInWorldType ||
+                Panel.Value->VisibleInWorldType == EWorldType::None)
+            {
+                Panel.Value->Render();
+            }
+        }
     }
 }
 

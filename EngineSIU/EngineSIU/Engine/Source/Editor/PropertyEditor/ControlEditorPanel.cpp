@@ -113,7 +113,7 @@ void ControlEditorPanel::CreateMenuButton(const ImVec2 ButtonSize, ImFont* IconF
     if (bOpenMenu)
     {
         ImGui::SetNextWindowPos(ImVec2(10, 55), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(135, 170), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(135, 190), ImGuiCond_Always);
 
         ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 
@@ -196,6 +196,13 @@ void ControlEditorPanel::CreateMenuButton(const ImVec2 ButtonSize, ImFont* IconF
             }
 
             ImGui::EndMenu();
+        }
+
+        ImGui::Separator();
+
+        if (ImGui::MenuItem("ParticleEditor"))
+        {
+            
         }
 
         ImGui::Separator();
