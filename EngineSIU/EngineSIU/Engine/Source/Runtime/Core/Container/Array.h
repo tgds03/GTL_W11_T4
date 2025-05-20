@@ -7,6 +7,7 @@
 #include "Serialization/Archive.h"
 
 #include "MakeUnsigned.h"
+// #include "UserInterface/Console.h"
 
 
 template <typename T, typename Allocator = FDefaultAllocator<T>>
@@ -30,7 +31,7 @@ private:
             ArrayNameSuffix = TEXT("64");
         }
 
-        UE_LOG(LogLevel::Error, TEXT("Trying to resize TArray%s to an invalid size of %llu"), ArrayNameSuffix, (unsigned long long)NewNum);
+        // UE_LOG(LogLevel::Error, TEXT("Trying to resize TArray%s to an invalid size of %llu"), ArrayNameSuffix, (unsigned long long)NewNum);
     }
 
 public:
@@ -213,13 +214,13 @@ public:
     SizeType AddZeroed()
     {
         const SizeType Index = AddUninitialized();
-        FPlatformMemory::Memzero((uint8*)AllocatorInstance.GetAllocation() + Index * sizeof(ElementType), sizeof(ElementType));
+        FPlatformMemory::Memzero((uint8*)GetData() + Index * sizeof(ElementType), sizeof(ElementType));
         return Index;
     }
     SizeType AddZeroed(SizeType Count)
     {
         const SizeType Index = AddUninitialized(Count);
-        FPlatformMemory::Memzero((uint8*)AllocatorInstance.GetAllocation() + Index * sizeof(ElementType), Count * sizeof(ElementType));
+        FPlatformMemory::Memzero((uint8*)GetData() + Index * sizeof(ElementType), Count * sizeof(ElementType));
         return Index;
     }
 };
