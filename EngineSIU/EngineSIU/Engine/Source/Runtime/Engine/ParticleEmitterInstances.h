@@ -260,6 +260,24 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
     
     void KillParticle(int32 Index);
 
+
+    /**
+     *	Retrieves the dynamic data for the emitter
+     */
+    virtual FDynamicEmitterDataBase* GetDynamicData(bool bSelected)
+    {
+        return nullptr;
+    }
+
+protected:
+    /**
+     * Captures dynamic replay data for this particle system.
+     *
+     * @param	OutData		[Out] Data will be copied here
+     *
+     * @return Returns true if successful
+     */
+    virtual bool FillReplayData( FDynamicEmitterReplayDataBase& OutData ) { return false; }
     /** Get pointer to emitter instance random seed payload data for a particular module */
     FParticleRandomSeedInstancePayload* GetModuleRandomSeedInstanceData(UParticleModule* Module);
 
@@ -300,7 +318,7 @@ struct FParticleMeshEmitterInstance : public FParticleEmitterInstance
 	int32 MeshMotionBlurOffset;
 
 	/** The materials to render this instance with.	*/
-	TArray<UMaterial*> CurrentMaterials;
+	// TArray<UMaterial*> CurrentMaterials;
 
 	/** Constructor	*/
 	FParticleMeshEmitterInstance();

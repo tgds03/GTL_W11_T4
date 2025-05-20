@@ -3,6 +3,8 @@
 #include "Define.h"
 #include "Particles/ParticleEmitter.h"
 #include "Particles/ParticleLODLevel.h"
+#include "Particles/ParticleModuleRequired.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "Particles/Event/ParticleModuleEventGenerator.h"
 #include "RandomStream.h"
 #include "Core/HAL/PlatformMemory.h"
@@ -10,7 +12,7 @@
 #include "Runtime/Engine/World/World.h"
 
 #include "Particles/ParticleModuleSpawn.h"
-#include "Particles/ParticleModuleRequired.h"
+#include "Particles/TypeData/ParticleModuleTypeDataMesh.h"
 #include "Particles/ParticleModuleSpawn.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "UObject/Casts.h"
@@ -539,7 +541,8 @@ void FParticleEmitterInstance::SpawnParticles(int32 Count, float StartTime, floa
         }
     };
 
-    SpawnInternal();
+    // SpawnInternal();
+    
 	// // Ensure we don't access particle beyond what is allocated.
 	// ensure( ActiveParticles + Count <= MaxActiveParticles );
 	// Count = FMath::Min<int32>(Count, MaxActiveParticles - ActiveParticles);
@@ -730,6 +733,272 @@ FParticleRandomSeedInstancePayload* FParticleEmitterInstance::GetModuleRandomSee
         }
     }
     return NULL;
+}
+
+/**
+ * Captures dynamic replay data for this particle system.
+ *
+ * @param	OutData		[Out] Data will be copied here
+ *
+ * @return Returns true if successful
+ */
+// bool FParticleEmitterInstance::FillReplayData(FDynamicEmitterReplayDataBase& OutData)
+// {
+//     QUICK_SCOPE_CYCLE_COUNTER(STAT_ParticleEmitterInstance_FillReplayData);
+//
+// 	// NOTE: This the base class implementation that should ONLY be called by derived classes' FillReplayData()!
+//
+// 	// Make sure there is a template present
+// 	if (!SpriteTemplate)
+// 	{
+// 		return false;
+// 	}
+//
+// 	// Allocate it for now, but we will want to change this to do some form
+// 	// of caching
+// 	if (ActiveParticles <= 0 || !bEnabled)
+// 	{
+// 		return false;
+// 	}
+// 	// If the template is disabled, don't return data.
+// 	UParticleLODLevel* LODLevel = SpriteTemplate->GetCurrentLODLevel(this);
+// 	if ((LODLevel == NULL) || (LODLevel->bEnabled == false))
+// 	{
+// 		return false;
+// 	}
+//
+// 	// Make sure we will not be allocating enough memory
+// 	check(MaxActiveParticles >= ActiveParticles);
+//
+// 	// Must be filled in by implementation in derived class
+// 	OutData.eEmitterType = DET_Unknown;
+//
+// 	OutData.ActiveParticleCount = ActiveParticles;
+// 	OutData.ParticleStride = ParticleStride;
+// 	OutData.SortMode = SortMode;
+//
+// 	// Take scale into account
+// 	OutData.Scale = FVector3f::OneVector;
+// 	if (Component)
+// 	{
+// 		OutData.Scale = FVector3f(Component->GetComponentTransform().GetScale3D());
+// 	}
+//
+// 	int32 ParticleMemSize = MaxActiveParticles * ParticleStride;
+//
+// 	// Allocate particle memory
+//
+// 	OutData.DataContainer.Alloc(ParticleMemSize, MaxActiveParticles);
+// 	INC_DWORD_STAT_BY(STAT_RTParticleData, OutData.DataContainer.MemBlockSize);
+//
+// 	FMemory::BigBlockMemcpy(OutData.DataContainer.ParticleData, ParticleData, ParticleMemSize);
+// 	FMemory::Memcpy(OutData.DataContainer.ParticleIndices, ParticleIndices, OutData.DataContainer.ParticleIndicesNumShorts * sizeof(uint16));
+//
+// 	// All particle emitter types derived from sprite emitters, so we can fill that data in here too!
+// 	{
+// 		FDynamicSpriteEmitterReplayDataBase* NewReplayData =
+// 			static_cast< FDynamicSpriteEmitterReplayDataBase* >( &OutData );
+//
+// 		NewReplayData->RequiredModule = LODLevel->RequiredModule->CreateRendererResource();
+// 		NewReplayData->MaterialInterface = NULL;	// Must be set by derived implementation
+// 		NewReplayData->InvDeltaSeconds = (LastDeltaTime > UE_KINDA_SMALL_NUMBER) ? (1.0f / LastDeltaTime) : 0.0f;
+// 		NewReplayData->LWCTile = ((Component == nullptr) || LODLevel->RequiredModule->bUseLocalSpace) ? FVector3f::Zero() : Component->GetLWCTile();
+//
+// 		NewReplayData->MaxDrawCount =
+// 			(LODLevel->RequiredModule->bUseMaxDrawCount == true) ? LODLevel->RequiredModule->MaxDrawCount : -1;
+// 		NewReplayData->ScreenAlignment	= LODLevel->RequiredModule->ScreenAlignment;
+// 		NewReplayData->bUseLocalSpace = LODLevel->RequiredModule->bUseLocalSpace;
+// 		NewReplayData->EmitterRenderMode = SpriteTemplate->EmitterRenderMode;
+// 		NewReplayData->DynamicParameterDataOffset = DynamicParameterDataOffset;
+// 		NewReplayData->LightDataOffset = LightDataOffset;
+// 		NewReplayData->LightVolumetricScatteringIntensity = LightVolumetricScatteringIntensity;
+// 		NewReplayData->CameraPayloadOffset = CameraPayloadOffset;
+//
+// 		NewReplayData->SubUVDataOffset = SubUVDataOffset;
+// 		NewReplayData->SubImages_Horizontal = LODLevel->RequiredModule->SubImages_Horizontal;
+// 		NewReplayData->SubImages_Vertical = LODLevel->RequiredModule->SubImages_Vertical;
+//
+// 		NewReplayData->MacroUVOverride.bOverride = LODLevel->RequiredModule->bOverrideSystemMacroUV;
+// 		NewReplayData->MacroUVOverride.Radius = LODLevel->RequiredModule->MacroUVRadius;
+// 		NewReplayData->MacroUVOverride.Position = FVector3f(LODLevel->RequiredModule->MacroUVPosition);
+//         
+// 		NewReplayData->bLockAxis = false;
+// 		if (bAxisLockEnabled == true)
+// 		{
+// 			NewReplayData->LockAxisFlag = LockAxisFlags;
+// 			if (LockAxisFlags != EPAL_NONE)
+// 			{
+// 				NewReplayData->bLockAxis = true;
+// 			}
+// 		}
+//
+// 		// If there are orbit modules, add the orbit module data
+// 		if (LODLevel->OrbitModules.Num() > 0)
+// 		{
+// 			UParticleLODLevel* HighestLODLevel = SpriteTemplate->LODLevels[0];
+// 			UParticleModuleOrbit* LastOrbit = HighestLODLevel->OrbitModules[LODLevel->OrbitModules.Num() - 1];
+// 			check(LastOrbit);
+//
+// 			uint32* LastOrbitOffset = SpriteTemplate->ModuleOffsetMap.Find(LastOrbit);
+// 			NewReplayData->OrbitModuleOffset = *LastOrbitOffset;
+// 		}
+//
+// 		NewReplayData->EmitterNormalsMode = LODLevel->RequiredModule->EmitterNormalsMode;
+// 		NewReplayData->NormalsSphereCenter = (FVector3f)LODLevel->RequiredModule->NormalsSphereCenter;
+// 		NewReplayData->NormalsCylinderDirection = (FVector3f)LODLevel->RequiredModule->NormalsCylinderDirection;
+//
+// 		NewReplayData->PivotOffset = FVector2f(PivotOffset);
+//
+// 		NewReplayData->bUseVelocityForMotionBlur = LODLevel->RequiredModule->ShouldUseVelocityForMotionBlur();
+// 		NewReplayData->bRemoveHMDRoll = LODLevel->RequiredModule->bRemoveHMDRoll;
+// 		NewReplayData->MinFacingCameraBlendDistance = LODLevel->RequiredModule->MinFacingCameraBlendDistance;
+// 		NewReplayData->MaxFacingCameraBlendDistance = LODLevel->RequiredModule->MaxFacingCameraBlendDistance;
+// 	}
+//
+//
+// 	return true;
+// }
+
+/**
+ *	Retrieves the dynamic data for the emitter
+ *	
+ *	@param	bSelected					Whether the emitter is selected in the editor
+ *
+ *	@return	FDynamicEmitterDataBase*	The dynamic data, or NULL if it shouldn't be rendered
+ */
+// FDynamicEmitterDataBase* FParticleMeshEmitterInstance::GetDynamicData(bool bSelected)
+// {
+//     QUICK_SCOPE_CYCLE_COUNTER(STAT_ParticleMeshEmitterInstance_GetDynamicData);
+//
+//     // It is safe for LOD level to be NULL here!
+//     UParticleLODLevel* LODLevel = SpriteTemplate->GetCurrentLODLevel(this);
+//     // if (IsDynamicDataRequired(LODLevel) == false || !bEnabled)
+//     // {
+//     //     return nullptr;
+//     // }
+//
+//     // Allocate the dynamic data
+//     FDynamicMeshEmitterData* NewEmitterData = new FDynamicMeshEmitterData(LODLevel->RequiredModule);
+//     {
+//         // INC_DWORD_STAT(STAT_DynamicEmitterCount);
+//         // INC_DWORD_STAT(STAT_DynamicMeshCount);
+//         // INC_DWORD_STAT_BY(STAT_DynamicEmitterMem, sizeof(FDynamicMeshEmitterData));
+//     }
+//
+//     // Now fill in the source data
+//     if( !FillReplayData( NewEmitterData->Source ) )
+//     {
+//         delete NewEmitterData;
+//         return nullptr;
+//     }
+//
+//
+//     // Setup dynamic render data.  Only call this AFTER filling in source data for the emitter.
+//     NewEmitterData->Init(
+//         this,
+//         MeshTypeData->Mesh,
+//         MeshTypeData->LODSizeScale
+//     );
+//
+//     return NewEmitterData;
+// }
+
+bool FParticleMeshEmitterInstance::FillReplayData(FDynamicEmitterReplayDataBase& OutData)
+{
+    QUICK_SCOPE_CYCLE_COUNTER(STAT_ParticleMeshEmitterInstance_FillReplayData);
+
+	// Call parent implementation first to fill in common particle source data
+	if( !FParticleEmitterInstance::FillReplayData( OutData ) )
+	{
+		return false;
+	}
+
+	// Grab the LOD level
+	UParticleLODLevel* LODLevel = SpriteTemplate->GetCurrentLODLevel(this);
+	if ((LODLevel == NULL) || (LODLevel->bEnabled == false))
+	{
+		return false;
+	}
+
+	OutData.eEmitterType = DET_Mesh;
+
+	FDynamicMeshEmitterReplayData* NewReplayData = static_cast< FDynamicMeshEmitterReplayData* >( &OutData );
+
+	// UMaterialInterface* RenderMaterial = CurrentMaterial;
+	// if (RenderMaterial == NULL  || (RenderMaterial->CheckMaterialUsage_Concurrent(MATUSAGE_MeshParticles) == false))
+	// {
+	// 	RenderMaterial = UMaterial::GetDefaultMaterial(MD_Surface);
+	// }
+	// NewReplayData->MaterialInterface = RenderMaterial;
+	// CurrentMaterial = RenderMaterial;
+	//
+	// // Mesh settings
+	// NewReplayData->bScaleUV = LODLevel->RequiredModule->bScaleUV;
+	// NewReplayData->SubUVInterpMethod = LODLevel->RequiredModule->InterpolationMethod;
+	// NewReplayData->SubUVDataOffset = SubUVDataOffset;
+	// NewReplayData->SubImages_Horizontal = LODLevel->RequiredModule->SubImages_Horizontal;
+	// NewReplayData->SubImages_Vertical = LODLevel->RequiredModule->SubImages_Vertical;
+	// NewReplayData->MeshRotationOffset = MeshRotationOffset;
+	// NewReplayData->MeshMotionBlurOffset = MeshMotionBlurOffset;
+	// NewReplayData->bMeshRotationActive = MeshRotationActive;
+	// NewReplayData->MeshAlignment = MeshTypeData->MeshAlignment;
+	//
+	// // Scale needs to be handled in a special way for meshes.  The parent implementation set this
+	// // itself, but we'll recompute it here.
+	// NewReplayData->Scale = FVector::OneVector;
+	// if (Component)
+	// {
+	// 	check(SpriteTemplate);
+	// 	UParticleLODLevel* LODLevel2 = SpriteTemplate->GetCurrentLODLevel(this);
+	// 	check(LODLevel2);
+	// 	check(LODLevel2->RequiredModule);
+	// 	// Take scale into account
+	// 	if (LODLevel2->RequiredModule->bUseLocalSpace == false)
+	// 	{
+	// 		if (!bIgnoreComponentScale)
+	// 		{
+	// 			NewReplayData->Scale = Component->GetWorldScale3D();
+	// 		}
+	// 	}
+	// }
+	//
+	// // See if the new mesh locked axis is being used...
+	// if (MeshTypeData->AxisLockOption == EPAL_NONE)
+	// {
+	// 	if (bAxisLockEnabled)
+	// 	{
+	// 		NewReplayData->LockAxisFlag = LockAxisFlags;
+	// 		if (LockAxisFlags != EPAL_NONE)
+	// 		{
+	// 			NewReplayData->bLockAxis = true;
+	// 			switch (LockAxisFlags)
+	// 			{
+	// 			case EPAL_X:
+	// 				NewReplayData->LockedAxis = FVector3f(1,0,0);
+	// 				break;
+	// 			case EPAL_Y:
+	// 				NewReplayData->LockedAxis = FVector3f(0,1,0);
+	// 				break;
+	// 			case EPAL_NEGATIVE_X:
+	// 				NewReplayData->LockedAxis = FVector3f(-1,0,0);
+	// 				break;
+	// 			case EPAL_NEGATIVE_Y:
+	// 				NewReplayData->LockedAxis = FVector3f(0,-1,0);
+	// 				break;
+	// 			case EPAL_NEGATIVE_Z:
+	// 				NewReplayData->LockedAxis = FVector3f(0,0,-1);
+	// 				break;
+	// 			case EPAL_Z:
+	// 			case EPAL_NONE:
+	// 			default:
+	// 				NewReplayData->LockedAxis = FVector3f(0,0,1);
+	// 				break;
+	// 			}
+	// 		}
+	// 	}
+	// }
+
+	return true;
 }
 
 class UParticleLODLevel* FParticleEmitterInstance::GetCurrentLODLevelChecked()

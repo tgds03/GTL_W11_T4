@@ -36,20 +36,20 @@ void UParticleSystemComponent::ForceReset()
 
 void UParticleSystemComponent::ComputeTickComponent()
 {
-    for (int EmitterIndex = 0; EmitterIndex < EmitterInstances.Num(); ++EmitterIndex)
-    {
-        FParticleEmitterInstance* Instance = EmitterInstances[EmitterIndex];
-
-        if (Instance && Instance->SpriteTemplate)
-        {
-            UParticleLODLevel* SpriteLODLevel = Instance->GetCurrentLODLevelChecked();
-            if (SpriteLODLevel /** && SpriteLODLevel.IsEnabled */)
-            {
-                Instance->Tick(DeltaTime, false);
-                TotalActiveParticles += Instance->ActiveParticles;
-            }
-        }
-    }
+    // for (int EmitterIndex = 0; EmitterIndex < EmitterInstances.Num(); ++EmitterIndex)
+    // {
+    //     FParticleEmitterInstance* Instance = EmitterInstances[EmitterIndex];
+    //
+    //     if (Instance && Instance->SpriteTemplate)
+    //     {
+    //         UParticleLODLevel* SpriteLODLevel = Instance->GetCurrentLODLevelChecked();
+    //         if (SpriteLODLevel /** && SpriteLODLevel.IsEnabled */)
+    //         {
+    //             Instance->Tick(DeltaTime, false);
+    //             TotalActiveParticles += Instance->ActiveParticles;
+    //         }
+    //     }
+    // }
 }
 
 void UParticleSystemComponent::InitializeSystem()
@@ -503,7 +503,7 @@ FParticleDynamicData* UParticleSystemComponent::GetDynamicData()
 	// }
 	// else
 	{
-		FParticleSystemReplayFrame* NewReplayFrame = NULL;
+		// FParticleSystemReplayFrame* NewReplayFrame = NULL;
 		// if( ReplayState == PRS_Capturing )
 		// {
 		// 	SCOPE_CYCLE_COUNTER(STAT_ParticleSystemComponent_CreateDynamicData_Capture);
@@ -539,10 +539,11 @@ FParticleDynamicData* UParticleSystemComponent::GetDynamicData()
 		// }
 
 		// Is the particle system allowed to run?
-		if( bForcedInActive == false )
+	    // TODO 활성, 비활성화 
+		// if( bForcedInActive == false )
 		{
 			//SCOPE_CYCLE_COUNTER(STAT_ParticleSystemComponent_CreateDynamicData_Gather);
-			ParticleDynamicData->DynamicEmitterDataArray.Reset();
+			ParticleDynamicData->DynamicEmitterDataArray.Empty();
 			ParticleDynamicData->DynamicEmitterDataArray.Reserve(EmitterInstances.Num());
 
 			int32 NumMeshEmitterLODIndices = 0;
@@ -550,41 +551,39 @@ FParticleDynamicData* UParticleSystemComponent::GetDynamicData()
 			//QUICK_SCOPE_CYCLE_COUNTER(STAT_ParticleSystemComponent_GetDynamicData);
 			for (int32 EmitterIndex = 0; EmitterIndex < EmitterInstances.Num(); EmitterIndex++)
 			{
-				if (SceneProxy)
+				// if (SceneProxy)
 				{
 					++NumMeshEmitterLODIndices;
 				}
 
-				FDynamicEmitterDataBase* NewDynamicEmitterData = NULL;
+				FDynamicEmitterDataBase* NewDynamicEmitterData = nullptr;
 				FParticleEmitterInstance* EmitterInst = EmitterInstances[EmitterIndex];
 				if (EmitterInst)
 				{
-					FScopeCycleCounterEmitter AdditionalScope(EmitterInst);
+					// FScopeCycleCounterEmitter AdditionalScope(EmitterInst);
 #if WITH_EDITOR
-					uint32 StartTime = FPlatformTime::Cycles();
+					// uint32 StartTime = FPlatformTime::Cycles();
 #endif
 
 					// Generate the dynamic data for this emitter
 					{
 						//SCOPE_CYCLE_COUNTER(STAT_ParticleSystemComponent_GetDynamicData);
-						bool bIsOwnerSeleted = false;
+						bool bIsOwnerSelected = false;
 #if WITH_EDITOR
-						{
-							SCOPE_CYCLE_COUNTER(STAT_ParticleSystemComponent_GetDynamicData_Selected);
-							bIsOwnerSeleted = IsOwnerSelected();
-						}
+						// {
+						// 	SCOPE_CYCLE_COUNTER(STAT_ParticleSystemComponent_GetDynamicData_Selected);
+						// 	bIsOwnerSeleted = IsOwnerSelected();
+						// }
 #endif
-						NewDynamicEmitterData = EmitterInst->GetDynamicData(bIsOwnerSeleted);
+						NewDynamicEmitterData = EmitterInst->GetDynamicData(bIsOwnerSelected);
 					}
-					if( NewDynamicEmitterData != NULL )
+					if( NewDynamicEmitterData != nullptr)
 					{
 #if STATS
-						NewDynamicEmitterData->StatID = EmitterInst->SpriteTemplate->GetStatIDRT();
+						// NewDynamicEmitterData->StatID = EmitterInst->SpriteTemplate->GetStatIDRT();
 #endif
 						NewDynamicEmitterData->bValid = true;
 						ParticleDynamicData->DynamicEmitterDataArray.Add( NewDynamicEmitterData );
-						NewDynamicEmitterData->EmitterIndex = EmitterIndex;
-
 						NewDynamicEmitterData->EmitterIndex = EmitterIndex;
 						
 						// Are we current capturing particle state?
@@ -614,37 +613,27 @@ FParticleDynamicData* UParticleSystemComponent::GetDynamicData()
 						// }
 					}
 #if WITH_EDITOR
-					uint32 EndTime = FPlatformTime::Cycles();
-					EmitterInst->LastTickDurationMs += FPlatformTime::ToMilliseconds(EndTime - StartTime);
+					// uint32 EndTime = FPlatformTime::Cycles();
+					// EmitterInst->LastTickDurationMs += FPlatformTime::ToMilliseconds(EndTime - StartTime);
 #endif
 				}
 			}
 
-			if (SceneProxy && static_cast<FParticleSystemSceneProxy*>(SceneProxy)->MeshEmitterLODIndices.Num() != NumMeshEmitterLODIndices)
-			{
-				ENQUEUE_RENDER_COMMAND(UpdateMeshEmitterLODIndicesCmd)(
-					[Proxy = SceneProxy, NumMeshEmitterLODIndices](FRHICommandList&)
-				{
-					if (Proxy)
-					{
-						FParticleSystemSceneProxy *ParticleProxy = static_cast<FParticleSystemSceneProxy*>(Proxy);
-						ParticleProxy->MeshEmitterLODIndices.Reset();
-						ParticleProxy->MeshEmitterLODIndices.AddZeroed(NumMeshEmitterLODIndices);
-					}
-				});
-			}
+			// if (SceneProxy && static_cast<FParticleSystemSceneProxy*>(SceneProxy)->MeshEmitterLODIndices.Num() != NumMeshEmitterLODIndices)
+			// {
+			// 	ENQUEUE_RENDER_COMMAND(UpdateMeshEmitterLODIndicesCmd)(
+			// 		[Proxy = SceneProxy, NumMeshEmitterLODIndices](FRHICommandList&)
+			// 	{
+			// 		if (Proxy)
+			// 		{
+			// 			FParticleSystemSceneProxy *ParticleProxy = static_cast<FParticleSystemSceneProxy*>(Proxy);
+			// 			ParticleProxy->MeshEmitterLODIndices.Reset();
+			// 			ParticleProxy->MeshEmitterLODIndices.AddZeroed(NumMeshEmitterLODIndices);
+			// 		}
+			// 	});
+			// }
 		}
 	}
 
 	return ParticleDynamicData;
-}
-
-void UParticleSystemComponent::ClearDynamicData()
-{
-    ForceAsyncWorkCompletion(ENSURE_AND_STALL);
-    if (SceneProxy)
-    {
-        FParticleSystemSceneProxy* ParticleSceneProxy = (FParticleSystemSceneProxy*)SceneProxy;
-        ParticleSceneProxy->UpdateData(NULL);
-    }
 }

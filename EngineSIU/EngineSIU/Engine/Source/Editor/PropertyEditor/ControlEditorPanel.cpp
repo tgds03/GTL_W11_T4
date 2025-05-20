@@ -36,6 +36,7 @@
 #include "Actors/PrimitiveActors/CapsuleActor.h"
 #include "Actors/Character/Pawn.h"
 #include "Actors/Character/Character.h"
+#include "Actors/PrimitiveActors/AParticleActor.h"
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Contents/Actors/Fish.h"
@@ -318,7 +319,7 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
             { .Label= "SpotLight", .OBJ= OBJ_SPOTLIGHT },
             { .Label= "DirectionalLight", .OBJ= OBJ_DIRECTIONALLGIHT },
             { .Label= "AmbientLight", .OBJ= OBJ_AMBIENTLIGHT },
-            { .Label= "Particle",  .OBJ= OBJ_PARTICLE },
+            { .Label= "LegacyParticle",  .OBJ= OBJ_LEGACY_PARTICLE },
             { .Label= "Text",      .OBJ= OBJ_TEXT },
             { .Label= "Fireball",  .OBJ = OBJ_FIREBALL},
             { .Label= "Fog",       .OBJ= OBJ_FOG },
@@ -331,6 +332,7 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
             {.Label = "Coin", .OBJ = OBJ_COIN},
             {.Label = "TriggerBox", .OBJ = OBJ_TRIGGERBOX},
             {.Label = "SkeletalMesh", .OBJ = OBJ_SKELETALMESH},
+            { .Label= "Particle",  .OBJ= OBJ_PARTICLE },
         };
 
         for (const auto& primitive : primitives)
@@ -381,10 +383,10 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
                     LightActor->SetActorLabel(TEXT("OBJ_AMBIENTLIGHT"));
                     break;
                 }
-                case OBJ_PARTICLE:
+                case OBJ_LEGACY_PARTICLE:
                 {
                     SpawnedActor = World->SpawnActor<AActor>();
-                    SpawnedActor->SetActorLabel(TEXT("OBJ_PARTICLE"));
+                    SpawnedActor->SetActorLabel(TEXT("OBJ_LEGACY_PARTICLE"));
                     UParticleSubUVComponent* ParticleComponent = SpawnedActor->AddComponent<UParticleSubUVComponent>();
                     ParticleComponent->SetTexture(L"Assets/Texture/T_Explosion_SubUV.png");
                     ParticleComponent->SetRowColumnCount(6, 6);
@@ -463,6 +465,12 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
                     {
                         SpawnedActor = World->SpawnActor<APawn>();
                         SpawnedActor->SetActorLabel(TEXT("OBJ_APAWN"));
+                        break;
+                    }
+                case OBJ_PARTICLE:
+                    {
+                        SpawnedActor = World->SpawnActor<AParticleActor>();
+                        SpawnedActor->SetActorLabel(TEXT("OBJ_PARTICLE"));
                         break;
                     }
                 case OBJ_CAMERA:

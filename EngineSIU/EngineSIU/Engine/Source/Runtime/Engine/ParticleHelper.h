@@ -150,6 +150,8 @@ struct FParticleSpriteVertex
     float Rotation;
     /** The sub-image index for the particle. */
     float SubImageIndex;
+    float SubImagesHorizontal;
+    float SubImagesVertical;
     /** The color of the particle. */
     FLinearColor Color;
 };
@@ -177,6 +179,13 @@ struct FParticleSpriteVertexNonInstanced
     float SubImageIndex;
     /** The color of the particle. */
     FLinearColor Color;
+};
+
+//	FParticleSpriteVertexDynamicParameter
+struct FParticleVertexDynamicParameter
+{
+    /** The dynamic parameter of the particle			*/
+    float			DynamicValue[4];
 };
 
 //	FParticleBeamTrailVertex
@@ -220,10 +229,10 @@ struct FMeshParticleInstanceVertex
     FVector4 Velocity;
 
     /** The sub-image texture offsets for the particle. */
-    int16 SubUVParams[4];
+    // int16 SubUVParams[4];
 
     /** The sub-image lerp value for the particle. */
-    float SubUVLerp;
+    // float SubUVLerp;
 
     /** The relative time of the particle. */
     float RelativeTime;
@@ -307,8 +316,8 @@ struct FParticleDataContainer
     {
         Free();
     }
-    void Alloc(int32 InParticleDataNumBytes, int32 InParticleIndicesNumShorts);
-    void Free();
+    void Alloc(int32 InParticleDataNumBytes, int32 InParticleIndicesNumShorts) {}
+    void Free() {}
 };
 
 struct FDynamicEmitterReplayDataBase
@@ -348,15 +357,15 @@ struct FDynamicEmitterReplayDataBase
 /** Base class for all emitter types */
 struct FDynamicEmitterDataBase
 {
-    FDynamicEmitterDataBase(const class UParticleModuleRequired* RequiredModule);
+    FDynamicEmitterDataBase(const class UParticleModuleRequired* RequiredModule) {}
 	
     virtual ~FDynamicEmitterDataBase()
     {
     }
 
     /** Custom new/delete with recycling */
-    void* operator new(size_t Size);
-    void operator delete(void *RawMemory, size_t Size);
+    // void* operator new(size_t Size);
+    // void operator delete(void *RawMemory, size_t Size);
     
     /**
      *	Create the render thread resources for this emitter data
@@ -412,7 +421,7 @@ struct FDynamicSpriteEmitterReplayDataBase : public FDynamicEmitterReplayDataBas
     FVector							NormalsSphereCenter;
     FVector							NormalsCylinderDirection;
     float							InvDeltaSeconds;
-    FVector						LWCTile;
+    FVector						    LWCTile;
     int32							MaxDrawCount;
     int32							OrbitModuleOffset;
     int32							DynamicParameterDataOffset;
@@ -435,8 +444,8 @@ struct FDynamicSpriteEmitterReplayDataBase : public FDynamicEmitterReplayDataBas
     float						MaxFacingCameraBlendDistance;
 	
     /** Constructor */
-    FDynamicSpriteEmitterReplayDataBase();
-    ~FDynamicSpriteEmitterReplayDataBase();
+    FDynamicSpriteEmitterReplayDataBase() {};
+    ~FDynamicSpriteEmitterReplayDataBase() {};
 
     // /** Serialization */
     // virtual void Serialize( FArchive& Ar );
@@ -481,7 +490,7 @@ struct FDynamicSpriteEmitterDataBase : public FDynamicEmitterDataBase
     /**
      *	Get the vertex stride for the dynamic parameter rendering data
      */
-    // virtual int32 GetDynamicParameterVertexStride() const = 0;
+    virtual int32 GetDynamicParameterVertexStride() const = 0;
     
     /**
      *	Get the source replay data for this emitter
@@ -502,105 +511,105 @@ struct FDynamicSpriteEmitterReplayData	: public FDynamicSpriteEmitterReplayDataB
 };
 
 /** Dynamic emitter data for sprite emitters */
-// struct FDynamicSpriteEmitterData : public FDynamicSpriteEmitterDataBase
-// {
-//     FDynamicSpriteEmitterData(const UParticleModuleRequired* RequiredModule) :
-//     FDynamicSpriteEmitterDataBase(RequiredModule)
-//     {
-//     }
-//
-//     ~FDynamicSpriteEmitterData()
-//     {
-//     }
-//
-//     /** Initialize this emitter's dynamic rendering data, called after source data has been filled in */
-//     void Init( bool bInSelected );
-//     
-//     /**
-//      *	Get the vertex stride for the dynamic rendering data
-//      */
-//     virtual int32 GetDynamicVertexStride() const override
-//     {
-//         return sizeof(FParticleSpriteVertex);
-//     }
-//
-//     /**
-//      *	Get the vertex stride for the dynamic parameter rendering data
-//      */
-//     // virtual int32 GetDynamicParameterVertexStride() const override
-//     // {
-//     //     return sizeof(FParticleVertexDynamicParameter);
-//     // }
-//
-//     /**
-//      *	Get the source replay data for this emitter 
-//      */
-//     virtual const FDynamicSpriteEmitterReplayDataBase* GetSourceData() const override
-//     {
-//         return &Source;
-//     }
-//
-//
-//     /**
-//      *	Retrieve the vertex and (optional) index required to render this emitter.
-//      *	Render-thread only
-//      *
-//      *	@param	VertexData			The memory to fill the vertex data into
-//      *	@param	FillIndexData		The index data to fill in
-//      *	@param	ParticleOrder		The (optional) particle ordering to use
-//      *	@param	InCameraPosition	The position of the camera in world space.
-//      *	@param	InLocalToWorld		Transform from local to world space.
-//      *	@param	InstanceFactor		The factor to duplicate instances by.
-//      *
-//      *	@return	bool			true if successful, false if failed
-//      */
-//     bool GetVertexAndIndexData(void* VertexData, void* DynamicParameterVertexData, void* FillIndexData, FParticleOrder* ParticleOrder, const FVector& InCameraPosition, const FMatrix& InLocalToWorld, uint32 InstanceFactor) const;
-//     
-//
-//     /**
-//      *	Retrieve the vertex and (optional) index required to render this emitter.
-//      *  This version for non-instanced platforms.
-//      *	Render-thread only
-//      *
-//      *	@param	VertexData			The memory to fill the vertex data into
-//      *	@param	FillIndexData		The index data to fill in
-//      *	@param	ParticleOrder		The (optional) particle ordering to use
-//      *	@param	InCameraPosition	The position of the camera in world space.
-//      *	@param	InLocalToWorld		Transform from local to world space.
-//      *
-//      *	@return	bool			true if successful, false if failed
-//      */
-//     // TODO Deprecated
-//     //bool GetVertexAndIndexDataNonInstanced(void* VertexData, void* DynamicParameterVertexData, void* FillIndexData, FParticleOrder* ParticleOrder, const FVector& InCameraPosition, const FMatrix& InLocalToWorld, int32 NumVerticesPerParticle) const;
-//
-//     /** Gathers simple lights for this emitter. */
-//     // virtual void GatherSimpleLights(const FParticleSystemSceneProxy* Proxy, const FSceneViewFamily& ViewFamily, FSimpleLightArray& OutParticleLights) const override;
-//     //
-//     // virtual void GetDynamicMeshElementsEmitter(const FParticleSystemSceneProxy* Proxy, const FSceneView* View, const FSceneViewFamily& ViewFamily, int32 ViewIndex, FMeshElementCollector& Collector) const override;
-//     //
-//     // /**
-//     //  *	Create the render thread resources for this emitter data
-//     //  *
-//     //  *	@param	InOwnerProxy	The proxy that owns this dynamic emitter data
-//     //  *
-//     //  *	@return	bool			true if successful, false if failed
-//     //  */
-//     // virtual void UpdateRenderThreadResourcesEmitter(const FParticleSystemSceneProxy* InOwnerProxy) override;
-//     
-//     /** Returns the source data for this particle system */
-//     virtual const FDynamicEmitterReplayDataBase& GetSource() const override
-//     {
-//         return Source;
-//     }
-//
-//     /** The frame source data for this particle system.  This is everything needed to represent this
-//         this particle system frame.  It does not include any transient rendering thread data.  Also, for
-//         non-simulating 'replay' particle systems, this data may have come straight from disk! */
-//     FDynamicSpriteEmitterReplayData Source;
-//
-//     /** Uniform parameters. Most fields are filled in when updates are sent to the rendering thread, some are per-view! */
-//     // FParticleSpriteUniformParameters UniformParameters;
-// };
+struct FDynamicSpriteEmitterData : public FDynamicSpriteEmitterDataBase
+{
+    FDynamicSpriteEmitterData(const UParticleModuleRequired* RequiredModule) :
+    FDynamicSpriteEmitterDataBase(RequiredModule)
+    {
+    }
+
+    ~FDynamicSpriteEmitterData()
+    {
+    }
+
+    /** Initialize this emitter's dynamic rendering data, called after source data has been filled in */
+    void Init( bool bInSelected );
+    
+    /**
+     *	Get the vertex stride for the dynamic rendering data
+     */
+    virtual int32 GetDynamicVertexStride() const override
+    {
+        return sizeof(FParticleSpriteVertex);
+    }
+    
+    /**
+     *	Get the vertex stride for the dynamic parameter rendering data
+     */
+    virtual int32 GetDynamicParameterVertexStride() const override
+    {
+        return sizeof(FParticleVertexDynamicParameter);
+    }
+    
+    /**
+     *	Get the source replay data for this emitter 
+     */
+    virtual const FDynamicSpriteEmitterReplayDataBase* GetSourceData() const override
+    {
+        return &Source;
+    }
+    
+    
+    /**
+     *	Retrieve the vertex and (optional) index required to render this emitter.
+     *	Render-thread only
+     *
+     *	@param	VertexData			The memory to fill the vertex data into
+     *	@param	ParticleOrder		The (optional) particle ordering to use
+     *	@param	InCameraPosition	The position of the camera in world space.
+     *	@param	InLocalToWorld		Transform from local to world space.
+     *
+     *	@return	bool			true if successful, false if failed
+     */
+    bool GetVertexAndIndexData(void* VertexData, FParticleOrder* ParticleOrder, const FVector& InCameraPosition, const FMatrix& InLocalToWorld) const;
+    
+    
+    // /**
+    //  *	Retrieve the vertex and (optional) index required to render this emitter.
+    //  *  This version for non-instanced platforms.
+    //  *	Render-thread only
+    //  *
+    //  *	@param	VertexData			The memory to fill the vertex data into
+    //  *	@param	FillIndexData		The index data to fill in
+    //  *	@param	ParticleOrder		The (optional) particle ordering to use
+    //  *	@param	InCameraPosition	The position of the camera in world space.
+    //  *	@param	InLocalToWorld		Transform from local to world space.
+    //  *
+    //  *	@return	bool			true if successful, false if failed
+    //  */
+    // // TODO Deprecated
+    // //bool GetVertexAndIndexDataNonInstanced(void* VertexData, void* DynamicParameterVertexData, void* FillIndexData, FParticleOrder* ParticleOrder, const FVector& InCameraPosition, const FMatrix& InLocalToWorld, int32 NumVerticesPerParticle) const;
+    //
+    // /** Gathers simple lights for this emitter. */
+    // // virtual void GatherSimpleLights(const FParticleSystemSceneProxy* Proxy, const FSceneViewFamily& ViewFamily, FSimpleLightArray& OutParticleLights) const override;
+    // //
+    // // virtual void GetDynamicMeshElementsEmitter(const FParticleSystemSceneProxy* Proxy, const FSceneView* View, const FSceneViewFamily& ViewFamily, int32 ViewIndex, FMeshElementCollector& Collector) const override;
+    // //
+    // // /**
+    // //  *	Create the render thread resources for this emitter data
+    // //  *
+    // //  *	@param	InOwnerProxy	The proxy that owns this dynamic emitter data
+    // //  *
+    // //  *	@return	bool			true if successful, false if failed
+    // //  */
+    // // virtual void UpdateRenderThreadResourcesEmitter(const FParticleSystemSceneProxy* InOwnerProxy) override;
+    //
+    /** Returns the source data for this particle system */
+    virtual const FDynamicEmitterReplayDataBase& GetSource() const override
+    {
+        return Source;
+    }
+
+    virtual void GetIndexAllocInfo(int32& OutNumIndices, int32& OutStride ) const override {};
+    
+    /** The frame source data for this particle system.  This is everything needed to represent this
+        this particle system frame.  It does not include any transient rendering thread data.  Also, for
+        non-simulating 'replay' particle systems, this data may have come straight from disk! */
+    FDynamicSpriteEmitterReplayData Source;
+    
+    // /** Uniform parameters. Most fields are filled in when updates are sent to the rendering thread, some are per-view! */
+    // // FParticleSpriteUniformParameters UniformParameters;
+};
 
 //
 //	Helper structures for payload data...
@@ -620,28 +629,29 @@ struct FFullSubUVPayload
 /** Source data for Mesh emitters */
 struct FDynamicMeshEmitterReplayData : public FDynamicSpriteEmitterReplayDataBase
 {
-    int32	SubUVInterpMethod;
-    int32	SubUVDataOffset;
+    // int32	SubUVInterpMethod;
+    // int32	SubUVDataOffset;
     int32	SubImages_Horizontal;
     int32	SubImages_Vertical;
-    bool	bScaleUV;
-    int32	MeshRotationOffset;
-    int32	MeshMotionBlurOffset;
+    // bool	bScaleUV;
+    // Mesh Rotation Payload
+    // int32	MeshRotationOffset;
+    // int32	MeshMotionBlurOffset;
     uint8	MeshAlignment;
-    bool	bMeshRotationActive;
+    // bool	bMeshRotationActive;
     FVector	LockedAxis;	
 
     /** Constructor */
     FDynamicMeshEmitterReplayData() : 
-        SubUVInterpMethod( 0 ),
-        SubUVDataOffset( 0 ),
+        // SubUVInterpMethod( 0 ),
+        // SubUVDataOffset( 0 ),
         SubImages_Horizontal( 0 ),
         SubImages_Vertical( 0 ),
-        bScaleUV( false ),
-        MeshRotationOffset( 0 ),
-        MeshMotionBlurOffset( 0 ),
+        // bScaleUV( false ),
+        // MeshRotationOffset( 0 ),
+        // MeshMotionBlurOffset( 0 ),
         MeshAlignment( 0 ),
-        bMeshRotationActive( false ),
+        // bMeshRotationActive( false ),
         LockedAxis(1.0f, 0.0f, 0.0f)
     {
     }
@@ -653,13 +663,12 @@ struct FDynamicMeshEmitterData : public FDynamicSpriteEmitterDataBase
 
     virtual ~FDynamicMeshEmitterData();
 
-    uint32 GetMeshLODIndexFromProxy(const FParticleSystemSceneProxy *InOwnerProxy) const;
+    // uint32 GetMeshLODIndexFromProxy(const FParticleSystemSceneProxy *InOwnerProxy) const;
     /** Initialize this emitter's dynamic rendering data, called after source data has been filled in */
-    void Init(	bool bInSelected,
-                const FParticleMeshEmitterInstance* InEmitterInstance,
-                UStaticMesh* InStaticMesh,
-                bool InUseStaticMeshLODs,
-                float InLODSizeScale);
+    void Init(
+        const FParticleMeshEmitterInstance* InEmitterInstance,
+        UStaticMesh* InStaticMesh,
+        float InLODSizeScale);
     
     /**
      *	Create the render thread resources for this emitter data
@@ -686,25 +695,20 @@ struct FDynamicMeshEmitterData : public FDynamicSpriteEmitterDataBase
      *	Render-thread only
      *
      *	@param	InstanceData            The memory to fill the vertex data into
-     *	@param	DynamicParameterData    The memory to fill the vertex dynamic parameter data into
-     *	@param	PrevTransformBuffer     The memory to fill the vertex prev transform data into. May be null
-     *	@param	Proxy                   The scene proxy for the particle system that owns this emitter
-     *	@param	View                    The scene view being rendered
-     *	@param	InstanceFactor			The factor to duplicate instances by
+     *	@param InLocalToWorld
      */
-    void GetInstanceData(void* InstanceData, void* DynamicParameterData, void* PrevTransformBuffer, const FParticleSystemSceneProxy* Proxy, const FSceneView* View, uint32 InstanceFactor) const;
+    void GetInstanceData(void* InstanceData, const FMatrix& InLocalToWorld) const;
 
     /**
      *	Helper function for retrieving the particle transform.
      *
      *	@param	InParticle					The particle being processed
-     *  @param	Proxy					    The scene proxy for the particle system that owns this emitter
-     *	@param	View						The scene view being rendered
-     *	@param	OutTransform				The InstanceToWorld transform matrix for the particle
+     *	@param InLocalToWorld
+     *	@param	OutTransformMat				The InstanceToWorld transform matrix for the particle
      */
-    void GetParticleTransform(const FBaseParticle& InParticle, const FParticleSystemSceneProxy* Proxy, const FSceneView* View, FMatrix& OutTransformMat) const;
+    void GetParticleTransform(const FBaseParticle& InParticle, const FMatrix& InLocalToWorld, FMatrix& OutTransformMat) const;
 
-    void GetParticlePrevTransform(const FBaseParticle& InParticle, const FParticleSystemSceneProxy* Proxy, const FSceneView* View, FMatrix& OutTransformMat) const;
+    // void GetParticlePrevTransform(const FBaseParticle& InParticle, const FParticleSystemSceneProxy* Proxy, const FSceneView* View, FMatrix& OutTransformMat) const;
 
     void CalculateParticleTransform(
 	    const FMatrix& ProxyLocalToWorld,
@@ -716,13 +720,13 @@ struct FDynamicMeshEmitterData : public FDynamicSpriteEmitterDataBase
 	    const FVector& ParticlePayloadRotation,
 	    const FVector& ParticlePayloadCameraOffset,
 	    const FVector& ParticlePayloadOrbitOffset,
-	    const FVector& ViewOrigin,
-	    const FVector& ViewDirection,
+	    // const FVector& ViewOrigin,
+	    // const FVector& ViewDirection,
 	    FMatrix& OutTransformMat
 	    ) const;
 
     /** Gathers simple lights for this emitter. */
-    virtual void GatherSimpleLights(const FParticleSystemSceneProxy* Proxy, const FSceneViewFamily& ViewFamily, FSimpleLightArray& OutParticleLights) const override;
+    // virtual void GatherSimpleLights(const FParticleSystemSceneProxy* Proxy, const FSceneViewFamily& ViewFamily, FSimpleLightArray& OutParticleLights) const override;
 
     /**
      *	Get the vertex stride for the dynamic rendering data
@@ -732,10 +736,11 @@ struct FDynamicMeshEmitterData : public FDynamicSpriteEmitterDataBase
 	    return sizeof(FMeshParticleInstanceVertex);
     }
 
-    // virtual int32 GetDynamicParameterVertexStride() const override 
-    // {
-	   //  return sizeof(FMeshParticleInstanceVertexDynamicParameter);
-    // }
+    virtual int32 GetDynamicParameterVertexStride() const override 
+    {
+        return 0;
+	    // return sizeof(FMeshParticleInstanceVertexDynamicParameter);
+    }
 
     /**
      *	Get the source replay data for this emitter
@@ -748,13 +753,16 @@ struct FDynamicMeshEmitterData : public FDynamicSpriteEmitterDataBase
     /**
      *	 Initialize this emitter's vertex factory with the vertex buffers from the mesh's rendering data.
      */
-    void SetupVertexFactory( FRHICommandListBase& RHICmdList, FMeshParticleVertexFactory* InVertexFactory, const FStaticMeshLODResources& LODResources, uint32 LODIdx) const;
+    // void SetupVertexFactory( FRHICommandListBase& RHICmdList, FMeshParticleVertexFactory* InVertexFactory, const FStaticMeshLODResources& LODResources, uint32 LODIdx) const;
 
     /** Returns the source data for this particle system */
     virtual const FDynamicEmitterReplayDataBase& GetSource() const override
     {
 	    return Source;
     }
+
+    virtual void GetIndexAllocInfo(int32& OutNumIndices, int32& OutStride ) const override {};
+    
 
     /** The frame source data for this particle system.  This is everything needed to represent this
 	    this particle system frame.  It does not include any transient rendering thread data.  Also, for
@@ -764,7 +772,7 @@ struct FDynamicMeshEmitterData : public FDynamicSpriteEmitterDataBase
     int32					LastFramePreRendered;
 
     UStaticMesh*		StaticMesh;
-    TArray<FMaterialRenderProxy*, TInlineAllocator<2>> MeshMaterials;	
+    // TArray<FMaterialRenderProxy*, TInlineAllocator<2>> MeshMaterials;	
 
     /** offset to FMeshTypeDataPayload */
     uint32 MeshTypeDataOffset;
@@ -790,9 +798,9 @@ struct FDynamicMeshEmitterData : public FDynamicSpriteEmitterDataBase
     /** The EMeshCameraFacingOption setting to use if bUseCameraFacing is true. */
     uint8 CameraFacingOption;
 
-    bool bUseStaticMeshLODs;
+    // bool bUseStaticMeshLODs;
     float LODSizeScale;
-    mutable int32 LastCalculatedMeshLOD;
+    // mutable int32 LastCalculatedMeshLOD;
     const FParticleMeshEmitterInstance* EmitterInstance;
 };
 
@@ -848,8 +856,8 @@ public:
     }
 
     /** Custom new/delete with recycling */
-    void* operator new(size_t Size);
-    void operator delete(void *RawMemory, size_t Size);
+    // void* operator new(size_t Size);
+    // void operator delete(void *RawMemory, size_t Size);
 
     void ClearEmitterDataArray()
     {
@@ -858,16 +866,16 @@ public:
             FDynamicEmitterDataBase* Data =	DynamicEmitterDataArray[Index];
             delete Data;
         }
-        DynamicEmitterDataArray.Reset();
+        DynamicEmitterDataArray.Empty();
     }
 
-    uint32 GetMemoryFootprint( void ) const { return( sizeof( *this ) + DynamicEmitterDataArray.GetAllocatedSize() ); }
+    // uint32 GetMemoryFootprint( void ) const { return( sizeof( *this ) + DynamicEmitterDataArray.GetAllocatedSize() ); }
 
     /** The Current Emmitter we are rendering **/
     uint32 EmitterIndex;
 
     // Variables
-    TArray<FDynamicEmitterDataBase*, TInlineAllocator<12> >	DynamicEmitterDataArray;
+    TArray<FDynamicEmitterDataBase*>	DynamicEmitterDataArray;
 
     /** World space position that UVs generated with the ParticleMacroUV material node will be centered on. */
     FVector SystemPositionForMacroUVs;

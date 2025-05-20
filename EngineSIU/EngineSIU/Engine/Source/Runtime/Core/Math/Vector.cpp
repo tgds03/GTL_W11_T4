@@ -1,4 +1,6 @@
 ﻿#include "Vector.h"
+
+#include "Vector4.h"
 #include "Misc/Parse.h"
 
 const FVector2D FVector2D::ZeroVector = FVector2D(0, 0);
@@ -17,6 +19,9 @@ const FVector FVector::LeftVector = FVector(0, -1, 0);
 const FVector FVector::XAxisVector = FVector(1, 0, 0);
 const FVector FVector::YAxisVector = FVector(0, 1, 0);
 const FVector FVector::ZAxisVector = FVector(0, 0, 1);
+
+const FVector4 FVector4::ZeroVector = FVector4(0 , 0, 0, 0);
+const FVector4 FVector4::OneVector = FVector4(1, 1, 1, 1);
 
 
 FString FVector2D::ToString() const
@@ -52,4 +57,18 @@ bool FVector::InitFromString(const FString& InSourceString)
     const bool bSuccessful = FParse::Value(*InSourceString, TEXT("X=") , X) && FParse::Value(*InSourceString, TEXT("Y="), Y) && FParse::Value(*InSourceString, TEXT("Z="), Z);
 
     return bSuccessful;
+}
+
+void FVector::ToDirectionAndLength(FVector& OutDir, float& OutLength) const
+{
+    OutLength = Length();
+    if (OutLength > UE_SMALL_NUMBER)
+    {
+        float OneOverLength = 1.0f / OutLength;
+        OutDir = FVector(X * OneOverLength, Y * OneOverLength, Z * OneOverLength);
+    }
+    else
+    {
+        OutDir = ZeroVector;
+    }
 }

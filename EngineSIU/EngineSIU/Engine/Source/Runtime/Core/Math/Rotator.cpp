@@ -107,6 +107,11 @@ FRotator FRotator::FromQuaternion(const FQuat& InQuat)
     return FRotator(InQuat);
 }
 
+FRotator FRotator::MakeFromEuler(const FVector& Euler)
+{
+    return FRotator(Euler.Y, Euler.Z, Euler.X);
+}
+
 FQuat FRotator::ToQuaternion() const
 {
     float DegToRad = PI / 180.0f;

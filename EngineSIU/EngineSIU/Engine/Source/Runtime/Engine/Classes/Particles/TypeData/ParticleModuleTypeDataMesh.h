@@ -1,6 +1,26 @@
 ﻿#pragma once
 #include "ParticleModuleTypeDataBase.h"
 
+enum EMeshCameraFacingOptions : int
+{
+    XAxisFacing_NoUp,
+    XAxisFacing_ZUp,
+    XAxisFacing_NegativeZUp,
+    XAxisFacing_YUp,
+    XAxisFacing_NegativeYUp,
+
+    LockedAxis_ZAxisFacing,
+    LockedAxis_NegativeZAxisFacing,
+    LockedAxis_YAxisFacing,
+    LockedAxis_NegativeYAxisFacing,
+
+    VelocityAligned_ZAxisFacing,
+    VelocityAligned_NegativeZAxisFacing,
+    VelocityAligned_YAxisFacing,
+    VelocityAligned_NegativeYAxisFacing,
+
+    EMeshCameraFacingOptions_MAX,
+};
 
 class UParticleModuleTypeDataMesh : public UParticleModuleTypeDataBase
 {
