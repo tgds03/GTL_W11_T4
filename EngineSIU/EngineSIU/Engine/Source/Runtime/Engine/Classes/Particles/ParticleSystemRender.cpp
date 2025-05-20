@@ -11,11 +11,59 @@ FVector2D GetParticleSize(const FBaseParticle& Particle, const FDynamicSpriteEmi
     Size.X = FMath::Abs(Particle.Size.X * Source.Scale.X);
     Size.Y = FMath::Abs(Particle.Size.Y * Source.Scale.Y);
     // if (Source.ScreenAlignment == PSA_Square || Source.ScreenAlignment == PSA_FacingCameraPosition || Source.ScreenAlignment == PSA_FacingCameraDistanceBlend)
-    {
-        Size.Y = Size.X;
-    }
+    // {
+    //     Size.Y = Size.X;
+    // }
 
     return Size;
+}
+
+FDynamicSpriteEmitterReplayDataBase::FDynamicSpriteEmitterReplayDataBase()
+    :
+// MaterialInterface(nullptr),
+    // RequiredModule(nullptr),
+      NormalsSphereCenter(FVector::ZeroVector)
+    , NormalsCylinderDirection(FVector::ZeroVector)
+    , InvDeltaSeconds(0.0f)
+    , MaxDrawCount(0)
+    , OrbitModuleOffset(0)
+    , DynamicParameterDataOffset(0)
+    , LightDataOffset(0)
+    , LightVolumetricScatteringIntensity(0)
+    , CameraPayloadOffset(0)
+    , SubUVDataOffset(0)
+    , SubImages_Horizontal(1)
+    , SubImages_Vertical(1)
+    , bUseLocalSpace(false)
+    , bLockAxis(false)
+    , ScreenAlignment(0)
+    , LockAxisFlag(0)
+    , EmitterRenderMode(0)
+    , EmitterNormalsMode(0)
+    , PivotOffset(-0.5f, -0.5f)
+    , bUseVelocityForMotionBlur(false)
+    , bRemoveHMDRoll(false)
+    , MinFacingCameraBlendDistance(0.f)
+    , MaxFacingCameraBlendDistance(0.f)
+{
+}
+
+FDynamicSpriteEmitterReplayDataBase::~FDynamicSpriteEmitterReplayDataBase()
+{
+    // delete RequiredModule;
+}
+
+void FDynamicSpriteEmitterData::Init(bool bInSelected)
+{
+    bSelected = bInSelected;
+
+    // bUsesDynamicParameter = GetSourceData()->DynamicParameterDataOffset > 0;
+
+    // UMaterialInterface const* MaterialInterface = const_cast<UMaterialInterface const*>(Source.MaterialInterface);
+    // MaterialResource = MaterialInterface->GetRenderProxy();
+
+    // We won't need this on the render thread
+    // Source.MaterialInterface = NULL;
 }
 
 bool FDynamicSpriteEmitterData::GetVertexAndIndexData(void* VertexData, FParticleOrder* ParticleOrder, const FVector& InCameraPosition, const FMatrix& InLocalToWorld) const
@@ -102,11 +150,14 @@ bool FDynamicSpriteEmitterData::GetVertexAndIndexData(void* VertexData, FParticl
         FillVertex->RelativeTime = Particle.RelativeTime;
         FillVertex->OldPosition = FVector(ParticleOldPosition);
         // Create a floating point particle ID from the counter, map into approximately 0-1
-        // FillVertex->ParticleId = (Particle.Flags & STATE_CounterMask) / 10000.0f;
-        // FillVertex->Size = FVector2D(GetParticleSizeWithUVFlipInSign(Particle, Size));
+        FillVertex->ParticleId = (Particle.Flags & STATE_CounterMask) / 10000.0f;
+        FillVertex->Size = FVector2D(GetParticleSizeWithUVFlipInSign(Particle, Size));
         FillVertex->Rotation = Particle.Rotation;
-        FillVertex->SubImageIndex = SubImageIndex;
         FillVertex->Color = Particle.Color;
+        // TODO UISOO
+        FillVertex->SubImageIndex = SubImageIndex;
+        FillVertex->SubImagesHorizontal = 1;
+        FillVertex->SubImagesVertical = 1;
  
         TempVert += VertexStride;
     }
@@ -147,98 +198,98 @@ void FDynamicMeshEmitterData::Init( const FParticleMeshEmitterInstance* InEmitte
 									UStaticMesh* InStaticMesh,
 									float InLODSizeScale)
 {
-	EmitterInstance = InEmitterInstance;
+    EmitterInstance = InEmitterInstance;
 
-	// // @todo: For replays, currently we're assuming the original emitter instance is bound to the same mesh as
-	// //        when the replay was generated (safe), and various mesh/material indices are intact.  If
-	// //        we ever support swapping meshes/material on the fly, we'll need cache the mesh
-	// //        reference and mesh component/material indices in the actual replay data.
- //
-	// StaticMesh = InStaticMesh;
-	// LODSizeScale = InLODSizeScale;
- //    
-	// if (StaticMesh == nullptr) return;
- //    if (Source.ParticleStride >= 2 * 1024) return;
- //
-	// TArray<UMaterialInterface*, TInlineAllocator<2> > MeshMaterialsGT;
-	// InEmitterInstance->GetMeshMaterials(
-	// 	MeshMaterialsGT,
-	// 	InEmitterInstance->SpriteTemplate->LODLevels[InEmitterInstance->CurrentLODLevelIndex]);	
- //
-	// for (int32 i = 0; i < MeshMaterialsGT.Num(); ++i)
-	// {
-	// 	UMaterialInterface* RenderMaterial = MeshMaterialsGT[i];
-	// 	if (RenderMaterial == NULL  || (RenderMaterial->CheckMaterialUsage_Concurrent(MATUSAGE_MeshParticles) == false))
-	// 	{
-	// 		MeshMaterialsGT[i] = UMaterial::GetDefaultMaterial(MD_Surface);
-	// 	}
-	// }
- //
-	// MeshMaterials.AddZeroed(MeshMaterialsGT.Num());
-	// for (int32 i = 0; i < MeshMaterialsGT.Num(); ++i)
-	// {
-	// 	MeshMaterials[i] = MeshMaterialsGT[i]->GetRenderProxy();
-	// }
- //
- //
-	// // Find the offset to the mesh type data 
-	// if (InEmitterInstance->MeshTypeData != NULL)
-	// {
-	// 	UParticleModuleTypeDataMesh* MeshTD = InEmitterInstance->MeshTypeData;
-	// 	// offset to the mesh emitter type data
-	// 	MeshTypeDataOffset = InEmitterInstance->TypeDataOffset;
- //
-	// 	FVector Mins, Maxs;
-	// 	MeshTD->RollPitchYawRange.GetRange(Mins, Maxs);
- //
-	// 	// Enable/Disable pre-rotation
-	// 	if (Mins.SizeSquared() || Maxs.SizeSquared())
-	// 	{
-	// 		bApplyPreRotation = true;
-	// 	}
-	// 	else
-	// 	{
-	// 		bApplyPreRotation = false;
-	// 	}
- //
-	// 	// Setup the camera facing options
-	// 	if (MeshTD->bCameraFacing == true)
-	// 	{
-	// 		bUseCameraFacing = true;
-	// 		CameraFacingOption = MeshTD->CameraFacingOption;
-	// 		bApplyParticleRotationAsSpin = MeshTD->bApplyParticleRotationAsSpin;
-	// 		bFaceCameraDirectionRatherThanPosition = MeshTD->bFaceCameraDirectionRatherThanPosition;
-	// 	}
-	// 	else
-	// 	{
-	// 		bUseCameraFacing = false;
-	// 		CameraFacingOption = 0;
-	// 		bApplyParticleRotationAsSpin = false;
-	// 		bFaceCameraDirectionRatherThanPosition = false;
-	// 	}
- //
-	// 	// Camera facing trumps locked axis... but can still use it.
-	// 	// Setup the locked axis option
-	// 	uint8 CheckAxisLockOption = MeshTD->AxisLockOption;
-	// 	if ((CheckAxisLockOption >= EPAL_X) && (CheckAxisLockOption <= EPAL_NEGATIVE_Z))
-	// 	{
-	// 		bUseMeshLockedAxis = true;
-	// 		Source.LockedAxis = FVector(
-	// 			(CheckAxisLockOption == EPAL_X) ? 1.0f : ((CheckAxisLockOption == EPAL_NEGATIVE_X) ? -1.0f :  0.0),
-	// 			(CheckAxisLockOption == EPAL_Y) ? 1.0f : ((CheckAxisLockOption == EPAL_NEGATIVE_Y) ? -1.0f :  0.0),
-	// 			(CheckAxisLockOption == EPAL_Z) ? 1.0f : ((CheckAxisLockOption == EPAL_NEGATIVE_Z) ? -1.0f :  0.0)
-	// 			);
-	// 	}
-	// 	else if ((CameraFacingOption >= LockedAxis_ZAxisFacing) && (CameraFacingOption <= LockedAxis_NegativeYAxisFacing))
-	// 	{
-	// 		// Catch the case where we NEED locked axis...
-	// 		bUseMeshLockedAxis = true;
-	// 		Source.LockedAxis = FVector(1.0f, 0.0f, 0.0f);
-	// 	}
-	// }
- //
-	// // We won't need this on the render thread
-	// Source.MaterialInterface = NULL;
+    // @todo: For replays, currently we're assuming the original emitter instance is bound to the same mesh as
+    //        when the replay was generated (safe), and various mesh/material indices are intact.  If
+    //        we ever support swapping meshes/material on the fly, we'll need cache the mesh
+    //        reference and mesh component/material indices in the actual replay data.
+ 
+    StaticMesh = InStaticMesh;
+    LODSizeScale = InLODSizeScale;
+    
+    assert(StaticMesh);
+    assert(Source.ParticleStride < 2 * 1024);	// TTP #3375
+ 
+    // TArray<UMaterialInterface*, TInlineAllocator<2> > MeshMaterialsGT;
+    // InEmitterInstance->GetMeshMaterials(
+    //     MeshMaterialsGT,
+    //     InEmitterInstance->SpriteTemplate->LODLevels[InEmitterInstance->CurrentLODLevelIndex]);	
+    //
+    // for (int32 i = 0; i < MeshMaterialsGT.Num(); ++i)
+    // {
+    //     UMaterialInterface* RenderMaterial = MeshMaterialsGT[i];
+    //     if (RenderMaterial == NULL  || (RenderMaterial->CheckMaterialUsage_Concurrent(MATUSAGE_MeshParticles) == false))
+    //     {
+    //         MeshMaterialsGT[i] = UMaterial::GetDefaultMaterial(MD_Surface);
+    //     }
+    // }
+    //
+    // MeshMaterials.AddZeroed(MeshMaterialsGT.Num());
+    // for (int32 i = 0; i < MeshMaterialsGT.Num(); ++i)
+    // {
+    //     MeshMaterials[i] = MeshMaterialsGT[i]->GetRenderProxy();
+    // }
+ 
+ 
+    // Find the offset to the mesh type data 
+    if (InEmitterInstance->MeshTypeData != NULL)
+    {
+        UParticleModuleTypeDataMesh* MeshTD = InEmitterInstance->MeshTypeData;
+        // offset to the mesh emitter type data
+        MeshTypeDataOffset = InEmitterInstance->TypeDataOffset;
+ 
+        FVector Mins, Maxs;
+        // MeshTD->RollPitchYawRange.GetRange(Mins, Maxs);
+ 
+        // Enable/Disable pre-rotation
+        if (Mins.SizeSquared() || Maxs.SizeSquared())
+        {
+            bApplyPreRotation = true;
+        }
+        else
+        {
+            bApplyPreRotation = false;
+        }
+ 
+        // Setup the camera facing options
+        // if (MeshTD->bCameraFacing == true)
+        // {
+        //     bUseCameraFacing = true;
+        //     CameraFacingOption = MeshTD->CameraFacingOption;
+        //     bApplyParticleRotationAsSpin = MeshTD->bApplyParticleRotationAsSpin;
+        //     bFaceCameraDirectionRatherThanPosition = MeshTD->bFaceCameraDirectionRatherThanPosition;
+        // }
+        // else
+        {
+            bUseCameraFacing = false;
+            CameraFacingOption = 0;
+            bApplyParticleRotationAsSpin = false;
+            bFaceCameraDirectionRatherThanPosition = false;
+        }
+ 
+        // Camera facing trumps locked axis... but can still use it.
+        // Setup the locked axis option
+        // uint8 CheckAxisLockOption = MeshTD->AxisLockOption;
+        // if ((CheckAxisLockOption >= EPAL_X) && (CheckAxisLockOption <= EPAL_NEGATIVE_Z))
+        // {
+        //     bUseMeshLockedAxis = true;
+        //     Source.LockedAxis = FVector(
+        //         (CheckAxisLockOption == EPAL_X) ? 1.0f : ((CheckAxisLockOption == EPAL_NEGATIVE_X) ? -1.0f :  0.0),
+        //         (CheckAxisLockOption == EPAL_Y) ? 1.0f : ((CheckAxisLockOption == EPAL_NEGATIVE_Y) ? -1.0f :  0.0),
+        //         (CheckAxisLockOption == EPAL_Z) ? 1.0f : ((CheckAxisLockOption == EPAL_NEGATIVE_Z) ? -1.0f :  0.0)
+        //         );
+        // }
+        // else if ((CameraFacingOption >= LockedAxis_ZAxisFacing) && (CameraFacingOption <= LockedAxis_NegativeYAxisFacing))
+        // {
+        //     // Catch the case where we NEED locked axis...
+        //     bUseMeshLockedAxis = true;
+        //     Source.LockedAxis = FVector(1.0f, 0.0f, 0.0f);
+        // }
+    }
+ 
+    // We won't need this on the render thread
+    // Source.MaterialInterface = NULL;
 }
 
 // TODO DynamicParameterData, PrevTransformBuffer, UV, LOD는 구현 안함.

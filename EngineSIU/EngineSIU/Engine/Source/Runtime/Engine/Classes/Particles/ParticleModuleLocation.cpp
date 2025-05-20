@@ -1,4 +1,6 @@
 ﻿#include "ParticleModuleLocation.h"
+
+#include "ParticleEmitter.h"
 #include "ParticleEmitterInstances.h"
 #include "ParticleHelper.h"
 
@@ -10,6 +12,10 @@ UParticleModuleLocation::UParticleModuleLocation()
 
 void UParticleModuleLocation::InitializeDefaults()
 {
+    // if (!StartLocation.IsCreated())
+    // {
+    //     StartLocation.Distribution = NewObject<UDistributionVectorUniform>(this, TEXT("DistributionStartLocation"));
+    // }
 }
 
 void UParticleModuleLocation::Spawn(FParticleEmitterInstance* Owner, uint32 Offset, float SpawnTime, FBaseParticle* ParticleBase)
@@ -21,6 +27,8 @@ void UParticleModuleLocation::SpawnEx(FParticleEmitterInstance* Owner, uint32 Of
     FBaseParticle* ParticleBase)
 {
     SPAWN_INIT;
+    UParticleLODLevel* LODLevel	= Owner->SpriteTemplate->GetCurrentLODLevel(Owner);
+    assert(LODLevel);
     
     FVector LocationOffset;
     if ( (DistributeOverNPoints != 0.f) && (DistributeOverNPoints != 1.f) )
@@ -38,7 +46,8 @@ void UParticleModuleLocation::SpawnEx(FParticleEmitterInstance* Owner, uint32 Of
             FVector Lerped = FMath::Lerp(Min, Max, Interp);
             LocationOffset = Lerped;
         }
-    } else
+    }
+    else
     {
         LocationOffset = StartLocation.GetValue(Owner->EmitterTime, InRandomStream);
     }

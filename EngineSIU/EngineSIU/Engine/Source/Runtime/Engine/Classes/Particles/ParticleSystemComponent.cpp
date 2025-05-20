@@ -11,8 +11,73 @@
 
 bool GIsAllowingParticles = true;
 
+
+UParticleSystemComponent::UParticleSystemComponent()
+    : Super(), FXSystem(NULL)
+{
+    Template = nullptr;
+    // PrimaryComponentTick.bCanEverTick = true;
+    // PrimaryComponentTick.TickGroup = TG_DuringPhysics;
+    // PrimaryComponentTick.bAllowTickOnDedicatedServer = false;
+    // bTickInEditor = true;
+    // MaxTimeBeforeForceUpdateTransform = 5.0f;
+    // bAutoActivate = true;
+    // bResetOnDetach = false;
+    // bOldPositionValid = false;
+    // OldPosition = FVector::ZeroVector;
+
+    // RandomStream.Initialize(FApp::bUseFixedSeed ? GetFName() : NAME_None);
+
+    // PartSysVelocity = FVector::ZeroVector;
+
+    WarmupTime = 0.0f;
+    // SecondsBeforeInactive = 1.0f;
+    // bIsTransformDirty = false;
+    // bSkipUpdateDynamicDataDuringTick = false;
+    bIsViewRelevanceDirty = true;
+//     CustomTimeDilation = 1.0f;
+//     bAllowConcurrentTick = true;
+//     bAsyncWorkOutstanding = false;
+//     PoolingMethod = EPSCPoolMethod::None;
+//     bWasActive = false;
+// #if WITH_EDITORONLY_DATA
+//     EditorDetailMode = -1;
+// #endif // WITH_EDITORONLY_DATA
+//     SetCollisionProfileName(UCollisionProfile::NoCollision_ProfileName);
+//     SetGenerateOverlapEvents(false);
+//
+//     bCastVolumetricTranslucentShadow = true;
+//
+//     // Disable receiving decals by default.
+//     bReceivesDecals = false;
+//
+//     // Don't need to call OnUpdateTransform, no physics state to update
+//     bWantsOnUpdateTransform = false;
+//
+//     SavedAutoAttachRelativeScale3D = FVector(1.f, 1.f, 1.f);
+//     TimeSinceLastTick = 0;
+//
+//     RequiredSignificance = EParticleSignificanceLevel::Low;
+//     LastSignificantTime = 0.0f;
+//     bIsManagingSignificance = 0;
+//     bWasManagingSignificance = 0;
+//     bIsDuringRegister = 0;
+//
+//     ManagerHandle = INDEX_NONE;
+//     bPendingManagerAdd = false;
+//     bPendingManagerRemove = false;
+//
+//     bExcludeFromLightAttachmentGroup = true;
+}
+
+
 void UParticleSystemComponent::TickComponent(float DeltaTime)
 {
+    if (bFirstTick)
+    {
+        bFirstTick = false;
+        InitializeSystem();
+    }
     TotalActiveParticles = 0;
     this->DeltaTime = DeltaTime;
 
@@ -36,20 +101,20 @@ void UParticleSystemComponent::ForceReset()
 
 void UParticleSystemComponent::ComputeTickComponent()
 {
-    // for (int EmitterIndex = 0; EmitterIndex < EmitterInstances.Num(); ++EmitterIndex)
-    // {
-    //     FParticleEmitterInstance* Instance = EmitterInstances[EmitterIndex];
-    //
-    //     if (Instance && Instance->SpriteTemplate)
-    //     {
-    //         UParticleLODLevel* SpriteLODLevel = Instance->GetCurrentLODLevelChecked();
-    //         if (SpriteLODLevel /** && SpriteLODLevel.IsEnabled */)
-    //         {
-    //             Instance->Tick(DeltaTime, false);
-    //             TotalActiveParticles += Instance->ActiveParticles;
-    //         }
-    //     }
-    // }
+    for (int EmitterIndex = 0; EmitterIndex < EmitterInstances.Num(); ++EmitterIndex)
+    {
+        FParticleEmitterInstance* Instance = EmitterInstances[EmitterIndex];
+    
+        if (Instance && Instance->SpriteTemplate)
+        {
+            UParticleLODLevel* SpriteLODLevel = Instance->GetCurrentLODLevelChecked();
+            if (SpriteLODLevel /** && SpriteLODLevel.IsEnabled */)
+            {
+                Instance->Tick(DeltaTime, false);
+                TotalActiveParticles += Instance->ActiveParticles;
+            }
+        }
+    }
 }
 
 void UParticleSystemComponent::InitializeSystem()
@@ -125,6 +190,7 @@ void UParticleSystemComponent::InitParticles()
                 {
                     if (Instance)
                     {
+                        // TODO CHECk THIs
                         Instance->SetHaltSpawning(false);
                         Instance->SetHaltSpawningExternal(false);
                     }
@@ -194,81 +260,6 @@ void UParticleSystemComponent::InitParticles()
     }
 
 }
-
-// 	FInGameScopedCycleCounter InGameCycleCounter(GetWorld(), EInGamePerfTrackers::VFXSignificance, IsInGameThread() ? EInGamePerfTrackerThreads::GameThread : EInGamePerfTrackerThreads::OtherThread, bIsManagingSignificance);
-//
-// 	SCOPE_CYCLE_COUNTER(STAT_ParticleComputeTickTime);
-// 	FScopeCycleCounterUObject AdditionalScope(AdditionalStatObject(), GET_STATID(STAT_ParticleComputeTickTime));
-// 	SCOPE_CYCLE_COUNTER(STAT_ParticlesOverview_GT_CNC);
-// 	PARTICLE_PERF_STAT_CYCLES_GT(FParticlePerfStatsContext(GetWorld(), Template, this), TickConcurrent);
-//
-// 	// Tick Subemitters.
-// 	int32 EmitterIndex;
-// 	NumSignificantEmitters = 0;
-// 	for (EmitterIndex = 0; EmitterIndex < EmitterInstances.Num(); EmitterIndex++)
-// 	{
-// 		FParticleEmitterInstance* Instance = EmitterInstances[EmitterIndex];
-// 		FScopeCycleCounterEmitter AdditionalScopeInner(Instance);
-// #if WITH_EDITOR
-// 		uint32 StartTime = FPlatformTime::Cycles();
-// #endif
-//
-// 		if (EmitterIndex + 1 < EmitterInstances.Num())
-// 		{
-// 			FParticleEmitterInstance* NextInstance = EmitterInstances[EmitterIndex+1];
-// 			FPlatformMisc::Prefetch(NextInstance);
-// 		}
-//
-// 		if (Instance && Instance->SpriteTemplate)
-// 		{
-// 			check(Instance->SpriteTemplate->LODLevels.Num() > 0);
-//
-// 			UParticleLODLevel* SpriteLODLevel = Instance->SpriteTemplate->GetCurrentLODLevel(Instance);
-// 			if (SpriteLODLevel && SpriteLODLevel->bEnabled)
-// 			{
-// 				if (bIsManagingSignificance)
-// 				{
-// 					bool bEmitterIsSignificant = Instance->SpriteTemplate->IsSignificant(RequiredSignificance);
-// 					if (bEmitterIsSignificant)
-// 					{
-// 						++NumSignificantEmitters;
-// 						Instance->SetHaltSpawning(false);
-// 						Instance->SetFakeBurstWhenSpawningSupressed(false);
-// 						Instance->bEnabled = true;
-// 					}
-// 					else
-// 					{
-// 						Instance->SetHaltSpawning(true);
-// 						Instance->SetFakeBurstWhenSpawningSupressed(true);
-// 						if (Instance->SpriteTemplate->bDisableWhenInsignficant)
-// 						{
-// 							Instance->bEnabled = false;
-// 						}
-// 					}
-// 				}
-// 				else
-// 				{
-// 					++NumSignificantEmitters;
-// 				}
-//
-// 				Instance->Tick(DeltaTimeTick, bSuppressSpawning);
-//
-// 				Instance->Tick_MaterialOverrides(EmitterIndex);
-// 				TotalActiveParticles += Instance->ActiveParticles;
-// 			}
-//
-// #if WITH_EDITOR
-// 			uint32 EndTime = FPlatformTime::Cycles();
-// 			Instance->LastTickDurationMs += FPlatformTime::ToMilliseconds(EndTime - StartTime);
-// #endif
-// 		}
-// 	}
-// 	if (bAsyncWorkOutstanding)
-// 	{
-// 		FPlatformMisc::MemoryBarrier();
-// 		bAsyncWorkOutstanding = false;
-// 	}
-//}
 
 // FDynamicEmitterDataBase* UParticleSystemComponent::CreateDynamicDataFromReplay(FParticleEmitterInstance* EmitterInstance,
 //     const FDynamicEmitterReplayDataBase* EmitterReplayData, bool bSelected)
@@ -412,7 +403,7 @@ void UParticleSystemComponent::InitParticles()
 
 FParticleDynamicData* UParticleSystemComponent::GetDynamicData()
 {
-    //SCOPE_CYCLE_COUNTER(STAT_ParticleSystemComponent_CreateDynamicData);
+    // QUICK_SCOPE_CYCLE_COUNTER(STAT_ParticleSystemComponent_CreateDynamicData);
 
 	// FInGameScopedCycleCounter InGameCycleCounter(GetWorld(), EInGamePerfTrackers::VFXSignificance, EInGamePerfTrackerThreads::GameThread, bIsManagingSignificance);
 
@@ -453,9 +444,9 @@ FParticleDynamicData* UParticleSystemComponent::GetDynamicData()
 		// ParticleDynamicData->SystemRadiusForMacroUVs = Template->MacroUVRadius;
 	}
 
-#if WITH_PARTICLE_PERF_STATS
-	ParticleDynamicData->PerfStatContext = GetPerfStatsContext();
-#endif
+// #if WITH_PARTICLE_PERF_STATS
+// 	ParticleDynamicData->PerfStatContext = GetPerfStatsContext();
+// #endif
 
 	// if( ReplayState == PRS_Replaying )
 	// {
@@ -551,10 +542,7 @@ FParticleDynamicData* UParticleSystemComponent::GetDynamicData()
 			//QUICK_SCOPE_CYCLE_COUNTER(STAT_ParticleSystemComponent_GetDynamicData);
 			for (int32 EmitterIndex = 0; EmitterIndex < EmitterInstances.Num(); EmitterIndex++)
 			{
-				// if (SceneProxy)
-				{
-					++NumMeshEmitterLODIndices;
-				}
+				++NumMeshEmitterLODIndices;
 
 				FDynamicEmitterDataBase* NewDynamicEmitterData = nullptr;
 				FParticleEmitterInstance* EmitterInst = EmitterInstances[EmitterIndex];

@@ -137,6 +137,7 @@ HRESULT FDXDBufferManager::CreateVertexBufferInternal(const FString& KeyName, co
 
     OutVertexInfo.NumVertices = static_cast<uint32>(vertices.Num());
     OutVertexInfo.VertexBuffer = NewBuffer;
+    OutVertexInfo.CapacityVertices = static_cast<uint32>(vertices.Num());
     OutVertexInfo.Stride = Stride;
     VertexBufferPool.Add(KeyName, OutVertexInfo);
 
@@ -206,6 +207,7 @@ HRESULT FDXDBufferManager::CreateVertexBufferInternal(const FWString& KeyName, c
         return hr;
 
     OutVertexInfo.NumVertices = static_cast<uint32>(vertices.Num());
+    OutVertexInfo.CapacityVertices = static_cast<uint32>(vertices.Num());
     OutVertexInfo.VertexBuffer = NewBuffer;
     OutVertexInfo.Stride = Stride;
     TextAtlasVertexBufferPool.Add(KeyName, OutVertexInfo);
@@ -342,6 +344,14 @@ void FDXDBufferManager::UpdateDynamicVertexBuffer(const FString& KeyName, const 
     }
     FVertexInfo vbInfo = VertexBufferPool[KeyName];
 
+    const size_t RequiredSize = sizeof(T) * vertices.Num();
+    if (RequiredSize > vbInfo.CapacityVertices * vbInfo.Stride) // 직접 저장한 크기
+    {
+        vbInfo.VertexBuffer->Release();
+        VertexBufferPool.Remove(KeyName);
+        CreateDynamicVertexBuffer(KeyName, vertices, vbInfo);
+    }
+    
     D3D11_MAPPED_SUBRESOURCE mapped;
     HRESULT hr = DXDeviceContext->Map(vbInfo.VertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
     if (FAILED(hr))
@@ -349,17 +359,10 @@ void FDXDBufferManager::UpdateDynamicVertexBuffer(const FString& KeyName, const 
         UE_LOG(LogLevel::Error, TEXT("VertexBuffer Map 실패, HRESULT: 0x%X"), hr);
         return;
     }
-    const size_t RequiredSize = sizeof(T) * vertices.Num();
-    if (RequiredSize > vbInfo.NumVertices * vbInfo.Stride) // 직접 저장한 크기
-    {
-        MessageBox(nullptr, L"BufferSize Error", L"Error", MB_OK | MB_ICONERROR);
-        return;
-    }
 
     memcpy(mapped.pData, vertices.GetData(), sizeof(T) * vertices.Num());
     DXDeviceContext->Unmap(vbInfo.VertexBuffer, 0);
     VertexBufferPool[KeyName].NumVertices = vertices.Num();
-    VertexBufferPool[KeyName].Stride = sizeof(T);
 }
 
 template <typename T>

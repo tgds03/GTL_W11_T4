@@ -1,7 +1,17 @@
 #include "ParticleEmitter.h"
 #include "ParticleLODLevel.h"
+#include "ParticleModuleRequired.h"
+#include "ParticleModuleSpawn.h"
 #include "ParticleModuleSubUV.h"
+#include "ParticleSpriteEmitter.h"
 #include "TypeData/ParticleModuleTypeDataBase.h"
+#include "UObject/ObjectFactory.h"
+
+UParticleEmitter::UParticleEmitter()
+    : Super()
+    , QualityLevelSpawnRateScale(1.0f)
+{
+}
 
 bool UParticleEmitter::HasAnyEnabledLODs() const
 {
@@ -36,30 +46,29 @@ UParticleLODLevel* UParticleEmitter::GetLODLevel(int32 LODLevel)
 void UParticleEmitter::CacheEmitterModuleInfo()
 {
 	// This assert makes sure that packing is as expected.
-	// Added FBaseColor...
+	// Added FBaseColor... 
 	// Linear color change
 	// Added Flags field
-
-	bRequiresLoopNotification = false;
-	bAxisLockEnabled = false;
-	// bMeshRotationActive = false;
-	// LockAxisFlags = EPAL_NONE;
-	ModuleOffsetMap.Empty();
-	ModuleInstanceOffsetMap.Empty();
-	ModuleRandomSeedInstanceOffsetMap.Empty();
-	ModulesNeedingInstanceData.Empty();
-	ModulesNeedingRandomSeedInstanceData.Empty();
-	// MeshMaterials.Empty();
-	DynamicParameterDataOffset = 0;
-	LightDataOffset = 0;
-	LightVolumetricScatteringIntensity = 0;
-	CameraPayloadOffset = 0;
-	ParticleSize = sizeof(FBaseParticle);
-	ReqInstanceBytes = 0;
-	PivotOffset = FVector2D(-0.5f, -0.5f);
-	TypeDataOffset = 0;
-	TypeDataInstanceOffset = -1;
-	// SubUVAnimation = nullptr;
+    bRequiresLoopNotification = false;
+    bAxisLockEnabled = false;
+    // bMeshRotationActive = false;
+    // LockAxisFlags = EPAL_NONE;
+    ModuleOffsetMap.Empty();
+    ModuleInstanceOffsetMap.Empty();
+    ModuleRandomSeedInstanceOffsetMap.Empty();
+    ModulesNeedingInstanceData.Empty();
+    ModulesNeedingRandomSeedInstanceData.Empty();
+    MeshMaterials.Empty();
+    DynamicParameterDataOffset = 0;
+    LightDataOffset = 0;
+    LightVolumetricScatteringIntensity = 0;
+    CameraPayloadOffset = 0;
+    ParticleSize = sizeof(FBaseParticle);
+    ReqInstanceBytes = 0;
+    PivotOffset = FVector2D(-0.5f, -0.5f);
+    TypeDataOffset = 0;
+    TypeDataInstanceOffset = -1;
+    // SubUVAnimation = nullptr;
 
 	UParticleLODLevel* HighLODLevel = GetLODLevel(0);
 
@@ -201,7 +210,126 @@ void UParticleEmitter::CacheEmitterModuleInfo()
 }
 
 
+int32 UParticleEmitter::CreateLODLevel(int32 LODLevel)
+{
+    int32               LevelIndex		= -1;
+	UParticleLODLevel*	CreatedLODLevel	= nullptr;
+
+	if (LODLevels.Num() == 0)
+	{
+		LODLevel = 0;
+	}
+
+	// Is the requested index outside a viable range?
+	if ((LODLevel < 0) || (LODLevel > LODLevels.Num()))
+	{
+		return -1;
+	}
+
+	// Create a ParticleLODLevel
+	CreatedLODLevel = FObjectFactory::ConstructObject<UParticleLODLevel>(this);
+	assert(CreatedLODLevel);
+
+	CreatedLODLevel->Level = LODLevel;
+	CreatedLODLevel->bEnabled = true;
+	// CreatedLODLevel->ConvertedModules = true;
+	CreatedLODLevel->PeakActiveParticles = 0;
+
+	// Determine where to place it...
+	if (LODLevels.Num() == 0)
+	{
+		LODLevels.SetNumZeroed(1);
+		LODLevels[0] = CreatedLODLevel;
+		CreatedLODLevel->Level	= 0;
+	}
+
+	{
+		// Create the RequiredModule
+		UParticleModuleRequired* RequiredModule = FObjectFactory::ConstructObject<UParticleModuleRequired>(GetOuter());
+		assert(RequiredModule);
+		// RequiredModule->SetToSensibleDefaults(this);
+		CreatedLODLevel->RequiredModule	= RequiredModule;
+
+		// The SpawnRate for the required module
+		RequiredModule->bUseLocalSpace			= false;
+		RequiredModule->bKillOnDeactivate		= false;
+		RequiredModule->bKillOnCompleted		= false;
+		RequiredModule->EmitterDuration			= 1.0f;
+		RequiredModule->EmitterLoops			= 0;
+		// RequiredModule->ParticleBurstMethod		= EPBM_Instant;
+// #if WITH_EDITORONLY_DATA
+// 		RequiredModule->ModuleEditorColor		= FColor::MakeRandomColor();
+// #endif // WITH_EDITORONLY_DATA
+		RequiredModule->InterpolationMethod		= PSUVIM_None;
+		RequiredModule->SubImages_Horizontal	= 1;
+		RequiredModule->SubImages_Vertical		= 1;
+		// RequiredModule->bScaleUV				= false;
+		RequiredModule->RandomImageTime			= 0.0f;
+		RequiredModule->RandomImageChanges		= 0;
+		// RequiredModule->bEnabled				= true;
+
+		// RequiredModule->LODValidity = (1 << LODLevel);
+
+        // There must be a spawn module as well...
+		UParticleModuleSpawn* SpawnModule = FObjectFactory::ConstructObject<UParticleModuleSpawn>(GetOuter());
+		assert(SpawnModule);
+		CreatedLODLevel->SpawnModule = SpawnModule;
+		// SpawnModule->LODValidity = (1 << LODLevel);
+		// UDistributionFloatConstant* ConstantSpawn	= Cast<UDistributionFloatConstant>(SpawnModule->Rate.Distribution);
+		// ConstantSpawn->Constant					= 10;
+		// ConstantSpawn->bIsDirty					= true;
+		// SpawnModule->BurstList.Empty();
+
+		// Copy the TypeData module
+		CreatedLODLevel->TypeDataModule			= NULL;
+	}
+
+	LevelIndex = CreatedLODLevel->Level;
+
+	// MarkPackageDirty();
+
+	return LevelIndex;
+}
+
 UParticleLODLevel* UParticleEmitter::GetCurrentLODLevel(FParticleEmitterInstance* Instance)
 {
     return Instance->CurrentLODLevel;
+}
+
+FParticleEmitterInstance* UParticleSpriteEmitter::CreateInstance(UParticleSystemComponent* InComponent)
+{
+    // If this emitter was cooked out or has no valid LOD levels don't create an instance for it.
+    if (
+        // (bCookedOut == true) ||
+        (LODLevels.Num() == 0))
+    {
+        return NULL;
+    }
+
+    FParticleEmitterInstance* Instance = 0;
+
+    UParticleLODLevel* LODLevel	= GetLODLevel(0);
+    assert(LODLevel);
+
+    if (LODLevel->TypeDataModule)
+    {
+        //@todo. This will NOT work for trails/beams!
+        Instance = LODLevel->TypeDataModule->CreateInstance(this, InComponent);
+    }
+    else
+    {
+        assert(InComponent);
+        Instance = new FParticleSpriteEmitterInstance();
+        assert(Instance);
+        Instance->InitParameters(this, InComponent);
+    }
+
+    if (Instance)
+    {
+        Instance->CurrentLODLevelIndex	= 0;
+        Instance->CurrentLODLevel		= LODLevels[Instance->CurrentLODLevelIndex];
+        Instance->Init();
+    }
+
+    return Instance;
 }

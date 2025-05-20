@@ -15,7 +15,7 @@
 #include "D3D11RHI/DXDBufferManager.h"
 
 
-class FCascadeParticleRenderPass;
+class FTranslucencyRenderPass;
 class FLightHeatMapRenderPass;
 class FPostProcessCompositingPass;
 enum class EResourceType : uint8;
@@ -110,7 +110,7 @@ public:
     FCameraEffectRenderPass* CameraEffectRenderPass = nullptr;
     FEditorRenderPass* EditorRenderPass = nullptr;
 
-    FCascadeParticleRenderPass* CascadeParticleRenderPass = nullptr;
+    FTranslucencyRenderPass* TranslucencyRenderPass = nullptr;
     
     FDepthPrePass* DepthPrePass = nullptr;
     FTileLightCullingPass* TileLightCullingPass = nullptr;

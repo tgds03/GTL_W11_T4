@@ -24,12 +24,12 @@ public:
     UParticleModuleRequired* RequiredModule;
     UParticleModuleSpawn* SpawnModule;
     TArray<class UParticleModule*> SpawnModules;
-    TArray<class UParticcleModuleSpawnBase*> SpawningModules;
+    TArray<class UParticleModuleSpawnBase*> SpawningModules;
     UParticleModuleTypeDataBase* TypeDataModule;
     TArray<class UParticleModule*> UpdateModules;
     TArray<class UParticleModule*> FinalUpdateModules;
     /** The optional EventGenerator module. */
-    class UParticleModuleEventGenerator* EventGenerator;
+    // class UParticleModuleEventGenerator* EventGenerator;
     
     /** True if the LOD level is enabled, meaning it should be updated and rendered.	*/
     uint8 bEnabled : 1;

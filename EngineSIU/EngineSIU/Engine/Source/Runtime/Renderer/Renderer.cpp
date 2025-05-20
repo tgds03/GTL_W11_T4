@@ -23,7 +23,7 @@
 #include <UObject/UObjectIterator.h>
 #include <UObject/Casts.h>
 
-#include "CascadeParticleRenderPass.h"
+#include "TranslucencyRenderPass.h"
 #include "CompositingPass.h"
 #include "LightHeatMapRenderPass.h"
 #include "PostProcessCompositingPass.h"
@@ -65,7 +65,7 @@ void FRenderer::Initialize(FGraphicsDevice* InGraphics, FDXDBufferManager* InBuf
     FogRenderPass = new FFogRenderPass();
     CameraEffectRenderPass = new FCameraEffectRenderPass();
     EditorRenderPass = new FEditorRenderPass();
-    CascadeParticleRenderPass = new FCascadeParticleRenderPass();
+    TranslucencyRenderPass = new FTranslucencyRenderPass();
     
     DepthPrePass = new FDepthPrePass();
     TileLightCullingPass = new FTileLightCullingPass();
@@ -94,7 +94,7 @@ void FRenderer::Initialize(FGraphicsDevice* InGraphics, FDXDBufferManager* InBuf
     FogRenderPass->Initialize(BufferManager, Graphics, ShaderManager);
     CameraEffectRenderPass->Initialize(BufferManager, Graphics, ShaderManager);
     EditorRenderPass->Initialize(BufferManager, Graphics, ShaderManager);
-    CascadeParticleRenderPass->Initialize(BufferManager, Graphics, ShaderManager);
+    TranslucencyRenderPass->Initialize(BufferManager, Graphics, ShaderManager);
     
     DepthPrePass->Initialize(BufferManager, Graphics, ShaderManager);
     TileLightCullingPass->Initialize(BufferManager, Graphics, ShaderManager);
@@ -272,7 +272,7 @@ void FRenderer::PrepareRenderPass() const
     UpdateLightBufferPass->PrepareRenderArr();
     FogRenderPass->PrepareRenderArr();
     EditorRenderPass->PrepareRenderArr();
-    CascadeParticleRenderPass->PrepareRenderArr();
+    TranslucencyRenderPass->PrepareRenderArr();
     TileLightCullingPass->PrepareRenderArr();
     DepthPrePass->PrepareRenderArr();
 }
@@ -288,7 +288,7 @@ void FRenderer::ClearRenderArr() const
     UpdateLightBufferPass->ClearRenderArr();
     FogRenderPass->ClearRenderArr();
     EditorRenderPass->ClearRenderArr();
-    CascadeParticleRenderPass->ClearRenderArr();
+    TranslucencyRenderPass->ClearRenderArr();
     DepthPrePass->ClearRenderArr();
     TileLightCullingPass->ClearRenderArr();
 }
@@ -439,15 +439,15 @@ void FRenderer::RenderWorldScene(const std::shared_ptr<FEditorViewportClient>& V
 }
 
 void FRenderer::RenderTranslucency(const std::shared_ptr<FEditorViewportClient>& Viewport) const
- {
-     const uint64 ShowFlag = Viewport->GetShowFlag();
+{
+    const uint64 ShowFlag = Viewport->GetShowFlag();
 
-     if (ShowFlag & EEngineShowFlags::SF_Primitives)
-     {
-         QUICK_SCOPE_CYCLE_COUNTER(UpdateCascadeParticleRenderPass_CPU)
-         QUICK_GPU_SCOPE_CYCLE_COUNTER(UpdateCascadeParticleRenderPass_GPU, *GPUTimingManager)
-         CascadeParticleRenderPass->Render(Viewport);
-     }    
+    if (ShowFlag & EEngineShowFlags::SF_Primitives)
+    {
+        QUICK_SCOPE_CYCLE_COUNTER(UpdateCascadeParticleRenderPass_CPU)
+        QUICK_GPU_SCOPE_CYCLE_COUNTER(UpdateCascadeParticleRenderPass_GPU, *GPUTimingManager)
+        TranslucencyRenderPass->Render(Viewport);
+    }
 }
 
 void FRenderer::RenderPostProcess(const std::shared_ptr<FEditorViewportClient>& Viewport) const

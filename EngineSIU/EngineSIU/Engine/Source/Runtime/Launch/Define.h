@@ -470,6 +470,7 @@ struct FViewportSize
 struct FVertexInfo
 {
     uint32_t NumVertices;
+    uint32_t CapacityVertices;
     uint32_t Stride;
     ID3D11Buffer* VertexBuffer;
 };

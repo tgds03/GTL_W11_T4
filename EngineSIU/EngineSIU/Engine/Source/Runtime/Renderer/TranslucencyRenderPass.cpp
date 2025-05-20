@@ -1,4 +1,4 @@
-﻿#include "CascadeParticleRenderPass.h"
+﻿#include "TranslucencyRenderPass.h"
 
 #include "ParticleEmitterInstances.h"
 #include "Engine/Engine.h"
@@ -14,12 +14,12 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "UnrealEd/EditorViewportClient.h"
 
-FCascadeParticleRenderPass::~FCascadeParticleRenderPass()
+FTranslucencyRenderPass::~FTranslucencyRenderPass()
 {
     ReleaseShader();
 }
 
-void FCascadeParticleRenderPass::Initialize(FDXDBufferManager* InBufferManager, FGraphicsDevice* InGraphics, FDXDShaderManager* InShaderManage)
+void FTranslucencyRenderPass::Initialize(FDXDBufferManager* InBufferManager, FGraphicsDevice* InGraphics, FDXDShaderManager* InShaderManage)
 {
     BufferManager = InBufferManager;
     Graphics = InGraphics;
@@ -27,7 +27,7 @@ void FCascadeParticleRenderPass::Initialize(FDXDBufferManager* InBufferManager, 
     CreateShader();
 }
 
-void FCascadeParticleRenderPass::PrepareRenderArr()
+void FTranslucencyRenderPass::PrepareRenderArr()
 {
     for (const auto iter : TObjectRange<UParticleSystemComponent>())
     {
@@ -41,7 +41,7 @@ void FCascadeParticleRenderPass::PrepareRenderArr()
     }
 }
 
-void FCascadeParticleRenderPass::Render(const std::shared_ptr<FEditorViewportClient>& Viewport)
+void FTranslucencyRenderPass::Render(const std::shared_ptr<FEditorViewportClient>& Viewport)
 {
     PrepareRenderState(Viewport);
 
@@ -50,12 +50,12 @@ void FCascadeParticleRenderPass::Render(const std::shared_ptr<FEditorViewportCli
     Graphics->DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
 }
 
-void FCascadeParticleRenderPass::ClearRenderArr()
+void FTranslucencyRenderPass::ClearRenderArr()
 {
     ParticleSystemComponents.Empty();
 }
 
-void FCascadeParticleRenderPass::CreateShader()
+void FTranslucencyRenderPass::CreateShader()
 {
     D3D11_INPUT_ELEMENT_DESC MeshParticleLayoutDesc[] = {
         {"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -130,11 +130,11 @@ void FCascadeParticleRenderPass::CreateShader()
     Graphics->Device->CreateSamplerState(&SamplerDesc, &SamplerState);
 }
 
-void FCascadeParticleRenderPass::ReleaseShader()
+void FTranslucencyRenderPass::ReleaseShader()
 {
 }
 
-void FCascadeParticleRenderPass::PrepareRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport)
+void FTranslucencyRenderPass::PrepareRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport)
 {
     FViewportResource* ViewportResource = Viewport->GetViewportResource();
 
@@ -146,15 +146,19 @@ void FCascadeParticleRenderPass::PrepareRenderState(const std::shared_ptr<FEdito
     Graphics->DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
-void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorViewportClient>& Viewport) const
+void FTranslucencyRenderPass::RenderParticles(const std::shared_ptr<FEditorViewportClient>& Viewport) const
 {
     for (auto& ParticleSystemComponent : ParticleSystemComponents)
     {
-        // FParticleDynamicData* DynamicData = ParticleSystemComponent->GetDynamicData();
-        // for (FDynamicEmitterDataBase* DynamicEmitterData : DynamicData->DynamicEmitterDataArray)
-        for (int i = 0; i < ParticleSystemComponent->TempTestEmitterRenderData.Num(); i++)
+        // for (int i = 0; i < ParticleSystemComponent->TempTestEmitterRenderData.Num(); i++)
+        FParticleDynamicData* DynamicData = ParticleSystemComponent->GetDynamicData();
+        if (!DynamicData)
         {
-            FDynamicEmitterDataBase* DynamicEmitterData = ParticleSystemComponent->TempTestEmitterRenderData[i];
+            break;
+        }
+        for (int i = 0; i < DynamicData->DynamicEmitterDataArray.Num(); i++)
+        {
+            FDynamicEmitterDataBase* DynamicEmitterData = DynamicData->DynamicEmitterDataArray[i];
             if (FDynamicSpriteEmitterData* DynamicSpriteEmitterData = dynamic_cast<FDynamicSpriteEmitterData*>(DynamicEmitterData))
             {
                 ID3D11InputLayout* InputLayout = ShaderManager->GetInputLayoutByKey(L"SpriteParticleVertexShader");
@@ -177,27 +181,27 @@ void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorVi
                 //     DynamicSpriteEmitterData->Sort();
                 // }
 
-                TArray<FParticleSpriteVertex> InstanceData;
-                InstanceData.SetNum(InstanceCount);
-                for (auto& Instance : InstanceData)
-                {
-                    Instance.OldPosition = Instance.Position;
-                    Instance.Position = ParticleSystemComponent->GetWorldLocation() + FVector(FMath::RandHelper(100), FMath::RandHelper(100), FMath::RandHelper(100));
-                    Instance.RelativeTime = 0.5f;
-                    Instance.ParticleId = 0;
-                    Instance.Size = FVector2D(1, 1);
-                    Instance.Rotation = 0;
-                    Instance.SubImageIndex = FMath::RandHelper(36);
-                    Instance.SubImagesHorizontal = 6;
-                    Instance.SubImagesVertical = 6;
-                    Instance.Color = FLinearColor::Red;
-                } 
-
-                
                 // TArray<FParticleSpriteVertex> InstanceData;
                 // InstanceData.SetNum(InstanceCount);
+                // for (auto& Instance : InstanceData)
+                // {
+                //     Instance.OldPosition = Instance.Position;
+                //     Instance.Position = ParticleSystemComponent->GetWorldLocation() + FVector(FMath::RandHelper(100), FMath::RandHelper(100), FMath::RandHelper(100));
+                //     Instance.RelativeTime = 0.5f;
+                //     Instance.ParticleId = 0;
+                //     Instance.Size = FVector2D(1, 1);
+                //     Instance.Rotation = 0;
+                //     Instance.SubImageIndex = FMath::RandHelper(36);
+                //     Instance.SubImagesHorizontal = 6;
+                //     Instance.SubImagesVertical = 6;
+                //     Instance.Color = FLinearColor::Red;
+                // } 
+
+                
+                TArray<FParticleSpriteVertex> InstanceData;
+                InstanceData.SetNum(InstanceCount);
                 // TODO 각 파티클 개체(각 입자)의 Instnace 데이터를 얻음. (Per Particle)
-                // DynamicSpriteEmitterData->GetVertexAndIndexData(InstanceData.GetData(), ParticleOrder, Viewport->GetCameraLocation(), ParticleSystemComponent->GetWorldMatrix());
+                 DynamicSpriteEmitterData->GetVertexAndIndexData(InstanceData.GetData(), nullptr, Viewport->GetCameraLocation(), ParticleSystemComponent->GetWorldMatrix());
             
                 UINT Offset = 0;
                 
@@ -213,6 +217,7 @@ void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorVi
                 FVertexInfo ParticleVertexInfo;
                 BufferManager->CreateVertexBuffer(ParticleSystemVertexBufferName, InstanceData, ParticleVertexInfo, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
                 BufferManager->UpdateDynamicVertexBuffer(ParticleSystemVertexBufferName, InstanceData);
+                ParticleVertexInfo = BufferManager->GetVertexBuffer(ParticleSystemVertexBufferName);
 
                 Graphics->DeviceContext->IASetVertexBuffers(0, 1, &VertexInfo.VertexBuffer, &VertexInfo.Stride, &Offset);
                 Graphics->DeviceContext->IASetVertexBuffers(1, 1, &ParticleVertexInfo.VertexBuffer, &ParticleVertexInfo.Stride, &InstanceOffset);
@@ -225,7 +230,7 @@ void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorVi
                 // TODO Set Material
 
 
-                std::shared_ptr<FTexture> Texture = FEngineLoop::ResourceManager.GetTexture(L"Assets/Texture/T_Explosion_SubUV.png");
+                std::shared_ptr<FTexture> Texture = FEngineLoop::ResourceManager.GetTexture(L"Assets/Texture/emart.png");
                 if (Texture)
                 {
                     Graphics->DeviceContext->PSSetShaderResources(0, 1, &Texture->TextureSRV);
@@ -294,13 +299,16 @@ void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorVi
 
                 // TODO
                 // 각 파티클 개체(각 입자)의 Instnace 데이터를 얻음. (Per Particle)
-                // DynamicMeshEmitterData->GetInstanceData(InstanceData.GetData(), ParticleSystemComponent->GetWorldMatrix());
+                DynamicMeshEmitterData->GetInstanceData(InstanceData.GetData(), ParticleSystemComponent->GetWorldMatrix());
                 
                 // VertexBuffer 구조체로 들어오는 MainVs -> VSINPUT 구조체에 이어 붙이면 됨.
                 FString ParticleSystemVertexBufferName = ParticleSystemComponent->GetName() + FString::FromInt(i) + "," + FString::FromInt(ParticleSystemComponent->GetUUID());
                 FVertexInfo ParticleVertexInfo;
                 BufferManager->CreateVertexBuffer(ParticleSystemVertexBufferName, InstanceData, ParticleVertexInfo, D3D11_USAGE_DYNAMIC, D3D11_CPU_ACCESS_WRITE);
                 BufferManager->UpdateDynamicVertexBuffer(ParticleSystemVertexBufferName, InstanceData);
+                ParticleVertexInfo = BufferManager->GetVertexBuffer(ParticleSystemVertexBufferName);
+
+                
                 Graphics->DeviceContext->IASetVertexBuffers(1, 1, &ParticleVertexInfo.VertexBuffer, &ParticleVertexInfo.Stride, &InstanceOffset);
                 
                 FIndexInfo ParticleIndexInfo;
@@ -322,5 +330,6 @@ void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorVi
                 InstanceData.Empty();
             }
         }
+        delete DynamicData;
     }
 }

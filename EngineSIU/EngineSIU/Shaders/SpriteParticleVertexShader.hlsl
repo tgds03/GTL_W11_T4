@@ -25,7 +25,7 @@ struct InstanceData
     float SubImagesHorizontal : SUB_IMAGE_Horizontal;
     float SubImagesVertical : SUB_IMAGE_Vertical;
     /** The color of the particle. */
-    float4 Color : TEXCOORD2;    
+    float4 Color : TEXCOORD2;
 };
 
 struct VS_INPUT_SpriteParticle

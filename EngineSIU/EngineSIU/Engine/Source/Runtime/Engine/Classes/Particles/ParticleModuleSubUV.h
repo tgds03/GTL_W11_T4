@@ -22,6 +22,13 @@ public:
 
     /** UTexture2D & USubUVAnimation */
     FTexture* SubUVTexture;
+
+    /** The number of sub-images horizontally in the texture							*/
+    int32 SubImages_Horizontal;
+
+    /** The number of sub-images vertically in the texture								*/
+    int32 SubImages_Vertical;
+    
     TEnumAsByte<EOpacitySourceMode> OpacitySourceMode;
     float AlphaThreshold;
 

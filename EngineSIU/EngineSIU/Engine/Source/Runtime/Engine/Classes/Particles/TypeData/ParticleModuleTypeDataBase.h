@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Particles/ParticleModule.h"
 
+class UParticleSystemComponent;
 class UParticleEmitter;
 
 class UParticleModuleTypeDataBase : public UParticleModule
@@ -12,4 +13,6 @@ public:
     virtual bool SupportsSubUV() const { return false; }
 
     virtual void CacheModuleInfo(UParticleEmitter* Emitter) {};
+    
+	virtual FParticleEmitterInstance* CreateInstance(UParticleEmitter* InEmitterParent, UParticleSystemComponent* InComponent);
 };

@@ -4,11 +4,11 @@
 
 class UParticleSystemComponent;
 
-class FCascadeParticleRenderPass : public IRenderPass
+class FTranslucencyRenderPass : public IRenderPass
 {
 public:
-    FCascadeParticleRenderPass() = default;
-    virtual ~FCascadeParticleRenderPass() override;
+    FTranslucencyRenderPass() = default;
+    virtual ~FTranslucencyRenderPass() override;
     
     virtual void Initialize(FDXDBufferManager* InBufferManager, FGraphicsDevice* InGraphics, FDXDShaderManager* InShaderManage) override;
     

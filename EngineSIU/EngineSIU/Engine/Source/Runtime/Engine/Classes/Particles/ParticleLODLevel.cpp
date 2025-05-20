@@ -4,6 +4,9 @@
 #include "ParticleModuleRequired.h"
 #include "ParticleModuleSpawn.h"
 #include "ParticleModuleSpawnBase.h"
+#include "ParticleSpriteEmitter.h"
+#include "Asset/StaticMeshAsset.h"
+#include "Components/Mesh/StaticMeshRenderData.h"
 #include "TypeData/ParticleModuleTypeDataBase.h"
 #include "TypeData/ParticleModuleTypeDataMesh.h"
 #include "UObject/Casts.h"
@@ -65,10 +68,11 @@ void UParticleLODLevel::UpdateModuleLists()
             {
                 TypeDataModuleIndex = i;
             }
-        } else if (Module->IsA<UParticleModuleSpawnBase>())
+        }
+        else if (Module->IsA<UParticleModuleSpawnBase>())
         {
-            UParticleModuleSpawnBase* SpawnModule = Cast<UParticleModuleSpawnBase>(Module);
-            SpawnModules.Add(SpawnModule);
+            UParticleModuleSpawnBase* SpawnBase = Cast<UParticleModuleSpawnBase>(Module);
+            SpawningModules.Add(SpawnBase);
         }
     }
 
@@ -80,18 +84,23 @@ void UParticleLODLevel::UpdateModuleLists()
     if (TypeDataModule)
     {
         UParticleModuleTypeDataMesh* MeshTD = Cast<UParticleModuleTypeDataMesh>(TypeDataModule);
-        if (MeshTD && MeshTD->Mesh /** && MeshTD->Mesh->HasValidRenderData(false) */)
+        if (MeshTD && MeshTD->Mesh && MeshTD->Mesh->GetRenderData())
         {
-            // UParticleSpriteEmitter* SpriteEmitter = Cast<UParticleSpriteEmitter>(GetOuter());
-            // if (SpriteEmitter && (MeshTD->bOverrideMaterial == false))
-            // {
-            //     FStaticMeshSection& Section = MeshTD->Mesh->GetRenderData()->LODResources[0].Sections[0];
-            //     UMaterialInterface* Material = MeshTD->Mesh->GetMaterial(Section.MaterialIndex);
-            //     if (Material)
-            //     {
-            //         RequiredModule->Material = Material;
-            //     }
-            // } 
+            UParticleSpriteEmitter* SpriteEmitter = Cast<UParticleSpriteEmitter>(GetOuter());
+            if (SpriteEmitter
+                // && (MeshTD->bOverrideMaterial == false)
+                )
+            {
+                FMaterialSubset& Section = MeshTD->Mesh->GetRenderData()->MaterialSubsets[0];
+                if (MeshTD->Mesh->GetMaterials().Num() > Section.MaterialIndex)
+                {
+                    UMaterial* Material = MeshTD->Mesh->GetMaterials()[Section.MaterialIndex]->Material;
+                    if (Material)
+                    {
+                        RequiredModule->Material = Material;
+                    }
+                }
+            } 
         }
     }
 }
