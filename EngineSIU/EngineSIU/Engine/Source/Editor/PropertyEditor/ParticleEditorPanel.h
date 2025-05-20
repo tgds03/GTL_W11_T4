@@ -5,10 +5,10 @@
 
 class UParticleModule;
 
-class ParticleEditorPanel : public UEditorPanel
+class FParticleEditorPanel : public FEditorPanel
 {
 public:
-    ParticleEditorPanel();
+    FParticleEditorPanel();
     virtual void Render() override;
     virtual void OnResize(HWND hWnd) override;
 

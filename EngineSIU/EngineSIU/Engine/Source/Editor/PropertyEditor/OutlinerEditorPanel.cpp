@@ -4,7 +4,7 @@
 #include "Engine/EditorEngine.h"
 #include <functional>
 
-void OutlinerEditorPanel::Render()
+void FOutlinerEditorPanel::Render()
 {
     /* Pre Setup */
     ImGuiIO& io = ImGui::GetIO();
@@ -103,7 +103,7 @@ void OutlinerEditorPanel::Render()
     ImGui::End();
 }
     
-void OutlinerEditorPanel::OnResize(HWND hWnd)
+void FOutlinerEditorPanel::OnResize(HWND hWnd)
 {
     RECT clientRect;
     GetClientRect(hWnd, &clientRect);

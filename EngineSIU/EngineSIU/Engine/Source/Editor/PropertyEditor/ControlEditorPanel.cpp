@@ -46,7 +46,7 @@
 #include "Contents/Actors/TriggerBox.h"
 #include "Renderer/CompositingPass.h"
 
-void ControlEditorPanel::Render()
+void FControlEditorPanel::Render()
 {
     /* Pre Setup */
     const ImGuiIO& IO = ImGui::GetIO();
@@ -101,7 +101,7 @@ void ControlEditorPanel::Render()
     ImGui::End();
 }
 
-void ControlEditorPanel::CreateMenuButton(const ImVec2 ButtonSize, ImFont* IconFont)
+void FControlEditorPanel::CreateMenuButton(const ImVec2 ButtonSize, ImFont* IconFont)
 {
     ImGui::PushFont(IconFont);
     if (ImGui::Button("\ue9ad", ButtonSize)) // Menu
@@ -248,7 +248,7 @@ void ControlEditorPanel::CreateMenuButton(const ImVec2 ButtonSize, ImFont* IconF
     }
 }
 
-void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* IconFont)
+void FControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* IconFont)
 {
     ImGui::PushFont(IconFont);
     if (ImGui::Button("\ue9c4", ButtonSize)) // Slider
@@ -498,7 +498,7 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
     }
 }
 
-void ControlEditorPanel::CreateFlagButton()
+void FControlEditorPanel::CreateFlagButton()
 {
     const std::shared_ptr<FEditorViewportClient> ActiveViewport = GEngineLoop.GetLevelEditor()->GetActiveViewportClient();
 
@@ -568,7 +568,7 @@ void ControlEditorPanel::CreateFlagButton()
     ShowFlags::GetInstance().Draw(ActiveViewport);
 }
 
-void ControlEditorPanel::CreatePIEButton(const ImVec2 ButtonSize, ImFont* IconFont)
+void FControlEditorPanel::CreatePIEButton(const ImVec2 ButtonSize, ImFont* IconFont)
 {
     UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
     if (!Engine)
@@ -597,7 +597,7 @@ void ControlEditorPanel::CreatePIEButton(const ImVec2 ButtonSize, ImFont* IconFo
 }
 
 // code is so dirty / Please refactor
-void ControlEditorPanel::CreateSRTButton(ImVec2 ButtonSize)
+void FControlEditorPanel::CreateSRTButton(ImVec2 ButtonSize)
 {
     const UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
     AEditorPlayer* Player = Engine->GetEditorPlayer();
@@ -646,7 +646,7 @@ void ControlEditorPanel::CreateSRTButton(ImVec2 ButtonSize)
     }
 }
 
-void ControlEditorPanel::OnResize(const HWND hWnd)
+void FControlEditorPanel::OnResize(const HWND hWnd)
 {
     RECT ClientRect;
     GetClientRect(hWnd, &ClientRect);
@@ -654,7 +654,7 @@ void ControlEditorPanel::OnResize(const HWND hWnd)
     Height = ClientRect.bottom - ClientRect.top;
 }
 
-void ControlEditorPanel::CreateLightSpawnButton(const ImVec2 InButtonSize, ImFont* IconFont)
+void FControlEditorPanel::CreateLightSpawnButton(const ImVec2 InButtonSize, ImFont* IconFont)
 {
     UWorld* World = GEngine->ActiveWorld;
     const ImVec2 WindowSize = ImGui::GetIO().DisplaySize;

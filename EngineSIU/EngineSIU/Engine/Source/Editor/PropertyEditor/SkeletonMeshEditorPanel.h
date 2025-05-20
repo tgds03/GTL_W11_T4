@@ -9,7 +9,7 @@ struct FSkeletonSequencePlayer
     
 };
 
-class SkeletonMeshEditorPanel : public UEditorPanel
+class FSkeletonMeshEditorPanel : public FEditorPanel
 {
 public:
     virtual void Render() override;

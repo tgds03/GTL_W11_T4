@@ -3,7 +3,7 @@
 #include "UnrealEd/EditorPanel.h"
 #include "LightGridGenerator.h"
 
-class ControlEditorPanel : public UEditorPanel
+class FControlEditorPanel : public FEditorPanel
 {
 public:
     virtual void Render() override;

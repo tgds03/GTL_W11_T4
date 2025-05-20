@@ -9,7 +9,7 @@
 #include "Math/JungleMath.h"
 #include "Engine/DataPreviewController.h"
 
-void SkeletonMeshEditorPanel::Render()
+void FSkeletonMeshEditorPanel::Render()
 {
     UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
     std::shared_ptr<UDataPreviewController> Controller = Engine->GetSkeletalMeshEditorController();
@@ -48,7 +48,7 @@ void SkeletonMeshEditorPanel::Render()
     ImGui::End();
 }
 
-void SkeletonMeshEditorPanel::RenderCommonEditorHeader()
+void FSkeletonMeshEditorPanel::RenderCommonEditorHeader()
 {
     if (ImGui::Button("Exit Edit Mode"))
     {
@@ -61,7 +61,7 @@ void SkeletonMeshEditorPanel::RenderCommonEditorHeader()
     ImGui::Separator();
 }
 
-void SkeletonMeshEditorPanel::RenderSkeletalMeshEditorUI()
+void FSkeletonMeshEditorPanel::RenderSkeletalMeshEditorUI()
 {
     // 에디터 엔진에서 현재 편집 중인 SkeletalMesh를 가져옴
     USkeletalMesh* SkelMesh = Cast<UEditorEngine>(GEngine)
@@ -141,7 +141,7 @@ void SkeletonMeshEditorPanel::RenderSkeletalMeshEditorUI()
     }
 }
 
-void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
+void FSkeletonMeshEditorPanel::RenderAnimationEditorUI()
 {
     UAnimInstance* AnimInstance = Cast<UEditorEngine>(GEngine)
         ->GetSkeletalMeshEditorController()
@@ -638,7 +638,7 @@ void SkeletonMeshEditorPanel::RenderAnimationEditorUI()
     ImGui::End();
 }
 
-void SkeletonMeshEditorPanel::RenderBoneTree(int32 BoneIndex)
+void FSkeletonMeshEditorPanel::RenderBoneTree(int32 BoneIndex)
 {
     USkeletalMesh* SkelMesh = Cast<UEditorEngine>(GEngine)
         ->GetSkeletalMeshEditorController()
@@ -675,7 +675,7 @@ void SkeletonMeshEditorPanel::RenderBoneTree(int32 BoneIndex)
     }
 }
 
-USkeletalMesh* SkeletonMeshEditorPanel::GetCurrentEdittingMesh() const
+USkeletalMesh* FSkeletonMeshEditorPanel::GetCurrentEdittingMesh() const
 {
     UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
     if (!Engine)
@@ -684,7 +684,7 @@ USkeletalMesh* SkeletonMeshEditorPanel::GetCurrentEdittingMesh() const
     return Engine->GetSkeletalMeshEditorController()->OriginalMesh;
 }
 
-int32 SkeletonMeshEditorPanel::GetRootBoneIndex(USkeletalMesh* Mesh) const
+int32 FSkeletonMeshEditorPanel::GetRootBoneIndex(USkeletalMesh* Mesh) const
 {
     if (!Mesh)
         return INDEX_NONE;
@@ -702,7 +702,7 @@ int32 SkeletonMeshEditorPanel::GetRootBoneIndex(USkeletalMesh* Mesh) const
     return INDEX_NONE;
 }
 
-void SkeletonMeshEditorPanel::OnResize(HWND hWnd)
+void FSkeletonMeshEditorPanel::OnResize(HWND hWnd)
 {
     RECT ClientRect;
     GetClientRect(hWnd, &ClientRect);

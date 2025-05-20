@@ -11,7 +11,7 @@
 class USpringArmComponent : public USceneComponent
 {
     DECLARE_CLASS(USpringArmComponent, USceneComponent)
-    friend class PropertyEditorPanel;
+    friend class FPropertyEditorPanel;
 public:
     USpringArmComponent();
     virtual ~USpringArmComponent() override = default;

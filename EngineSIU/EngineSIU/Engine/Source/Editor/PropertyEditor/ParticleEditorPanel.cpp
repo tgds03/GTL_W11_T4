@@ -19,7 +19,7 @@
 #include "UnrealEd/ImGuiWidget.h"
 #include "UObject/Casts.h"
 
-ParticleEditorPanel::ParticleEditorPanel()
+FParticleEditorPanel::FParticleEditorPanel()
 {
     // 초기화 필요시 작성
 
@@ -37,7 +37,7 @@ ParticleEditorPanel::ParticleEditorPanel()
     TargetParticleSystem->Emitters.Add(Emmitter);
 }
 
-void ParticleEditorPanel::Render()
+void FParticleEditorPanel::Render()
 {
     // 좌측 상단에 버튼 배치
     ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Always);
@@ -86,28 +86,28 @@ void ParticleEditorPanel::Render()
 
 }
 
-void ParticleEditorPanel::OnResize(HWND hWnd)
+void FParticleEditorPanel::OnResize(HWND hWnd)
 {
     RECT ClientRect;
     GetClientRect(hWnd, &ClientRect);
 }
 
-void ParticleEditorPanel::RenderMenuBar()
+void FParticleEditorPanel::RenderMenuBar()
 {
 
 }
 
-void ParticleEditorPanel::RenderToolBar(const ImVec2& InSize)
+void FParticleEditorPanel::RenderToolBar(const ImVec2& InSize)
 {
 
 }
 
-void ParticleEditorPanel::RenderViewportPanel(const ImVec2& InSize)
+void FParticleEditorPanel::RenderViewportPanel(const ImVec2& InSize)
 {
 
 }
 
-void ParticleEditorPanel::RenderDetailPanel(const ImVec2& InPos, const ImVec2& InSize)
+void FParticleEditorPanel::RenderDetailPanel(const ImVec2& InPos, const ImVec2& InSize)
 {
     ImGui::SetNextWindowPos(InPos);
     ImGui::SetNextWindowSize(InSize);
@@ -124,7 +124,7 @@ void ParticleEditorPanel::RenderDetailPanel(const ImVec2& InPos, const ImVec2& I
     ImGui::PopStyleColor();
 }
 
-void ParticleEditorPanel::RenderEmitterPanel(const ImVec2& InPos, const ImVec2& InSize)
+void FParticleEditorPanel::RenderEmitterPanel(const ImVec2& InPos, const ImVec2& InSize)
 {
     ImGui::SetNextWindowPos(InPos);
     ImGui::SetNextWindowSize(InSize);
@@ -141,7 +141,7 @@ void ParticleEditorPanel::RenderEmitterPanel(const ImVec2& InPos, const ImVec2& 
     ImGui::PopStyleColor();
 }
 
-void ParticleEditorPanel::RenderEmitterInfos()
+void FParticleEditorPanel::RenderEmitterInfos()
 {
     if (!TargetParticleSystem)
         return;
@@ -165,7 +165,7 @@ void ParticleEditorPanel::RenderEmitterInfos()
     }
 }
 
-void ParticleEditorPanel::RenderDetailInfos()
+void FParticleEditorPanel::RenderDetailInfos()
 {
     if (SelectedModule == nullptr)
     {
