@@ -14,7 +14,7 @@ struct FDistributionFloat;
 
 class UParticleModuleSpawn : public UParticleModuleSpawnBase
 {
-    DECLARE_CLASS(UParticleModuleSpawn, UParticleModuleSpawn)
+    DECLARE_CLASS(UParticleModuleSpawn, UParticleModuleSpawnBase)
 public:
     UParticleModuleSpawn();
     

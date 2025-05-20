@@ -24,6 +24,9 @@ public:
     virtual int CheckRayIntersection(const FVector& InRayOrigin, const FVector& InRayDirection, float& OutHitDistance) const;
     virtual void DestroyComponent(bool bPromoteChildren = false) override;
 
+    /** return true if it can ever render **/
+    bool CanEverRender() const;
+    
     FVector GetForwardVector() const;
     FVector GetRightVector() const;
     FVector GetUpVector() const;

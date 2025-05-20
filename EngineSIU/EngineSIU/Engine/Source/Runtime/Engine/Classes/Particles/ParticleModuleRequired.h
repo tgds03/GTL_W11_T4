@@ -17,7 +17,7 @@ class UParticleModuleRequired : public UParticleModule
 {
     DECLARE_CLASS(UParticleModuleRequired, UParticleModule)
 public:
-    UParticleModuleRequired() {}
+    UParticleModuleRequired();
 
     UMaterial* Material;
     FVector EmitterOrigin;

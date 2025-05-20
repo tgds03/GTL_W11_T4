@@ -75,6 +75,8 @@ struct FQuat
         return FQuat(-W, -X, -Y, -Z);
     }
 
+    FQuat Inverse() const;
+
 };
 
 inline FArchive& operator<<(FArchive& Ar, FQuat& Q)

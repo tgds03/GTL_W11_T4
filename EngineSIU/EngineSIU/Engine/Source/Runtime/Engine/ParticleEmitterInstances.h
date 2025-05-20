@@ -5,6 +5,7 @@
 #include "Math/Matrix.h"
 #include "EnumAsByte.h"
 
+class UMaterial;
 class UParticleModuleTypeDataMesh;
 class UParticleModule;
 class UParticleEmitter;
@@ -44,10 +45,10 @@ struct FParticleEmitterInstanceFixLayout
     virtual ~FParticleEmitterInstanceFixLayout() = default;
 };
 
-struct FLODBurstFired
-{
-    TArray<bool> Fired;
-};
+// struct FLODBurstFired
+// {
+//     TArray<bool> Fired;
+// };
 
 struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
 {
@@ -126,7 +127,7 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
     uint32 bKillOnCompleted : 1;
 
     /** The BurstFire information.										*/
-    TArray<FLODBurstFired> BurstFired;
+    // TArray<FLODBurstFired> BurstFired;
 
     // Begin Test
     /** The material to render this instance with.						*/
@@ -134,11 +135,6 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
     // End Test
 
     virtual void SetMeshMaterials(const TArray<UMaterial*>& InMaterials);
-
-    /** The number of loops completed by the instance.					*/
-    int32 LoopCount;
-
-    /////
 
     /** If true, the emitter has modules that require loop notification.*/
     uint32 bRequiresLoopNotification : 1;
@@ -163,8 +159,6 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
 
     /** The sort mode to use for this emitter as specified by artist.	*/
     int32 SortMode;
-    /** The offset to the SubUV payload in the particle data.			*/
-    int32 SubUVDataOffset;
 
     virtual void Init();
 
@@ -269,7 +263,7 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
         return nullptr;
     }
 
-protected:
+public:
     /**
      * Captures dynamic replay data for this particle system.
      *
@@ -294,8 +288,6 @@ protected:
     }
 
 	virtual void GetAllocatedSize(int32& OutNum, int32& OutMax);
-    
-	virtual FDynamicEmitterDataBase* GetDynamicData(bool bSelected);
     
     /**
     * Retrieves the current LOD level and asserts that it is valid.
@@ -340,7 +332,7 @@ struct FParticleMeshEmitterInstance : public FParticleEmitterInstance
 	 *
 	 *	@return	The replay data, or NULL on failure
 	 */
-	virtual FDynamicEmitterReplayDataBase* GetReplayData() override;
+	// virtual FDynamicEmitterReplayDataBase* GetReplayData() override;
 
 	/**
 	 *	Retrieve the allocated size of this instance.
@@ -356,7 +348,7 @@ struct FParticleMeshEmitterInstance : public FParticleEmitterInstance
 	 * @param	Mode	Specifies which resource size should be displayed. ( see EResourceSizeMode::Type )
 	 * @return  Size of resource as to be displayed to artists/ LDs in the Editor.
 	 */
-	virtual void GetResourceSizeEx(FResourceSizeEx& CumulativeResourceSize) override;
+	// virtual void GetResourceSizeEx(FResourceSizeEx& CumulativeResourceSize) override;
 
 	/**
 	 * Returns the offset to the mesh rotation payload, if any.
@@ -385,12 +377,12 @@ struct FParticleMeshEmitterInstance : public FParticleEmitterInstance
 	 * @param OutMaterialRelevance - Pointer to where material relevance flags will be stored.
 	 * @param LODLevel - The LOD level for which to compute material relevance flags.
 	 */
-	virtual void GatherMaterialRelevance(FMaterialRelevance* OutMaterialRelevance, const UParticleLODLevel* LODLevel, ERHIFeatureLevel::Type InFeatureLevel) const override;
+	// virtual void GatherMaterialRelevance(FMaterialRelevance* OutMaterialRelevance, const UParticleLODLevel* LODLevel) const override;
 
 	/**
 	 * Gets the materials applied to each section of a mesh.
 	 */
-	void GetMeshMaterials(TArray<UMaterial*,TInlineAllocator<2> >& OutMaterials, const UParticleLODLevel* LODLevel, ERHIFeatureLevel::Type InFeatureLevel, bool bLogWarnings = false) const;
+	void GetMeshMaterials(TArray<UMaterial*>& OutMaterials, const UParticleLODLevel* LODLevel, bool bLogWarnings = false) const;
 
 protected:
 

@@ -29,4 +29,6 @@ AParticleActor::AParticleActor()
         
         ParticleSystemComponent->TempTestEmitterRenderData.Add(TempEmitterData);
     }
+
+    SetActorTickInEditor(true);
 }

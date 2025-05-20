@@ -262,3 +262,8 @@ FQuat FQuat::FindBetweenNormals(const FVector& A, const FVector& B)
     const float NormAB = 1.f;
     return JungleMath::FindBetween_Helper(A, B, NormAB);
 }
+
+FQuat FQuat::Inverse() const
+{
+    return FQuat(-X, -Y, -Z, W);
+}

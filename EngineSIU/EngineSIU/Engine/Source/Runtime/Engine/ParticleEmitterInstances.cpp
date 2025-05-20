@@ -1424,12 +1424,12 @@ void FParticleEmitterInstance::ResetBurstList()
 {
     //QUICK_SCOPE_CYCLE_COUNTER(STAT_ResetBurstLists);
 
-    for (int32 BurstIndex = 0; BurstIndex < BurstFired.Num(); BurstIndex++)
-    {
-        FLODBurstFired& CurrBurstFired = BurstFired[BurstIndex];
-        for (int32 FiredIndex = 0; FiredIndex < CurrBurstFired.Fired.Num(); FiredIndex++)
-        {
-            CurrBurstFired.Fired[FiredIndex] = false;
-        }
-    }
+    // for (int32 BurstIndex = 0; BurstIndex < BurstFired.Num(); BurstIndex++)
+    // {
+    //     FLODBurstFired& CurrBurstFired = BurstFired[BurstIndex];
+    //     for (int32 FiredIndex = 0; FiredIndex < CurrBurstFired.Fired.Num(); FiredIndex++)
+    //     {
+    //         CurrBurstFired.Fired[FiredIndex] = false;
+    //     }
+    // }
 }

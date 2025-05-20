@@ -159,10 +159,10 @@ void UParticleSystemComponent::InitParticles()
             }
         }
 
-        if (bClearDynamicData)
-        {
-            ClearDynamicData();
-        }
+        // if (bClearDynamicData)
+        // {
+        //     ClearDynamicData();
+        // }
 
         if (bSetLodLevels)
         {

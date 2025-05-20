@@ -893,14 +893,3 @@ struct FParticleRandomSeedInstancePayload
 {
     FRandomStream	RandomStream;
 };
-
-//
-//	SubUV-related payloads
-//
-struct FFullSubUVPayload
-{
-    // The integer portion indicates the sub-image index.
-    // The fractional portion indicates the lerp factor.
-    float ImageIndex;
-    float RandomImageTime;
-};

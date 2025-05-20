@@ -95,7 +95,7 @@ public:
     /** 특정 위치에 있는 요소를 제거합니다. */
     void RemoveAt(SizeType Index);
 
-    void RemoveAt(SizeType Index, SizeType Count = 1, bool bAllowShrinking = true);
+    void RemoveAt(SizeType Index, SizeType Count, bool bAllowShrinking = true);
 
     /** Predicate에 부합하는 모든 요소를 제거합니다. */
     template <typename Predicate>

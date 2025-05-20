@@ -7,7 +7,7 @@ class UParticleModuleTypeDataBase : public UParticleModule
 {
     DECLARE_CLASS(UParticleModuleTypeDataBase, UParticleModule)
 public:
-    UParticleModuleTypeDataBase();
+    UParticleModuleTypeDataBase() {}
     virtual EModuleType	GetModuleType() const override {	return EPMT_TypeData;	}
     virtual bool SupportsSubUV() const { return false; }
 
