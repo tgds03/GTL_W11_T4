@@ -7,6 +7,7 @@ enum class EWorldType
     Editor,
     PIE,
     EditorPreview,
+    ParticlePreview,
     GamePreview,
     GameRPC,
     Inactive

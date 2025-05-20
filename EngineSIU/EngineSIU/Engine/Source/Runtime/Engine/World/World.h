@@ -45,7 +45,7 @@ public:
     /**
      * World에 Actor를 Spawn합니다.
      * @param InClass Spawn할 Actor 정보
-     * @return Spawn된 Actor
+     * @return Spawn된 ActorT
      */
     AActor* SpawnActor(UClass* InClass, FName InActorName = NAME_None);
 

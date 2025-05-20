@@ -18,6 +18,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
 #include "Components/TextComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "Engine/EditorEngine.h"
 #include "Engine/FObjLoader.h"
 #include "UnrealEd/ImGuiWidget.h"
@@ -141,6 +142,10 @@ void PropertyEditorPanel::Render()
     if (USpringArmComponent* SpringArmComponent = GetTargetComponent<USpringArmComponent>(SelectedActor, SelectedComponent))
     {
         RenderForSpringArmComponent(SpringArmComponent);
+    }
+    if (UParticleSystemComponent* ParticleComponent = GetTargetComponent<UParticleSystemComponent>(SelectedActor, SelectedComponent))
+    {
+        RenderForParticleSystemComponent(ParticleComponent);
     }
 
     ImGui::End();
@@ -1024,6 +1029,15 @@ void PropertyEditorPanel::RenderForSpringArmComponent(USpringArmComponent* Sprin
         ImGui::DragFloat("LogMDist", &SpringArmComponent->CameraLagMaxDistance, 1.0f, 0.0f, 1000.0f);
 
         ImGui::TreePop();
+    }
+}
+
+void PropertyEditorPanel::RenderForParticleSystemComponent(UParticleSystemComponent* ParticleComponent) const
+{
+    if (ImGui::Button("Particle Editor"))
+    {
+        UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
+        Engine->StartParticleEditMode(ParticleComponent);
     }
 }
 

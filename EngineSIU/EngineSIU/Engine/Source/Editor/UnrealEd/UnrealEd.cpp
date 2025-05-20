@@ -29,7 +29,7 @@ void UnrealEd::Initialize()
     Panels["SkeletonPanel"] = SkeletonPanel;
 
     auto ParticlePanel = std::make_shared<ParticleEditorPanel>();
-    ParticlePanel->SetVisibleInWorldType(EWorldType::Editor);
+    ParticlePanel->SetVisibleInWorldType(EWorldType::ParticlePreview);
     Panels["ParticlePanel"] = ParticlePanel;
 }
 
@@ -40,24 +40,11 @@ void UnrealEd::Render() const
     for (const auto& Panel : Panels)
     {
         // TODO : Panel을 새로 만들지 Render할때 Type을 넣어서 분기 할지 고민
-        if (Panel.Key == "ParticlePanel")
+
+        if(ActiveWorldType == Panel.Value->VisibleInWorldType ||
+            Panel.Value->VisibleInWorldType == EWorldType::None)
         {
-            if (bShowParticlePanel)
-            {
-                if (ActiveWorldType == Panel.Value->VisibleInWorldType ||
-                    Panel.Value->VisibleInWorldType == EWorldType::None)
-                {
-                    Panel.Value->Render();
-                }
-            }
-        }
-        else
-        {
-            if(ActiveWorldType == Panel.Value->VisibleInWorldType ||
-                Panel.Value->VisibleInWorldType == EWorldType::None)
-            {
-                Panel.Value->Render();
-            }
+            Panel.Value->Render();
         }
     }
 }

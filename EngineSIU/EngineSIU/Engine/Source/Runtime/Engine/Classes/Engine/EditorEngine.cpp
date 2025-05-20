@@ -24,6 +24,8 @@
 #include "Launch/EngineLoop.h"
 #include "LevelEditor/SLevelEditor.h"
 
+#include "Particles/ParticleSystemComponent.h"
+#include "Actors/PrimitiveActors/AParticleActor.h"
 
 namespace PrivateEditorSelection
 {
@@ -289,6 +291,45 @@ void UEditorEngine::StartAnimaitonEditMode(UAnimInstance* InAnim)
     FEditorViewportClient* ViewPort = GEngineLoop.GetLevelEditor()->GetViewports()->get();
     DataPreviewController = std::make_shared<UDataPreviewController>(ActiveWorld, ViewPort);
     DataPreviewController->Initialize(InAnim);
+}
+
+void UEditorEngine::StartParticleEditMode(UParticleSystemComponent* InParticleComponent)
+{
+    StartParticlePreviewMode();
+    FEditorViewportClient* ViewPort = GEngineLoop.GetLevelEditor()->GetViewports()->get();
+    
+    AActor* SpawnedActor = ActiveWorld->SpawnActor<AParticleActor>();
+    SpawnedActor->SetActorLabel(TEXT("OBJ_PARTICLE"));
+
+    //ViewPort->SetShowFlag()
+}
+
+void UEditorEngine::StartParticlePreviewMode()
+{ 
+    if (ParticlePreviewWorld)
+        return;
+
+    FWorldContext& PreviewWorldContext = CreateNewWorldContext(EWorldType::ParticlePreview);
+
+    ParticlePreviewWorld = UWorld::CreateWorld(this, EWorldType::ParticlePreview, TEXT("ParticlePreviewWorld"));
+
+    PreviewWorldContext.SetCurrentWorld(ParticlePreviewWorld);
+    ActiveWorld = ParticlePreviewWorld;
+}
+
+void UEditorEngine::EndParticlePreviewMode()
+{
+    if (!ParticlePreviewWorld)
+        return;
+
+    if (FWorldContext* Context = GetEditorPreviewWorldContext())
+        WorldList.Remove(Context);
+
+    ParticlePreviewWorld->Release();
+    GUObjectArray.MarkRemoveObject(ParticlePreviewWorld);
+    ParticlePreviewWorld = nullptr;
+
+    ActiveWorld = EditorWorld;
 }
 
 FWorldContext& UEditorEngine::GetEditorWorldContext(/*bool bEnsureIsGWorld*/)

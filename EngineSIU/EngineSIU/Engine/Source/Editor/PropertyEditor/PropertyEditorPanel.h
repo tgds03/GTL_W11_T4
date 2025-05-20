@@ -22,6 +22,7 @@ class UHeightFogComponent;
 class AEditorPlayer;
 class UStaticMeshComponent;
 class USkeletalMeshComponent;
+class UParticleSystemComponent;
 class UMaterial;
 
 // 헬퍼 함수 예시
@@ -85,6 +86,8 @@ private:
 
     void RenderForShapeComponent(UShapeComponent* ShapeComponent) const;
     void RenderForSpringArmComponent(USpringArmComponent* SpringArmComponent) const;
+
+    void RenderForParticleSystemComponent(UParticleSystemComponent* ParticleComponent) const;
     
     template<typename T>
         requires std::derived_from<T, UActorComponent>
