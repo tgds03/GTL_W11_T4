@@ -25,7 +25,7 @@ ParticleEditorPanel::ParticleEditorPanel()
     // TEST
     UParticleEmitter* Emmitter = FObjectFactory::ConstructObject<UParticleEmitter>(nullptr);
     Emmitter->LODLevels.Add(FObjectFactory::ConstructObject<UParticleLODLevel>(nullptr));
-    Emmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleVelocity>(nullptr));
+    Emmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleRequired>(nullptr));
 
     TargetParticleSystem = FObjectFactory::ConstructObject<UParticleSystem>(nullptr);
     TargetParticleSystem->Emitters.Add(Emmitter);
@@ -161,7 +161,7 @@ void ParticleEditorPanel::RenderDetailInfos()
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
         
         ImGui::Text("Required");
-        if (ImGui::TreeNodeEx("Emitter", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
+        if (ImGui::TreeNodeEx("Emitter", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) 
         {
             FVector Origin = module->EmitterOrigin;
             FImGuiWidget::DrawVec3Control("Origin", Origin, 0, 85);
@@ -184,18 +184,63 @@ void ParticleEditorPanel::RenderDetailInfos()
             bool bKillOnCompleted = module->bKillOnCompleted;
             ImGui::Checkbox("Kill On Completed", &bKillOnCompleted);
             module->bKillOnCompleted = bKillOnCompleted;
+
+            const char* Label[5] = {"None", "ViewProjDepth", "DistanceToView", "Age_OldestFirst", "Age_NewestFirst"};
+            int SortMode = module->SortMode;
+            ImGui::Combo("Sorting Mode", &SortMode, Label, 5);
+            module->SortMode = TEnumAsByte<EParticleSortMode>(SortMode);
             
             ImGui::TreePop();
         }
     
+        if (ImGui::TreeNodeEx("Elapsed Time", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            bool bEmitterDurationUseRange = module->bEmitterDurationUseRange;
+            ImGui::Checkbox("Use Emitter Duration with Range", &bEmitterDurationUseRange);
+            module->bEmitterDurationUseRange = bEmitterDurationUseRange;
+
+            ImGui::InputFloat("Duration##", &module->EmitterDuration);
+            ImGui::InputFloat("Duration Low##", &module->EmitterDurationLow);
+
+            ImGui::TreePop();
+        }
+        
+        if (ImGui::TreeNodeEx("Delay Time", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            bool bEmitterDelayUseRange = module->bEmitterDelayUseRange;
+            ImGui::Checkbox("Use Emitter Delay with Range", &bEmitterDelayUseRange);
+            module->bEmitterDelayUseRange = bEmitterDelayUseRange;
+
+            ImGui::InputFloat("Delay##", &module->EmitterDelay);
+            ImGui::InputFloat("Delay Low##", &module->EmitterDelayLow);
+
+            ImGui::TreePop();
+        }
+        
+        if (ImGui::TreeNodeEx("Sub UV", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
+        {
+            const char* Label[5] = {"None", "Linear", "Linear Blend", "Random", "Random_blend"};
+            int selected = module->InterpolationMethod;
+            ImGui::Combo("Interpolation Method", &selected, Label, 5);
+            module->InterpolationMethod = TEnumAsByte<EParticleSubUVInterpMethod>(selected);
+
+            // bool bUseScaleUV;
+
+            ImGui::InputInt("Horizontal SubImage", &module->SubImages_Horizontal);
+            ImGui::InputInt("Vertical SubImage", &module->SubImages_Vertical);
+            
+            ImGui::TreePop();
+        }
+        
         ImGui::PopStyleColor();
+        
     } else if (UParticleModuleSpawn* module = Cast<UParticleModuleSpawn>(SelectedModule))
     {
         ImGui::SetItemDefaultFocus();
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
         
         ImGui::Text("Spawn");
-        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
+        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
         {
              
             ImGui::TreePop();
@@ -208,7 +253,7 @@ void ParticleEditorPanel::RenderDetailInfos()
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
         
         ImGui::Text("Location");
-        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
+        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
         {
              
             ImGui::TreePop();
@@ -221,7 +266,7 @@ void ParticleEditorPanel::RenderDetailInfos()
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
         
         ImGui::Text("Velocity");
-        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
+        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
         {
              
             ImGui::TreePop();
@@ -234,7 +279,7 @@ void ParticleEditorPanel::RenderDetailInfos()
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
         
         ImGui::Text("Size");
-        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
+        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
         {
              
             ImGui::TreePop();
@@ -247,7 +292,7 @@ void ParticleEditorPanel::RenderDetailInfos()
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
         
         ImGui::Text("Lifetime");
-        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
+        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
         {
              
             ImGui::TreePop();
@@ -260,7 +305,7 @@ void ParticleEditorPanel::RenderDetailInfos()
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
         
         ImGui::Text("Color");
-        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
+        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
         {
              
             ImGui::TreePop();
@@ -273,7 +318,7 @@ void ParticleEditorPanel::RenderDetailInfos()
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
         
         ImGui::Text("SubUV");
-        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
+        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
         {
              
             ImGui::TreePop();
@@ -286,7 +331,7 @@ void ParticleEditorPanel::RenderDetailInfos()
         ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
         
         ImGui::Text("TypeDataMesh");
-        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
+        if (ImGui::TreeNodeEx("Transform", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
         {
              
             ImGui::TreePop();
