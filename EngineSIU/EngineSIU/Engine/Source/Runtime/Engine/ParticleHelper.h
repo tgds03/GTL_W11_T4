@@ -602,6 +602,21 @@ struct FDynamicSpriteEmitterReplayData	: public FDynamicSpriteEmitterReplayDataB
 //     // FParticleSpriteUniformParameters UniformParameters;
 // };
 
+//
+//	Helper structures for payload data...
+//
+
+//
+//	SubUV-related payloads
+//
+struct FFullSubUVPayload
+{
+    // The integer portion indicates the sub-image index.
+    // The fractional portion indicates the lerp factor.
+    float ImageIndex;
+    float RandomImageTime;
+};
+
 /** Source data for Mesh emitters */
 struct FDynamicMeshEmitterReplayData : public FDynamicSpriteEmitterReplayDataBase
 {

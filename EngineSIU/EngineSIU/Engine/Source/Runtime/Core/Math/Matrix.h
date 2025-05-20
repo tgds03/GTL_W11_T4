@@ -38,6 +38,8 @@ public:
     static FVector4 TransformVector(const FVector4& v, const FMatrix& m);
     static FMatrix CreateTranslationMatrix(const FVector& position);
 
+    static FMatrix CreateRotationTranslationMatrix(const FVector& position, const FVector& eulerAnglesDegrees);
+
     FVector4 TransformFVector4(const FVector4& vector) const;
     FVector TransformPosition(const FVector& vector) const;
 

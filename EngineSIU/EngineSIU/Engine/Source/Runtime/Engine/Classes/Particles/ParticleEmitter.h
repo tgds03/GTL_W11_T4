@@ -70,6 +70,9 @@ public:
     // Array of modules that want emitter random seed instance data
     TArray<UParticleModule*> ModulesNeedingRandomSeedInstanceData;
 
+    /** Materials collected from any MeshMaterial modules */
+    TArray<UMaterial*> MeshMaterials;
+
     /** GetCurrentLODLevel
 *	Returns the currently set LODLevel. Intended for game-time usage.
 *	Assumes that the given LODLevel will be in the [0..# LOD levels] range.

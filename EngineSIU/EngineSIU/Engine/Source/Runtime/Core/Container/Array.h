@@ -6,6 +6,8 @@
 #include "ContainerAllocator.h"
 #include "Serialization/Archive.h"
 
+#include "MakeUnsigned.h"
+
 
 template <typename T, typename Allocator = FDefaultAllocator<T>>
 class TArray
@@ -17,6 +19,19 @@ public:
 
 private:
     ArrayType ContainerPrivate;
+
+    using USizeType = typename TMakeUnsigned<SizeType>::Type;
+
+    FORCENOINLINE static void OnInvalidNum(USizeType NewNum)
+    {
+        const TCHAR* ArrayNameSuffix = TEXT("");
+        if constexpr (sizeof(SizeType) == 8)
+        {
+            ArrayNameSuffix = TEXT("64");
+        }
+
+        UE_LOG(LogLevel::Error, TEXT("Trying to resize TArray%s to an invalid size of %llu"), ArrayNameSuffix, (unsigned long long)NewNum);
+    }
 
 public:
     // Iterator를 사용하기 위함

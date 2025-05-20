@@ -860,8 +860,10 @@
     <ClCompile Include="Engine\Source\Runtime\Renderer\CascadeParticleRenderPass.cpp" />
     <ClCompile Include="FXSystem.cpp" />
     <ClCompile Include="RandomStream.h" />
-    <ClCompile Include="ParticleModuleRequired.cpp" />
-    <ClCompile Include="ParticleModuleSpawn.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Distribution\Distribution.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleRequired.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSpawn.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Core\Math\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="EngineSIU.natvis" />
@@ -1030,12 +1032,15 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\ParticleHelper.h" />
     <ClInclude Include="Engine\Source\Runtime\Renderer\CascadeParticleRenderPass.h" />
     <ClInclude Include="FXSystem.h" />
-    <ClInclude Include="ParticleModuleRequired.h" />
     <ClInclude Include="EnumAsByte.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Templates\IsIntegral.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Templates\IsPointer.h" />
-    <ClInclude Include="ParticleModuleSpawnBase.h" />
-    <ClInclude Include="ParticleModuleSpawn.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Distribution\Distribution.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleRequired.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSpawn.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSpawnBase.h" />
+    <ClInclude Include="Engine\Source\Runtime\Core\Math\Transform.h" />
+    <ClInclude Include="MakeUnsigned.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />
