@@ -28,6 +28,8 @@ public:
 
     virtual void PostSpawnInitialize();
 
+    virtual void PostInitializeComponents();
+
     virtual UObject* Duplicate(UObject* InOuter) override;
 
     /** Actor가 게임에 배치되거나 스폰될 때 호출됩니다. */

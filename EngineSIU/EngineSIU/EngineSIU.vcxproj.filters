@@ -864,6 +864,14 @@
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleRequired.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSpawn.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Core\Math\Transform.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Actors\PrimitiveActors\AParticleActor.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleColor.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleLifetime.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleLocation.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSize.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSubUV.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleVelocity.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleSystemRender.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="EngineSIU.natvis" />
@@ -1041,6 +1049,14 @@
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSpawnBase.h" />
     <ClInclude Include="Engine\Source\Runtime\Core\Math\Transform.h" />
     <ClInclude Include="MakeUnsigned.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Actors\PrimitiveActors\AParticleActor.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleColor.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleLifetime.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleLocation.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSize.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleSubUV.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleModuleVelocity.h" />
+    <ClInclude Include="ParticleModuleOrientationAxisLock.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\SlateShader.hlsl" />
@@ -1075,6 +1091,10 @@
     <None Include="Shaders\ComputeDefine.hlsl" />
     <None Include="Shaders\StaticMeshPixelShaderWorldTangent.hlsl" />
     <None Include="Shaders\CameraEffectShader.hlsl" />
+    <None Include="Shaders\MeshParticlePixelShader.hlsl" />
+    <None Include="Shaders\MeshParticleVertexShader.hlsl" />
+    <None Include="Shaders\SpriteParticlePixelShader.hlsl" />
+    <None Include="Shaders\SpriteParticleVertexShader.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\EditorShaderConstants.hlsli" />

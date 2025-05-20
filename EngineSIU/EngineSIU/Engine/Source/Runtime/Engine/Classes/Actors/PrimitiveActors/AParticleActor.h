@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #include "GameFramework/Actor.h"
 
@@ -9,6 +9,8 @@ class AParticleActor : public AActor
     DECLARE_CLASS(AParticleActor, AActor)
 public:
     AParticleActor();
+
+    virtual void PostInitializeComponents() override;
 
 protected:
     UPROPERTY

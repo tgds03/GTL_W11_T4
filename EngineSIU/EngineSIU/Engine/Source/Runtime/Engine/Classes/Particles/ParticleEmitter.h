@@ -37,9 +37,10 @@ public:
 
     bool HasAnyEnabledLODs() const;
 
-    virtual FParticleEmitterInstance* CreateInstance(UParticleSystemComponent* InComponent);
+    // Sets up this emitter with sensible defaults so we can see some particles as soon as its created.
+    virtual void SetToSensibleDefaults() {}
 
-    // 이거 다 쓰지는 않음..
+    virtual FParticleEmitterInstance* CreateInstance(UParticleSystemComponent* InComponent);
 
     /** If true, the emitter has modules that require loop notification.*/
     uint32 bRequiresLoopNotification : 1;
@@ -82,6 +83,13 @@ public:
 */
     UParticleLODLevel* GetCurrentLODLevel(FParticleEmitterInstance* Instance);
     UParticleLODLevel* GetLODLevel(int32 LODLevel);
+
+    virtual void UpdateModuleLists();
+
+    /**
+     * Builds data needed for simulation by the emitter from all modules.
+     */
+    void Build();
 
     /**
      *	Initial allocation count - overrides calculated peak count if > 0

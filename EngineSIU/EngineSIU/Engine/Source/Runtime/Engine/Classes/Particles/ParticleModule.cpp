@@ -15,6 +15,11 @@ uint32 UParticleModule::PrepPerInstanceBlock(FParticleEmitterInstance* Owner, vo
     return 0xffffffff;
 }
 
+void UParticleModule::SetToSensibleDefaults()
+{
+    //
+}
+
 FParticleRandomSeedInfo* UParticleModule::GetRandomSeedInfo()
 {
     return NULL;

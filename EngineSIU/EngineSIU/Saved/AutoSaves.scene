@@ -1,38 +1,41 @@
 {
     "Actors": [
         {
-            "ActorClass": "APawn",
-            "ActorID": "APawn_134",
-            "ActorLabel": "OBJ_APAWN_134",
+            "ActorClass": "AParticleActor",
+            "ActorID": "AParticleActor_140",
+            "ActorLabel": "OBJ_PARTICLE_140",
             "ActorTickInEditor": "true",
             "Components": [
                 {
-                    "ComponentClass": "ULuaScriptComponent",
-                    "ComponentID": "LuaComponent_0",
+                    "ComponentClass": "USceneComponent",
+                    "ComponentID": "USceneComponent_141",
                     "Properties": {
-                        "ComponentClass": "ULuaScriptComponent",
-                        "ComponentName": "LuaComponent_0",
-                        "ComponentOwner": "APawn_127",
-                        "ComponentOwnerClass": "APawn",
+                        "AttachParentID": "nullptr",
+                        "ComponentClass": "USceneComponent",
+                        "ComponentName": "USceneComponent_141",
+                        "ComponentOwner": "AParticleActor_140",
+                        "ComponentOwnerClass": "AParticleActor",
+                        "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
+                        "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
+                        "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
                         "bAutoActive": "true",
                         "bIsActive": "true"
                     }
                 },
                 {
-                    "ComponentClass": "USkeletalMeshComponent",
-                    "ComponentID": "USkeletalMeshComponent_137",
+                    "ComponentClass": "UParticleSystemComponent",
+                    "ComponentID": "UParticleSystemComponent_142",
                     "Properties": {
-                        "AABB_max": "X=96.463 Y=199.254 Z=33.858",
-                        "AABB_min": "X=-96.461 Y=-0.209 Z=-24.923",
+                        "AABB_max": "X=0.000 Y=0.000 Z=0.000",
+                        "AABB_min": "X=0.000 Y=0.000 Z=0.000",
                         "AttachParentID": "nullptr",
-                        "ComponentClass": "USkeletalMeshComponent",
-                        "ComponentName": "USkeletalMeshComponent_137",
-                        "ComponentOwner": "APawn_134",
-                        "ComponentOwnerClass": "APawn",
+                        "ComponentClass": "UParticleSystemComponent",
+                        "ComponentName": "UParticleSystemComponent_142",
+                        "ComponentOwner": "AParticleActor_140",
+                        "ComponentOwnerClass": "AParticleActor",
                         "RelativeLocation": "X=0.000 Y=0.000 Z=0.000",
                         "RelativeRotation": "Pitch=0.000 Yaw=0.000 Roll=-0.000",
                         "RelativeScale3D": "X=1.000 Y=1.000 Z=1.000",
-                        "SkeletalMeshPath": "Contents/Fbx/Twerkbin.fbx",
                         "bAutoActive": "true",
                         "bIsActive": "true",
                         "m_Type": ""
@@ -44,14 +47,14 @@
                     "Properties": {
                         "ComponentClass": "ULuaScriptComponent",
                         "ComponentName": "LuaComponent_0",
-                        "ComponentOwner": "APawn_134",
-                        "ComponentOwnerClass": "APawn",
+                        "ComponentOwner": "AParticleActor_140",
+                        "ComponentOwnerClass": "AParticleActor",
                         "bAutoActive": "true",
                         "bIsActive": "true"
                     }
                 }
             ],
-            "RootComponentID": "USkeletalMeshComponent_137"
+            "RootComponentID": "UParticleSystemComponent_142"
         }
     ],
     "NextUUID": 0,

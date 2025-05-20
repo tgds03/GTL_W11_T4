@@ -4,6 +4,9 @@
 #include "HAL/PlatformType.h"
 #include "Math/Matrix.h"
 #include "EnumAsByte.h"
+#include "Math/Transform.h"
+#include "Distribution/Distribution.h"
+#include "ParticleModuleOrientationAxisLock.h"
 
 class UMaterial;
 class UParticleModuleTypeDataMesh;
@@ -13,30 +16,157 @@ class UParticleLODLevel;
 class UParticleSystemComponent;
 
 
-enum EParticleAxisLock
+enum EParticleScreenAlignment
 {
-    /** No locking to an axis...							*/
-    EPAL_NONE,
-    /** Lock the sprite facing towards the positive X-axis	*/
-    EPAL_X,
-    /** Lock the sprite facing towards the positive Y-axis	*/
-    EPAL_Y,
-    /** Lock the sprite facing towards the positive Z-axis	*/
-    EPAL_Z,
-    /** Lock the sprite facing towards the negative X-axis	*/
-    EPAL_NEGATIVE_X,
-    /** Lock the sprite facing towards the negative Y-axis	*/
-    EPAL_NEGATIVE_Y,
-    /** Lock the sprite facing towards the negative Z-axis	*/
-    EPAL_NEGATIVE_Z,
-    /** Lock the sprite rotation on the X-axis				*/
-    EPAL_ROTATE_X,
-    /** Lock the sprite rotation on the Y-axis				*/
-    EPAL_ROTATE_Y ,
-    /** Lock the sprite rotation on the Z-axis				*/
-    EPAL_ROTATE_Z,
+    PSA_FacingCameraPosition,
+    PSA_Square,
+    PSA_Rectangle,
+    PSA_Velocity,
+    PSA_AwayFromCenter,
+    PSA_TypeSpecific,
+    PSA_FacingCameraDistanceBlend,
+    PSA_MAX,
+};
 
-    EPAL_MAX,
+
+/*-----------------------------------------------------------------------------
+    Information compiled from modules to build runtime emitter data.
+-----------------------------------------------------------------------------*/
+
+struct FParticleEmitterBuildInfo
+{
+    /** The required module. */
+    class UParticleModuleRequired* RequiredModule;
+    /** The spawn module. */
+    class UParticleModuleSpawn* SpawnModule;
+    /** The spawn-per-unit module. */
+    class UParticleModuleSpawnPerUnit* SpawnPerUnitModule;
+    /** List of spawn modules that need to be invoked at runtime. */
+    TArray<class UParticleModule*> SpawnModules;
+
+    /** The accumulated orbit offset. */
+    FDistributionVector OrbitOffset;
+    /** The accumulated orbit initial rotation. */
+    FDistributionVector OrbitInitialRotation;
+    /** The accumulated orbit rotation rate. */
+    FDistributionVector OrbitRotationRate;
+
+    /** The color scale of a particle over time. */
+    FDistributionVector ColorScale;
+    /** The alpha scale of a particle over time. */
+    FDistributionFloat AlphaScale;
+
+    /** An additional color scale for allowing parameters to be used for ColorOverLife modules. */
+    FDistributionVector DynamicColor;
+    /** An additional alpha scale for allowing parameters to be used for ColorOverLife modules. */
+    FDistributionFloat DynamicAlpha;
+
+    /** An additional color scale for allowing parameters to be used for ColorScaleOverLife modules. */
+    FDistributionVector DynamicColorScale;
+    /** An additional alpha scale for allowing parameters to be used for ColorScaleOverLife modules. */
+    FDistributionFloat DynamicAlphaScale;
+
+    /** How to scale a particle's size over time. */
+    FDistributionVector SizeScale;
+    /** The maximum size of a particle. */
+    FVector2D MaxSize;
+    /** How much to scale a particle's size based on its speed. */
+    FVector2D SizeScaleBySpeed;
+    /** The maximum amount by which to scale a particle based on its speed. */
+    FVector2D MaxSizeScaleBySpeed;
+
+    /** The sub-image index over the particle's life time. */
+    FDistributionFloat SubImageIndex;
+
+    /** Drag coefficient. */
+    FDistributionFloat DragCoefficient;
+    /** Drag scale over life. */
+    FDistributionFloat DragScale;
+
+    ///** Enable collision? */
+    //bool bEnableCollision;
+    ///** How particles respond to collision. */
+    //uint8 CollisionResponse;
+    //uint8 CollisionMode;
+    ///** Radius scale applied to friction. */
+    //float CollisionRadiusScale;
+    ///** Bias applied to the collision radius. */
+    //float CollisionRadiusBias;
+    ///** Factor reflection spreading cone when colliding. */
+    //float CollisionRandomSpread;
+    ///** Random distribution across the reflection spreading cone when colliding. */
+    //float CollisionRandomDistribution;
+    ///** Friction. */
+    //float Friction;
+    ///** Collision damping factor. */
+    //FComposableFloatDistribution Resilience;
+    ///** Collision damping factor scale over life. */
+    //FComposableFloatDistribution ResilienceScaleOverLife;
+
+    /** Location of a point source attractor. */
+    FVector PointAttractorPosition;
+    /** Radius of the point source attractor. */
+    float PointAttractorRadius;
+    /** Strength of the point attractor. */
+    FDistributionFloat PointAttractorStrength;
+
+    /** The per-particle vector field scale. */
+    FDistributionFloat VectorFieldScale;
+    /** The per-particle vector field scale-over-life. */
+    FDistributionFloat VectorFieldScaleOverLife;
+    /** Global vector field scale. */
+    float GlobalVectorFieldScale;
+    /** Global vector field tightness. */
+    float GlobalVectorFieldTightness;
+
+    /** Local vector field. */
+    class UVectorField* LocalVectorField;
+    /** Local vector field transform. */
+    FTransform LocalVectorFieldTransform;
+    /** Local vector field intensity. */
+    float LocalVectorFieldIntensity;
+    /** Tightness tweak for local vector fields. */
+    float LocalVectorFieldTightness;
+    /** Minimum initial rotation applied to local vector fields. */
+    FVector LocalVectorFieldMinInitialRotation;
+    /** Maximum initial rotation applied to local vector fields. */
+    FVector LocalVectorFieldMaxInitialRotation;
+    /** Local vector field rotation rate. */
+    FVector LocalVectorFieldRotationRate;
+
+    /** Constant acceleration to apply to particles. */
+    FVector ConstantAcceleration;
+
+    /** The maximum lifetime of any particle that will spawn. */
+    float MaxLifetime;
+    /** The maximum rotation rate of particles. */
+    float MaxRotationRate;
+    /** The estimated maximum number of particles for this emitter. */
+    int32 EstimatedMaxActiveParticleCount;
+
+    int32 ScreenAlignment;
+
+    /** An offset in UV space for the positioning of a sprites verticies. */
+    FVector2D PivotOffset;
+
+    /** If true, local vector fields ignore the component transform. */
+    uint32 bLocalVectorFieldIgnoreComponentTransform : 1;
+    /** Tile vector field in x axis? */
+    uint32 bLocalVectorFieldTileX : 1;
+    /** Tile vector field in y axis? */
+    uint32 bLocalVectorFieldTileY : 1;
+    /** Tile vector field in z axis? */
+    uint32 bLocalVectorFieldTileZ : 1;
+    /** Use fix delta time in the simulation? */
+    uint32 bLocalVectorFieldUseFixDT : 1;
+
+    /** Particle alignment overrides */
+    uint32 bRemoveHMDRoll : 1;
+    float MinFacingCameraBlendDistance;
+    float MaxFacingCameraBlendDistance;
+
+    /** Default constructor. */
+    FParticleEmitterBuildInfo();
 };
 
 // Hacky base class to avoid 8 bytes of padding after the vtable
@@ -296,6 +426,7 @@ public:
 };
 
 
+
 struct FParticleSpriteEmitterInstance : public FParticleEmitterInstance
 {
     
@@ -313,7 +444,7 @@ struct FParticleMeshEmitterInstance : public FParticleEmitterInstance
 	// TArray<UMaterial*> CurrentMaterials;
 
 	/** Constructor	*/
-	FParticleMeshEmitterInstance();
+    FParticleMeshEmitterInstance() = default;
 
 	// virtual void InitParameters(UParticleEmitter* InTemplate, UParticleSystemComponent* InComponent) override;
 	virtual void Init() override;

@@ -1,4 +1,4 @@
-﻿#include "CascadeParticleRenderPass.h"
+#include "CascadeParticleRenderPass.h"
 
 #include "ParticleEmitterInstances.h"
 #include "Engine/Engine.h"
@@ -152,9 +152,9 @@ void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorVi
     {
         // FParticleDynamicData* DynamicData = ParticleSystemComponent->GetDynamicData();
         // for (FDynamicEmitterDataBase* DynamicEmitterData : DynamicData->DynamicEmitterDataArray)
-        for (int i = 0; i < ParticleSystemComponent->TempTestEmitterRenderData.Num(); i++)
+        for (int i = 0; i < ParticleSystemComponent->EmitterRenderData.Num(); i++)
         {
-            FDynamicEmitterDataBase* DynamicEmitterData = ParticleSystemComponent->TempTestEmitterRenderData[i];
+            FDynamicEmitterDataBase* DynamicEmitterData = ParticleSystemComponent->EmitterRenderData[i];
             if (FDynamicSpriteEmitterData* DynamicSpriteEmitterData = dynamic_cast<FDynamicSpriteEmitterData*>(DynamicEmitterData))
             {
                 ID3D11InputLayout* InputLayout = ShaderManager->GetInputLayoutByKey(L"SpriteParticleVertexShader");

@@ -137,6 +137,7 @@ public:
      */
     virtual uint32	PrepPerInstanceBlock(FParticleEmitterInstance* Owner, void* InstData);
 
+    virtual void SetToSensibleDefaults();
 
     virtual FParticleRandomSeedInfo* GetRandomSeedInfo();
 

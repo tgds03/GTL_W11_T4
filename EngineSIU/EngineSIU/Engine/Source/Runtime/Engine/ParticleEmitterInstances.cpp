@@ -16,6 +16,7 @@
 #include "Particles/ParticleModuleSpawn.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "UObject/Casts.h"
+#include "Math/Transform.h"
 
 void FParticleEmitterInstance::ResetParticleParameters(float DeltaTime)
 {
@@ -903,6 +904,14 @@ FParticleRandomSeedInstancePayload* FParticleEmitterInstance::GetModuleRandomSee
 //     return NewEmitterData;
 // }
 
+void FParticleMeshEmitterInstance::SetMeshMaterials(const TArray<UMaterial*>& InMaterials)
+{
+}
+
+void FParticleMeshEmitterInstance::GetMeshMaterials(TArray<UMaterial*>& OutMaterials, const UParticleLODLevel* LODLevel, bool bLogWarnings) const
+{
+}
+
 bool FParticleMeshEmitterInstance::FillReplayData(FDynamicEmitterReplayDataBase& OutData)
 {
     QUICK_SCOPE_CYCLE_COUNTER(STAT_ParticleMeshEmitterInstance_FillReplayData);
@@ -999,6 +1008,10 @@ bool FParticleMeshEmitterInstance::FillReplayData(FDynamicEmitterReplayDataBase&
 	// }
 
 	return true;
+}
+
+void FParticleEmitterInstance::GetAllocatedSize(int32& OutNum, int32& OutMax)
+{
 }
 
 class UParticleLODLevel* FParticleEmitterInstance::GetCurrentLODLevelChecked()
@@ -1432,4 +1445,73 @@ void FParticleEmitterInstance::ResetBurstList()
     //         CurrBurstFired.Fired[FiredIndex] = false;
     //     }
     // }
+}
+
+FParticleEmitterBuildInfo::FParticleEmitterBuildInfo()
+    : RequiredModule(NULL)
+    , SpawnModule(NULL)
+    , SpawnPerUnitModule(NULL)
+    , MaxSize(1.0f, 1.0f)
+    , SizeScaleBySpeed(FVector2D::ZeroVector)
+    , MaxSizeScaleBySpeed(1.0f, 1.0f)
+    //, bEnableCollision(false)
+    //, CollisionResponse(EParticleCollisionResponse::Bounce)
+    //, CollisionMode(EParticleCollisionMode::SceneDepth)
+    //, CollisionRadiusScale(1.0f)
+    //, CollisionRadiusBias(0.0f)
+    //, CollisionRandomSpread(0.0f)
+    //, CollisionRandomDistribution(1.0f)
+    //, Friction(0.0f)
+    , PointAttractorPosition(FVector::ZeroVector)
+    , PointAttractorRadius(0.0f)
+    , GlobalVectorFieldScale(0.0f)
+    , GlobalVectorFieldTightness(-1)
+    , LocalVectorField(NULL)
+    , LocalVectorFieldTransform(FTransform::Identity())
+    , LocalVectorFieldIntensity(0.0f)
+    , LocalVectorFieldTightness(0.0f)
+    , LocalVectorFieldMinInitialRotation(FVector::ZeroVector)
+    , LocalVectorFieldMaxInitialRotation(FVector::ZeroVector)
+    , LocalVectorFieldRotationRate(FVector::ZeroVector)
+    , ConstantAcceleration(0.0f)
+    , MaxLifetime(1.0f)
+    , MaxRotationRate(1.0f)
+    , EstimatedMaxActiveParticleCount(0)
+    , ScreenAlignment(PSA_Square)
+    , PivotOffset(-0.5, -0.5)
+    , bLocalVectorFieldIgnoreComponentTransform(false)
+    , bLocalVectorFieldTileX(false)
+    , bLocalVectorFieldTileY(false)
+    , bLocalVectorFieldTileZ(false)
+    , bLocalVectorFieldUseFixDT(false)
+    , bRemoveHMDRoll(0)
+    , MinFacingCameraBlendDistance(0.0f)
+    , MaxFacingCameraBlendDistance(0.0f)
+{
+}
+
+void FParticleMeshEmitterInstance::Init()
+{
+}
+
+bool FParticleMeshEmitterInstance::Resize(int32 NewMaxActiveParticles, bool bSetMaxActiveCount)
+{
+    return false;
+}
+
+void FParticleMeshEmitterInstance::Tick(float DeltaTime, bool bSuppressSpawning)
+{
+}
+
+void FParticleMeshEmitterInstance::PostSpawn(FBaseParticle* Particle, float InterpolationPercentage, float SpawnTime)
+{
+}
+
+FDynamicEmitterDataBase* FParticleMeshEmitterInstance::GetDynamicData(bool bSelected)
+{
+    return nullptr;
+}
+
+void FParticleMeshEmitterInstance::GetAllocatedSize(int32& OutNum, int32& OutMax)
+{
 }

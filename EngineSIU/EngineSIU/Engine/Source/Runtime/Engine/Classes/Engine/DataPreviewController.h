@@ -1,4 +1,4 @@
-#pragma onece
+#pragma once
 #include "Components/SkeletalMesh/SkeletalMesh.h"
 
 enum class EPreviewType

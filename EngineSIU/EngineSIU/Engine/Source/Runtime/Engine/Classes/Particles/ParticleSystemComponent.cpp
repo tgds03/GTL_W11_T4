@@ -13,16 +13,34 @@ bool GIsAllowingParticles = true;
 
 void UParticleSystemComponent::TickComponent(float DeltaTime)
 {
-    TotalActiveParticles = 0;
-    this->DeltaTime = DeltaTime;
+    // 1. 컴포넌트 기본 정보 로깅 (TickComponent 시작 시)
+    UE_LOG(LogLevel::Display, TEXT("UParticleSystemComponent::TickComponent BEGIN - Name: %s, DeltaTime: %.4f"), *GetName(), DeltaTime);
+    if (!Template)
+    {
+        UE_LOG(LogLevel::Warning, TEXT("  - Template is NULL!"));
+        // Template이 null이면 더 이상 진행 의미 없을 수 있음
+    }
+    UE_LOG(LogLevel::Display, TEXT("  - IsActive: %s, bWasDeactivated: %s, bResetTriggered (before): %s"),
+        IsActive() ? TEXT("true") : TEXT("false"), // IsActive() 함수가 있다고 가정
+        bWasDeactivated ? TEXT("true") : TEXT("false"),
+        bResetTriggered ? TEXT("true") : TEXT("false")); // bResetTriggered는 이 줄 이후에 false로 바뀜
+
+    TotalActiveParticles = 0; // 이미 있음
+    this->DeltaTime = DeltaTime; // 이미 있음
 
     bool bRequiresReset = bResetTriggered;
     bResetTriggered = false;
     if (bRequiresReset)
     {
+        UE_LOG(LogLevel::Display, TEXT("  - bRequiresReset is true, calling ForceReset()."));
         ForceReset();
     }
-    ComputeTickComponent();
+
+    ComputeTickComponent(); // 실제 함수 호출 (만약 내용이 있다면)
+
+    // 3. 최종 결과 로깅 (TickComponent 끝 부분)
+    UE_LOG(LogLevel::Display, TEXT("UParticleSystemComponent::TickComponent END - TotalActiveParticles: %d"), TotalActiveParticles);
+    UE_LOG(LogLevel::Display, TEXT("-----------------------------------------------------")); // 프레임 구분선
 }
 
 void UParticleSystemComponent::ForceReset()
@@ -31,11 +49,88 @@ void UParticleSystemComponent::ForceReset()
     {
         Template->UpdateAllModuleLists();
     }
+
+    bool bOldActive = IsActive();
+    //ResetParticles(true);
+    if (bOldActive)
+    {
+        ActivateSystem();
+    }
+    else
+    {
+        InitializeSystem();
+    }
 }
 
 
 void UParticleSystemComponent::ComputeTickComponent()
 {
+    UE_LOG(LogLevel::Display, TEXT("UParticleSystemComponent::ComputeTickComponent SIMULATION BEGIN"));
+    if (Template && EmitterInstances.Num() > 0)
+    {
+        UE_LOG(LogLevel::Display, TEXT("  - EmitterInstances Count: %d"), EmitterInstances.Num());
+        for (int32 EmitterIndex = 0; EmitterIndex < EmitterInstances.Num(); ++EmitterIndex)
+        {
+            FParticleEmitterInstance* Instance = EmitterInstances[EmitterIndex];
+            if (Instance)
+            {
+                UE_LOG(LogLevel::Display, TEXT("    EmitterInstance[%d]: Valid"), EmitterIndex);
+                if (Instance->SpriteTemplate)
+                {
+                    UE_LOG(LogLevel::Display, TEXT("      - SpriteTemplate: %s"), *Instance->SpriteTemplate->GetName()); // UParticleEmitter의 이름
+                    UParticleLODLevel* SpriteLODLevel = Instance->GetCurrentLODLevelChecked();
+                    if (SpriteLODLevel)
+                    {
+                        UE_LOG(LogLevel::Display, TEXT("      - CurrentLODLevelIndex: %d, LODLevel Enabled: %s (가정)"),
+                            Instance->CurrentLODLevelIndex,
+                            SpriteLODLevel->bEnabled ? TEXT("true") : TEXT("false")
+                        );
+
+                        // Instance->Tick(DeltaTime, false); // Tick 호출 전에 ActiveParticles 로깅
+                        UE_LOG(LogLevel::Display, TEXT("      - ActiveParticles (Before Tick): %d, bEnabled: %s, bHaltSpawning: %s, bHaltSpawningExternal: %s"),
+                            Instance->ActiveParticles,
+                            Instance->bEnabled ? TEXT("true") : TEXT("false"),
+                            Instance->bHaltSpawning ? TEXT("true") : TEXT("false"),
+                            Instance->bHaltSpawningExternal ? TEXT("true") : TEXT("false")
+                        );
+
+                        if (Instance->bEnabled) // 인스턴스가 활성화된 경우에만 Tick
+                        {
+                            Instance->Tick(this->DeltaTime, false); // 여기서 this->DeltaTime 사용
+                        }
+
+
+                        UE_LOG(LogLevel::Display, TEXT("      - ActiveParticles (After Tick): %d"), Instance->ActiveParticles);
+                        TotalActiveParticles += Instance->ActiveParticles;
+                    }
+                    else
+                    {
+                        UE_LOG(LogLevel::Warning, TEXT("      - SpriteLODLevel for EmitterInstance[%d] is NULL or not enabled."), EmitterIndex);
+                    }
+                }
+                else
+                {
+                    UE_LOG(LogLevel::Warning, TEXT("      - SpriteTemplate for EmitterInstance[%d] is NULL."), EmitterIndex);
+                }
+            }
+            else
+            {
+                UE_LOG(LogLevel::Warning, TEXT("    EmitterInstance[%d]: NULL"), EmitterIndex);
+            }
+        }
+    }
+    else if (!Template)
+    {
+        UE_LOG(LogLevel::Warning, TEXT("  - Template is NULL, skipping emitter instance processing."));
+    }
+    else
+    {
+        UE_LOG(LogLevel::Display, TEXT("  - No EmitterInstances to process (Count: %d)."), EmitterInstances.Num());
+    }
+    UE_LOG(LogLevel::Display, TEXT("UParticleSystemComponent::ComputeTickComponent SIMULATION END"));
+
+
+
     // for (int EmitterIndex = 0; EmitterIndex < EmitterInstances.Num(); ++EmitterIndex)
     // {
     //     FParticleEmitterInstance* Instance = EmitterInstances[EmitterIndex];
@@ -52,20 +147,22 @@ void UParticleSystemComponent::ComputeTickComponent()
     // }
 }
 
+void UParticleSystemComponent::InitializeComponent()
+{
+    Super::InitializeComponent();
+}
+
 void UParticleSystemComponent::InitializeSystem()
 {
-    assert(GetWorld());
-    UE_LOG(LogLevel::Display, TEXT("InitializeSystem @ %fs Component=0x%p FXSystem=0x%p"), GetWorld()->TimeSeconds, this, FXSystem);
+    //assert(GetWorld());
+    //UE_LOG(LogLevel::Display, TEXT("InitializeSystem @ %fs Component=0x%p FXSystem=0x%p"), GetWorld()->TimeSeconds, this, FXSystem);
     
     if (GIsAllowingParticles)
     {
-        //if (IsTemplate() == true)
-        //{
-        //    return;
-        //}
-
         if (Template != NULL)
         {
+            Template->UpdateAllModuleLists();
+
             EmitterDelay = Template->Delay;
 
             if (Template->bUseDelayRange)
@@ -89,7 +186,7 @@ void UParticleSystemComponent::InitializeSystem()
 
 void UParticleSystemComponent::InitParticles()
 {
-    assert(GetWorld());
+    //assert(GetWorld());
 
     if (Template != NULL)
     {
@@ -636,4 +733,39 @@ FParticleDynamicData* UParticleSystemComponent::GetDynamicData()
 	}
 
 	return ParticleDynamicData;
+}
+
+void UParticleSystemComponent::ActivateSystem(bool bFlagAsJustAttached)
+{
+    if (!CanEverRender())
+    {
+        return;
+    }
+
+    UWorld* World = GetWorld();
+    assert(World);
+
+    if (EmitterInstances.Num() > 0)
+    {
+        int32 LiveCount = 0;
+
+        for (int32 EmitterIndex = 0; EmitterIndex < EmitterInstances.Num(); EmitterIndex++)
+        {
+            FParticleEmitterInstance* EmitInst = EmitterInstances[EmitterIndex];
+            if (EmitInst)
+            {
+                LiveCount += EmitInst->ActiveParticles;
+            }
+        }
+
+        if (LiveCount > 0)
+        {
+            UE_LOG(LogLevel::Display, TEXT("ActivateSystem called on PSysComp w/ live particles - %5d"), LiveCount);
+        }
+    }
+
+}
+
+void UParticleSystemComponent::DeactivateSystem()
+{
 }

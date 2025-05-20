@@ -17,6 +17,10 @@ void AActor::PostSpawnInitialize()
     InitLuaScriptComponent();
 }
 
+void AActor::PostInitializeComponents()
+{
+}
+
 UObject* AActor::Duplicate(UObject* InOuter)
 {
     ThisClass* NewActor = Cast<ThisClass>(Super::Duplicate(InOuter));

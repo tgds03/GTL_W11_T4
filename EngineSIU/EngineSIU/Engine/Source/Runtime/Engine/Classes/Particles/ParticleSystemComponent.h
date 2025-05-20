@@ -16,6 +16,8 @@ class UFXSystemComponent : public UPrimitiveComponent
     DECLARE_CLASS(UFXSystemComponent, UPrimitiveComponent)
 public:
     UFXSystemComponent() = default;
+
+    virtual void ActivateSystem(bool bFlagAsJustAttached = false) {};
 };
 
 
@@ -35,6 +37,8 @@ public:
 
     // 임시임
 public:
+    virtual void InitializeComponent() override;
+
     void InitializeSystem();
 
     // If particles have not already been initialised (ie. EmitterInstances created) do it now.
@@ -61,6 +65,10 @@ public:
      */
     FParticleDynamicData* GetDynamicData();
 
+    /** Activate the system */
+    virtual void ActivateSystem(bool bFlagAsJustAttached = false) override;
+    /** Deactivate the system */
+    void DeactivateSystem();
 
 
     // 언리얼 코드, GetDynamicData로 함.
@@ -103,7 +111,7 @@ public:
     // mutable TArray<FDynamicEmitterDataBase*> DynamicDataForThisFrame;
     TArray<FDynamicEmitterDataBase*> EmitterRenderData;
 
-    TArray<FDynamicEmitterDataBase*> TempTestEmitterRenderData;
+    //TArray<FDynamicEmitterDataBase*> TempTestEmitterRenderData;
 private:
     int32 LODLevel;
 };
