@@ -320,12 +320,13 @@ void UEditorEngine::StartParticleEditMode(UParticleSystemComponent* InParticleCo
 {
     StartParticlePreviewMode();
     FEditorViewportClient* Viewport = GEngineLoop.GetLevelEditor()->GetViewports()->get();
+    SelectedParticleComponent = InParticleComponent;
     ParticlePreviewController = std::make_shared<FParticlePreviewController>(ActiveWorld, Viewport);
-    ParticlePreviewController->Initialize(InParticleComponent); // Begin Test
+
+    ParticlePreviewController->Initialize(InParticleComponent->Template); // Begin Test
 
     FParticleEditorPanel* ParticlePanel = dynamic_cast<FParticleEditorPanel*>(GEngineLoop.GetUnrealEditor()->GetEditorPanel("ParticlePanel").get());
     ParticlePanel->SetParticlePreviewController(ParticlePreviewController.get());
-    ParticlePanel->SetParticleSystem(InParticleComponent->Template);
 
     FViewportResource* ViewportResource = ParticlePreviewController->GetViewportClient()->GetViewportResource();
     std::array<float, 4> BlackSceneClearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -364,6 +365,11 @@ void UEditorEngine::EndParticlePreviewMode()
     FViewportResource* ViewportResource = Viewport->GetViewportResource();
     std::array<float, 4> BaseSceneClearColor = { 0.025f, 0.025f, 0.025f, 1.0f };
     ViewportResource->SetClearColor(EResourceType::ERT_Scene, BaseSceneClearColor);
+
+    ParticlePreviewController = nullptr;
+    SelectedParticleComponent->ResetParticleSystem();
+    
+    SelectedParticleComponent = nullptr;
 }
 
 FWorldContext& UEditorEngine::GetEditorWorldContext(/*bool bEnsureIsGWorld*/)

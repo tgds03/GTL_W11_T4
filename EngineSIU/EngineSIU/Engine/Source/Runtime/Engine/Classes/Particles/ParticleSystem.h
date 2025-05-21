@@ -28,4 +28,6 @@ public:
     TArray<UParticleEmitter*> Emitters;
 
     void UpdateAllModuleLists();
+    void DeleteEmitterAt(int32 TargetEmitterIndex);
+    void DeleteEmitter(UParticleEmitter* TargetEmitter);
 };

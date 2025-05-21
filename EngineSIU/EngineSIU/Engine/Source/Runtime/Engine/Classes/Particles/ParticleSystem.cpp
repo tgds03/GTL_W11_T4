@@ -2,7 +2,10 @@
 
 #include "ParticleEmitter.h"
 #include "ParticleLODLevel.h"
+#include "ParticleModuleRequired.h"
+#include "ParticleModuleSpawn.h"
 #include "TypeData/ParticleModuleTypeDataBase.h"
+#include "UObject/ObjectFactory.h"
 
 UParticleSystem::UParticleSystem()
     : Delay(1)
@@ -45,4 +48,41 @@ void UParticleSystem::UpdateAllModuleLists()
             Emitter->CacheEmitterModuleInfo();
         }
     }
+}
+
+void UParticleSystem::DeleteEmitterAt(int32 TargetEmitterIndex)
+{
+    DeleteEmitter(Emitters[TargetEmitterIndex]);
+}
+
+void UParticleSystem::DeleteEmitter(UParticleEmitter* TargetEmitter)
+{
+    for (auto& LODLevel : TargetEmitter->LODLevels)
+    {
+        for (auto& Module : LODLevel->Modules)
+        {
+            if (Module == LODLevel->TypeDataModule || Module == LODLevel->RequiredModule || Module == LODLevel->SpawnModule)
+            {
+                continue;
+            }
+            GUObjectArray.MarkRemoveObject(Module);
+        }
+
+        if (LODLevel->TypeDataModule)
+        {
+            GUObjectArray.MarkRemoveObject(LODLevel->TypeDataModule);
+        }
+        GUObjectArray.MarkRemoveObject(LODLevel->RequiredModule);
+        GUObjectArray.MarkRemoveObject(LODLevel->SpawnModule);
+        
+        GUObjectArray.MarkRemoveObject(LODLevel);
+    }
+
+    auto prevNum = Emitters.Num();
+    Emitters.Remove(TargetEmitter);
+    if (prevNum == Emitters.Num())
+    {
+        MessageBox(nullptr, L"왜 이전이랑 같음ㄴ", L"Error", MB_OK | MB_ICONERROR);
+    }
+    GUObjectArray.MarkRemoveObject(TargetEmitter);
 }

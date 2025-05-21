@@ -91,4 +91,5 @@ private:
 
     std::shared_ptr<FDataPreviewController> DataPreviewController = nullptr;
     std::shared_ptr<FParticlePreviewController> ParticlePreviewController = nullptr;
+    UParticleSystemComponent* SelectedParticleComponent = nullptr;
 };

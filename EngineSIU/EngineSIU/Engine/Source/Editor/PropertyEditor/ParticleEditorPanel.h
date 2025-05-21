@@ -19,11 +19,6 @@ public:
         ParticlePreviewController = InController;
     }
 
-    void SetParticleSystem(UParticleSystem* InParticleSystem)
-    {
-        TargetParticleSystem = InParticleSystem;
-    }
-
 private:
     void RenderMenuBar(const ImVec2& InPos, const ImVec2& InSize);
     void RenderToolBar(const ImVec2& InPos, const ImVec2& InSize, ImFont* IconFont);
@@ -41,7 +36,6 @@ private:
 
     FParticlePreviewController* ParticlePreviewController = nullptr;
     
-    UParticleSystem* TargetParticleSystem = nullptr;
     UParticleModule* SelectedModule = nullptr;
     UParticleEmitter* SelectedEmitter = nullptr;
 
@@ -68,4 +62,6 @@ private:
     float ViewportPanelHeight;
     // ~End Panel Size
 
+
+    bool bExit;
 };

@@ -40,4 +40,5 @@ public:
     int32 PeakActiveParticles;
     
     bool InsertModule(UClass* InStaticClass, UParticleEmitter* TargetEmitter);
+    bool RemoveModule(UParticleModule* ParticleModule);
 };

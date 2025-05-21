@@ -4,6 +4,7 @@ UParticleModuleRequired::UParticleModuleRequired()
 {
     Flags = static_cast<EModuleFlag::EModuleFlags>(EModuleFlag::SpawnModule | EModuleFlag::UpdateModule);
 
+    Material = nullptr;
     EmitterDuration = 1.0f;
     EmitterDurationLow = 0.0f;
     bEmitterDurationUseRange = false;

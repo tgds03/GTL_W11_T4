@@ -71,6 +71,14 @@ UParticleSystemComponent::UParticleSystemComponent()
 //     bExcludeFromLightAttachmentGroup = true;
 }
 
+UParticleSystemComponent::~UParticleSystemComponent()
+{
+    for (auto& EmitterInstance : EmitterInstances)
+    {
+        delete EmitterInstance;
+    } 
+}
+
 
 void UParticleSystemComponent::TickComponent(float DeltaTime)
 {
@@ -626,4 +634,20 @@ FParticleDynamicData* UParticleSystemComponent::GetDynamicData()
 	}
 
 	return ParticleDynamicData;
+}
+
+void UParticleSystemComponent::SetParticleSystem(UParticleSystem* InParticleSystem)
+{
+    Template = InParticleSystem;
+    ResetParticleSystem();
+}
+
+void UParticleSystemComponent::ResetParticleSystem()
+{
+    bFirstTick = true;
+    for (auto& EmitterInstance : EmitterInstances)
+    {
+        delete EmitterInstance;
+    }
+    EmitterInstances.Empty();
 }

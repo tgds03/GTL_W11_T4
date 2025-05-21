@@ -16,18 +16,17 @@ public:
     {
     }
 
-    void Initialize(UParticleSystemComponent* InParticleSystemComponent);
+    void Initialize(UParticleSystem* InParticleSystem);
 
-    UParticleSystemComponent* GetParticleSystemComponent() const;
     FEditorViewportClient* GetViewportClient() const { return AttachedViewport; }
 
     void Release();
 
+    UParticleSystem* TargetParticleSystem = nullptr;
+    AParticleActor* PreviewActor = nullptr;
+    UParticleSystemComponent* PreviewParticleSystemComponent = nullptr;
 private:
     UWorld* PreviewWorld = nullptr;
     FEditorViewportClient* AttachedViewport = nullptr;
 
-    UParticleSystem* TargetParticleSystem = nullptr;
-    UParticleSystemComponent* PreviewParticleSystemComponent = nullptr;
-    AParticleActor* PreviewActor = nullptr;
 };

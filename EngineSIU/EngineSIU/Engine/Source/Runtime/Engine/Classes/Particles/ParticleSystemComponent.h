@@ -1,6 +1,7 @@
 #pragma once
 #include "RandomStream.h"
 #include "Components/PrimitiveComponent.h"
+#include "Engine/ParticlePreviewController.h"
 #include "UObject/ObjectMacros.h"
 
 class FParticleDynamicData;
@@ -25,6 +26,7 @@ class UParticleSystemComponent : public UFXSystemComponent
 public:
 
     UParticleSystemComponent();
+    virtual ~UParticleSystemComponent() override;
     
     virtual void TickComponent(float DeltaTime) override;
 
@@ -61,13 +63,14 @@ public:
     FParticleDynamicData* GetDynamicData();
 
 
-
     // 언리얼 코드, GetDynamicData로 함.
     
     /** Clears dynamic data on the rendering thread. */
     // void ClearDynamicData();
     // virtual void UpdateDynamicData();
 
+    void SetParticleSystem(UParticleSystem* InParticleSystem);
+    void ResetParticleSystem();
 
     float DeltaTime;
 private:

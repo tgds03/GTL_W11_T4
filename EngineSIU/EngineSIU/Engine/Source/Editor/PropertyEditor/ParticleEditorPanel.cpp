@@ -26,6 +26,7 @@
 #include "Engine/UnrealClient.h"
 #include <array>
 
+#include "Actors/PrimitiveActors/AParticleActor.h"
 #include "Asset/StaticMeshAsset.h"
 #include "Components/Mesh/StaticMeshRenderData.h"
 #include "Engine/AssetManager.h"
@@ -38,9 +39,7 @@ FParticleEditorPanel::FParticleEditorPanel()
 
 void FParticleEditorPanel::Render()
 {
-    UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
-    
-
+    bExit = false;
     HWND Hwnd = ::GetActiveWindow();
     RECT ClientRect = { 0,0,0,0 };
     if (Hwnd)
@@ -55,6 +54,8 @@ void FParticleEditorPanel::Render()
     CalculatePanelSize(ClientRect);
 
     RenderMenuBar(ImVec2(0.0f, 0.0f), ImVec2(WinWidth, MenuBarHeight));
+    if (bExit)
+        return;
     RenderToolBar(ImVec2(0.0f, MenuBarHeight), ImVec2(WinWidth, ToolBarHeight), IconFont);
     RenderEmitterPanel(ImVec2(EmitterPanelXPos, UsableScreenYOffset), ImVec2(EmitterPanelWidth, UsableScreenHeight));
     RenderDetailPanel(ImVec2(0.0f, DetailPanelYPos), ImVec2(LeftAreaWidth, DetailPanelHeight));
@@ -98,6 +99,7 @@ void FParticleEditorPanel::RenderMenuBar(const ImVec2& InPos, const ImVec2& InSi
             {
                 UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
                 Engine->EndParticlePreviewMode();
+                bExit = true;
             }
             ImGui::EndMenu();
         }
@@ -220,29 +222,28 @@ void FParticleEditorPanel::RenderEmitterPanel(const ImVec2& InPos, const ImVec2&
 
 void FParticleEditorPanel::RenderEmitterInfos()
 {
-    if (!TargetParticleSystem)
+    if (!ParticlePreviewController->PreviewParticleSystemComponent || !ParticlePreviewController->TargetParticleSystem)
     {
         ImGui::Text("No Particle System loaded.");
         return;
     }
 
-    if (ImGui::Button("Add Emitter"))
+    bool bAdd = false;
+    if (ImGui::Button("Add Particle Sprite Emitter"))
     {
-        UParticleSpriteEmitter* ParticleSpriteEmitter = FObjectFactory::ConstructObject<UParticleSpriteEmitter>(nullptr);
-        TargetParticleSystem->Emitters.Add(ParticleSpriteEmitter);
-        ParticleSpriteEmitter->CreateLODLevel(0);
-        ParticleSpriteEmitter->SetToSensibleDefaults();
+        bAdd = true;
     }
     ImGui::Separator();
 
     ImGui::BeginChild("EmittersHorizontalArea", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
+    int32 DeleteEmitterIndex = -1;
     bool bIsFirstEmitter = true;
     const float emitterColumnWidth = 300.f;
     const float modulesListHeight = 800.f;
-    for (int i = 0; i < TargetParticleSystem->Emitters.Num(); ++i)
+    for (int i = 0; i < ParticlePreviewController->TargetParticleSystem->Emitters.Num(); ++i)
     {
-        UParticleEmitter* Emitter = TargetParticleSystem->Emitters[i];
+        UParticleEmitter* Emitter = ParticlePreviewController->TargetParticleSystem->Emitters[i];
         if (!Emitter) continue;
 
         if (!bIsFirstEmitter)
@@ -263,25 +264,33 @@ void FParticleEditorPanel::RenderEmitterInfos()
                 if (Emitter->LODLevels.Num() > 0)
                 {
                     UParticleLODLevel* LODLevel = Emitter->GetLODLevel(0);
+
+                    if (LODLevel->RequiredModule)
                     {
                         bool bSelected = (LODLevel->RequiredModule == SelectedModule);
                         if (ImGui::Selectable("Required Module", bSelected, ImGuiSelectableFlags_DontClosePopups | ImGuiSelectableFlags_SpanAllColumns))
                         {
+                            SelectedEmitter = Emitter;
                             SelectedModule = LODLevel->RequiredModule;
                         }
                     }
+                    
+                    if (LODLevel->SpawnModule)
                     {
                         bool bSelected = (LODLevel->SpawnModule == SelectedModule);
                         if (ImGui::Selectable("Spawn Module", bSelected, ImGuiSelectableFlags_DontClosePopups | ImGuiSelectableFlags_SpanAllColumns))
                         {
+                            SelectedEmitter = Emitter;
                             SelectedModule = LODLevel->SpawnModule;
                         }
                     }
 
+                    if (LODLevel->TypeDataModule)
                     {
                         bool bSelected = (LODLevel->TypeDataModule == SelectedModule);
                         if (ImGui::Selectable("Type Data Module", bSelected, ImGuiSelectableFlags_DontClosePopups | ImGuiSelectableFlags_SpanAllColumns))
                         {
+                            SelectedEmitter = Emitter;
                             SelectedModule = LODLevel->TypeDataModule;
                         }
                     }
@@ -296,6 +305,7 @@ void FParticleEditorPanel::RenderEmitterInfos()
 
                         if (ImGui::Selectable((*ModuleDisplayName), bSelected, ImGuiSelectableFlags_DontClosePopups | ImGuiSelectableFlags_SpanAllColumns))
                         {
+                            SelectedEmitter = Emitter;
                             SelectedModule = Module;
                         }
                     }
@@ -304,11 +314,39 @@ void FParticleEditorPanel::RenderEmitterInfos()
             }
         }
 
+        if (ImGui::Selectable("Delete Emitter", false, ImGuiSelectableFlags_DontClosePopups | ImGuiSelectableFlags_SpanAllColumns))
+        {
+            DeleteEmitterIndex = i;
+        }
+
+
         ImGui::EndChild();
         ImGui::PopID();
     }
 
+    if (DeleteEmitterIndex != -1)
+    {
+        ParticlePreviewController->TargetParticleSystem->DeleteEmitterAt(DeleteEmitterIndex);
+        ParticlePreviewController->PreviewActor->Destroy();
+        ParticlePreviewController->Initialize(ParticlePreviewController->TargetParticleSystem);
+        SelectedModule = nullptr;
+        SelectedEmitter = nullptr;
+    }
+    
     ImGui::EndChild();
+
+    if (bAdd)
+    {
+        UParticleSpriteEmitter* ParticleSpriteEmitter = FObjectFactory::ConstructObject<UParticleSpriteEmitter>(nullptr);
+        ParticlePreviewController->TargetParticleSystem->Emitters.Add(ParticleSpriteEmitter);
+        ParticleSpriteEmitter->CreateLODLevel(0);
+        ParticleSpriteEmitter->SetToSensibleDefaults();
+        
+        ParticlePreviewController->PreviewActor->Destroy();
+        ParticlePreviewController->Initialize(ParticlePreviewController->TargetParticleSystem);
+        SelectedModule = nullptr;
+        SelectedEmitter = nullptr;
+    }
 }
 
 void FParticleEditorPanel::RenderDetailInfos()
@@ -333,26 +371,28 @@ void FParticleEditorPanel::RenderDetailInfos()
 
     if (UParticleModuleRequired* RequiredModule = Cast<UParticleModuleRequired>(SelectedModule))
     {
-
-        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
-        if (ImGui::TreeNodeEx("Materials", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
+        if (RequiredModule->Material)
         {
-            if (ImGui::Selectable(GetData(RequiredModule->Material->GetName()), false, ImGuiSelectableFlags_AllowDoubleClick))
+            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+            if (ImGui::TreeNodeEx("Materials", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
             {
-                if (ImGui::IsMouseDoubleClicked(0))
+                if (ImGui::Selectable(GetData(RequiredModule->Material->GetName()), false, ImGuiSelectableFlags_AllowDoubleClick))
                 {
-                    // IsOpen = true;
+                    if (ImGui::IsMouseDoubleClicked(0))
+                    {
+                        // IsOpen = true;
+                    }
                 }
-            }
 
-            // if (ImGui::Button("    +    "))
-            // {
+                // if (ImGui::Button("    +    "))
+                // {
                 // IsCreateMaterial = true;
-            // }
+                // }
 
-            ImGui::TreePop();
+                ImGui::TreePop();
+            }
+            ImGui::PopStyleColor();
         }
-        ImGui::PopStyleColor();
         
         // if (IsOpen != -1)
         // {
@@ -579,6 +619,21 @@ void FParticleEditorPanel::RenderDetailInfos()
     else
     {
         ImGui::TextWrapped("Properties editor for this module type ('%s') is not yet implemented.", (*ModuleClassName));
+    }
+
+    if (SelectedModule)
+    {
+        if (ImGui::Selectable("Delete Module", false, ImGuiSelectableFlags_AllowDoubleClick))
+        {
+            if (SelectedEmitter && SelectedEmitter->GetLODLevel(0)->RemoveModule(SelectedModule))
+            {
+                SelectedEmitter->UpdateModuleLists();
+                ParticlePreviewController->PreviewActor->Destroy();
+                ParticlePreviewController->Initialize(ParticlePreviewController->TargetParticleSystem);
+                SelectedModule = nullptr;
+                SelectedEmitter = nullptr;
+            }
+        }
     }
 
     ImGui::PopStyleColor();

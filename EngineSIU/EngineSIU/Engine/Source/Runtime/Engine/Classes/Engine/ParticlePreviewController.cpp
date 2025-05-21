@@ -1,25 +1,30 @@
 #include "ParticlePreviewController.h"
 #include "Actors/PrimitiveActors/AParticleActor.h"
+#include "Particles/ParticleEmitter.h"
 #include "World/World.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Particles/ParticleSystem.h"
 
-void FParticlePreviewController::Initialize(UParticleSystemComponent* InParticleSystemComponent)
+void FParticlePreviewController::Initialize(UParticleSystem* InParticleSystem)
 {
-    if (!InParticleSystemComponent)
+    if (!InParticleSystem)
     {
         return;
     }
-    TargetParticleSystem = InParticleSystemComponent->Template;
+    TargetParticleSystem = InParticleSystem;
 
     PreviewActor = PreviewWorld->SpawnActor<AParticleActor>();
     PreviewActor->SetActorLabel(TEXT("OBJ_PARTICLE"));
-    PreviewParticleSystemComponent = InParticleSystemComponent;
-}
+    PreviewParticleSystemComponent = PreviewActor->GetComponentByClass<UParticleSystemComponent>();
 
-UParticleSystemComponent* FParticlePreviewController::GetParticleSystemComponent() const
-{
-    return PreviewParticleSystemComponent;
+    auto Emitters = PreviewParticleSystemComponent->Template->Emitters;
+    for (auto& Emitter : Emitters)
+    {
+        PreviewParticleSystemComponent->Template->DeleteEmitter(Emitter);
+    }
+    GUObjectArray.MarkRemoveObject(PreviewParticleSystemComponent->Template);
+    
+    PreviewParticleSystemComponent->SetParticleSystem(TargetParticleSystem);
 }
 
 void FParticlePreviewController::Release()

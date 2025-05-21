@@ -147,3 +147,23 @@ bool UParticleLODLevel::InsertModule(UClass* InStaticClass, UParticleEmitter* Ta
     TargetEmitter->UpdateModuleLists();
 
 }
+
+bool UParticleLODLevel::RemoveModule(UParticleModule* Module)
+{
+    if (Module->IsA(UParticleModuleTypeDataBase::StaticClass()))
+    {
+        return false;
+    }
+    else if (Module->IsA(UParticleModuleSpawn::StaticClass()))
+    {
+        return false;
+    }
+    else if (Module->IsA(UParticleModuleRequired::StaticClass()))
+    {
+        return false;
+    }
+    
+    GUObjectArray.MarkRemoveObject(Module);    
+    Modules.Remove(Module);
+    return true;
+}

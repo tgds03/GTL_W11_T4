@@ -242,7 +242,10 @@ bool FParticleEmitterInstance::Resize(int32 NewMaxActiveParticles, bool bSetMaxA
 void FParticleEmitterInstance::Tick(float DeltaTime, bool bSuppressSpawning)
 {
     assert(SpriteTemplate);
-    assert(SpriteTemplate->LODLevels.Num() > 0);
+    if (SpriteTemplate->LODLevels.Num() <= 0)
+    {
+        return;
+    }
 
     bool bFirstTime = (SecondsSinceCreation > 0.f) ? false : true;
     
@@ -1837,7 +1840,7 @@ FParticleEmitterInstance::~FParticleEmitterInstance()
 
     FPlatformMemory::Free<EAT_Container>(ParticleData, ParticleStride * MaxActiveParticles);
     FPlatformMemory::Free<EAT_Container>(ParticleIndices, sizeof(uint16) * (MaxActiveParticles + 1));
-    // FPlatformMemory::Free(InstanceData);
+    FPlatformMemory::Free<EAT_Object>(InstanceData, SpriteTemplate->ReqInstanceBytes);
     // BurstFired.Empty();
 }
 
