@@ -131,6 +131,7 @@ public:
     /// ClearColor
     ////////
     std::array<float, 4> GetClearColor(EResourceType Type) const;
+    void SetClearColor(EResourceType Type, const std::array<float, 4>& Color);
     
 private:
     // DirectX

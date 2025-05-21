@@ -311,6 +311,9 @@ void UEditorEngine::StartParticleEditMode(UParticleSystemComponent* InParticleCo
     AActor* SpawnedActor = ActiveWorld->SpawnActor<AParticleActor>();
     SpawnedActor->SetActorLabel(TEXT("OBJ_PARTICLE"));
 
+    FViewportResource* ViewportResource = ParticlePreviewController->GetViewportClient()->GetViewportResource();
+    std::array<float, 4> BlackSceneClearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
+    ViewportResource->SetClearColor(EResourceType::ERT_Scene, BlackSceneClearColor);
     //ViewPort->SetShowFlag()
 }
 
@@ -340,6 +343,11 @@ void UEditorEngine::EndParticlePreviewMode()
     ParticlePreviewWorld = nullptr;
 
     ActiveWorld = EditorWorld;
+
+    FEditorViewportClient* Viewport = GEngineLoop.GetLevelEditor()->GetViewports()->get();
+    FViewportResource* ViewportResource = Viewport->GetViewportResource();
+    std::array<float, 4> BaseSceneClearColor = { 0.025f, 0.025f, 0.025f, 1.0f };
+    ViewportResource->SetClearColor(EResourceType::ERT_Scene, BaseSceneClearColor);
 }
 
 FWorldContext& UEditorEngine::GetEditorWorldContext(/*bool bEnsureIsGWorld*/)
