@@ -68,6 +68,7 @@
 #define INDEX_REQUIREDMODULE	(INDEX_NONE - 2)
 #define INDEX_SPAWNMODULE		(INDEX_NONE - 3)
 
+class UMaterial;
 struct FParticleMeshEmitterInstance;
 class UStaticMesh;
 
@@ -418,7 +419,7 @@ struct FDynamicEmitterDataBase
 /** Source data base class for Sprite emitters */
 struct FDynamicSpriteEmitterReplayDataBase : public FDynamicEmitterReplayDataBase
 {
-    // UMaterialInterface*				MaterialInterface;
+    UMaterial*				        Material;
     // struct FParticleRequiredModule	*RequiredModule;
     FVector							NormalsSphereCenter;
     FVector							NormalsCylinderDirection;

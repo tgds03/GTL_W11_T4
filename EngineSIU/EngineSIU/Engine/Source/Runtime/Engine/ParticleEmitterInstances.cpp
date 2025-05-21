@@ -968,7 +968,7 @@ bool FParticleEmitterInstance::FillReplayData(FDynamicEmitterReplayDataBase& Out
 			static_cast< FDynamicSpriteEmitterReplayDataBase* >( &OutData );
 
 		// NewReplayData->RequiredModule = LODLevel->RequiredModule->CreateRendererResource();
-		// NewReplayData->MaterialInterface = NULL;	// Must be set by derived implementation
+		NewReplayData->Material = NULL;	// Must be set by derived implementation
 		// NewReplayData->InvDeltaSeconds = (LastDeltaTime > UE_KINDA_SMALL_NUMBER) ? (1.0f / LastDeltaTime) : 0.0f;
 		// NewReplayData->LWCTile = ((Component == nullptr) || LODLevel->RequiredModule->bUseLocalSpace) ? FVector::Zero() : Component->GetLWCTile();
 
@@ -1145,7 +1145,7 @@ bool FParticleSpriteEmitterInstance::FillReplayData(FDynamicEmitterReplayDataBas
         static_cast< FDynamicSpriteEmitterReplayData* >( &OutData );
 
     // Get the material instance. If there is none, or the material isn't flagged for use with particle systems, use the DefaultMaterial.
-    // NewReplayData->MaterialInterface = GetCurrentMaterial();
+    NewReplayData->Material = CurrentMaterial;
 
     return true;
 }

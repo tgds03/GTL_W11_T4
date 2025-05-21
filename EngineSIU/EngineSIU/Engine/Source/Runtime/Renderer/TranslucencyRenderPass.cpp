@@ -262,11 +262,20 @@ void FTranslucencyRenderPass::RenderParticles(const std::shared_ptr<FEditorViewp
                 // TODO Set Material
 
 
-                std::shared_ptr<FTexture> Texture = FEngineLoop::ResourceManager.GetTexture(L"Assets/Texture/emart.png");
-                if (Texture)
+                // std::shared_ptr<FTexture> Texture = FEngineLoop::ResourceManager.GetTexture(L"Assets/Texture/emart.png");
+                if (Source.Material && Source.Material->GetMaterialInfo().TextureInfos.Num() > 0)
                 {
-                    Graphics->DeviceContext->PSSetShaderResources(0, 1, &Texture->TextureSRV);
-                    Graphics->DeviceContext->PSSetSamplers(0, 1, &Texture->SamplerState);
+                    auto Texture = FEngineLoop::ResourceManager.GetTexture(Source.Material->GetMaterialInfo().TextureInfos[0].TexturePath);
+                    if (Texture)
+                    {
+                        Graphics->DeviceContext->PSSetShaderResources(0, 1, &Texture->TextureSRV);
+                        Graphics->DeviceContext->PSSetSamplers(0, 1, &Texture->SamplerState);
+                    }
+                    else
+                    {
+                        ID3D11ShaderResourceView* NullSRV[1] = { nullptr };
+                        Graphics->DeviceContext->PSSetShaderResources(0, 1, NullSRV);
+                    }
                 }
                 Graphics->DeviceContext->DrawIndexedInstanced(IndexInfo.NumIndices, InstanceCount, 0, 0, 0);
                 InstanceData.Empty();
