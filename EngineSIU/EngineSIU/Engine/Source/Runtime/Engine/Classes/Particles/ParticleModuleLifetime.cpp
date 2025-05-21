@@ -33,7 +33,8 @@ void UParticleModuleLifetime::SpawnEx(FParticleEmitterInstance* Owner, uint32 Of
         if (Particle.OneOverMaxLifetime > 0.f)
         {
             Particle.OneOverMaxLifetime = 1.f / (MaxLifetime + 1.f / Particle.OneOverMaxLifetime);
-        } else
+        }
+        else
         {
             Particle.OneOverMaxLifetime = MaxLifetime > 0.f ? 1.f / MaxLifetime : 0.f;
         }

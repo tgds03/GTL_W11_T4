@@ -24,9 +24,8 @@ class UParticleSystemComponent : public UFXSystemComponent
     DECLARE_CLASS(UParticleSystemComponent, UFXSystemComponent)
 public:
 
-    UParticleSystemComponent() = default;
-
-
+    UParticleSystemComponent();
+    
     virtual void TickComponent(float DeltaTime) override;
 
     void ForceReset();
@@ -105,5 +104,7 @@ public:
 
     TArray<FDynamicEmitterDataBase*> TempTestEmitterRenderData;
 private:
-    int32 LODLevel;
+    int32 LODLevel = 0;
+
+    bool bFirstTick = true;
 };

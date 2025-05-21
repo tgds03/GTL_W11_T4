@@ -1,14 +1,11 @@
 #pragma once
-#include "UObject/ObjectMacros.h"
 #include "Particles/ParticleModule.h"
-
-struct FParticleEmitterInstance;
 
 class UParticleModuleSpawnBase : public UParticleModule
 {
     DECLARE_CLASS(UParticleModuleSpawnBase, UParticleModule)
 public:
-    UParticleModuleSpawnBase() = default;
+    UParticleModuleSpawnBase();
     /**
      *	If true, the SpawnRate of the SpawnModule of the emitter will be processed.
      *	If mutliple Spawn modules are 'stacked' in an emitter, if ANY of them
@@ -21,7 +18,7 @@ public:
      *	If mutliple Spawn modules are 'stacked' in an emitter, if ANY of them
      *	have this set to false, it will not process the SpawnModule BurstList.
      */
-    uint32 bProcessBurstList : 1;
+    // uint32 bProcessBurstList : 1;
 
 
     //~ Begin UParticleModule Interface
@@ -63,12 +60,12 @@ public:
      *	@return	bool		false if the default BurstList should be ignored.
      *						true if the default BurstList should still be processed.
      */
-    virtual bool GetBurstCount(FParticleEmitterInstance* Owner, int32 Offset, float OldLeftover,
-        float DeltaTime, int32& Number)
-    {
-        Number = 0;
-        return bProcessBurstList;
-    }
+    // virtual bool GetBurstCount(FParticleEmitterInstance* Owner, int32 Offset, float OldLeftover,
+    //     float DeltaTime, int32& Number)
+    // {
+    //     Number = 0;
+    //     return bProcessBurstList;
+    // }
 
     /**
      *	Retrieve the maximum spawn rate for this module...
@@ -92,7 +89,7 @@ public:
      *
      *	@return	int32			The maximum burst count
      */
-    virtual int32 GetMaximumBurstCount() { return 0; }
+    // virtual int32 GetMaximumBurstCount() { return 0; }
 
 };
 

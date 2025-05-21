@@ -1,16 +1,12 @@
 #pragma once
 
-#include "UObject/ObjectMacros.h"
-#include "Particles/ParticleEmitter.h"
 #include "ParticleModuleSpawnBase.h"
+
 #include "Distribution/Distribution.h"
-#include "EnumAsByte.h"
 
 // FIX-ME: Should implement PCH.h
 #define WITH_EDITOR 1
 
-class UParticleLODLevel;
-struct FDistributionFloat;
 
 class UParticleModuleSpawn : public UParticleModuleSpawnBase
 {
@@ -51,8 +47,7 @@ public:
     virtual bool GetSpawnAmount(FParticleEmitterInstance* Owner, int32 Offset, float OldLeftover,
         float DeltaTime, int32& Number, float& Rate) override;
     virtual float GetMaximumSpawnRate() override;
-    // virtual float GetEstimatedSpawnRate() override;
-    // virtual int32 GetMaximumBurstCount() override;
+    virtual float GetEstimatedSpawnRate() override;
     //~ End UParticleModuleSpawnBase Interface
 
     float GetGlobalRateScale() const;

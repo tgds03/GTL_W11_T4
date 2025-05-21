@@ -3,7 +3,6 @@
 #include "ParticleHelper.h"
 #include "HAL/PlatformType.h"
 #include "Math/Matrix.h"
-#include "EnumAsByte.h"
 
 class UMaterial;
 class UParticleModuleTypeDataMesh;
@@ -52,6 +51,8 @@ struct FParticleEmitterInstanceFixLayout
 
 struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
 {
+    FParticleEmitterInstance();
+    
     UParticleEmitter* SpriteTemplate;
 
     // Owner
@@ -204,6 +205,8 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
 
     virtual void Tick_ModuleUpdate(float DeltaTime, UParticleLODLevel* CurrentLODLevel);
     virtual void Tick_ModuleFinalUpdate(float DeltaTime, UParticleLODLevel* CurrentLODLevel);
+
+    virtual void UpdateBoundingBox(float DeltaTime);
     
     /** Get offset for particle payload data for a particular module */
     uint32 GetModuleDataOffset(UParticleModule* Module);
@@ -248,7 +251,7 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
      */
     virtual void PostSpawn(FBaseParticle* Particle, float InterpolationPercentage, float SpawnTime);
 
-    void InitParameters(UParticleEmitter* InTemplate, UParticleSystemComponent* InComponent);
+    virtual void InitParameters(UParticleEmitter* InTemplate, UParticleSystemComponent* InComponent);
 
     void SetupEmitterDuration();
     
@@ -271,7 +274,7 @@ public:
      *
      * @return Returns true if successful
      */
-    virtual bool FillReplayData( FDynamicEmitterReplayDataBase& OutData ) { return false; }
+    virtual bool FillReplayData( FDynamicEmitterReplayDataBase& OutData );
     /** Get pointer to emitter instance random seed payload data for a particular module */
     FParticleRandomSeedInstancePayload* GetModuleRandomSeedInstanceData(UParticleModule* Module);
 
@@ -287,7 +290,11 @@ public:
         bHaltSpawningExternal = bInHaltSpawning;
     }
 
-	virtual void GetAllocatedSize(int32& OutNum, int32& OutMax);
+	virtual void GetAllocatedSize(int32& OutNum, int32& OutMax)
+    {
+        OutNum = 0;
+        OutMax = 0;
+    }
     
     /**
     * Retrieves the current LOD level and asserts that it is valid.
@@ -298,6 +305,15 @@ public:
 
 struct FParticleSpriteEmitterInstance : public FParticleEmitterInstance
 {
+    
+    FParticleSpriteEmitterInstance();
+    
+    /**
+     *	Retrieves the dynamic data for the emitter
+     */
+    virtual FDynamicEmitterDataBase* GetDynamicData(bool bSelected) override;
+    
+    virtual bool FillReplayData( FDynamicEmitterReplayDataBase& OutData ) override;
     
 };
 
@@ -315,11 +331,10 @@ struct FParticleMeshEmitterInstance : public FParticleEmitterInstance
 	/** Constructor	*/
 	FParticleMeshEmitterInstance();
 
-	// virtual void InitParameters(UParticleEmitter* InTemplate, UParticleSystemComponent* InComponent) override;
-	virtual void Init() override;
+	virtual void InitParameters(UParticleEmitter* InTemplate, UParticleSystemComponent* InComponent) override;
 	virtual bool Resize(int32 NewMaxActiveParticles, bool bSetMaxActiveCount = true) override;
 	virtual void Tick(float DeltaTime, bool bSuppressSpawning) override;
-	// virtual void UpdateBoundingBox(float DeltaTime) override;
+	virtual void UpdateBoundingBox(float DeltaTime) override;
 	// virtual uint32 RequiredBytes() override;
 	virtual void PostSpawn(FBaseParticle* Particle, float InterpolationPercentage, float SpawnTime) override;
 	virtual FDynamicEmitterDataBase* GetDynamicData(bool bSelected) override;

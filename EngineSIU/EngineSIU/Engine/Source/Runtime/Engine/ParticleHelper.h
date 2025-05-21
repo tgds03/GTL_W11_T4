@@ -316,8 +316,8 @@ struct FParticleDataContainer
     {
         Free();
     }
-    void Alloc(int32 InParticleDataNumBytes, int32 InParticleIndicesNumShorts) {}
-    void Free() {}
+    void Alloc(int32 InParticleDataNumBytes, int32 InParticleIndicesNumShorts);
+    void Free();
 };
 
 struct FDynamicEmitterReplayDataBase
@@ -417,7 +417,7 @@ struct FDynamicEmitterDataBase
 struct FDynamicSpriteEmitterReplayDataBase : public FDynamicEmitterReplayDataBase
 {
     // UMaterialInterface*				MaterialInterface;
-    struct FParticleRequiredModule	*RequiredModule;
+    // struct FParticleRequiredModule	*RequiredModule;
     FVector							NormalsSphereCenter;
     FVector							NormalsCylinderDirection;
     float							InvDeltaSeconds;
@@ -444,8 +444,8 @@ struct FDynamicSpriteEmitterReplayDataBase : public FDynamicEmitterReplayDataBas
     float						MaxFacingCameraBlendDistance;
 	
     /** Constructor */
-    FDynamicSpriteEmitterReplayDataBase() {};
-    ~FDynamicSpriteEmitterReplayDataBase() {};
+    FDynamicSpriteEmitterReplayDataBase();
+    ~FDynamicSpriteEmitterReplayDataBase();
 
     // /** Serialization */
     // virtual void Serialize( FArchive& Ar );
@@ -893,3 +893,10 @@ struct FParticleRandomSeedInstancePayload
 {
     FRandomStream	RandomStream;
 };
+
+FORCEINLINE FVector2D GetParticleSizeWithUVFlipInSign(const FBaseParticle& Particle, const FVector2D& ScaledSize)
+{
+    return FVector2D(
+        Particle.BaseSize.X >= 0.0f ? ScaledSize.X : -ScaledSize.X,
+        Particle.BaseSize.Y >= 0.0f ? ScaledSize.Y : -ScaledSize.Y);
+}

@@ -22,7 +22,7 @@ class UParticleEmitter : public UObject
     DECLARE_CLASS(UParticleEmitter, UObject)
 
 public:
-    UParticleEmitter() = default;
+    UParticleEmitter();
 
     TArray<class UParticleLODLevel*> LODLevels;
 
@@ -73,6 +73,18 @@ public:
     /** Materials collected from any MeshMaterial modules */
     TArray<UMaterial*> MeshMaterials;
 
+
+
+    /** CreateLODLevel
+     *	Creates the given LOD level.
+     *	Intended for editor-time usage.
+     *	Assumes that the given LODLevel will be in the [0..100] range.
+     *	
+     *	@return The index of the created LOD level
+     */
+    int32 CreateLODLevel(int32 LODLevel);
+
+    
     /** GetCurrentLODLevel
 *	Returns the currently set LODLevel. Intended for game-time usage.
 *	Assumes that the given LODLevel will be in the [0..# LOD levels] range.
@@ -90,4 +102,8 @@ public:
     float QualityLevelSpawnRateScale;
 
     void CacheEmitterModuleInfo();
+
+    void UpdateModuleLists();
+
+    void Build();
 };

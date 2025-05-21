@@ -1,8 +1,4 @@
 #pragma once
-#include "Container/Array.h"
-
-class UParticleEmitter;
-
 #include "UObject/Object.h"
 #include "UObject/ObjectMacros.h"
 
