@@ -675,30 +675,34 @@ float FParticleEmitterInstance::Spawn(float DeltaTime)
 		}
 	}
 
+    // TODO 하셈
 	// Figure out spawn rate for this tick.
-	if (bProcessSpawnRate)
-	{
-		// float RateScale = LODLevel->SpawnModule->RateScale.GetValue(EmitterTime) * LODLevel->SpawnModule->GetGlobalRateScale();
-	    float RateScale;
-	    if (LODLevel->SpawnModule->bSpawnRateScaleUseRange)
-	    {
-	        RateScale = LODLevel->SpawnModule->RateScale + (LODLevel->SpawnModule->RateScale - LODLevel->SpawnModule->RateScaleLow) * FMath::RandNormalized();
-	    } else
-	    {
-	        RateScale = LODLevel->SpawnModule->RateScale;
-	    }
+	// if (bProcessSpawnRate)
+	// {
+	// 	// float RateScale = LODLevel->SpawnModule->RateScale.GetValue(EmitterTime) * LODLevel->SpawnModule->GetGlobalRateScale();
+	//     float RateScale;
+	//     if (LODLevel->SpawnModule->bSpawnRateScaleUseRange)
+	//     {
+	//         RateScale = LODLevel->SpawnModule->RateScale + (LODLevel->SpawnModule->RateScale - LODLevel->SpawnModule->RateScaleLow) * FMath::RandNormalized();
+	//     }
+	//     else
+	//     {
+	//         RateScale = LODLevel->SpawnModule->RateScale;
+	//     }
+	//
+	//     float Rate;
+	//     if (LODLevel->SpawnModule->bSpawnRateUseRange)
+	//     {
+	//         Rate = LODLevel->SpawnModule->Rate + (LODLevel->SpawnModule->Rate - LODLevel->SpawnModule->RateLow) * FMath::RandNormalized();
+	//     } else
+	//     {
+	//         Rate = LODLevel->SpawnModule->Rate;
+	//     }
+	// 	SpawnRate += Rate * RateScale;
+	// 	SpawnRate = FMath::Max<float>(0.0f, SpawnRate);
+	// }
 
-	    float Rate;
-	    if (LODLevel->SpawnModule->bSpawnRateUseRange)
-	    {
-	        Rate = LODLevel->SpawnModule->Rate + (LODLevel->SpawnModule->Rate - LODLevel->SpawnModule->RateLow) * FMath::RandNormalized();
-	    } else
-	    {
-	        Rate = LODLevel->SpawnModule->Rate;
-	    }
-		SpawnRate += Rate * RateScale;
-		SpawnRate = FMath::Max<float>(0.0f, SpawnRate);
-	}
+    SpawnRate = FMath::RandHelper(10);
 
 	// Take Bursts into account as well...
 	// if (bProcessBurstList)
