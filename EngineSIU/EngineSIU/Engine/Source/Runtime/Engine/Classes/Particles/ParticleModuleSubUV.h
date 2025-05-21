@@ -40,4 +40,6 @@ public:
     virtual void Update(FParticleEmitterInstance* Owner, uint32 Offset, float DeltaTime) override;
 
     virtual float DetermineImageIndex(FParticleEmitterInstance* Owner, int32 Offset, FBaseParticle* Particle, EParticleSubUVInterpMethod InterpMethod, FFullSubUVPayload& SubUVPayload, float DeltaTime);
+
+    void SetToSensibleDefaults(UParticleEmitter* Owner) override;
 };

@@ -5,6 +5,7 @@
 #include "UObject/ObjectMacros.h"
 #include "RandomStream.h"
 
+class UParticleEmitter;
 class UParticleModuleTypeDataBase;
 struct FBaseParticle;
 struct FParticleEmitterInstance;
@@ -146,6 +147,7 @@ public:
     virtual void FinalUpdate(FParticleEmitterInstance* Owner, uint32 Offset, float DeltaTime);
     virtual uint32 RequiredBytes(UParticleModuleTypeDataBase* TypeData);
     virtual uint32 RequiredBytesPerInstance();
+    virtual void SetToSensibleDefaults(UParticleEmitter* Owner);
     
     bool GetFlag(EModuleFlag::EModuleFlags Flag)
     {
