@@ -29,7 +29,7 @@ class UParticleSpriteEmitter : public UParticleEmitter
 
     //~ Begin UParticleEmitter Interface
     virtual FParticleEmitterInstance* CreateInstance(UParticleSystemComponent* InComponent) override;
-    // virtual void SetToSensibleDefaults() override;
+    virtual void SetToSensibleDefaults() override;
     //~ End UParticleEmitter Interface
 };
 

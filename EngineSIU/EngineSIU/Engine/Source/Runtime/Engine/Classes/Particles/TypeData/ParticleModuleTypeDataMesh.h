@@ -47,4 +47,6 @@ public:
     virtual bool SupportsSubUV() const override { return true; }
 
     void SetToSensibleDefaults(UParticleEmitter* Owner) override;
+
+    FParticleEmitterInstance* CreateInstance(UParticleEmitter* InEmitterParent, UParticleSystemComponent* InComponent) override;
 };

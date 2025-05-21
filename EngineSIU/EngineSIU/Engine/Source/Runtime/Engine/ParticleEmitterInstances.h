@@ -361,7 +361,7 @@ struct FParticleMeshEmitterInstance : public FParticleEmitterInstance
 	 *	@param	OutNum			The size of this instance
 	 *	@param	OutMax			The maximum size of this instance
 	 */
-	virtual void GetAllocatedSize(int32& OutNum, int32& OutMax) override;
+	// virtual void GetAllocatedSize(int32& OutNum, int32& OutMax) override;
 
 	/**
 	 * Returns the size of the object/ resource for display to artists/ LDs in the Editor.
@@ -391,7 +391,7 @@ struct FParticleMeshEmitterInstance : public FParticleEmitterInstance
 	 * Sets the materials with which mesh particles should be rendered.
 	 * @param InMaterials - The materials.
 	 */
-	virtual void SetMeshMaterials( const TArray<UMaterial*>& InMaterials ) override;
+	// virtual void SetMeshMaterials( const TArray<UMaterial*>& InMaterials ) override;
 
 	/**
 	 * Gathers material relevance flags for this emitter instance.
@@ -403,7 +403,7 @@ struct FParticleMeshEmitterInstance : public FParticleEmitterInstance
 	/**
 	 * Gets the materials applied to each section of a mesh.
 	 */
-	void GetMeshMaterials(TArray<UMaterial*>& OutMaterials, const UParticleLODLevel* LODLevel, bool bLogWarnings = false) const;
+	// void GetMeshMaterials(TArray<UMaterial*>& OutMaterials, const UParticleLODLevel* LODLevel, bool bLogWarnings = false) const;
 
 protected:
 

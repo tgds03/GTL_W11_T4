@@ -126,6 +126,7 @@ FParticleEmitterInstance* UParticleModuleTypeDataBase::CreateInstance(UParticleE
 
 UParticleModuleTypeDataMesh::UParticleModuleTypeDataMesh() : Super()
 {
+    Mesh = nullptr;
     CastShadows = false;
     DoCollisions = false;
     // MeshAlignment = PSMA_MeshFaceCameraWithRoll;
@@ -144,6 +145,19 @@ void UParticleModuleTypeDataMesh::SetToSensibleDefaults(UParticleEmitter* Owner)
         FResourceManager::CreateStaticMesh("Contents/Reference/Reference.obj");
         Mesh = FResourceManager::GetStaticMesh(L"Contents/Reference/Reference.obj");
     }
+}
+
+FParticleEmitterInstance* UParticleModuleTypeDataMesh::CreateInstance(UParticleEmitter* InEmitterParent, UParticleSystemComponent* InComponent)
+{
+    SetToSensibleDefaults(InEmitterParent);
+    FParticleEmitterInstance* Instance = new FParticleMeshEmitterInstance();
+    assert(Instance);
+
+    Instance->InitParameters(InEmitterParent, InComponent);
+
+    // CreateDistribution();
+    
+    return Instance;
 }
 
 void UParticleModuleLifetime::SetToSensibleDefaults(UParticleEmitter* Owner)

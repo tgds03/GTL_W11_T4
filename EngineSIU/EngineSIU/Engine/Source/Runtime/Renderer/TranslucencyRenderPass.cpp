@@ -290,35 +290,35 @@ void FTranslucencyRenderPass::RenderParticles(const std::shared_ptr<FEditorViewp
 
                 TArray<FMeshParticleInstanceVertex> InstanceData;
                 InstanceData.SetNum(InstanceCount);
-                for (auto& Instance : InstanceData)
-                {
-                    Instance.Color = FLinearColor::Red;
-                    
-                    {
-                        Instance.Transform[0] = FVector4::ZeroVector;
-                        Instance.Transform[0].W = ParticleSystemComponent->GetWorldLocation().X + FMath::RandHelper(100);
-                    }
-
-                    {
-                        Instance.Transform[1] = FVector4::ZeroVector;
-                        Instance.Transform[1].W = ParticleSystemComponent->GetWorldLocation().Y + FMath::RandHelper(100);
-                    }
-                    
-                    {
-                        Instance.Transform[2] = FVector4::ZeroVector;
-                        Instance.Transform[2].W = ParticleSystemComponent->GetWorldLocation().Z + FMath::RandHelper(100);
-                    }
-                    
-                    
-                    Instance.Transform[0].X = 2;
-                    Instance.Transform[1].Y = 2;
-                    Instance.Transform[2].Z = 2;
-                    auto randomValueX = FMath::RandHelper(10);
-                    auto randomValueY = FMath::RandHelper(10);
-                    auto randomValueZ = FMath::RandHelper(10);
-                    Instance.Velocity = FVector(randomValueX, randomValueY, randomValueZ);
-                    Instance.RelativeTime = 0.5f;
-                } 
+                // for (auto& Instance : InstanceData)
+                // {
+                //     Instance.Color = FLinearColor::Red;
+                //     
+                //     {
+                //         Instance.Transform[0] = FVector4::ZeroVector;
+                //         Instance.Transform[0].W = ParticleSystemComponent->GetWorldLocation().X + FMath::RandHelper(100);
+                //     }
+                //
+                //     {
+                //         Instance.Transform[1] = FVector4::ZeroVector;
+                //         Instance.Transform[1].W = ParticleSystemComponent->GetWorldLocation().Y + FMath::RandHelper(100);
+                //     }
+                //     
+                //     {
+                //         Instance.Transform[2] = FVector4::ZeroVector;
+                //         Instance.Transform[2].W = ParticleSystemComponent->GetWorldLocation().Z + FMath::RandHelper(100);
+                //     }
+                //     
+                //     
+                //     Instance.Transform[0].X = 2;
+                //     Instance.Transform[1].Y = 2;
+                //     Instance.Transform[2].Z = 2;
+                //     auto randomValueX = FMath::RandHelper(10);
+                //     auto randomValueY = FMath::RandHelper(10);
+                //     auto randomValueZ = FMath::RandHelper(10);
+                //     Instance.Velocity = FVector(randomValueX, randomValueY, randomValueZ);
+                //     Instance.RelativeTime = 0.5f;
+                // } 
 
                 // TODO
                 // 각 파티클 개체(각 입자)의 Instnace 데이터를 얻음. (Per Particle)

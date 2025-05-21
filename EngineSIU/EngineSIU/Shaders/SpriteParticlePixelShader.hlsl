@@ -30,6 +30,6 @@ float4 mainPS(PS_INPUT_SpriteParticle Input) : SV_Target
     {
         discard;
     }
-        
+    Color.a = .4f;
     return Color;
 }

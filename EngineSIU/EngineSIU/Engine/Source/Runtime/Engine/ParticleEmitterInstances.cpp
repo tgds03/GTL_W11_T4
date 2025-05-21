@@ -1169,6 +1169,16 @@ bool FParticleSpriteEmitterInstance::FillReplayData(FDynamicEmitterReplayDataBas
     return true;
 }
 
+FParticleMeshEmitterInstance::FParticleMeshEmitterInstance() :
+      FParticleEmitterInstance()
+    , MeshTypeData(NULL)
+    , MeshRotationActive(false)
+    , MeshRotationOffset(0)
+    , MeshMotionBlurOffset(0)
+{
+}
+
+
 void FParticleMeshEmitterInstance::InitParameters(UParticleEmitter* InTemplate, UParticleSystemComponent* InComponent)
 {
     QUICK_SCOPE_CYCLE_COUNTER(STAT_MeshEmitterInstance_InitParameters);
@@ -1465,6 +1475,69 @@ void FParticleMeshEmitterInstance::UpdateBoundingBox(float DeltaTime)
 		// 	ParticleBoundingBox = FBox(MinVal, MaxVal);
 		// }
 	}
+}
+
+void FParticleMeshEmitterInstance::PostSpawn(FBaseParticle* Particle, float InterpolationPercentage, float SpawnTime)
+{
+    FParticleEmitterInstance::PostSpawn(Particle, InterpolationPercentage, SpawnTime);
+	UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
+
+	// FMeshRotationPayloadData* PayloadData = (FMeshRotationPayloadData*)((uint8*)Particle + MeshRotationOffset);
+
+	// if (LODLevel->RequiredModule->ScreenAlignment == PSA_Velocity
+	// 	|| LODLevel->RequiredModule->ScreenAlignment == PSA_AwayFromCenter)
+	// {
+	// 	// Determine the rotation to the velocity vector and apply it to the mesh
+	// 	FVector	NewDirection(Particle->Velocity);
+	// 	if (LODLevel->RequiredModule->ScreenAlignment == PSA_AwayFromCenter)
+	// 	{
+	// 		NewDirection = Particle->Location;
+	// 	}
+	//
+	// 	NewDirection.Normalize();
+	// 	FVector	OldDirection(1.0f, 0.0f, 0.0f);
+	//
+	// 	FQuat Rotation	= FQuat::FindBetweenNormals(OldDirection, NewDirection);
+	// 	FVector Euler	= Rotation.Euler();
+	//
+	// 	PayloadData->Rotation.X	+= Euler.X;
+	// 	PayloadData->Rotation.Y	+= Euler.Y;
+	// 	PayloadData->Rotation.Z	+= Euler.Z;
+	// }
+
+	// FVector InitialOrient = MeshTypeData->RollPitchYawRange.GetValue(SpawnTime, 0, 0, &MeshTypeData->RandomStream);
+	// PayloadData->InitialOrientation = (FVector3f)InitialOrient;
+
+	// if (MeshMotionBlurOffset)
+	// {
+	// 	FMeshRotationPayloadData* RotationPayloadData = (FMeshRotationPayloadData*)((uint8*)Particle + MeshRotationOffset);
+	// 	FMeshMotionBlurPayloadData* MotionBlurPayloadData = (FMeshMotionBlurPayloadData*)((uint8*)Particle + MeshMotionBlurOffset);
+	//
+	// 	MotionBlurPayloadData->BaseParticlePrevRotation = Particle->Rotation;
+	// 	MotionBlurPayloadData->BaseParticlePrevVelocity = Particle->Velocity;
+	// 	MotionBlurPayloadData->BaseParticlePrevSize = Particle->Size;
+	// 	MotionBlurPayloadData->PayloadPrevRotation = RotationPayloadData->Rotation;
+	//
+	// 	if (CameraPayloadOffset)
+	// 	{
+	// 		const FCameraOffsetParticlePayload* CameraPayload = (const FCameraOffsetParticlePayload*)((const uint8*)Particle + CameraPayloadOffset);
+	// 		MotionBlurPayloadData->PayloadPrevCameraOffset = CameraPayload->Offset;
+	// 	}
+	// 	else
+	// 	{
+	// 		MotionBlurPayloadData->PayloadPrevCameraOffset = 0.0f;
+	// 	}
+	//
+	// 	if (OrbitModuleOffset)
+	// 	{
+	// 		const FOrbitChainModuleInstancePayload* OrbitPayload = (const FOrbitChainModuleInstancePayload*)((const uint8*)Particle + OrbitModuleOffset);
+	// 		MotionBlurPayloadData->PayloadPrevOrbitOffset = OrbitPayload->Offset;
+	// 	}
+	// 	else
+	// 	{
+	// 		MotionBlurPayloadData->PayloadPrevOrbitOffset = FVector3f::ZeroVector;
+	// 	}
+	// }
 }
 
 FDynamicEmitterDataBase* FParticleMeshEmitterInstance::GetDynamicData(bool bSelected)

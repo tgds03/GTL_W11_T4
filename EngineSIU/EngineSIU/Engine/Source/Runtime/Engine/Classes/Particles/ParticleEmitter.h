@@ -39,6 +39,9 @@ public:
 
     virtual FParticleEmitterInstance* CreateInstance(UParticleSystemComponent* InComponent);
 
+    // Sets up this emitter with sensible defaults so we can see some particles as soon as its created.
+    virtual void SetToSensibleDefaults() {}
+    
     // 이거 다 쓰지는 않음..
 
     /** If true, the emitter has modules that require loop notification.*/

@@ -1,8 +1,11 @@
 #include "ParticleEmitter.h"
 #include "ParticleLODLevel.h"
+#include "ParticleModuleLifetime.h"
 #include "ParticleModuleRequired.h"
+#include "ParticleModuleSize.h"
 #include "ParticleModuleSpawn.h"
 #include "ParticleModuleSubUV.h"
+#include "ParticleModuleVelocity.h"
 #include "ParticleSpriteEmitter.h"
 #include "TypeData/ParticleModuleTypeDataBase.h"
 #include "UObject/ObjectFactory.h"
@@ -290,7 +293,7 @@ int32 UParticleEmitter::CreateLODLevel(int32 LODLevel)
 		// Create the RequiredModule
 		UParticleModuleRequired* RequiredModule = FObjectFactory::ConstructObject<UParticleModuleRequired>(GetOuter());
 		assert(RequiredModule);
-		// RequiredModule->SetToSensibleDefaults(this);
+		RequiredModule->SetToSensibleDefaults(this);
 		CreatedLODLevel->RequiredModule	= RequiredModule;
 
 		// The SpawnRate for the required module
@@ -317,6 +320,7 @@ int32 UParticleEmitter::CreateLODLevel(int32 LODLevel)
 		UParticleModuleSpawn* SpawnModule = FObjectFactory::ConstructObject<UParticleModuleSpawn>(GetOuter());
 		assert(SpawnModule);
 		CreatedLODLevel->SpawnModule = SpawnModule;
+        SpawnModule->SetToSensibleDefaults(this);
 		// SpawnModule->LODValidity = (1 << LODLevel);
 		// UDistributionFloatConstant* ConstantSpawn	= Cast<UDistributionFloatConstant>(SpawnModule->Rate.Distribution);
 		// ConstantSpawn->Constant					= 10;
@@ -375,4 +379,51 @@ FParticleEmitterInstance* UParticleSpriteEmitter::CreateInstance(UParticleSystem
     }
 
     return Instance;
+}
+
+void UParticleSpriteEmitter::SetToSensibleDefaults()
+{
+	UParticleLODLevel* LODLevel = GetLODLevel(0);
+	
+    LODLevel->InsertModule(UParticleModuleLifetime::StaticClass(), this);
+    LODLevel->InsertModule(UParticleModuleSize::StaticClass(), this);
+    LODLevel->InsertModule(UParticleModuleVelocity::StaticClass(), this);
+
+	// Color over life module
+	// UParticleModuleColorOverLife* ColorModule = NewObject<UParticleModuleColorOverLife>(GetOuter());
+	// UDistributionVectorConstantCurve* ColorCurveDist = Cast<UDistributionVectorConstantCurve>(ColorModule->ColorOverLife.Distribution);
+	// if (ColorCurveDist)
+	// {
+	// 	// Add two points, one at time 0.0f and one at 1.0f
+	// 	for (int32 Key = 0; Key < 2; Key++)
+	// 	{
+	// 		int32	KeyIndex = ColorCurveDist->CreateNewKey(Key * 1.0f);
+	// 		for (int32 SubIndex = 0; SubIndex < 3; SubIndex++)
+	// 		{
+	// 			ColorCurveDist->SetKeyOut(SubIndex, KeyIndex, 1.0f);
+	// 		}
+	// 	}
+	// 	ColorCurveDist->bIsDirty = true;
+	// }
+	// ColorModule->AlphaOverLife.Distribution = NewObject<UDistributionFloatConstantCurve>(ColorModule);
+	// UDistributionFloatConstantCurve* AlphaCurveDist = Cast<UDistributionFloatConstantCurve>(ColorModule->AlphaOverLife.Distribution);
+	// if (AlphaCurveDist)
+	// {
+	// 	// Add two points, one at time 0.0f and one at 1.0f
+	// 	for (int32 Key = 0; Key < 2; Key++)
+	// 	{
+	// 		int32	KeyIndex = AlphaCurveDist->CreateNewKey(Key * 1.0f);
+	// 		if (Key == 0)
+	// 		{
+	// 			AlphaCurveDist->SetKeyOut(0, KeyIndex, 1.0f);
+	// 		}
+	// 		else
+	// 		{
+	// 			AlphaCurveDist->SetKeyOut(0, KeyIndex, 0.0f);
+	// 		}
+	// 	}
+	// 	AlphaCurveDist->bIsDirty = true;
+	// }
+	// ColorModule->LODValidity = 1;
+	// LODLevel->Modules.Add(ColorModule);
 }

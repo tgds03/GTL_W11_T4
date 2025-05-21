@@ -23,7 +23,7 @@ void UParticleModuleVelocity::SpawnEx(FParticleEmitterInstance* Owner, uint32 Of
     SPAWN_INIT;
     {
         FVector Vel = StartVelocity.GetValue(Owner->EmitterTime, InRandomStream);
-        Vel = FVector(FMath::RandNormalized(), FMath::RandNormalized(), FMath::RandNormalized());
+        Vel = FVector(FMath::RandNormalized(), FMath::RandNormalized(), FMath::RandNormalized()) * 5;
         FVector FromOrigin = (Particle.Location - Owner->EmitterToSimulation.GetTranslationVector()).GetSafeNormal();
 
         FVector OwnerScale = FVector::OneVector;
