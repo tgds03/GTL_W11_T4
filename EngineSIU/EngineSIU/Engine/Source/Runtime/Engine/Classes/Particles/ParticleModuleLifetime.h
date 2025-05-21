@@ -15,6 +15,8 @@ public:
     virtual float GetMaxLifetime();
     virtual float GetLifetimeValue(FParticleEmitterInstance* Owner, float InTime);
 
+    void SetToSensibleDefaults(UParticleEmitter* Owner) override;
+    
 protected:
     void SpawnEx(FParticleEmitterInstance* Owner, uint32 Offset, float SpawnTime, FRandomStream* InRandomStream, FBaseParticle* ParticleBase);
 };

@@ -141,6 +141,9 @@ bool UParticleLODLevel::InsertModule(UClass* InStaticClass, UParticleEmitter* Ta
         Modules.Add(Module); 
     }
 
+    Module->SetToSensibleDefaults(TargetEmitter);
+    
+    
     TargetEmitter->UpdateModuleLists();
 
 }

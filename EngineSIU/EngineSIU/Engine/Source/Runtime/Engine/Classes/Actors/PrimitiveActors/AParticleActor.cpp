@@ -35,33 +35,11 @@ AParticleActor::AParticleActor()
     UParticleLODLevel* ParticleLodLevel = ParticleSpriteEmitter->GetLODLevel(0);
     ParticleLodLevel->InsertModule(UParticleModuleVelocity::StaticClass(), ParticleSpriteEmitter);
     
-    
     ParticleLodLevel->InsertModule(UParticleModuleLifetime::StaticClass(), ParticleSpriteEmitter);
 
     // TODO 빼버리기 아마 빼도 될거임. 아마? InsertModule 한번이라도 실행하면?
     ParticleSystem->UpdateAllModuleLists();
     ParticleSpriteEmitter->CacheEmitterModuleInfo();
-    
-    
-    {
-        FDynamicSpriteEmitterData* TempEmitterData = new FDynamicSpriteEmitterData(nullptr);
-        TempEmitterData->Source = FDynamicSpriteEmitterReplayData();
-        TempEmitterData->Source.ActiveParticleCount = 100;
-        TempEmitterData->Source.MaxDrawCount = 100;
-    
-        ParticleSystemComponent->TempTestEmitterRenderData.Add(TempEmitterData);
-    }
-    
-    {
-        FResourceManager::CreateStaticMesh("Contents/Reference/Reference.obj");
-        FDynamicMeshEmitterData* TempEmitterData = new FDynamicMeshEmitterData(nullptr);
-        TempEmitterData->StaticMesh = FResourceManager::GetStaticMesh(L"Contents/Reference/Reference.obj");
-        TempEmitterData->Source = FDynamicMeshEmitterReplayData();
-        TempEmitterData->Source.ActiveParticleCount = 100;
-        TempEmitterData->Source.MaxDrawCount = 100;
-        
-        ParticleSystemComponent->TempTestEmitterRenderData.Add(TempEmitterData);
-    }
     
     SetActorTickInEditor(true);
 }

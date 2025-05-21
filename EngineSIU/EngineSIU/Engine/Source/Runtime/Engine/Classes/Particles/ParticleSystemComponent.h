@@ -98,11 +98,7 @@ public:
 
 public:
     TArray<struct FParticleEmitterInstance*> EmitterInstances;
-
-    // mutable TArray<FDynamicEmitterDataBase*> DynamicDataForThisFrame;
-    TArray<FDynamicEmitterDataBase*> EmitterRenderData;
-
-    TArray<FDynamicEmitterDataBase*> TempTestEmitterRenderData;
+    
 private:
     int32 LODLevel = 0;
 

@@ -1,7 +1,9 @@
 #include "ParticleModule.h"
 #include "ParticleHelper.h"
 #include "ParticleEmitterInstances.h"
+#include "ParticleModuleLifetime.h"
 #include "ParticleSystemComponent.h"
+#include "TypeData/ParticleModuleTypeDataMesh.h"
 
 FRandomStream& UParticleModule::GetRandomStream(FParticleEmitterInstance* Owner)
 {
@@ -103,6 +105,54 @@ uint32 UParticleModule::RequiredBytesPerInstance()
     return 0;
 }
 
+void UParticleModule::SetToSensibleDefaults(UParticleEmitter* Owner)
+{
+}
+
 void UParticleModule::FinalUpdate(FParticleEmitterInstance* Owner, uint32 Offset, float DeltaTime)
 {
+}
+
+UParticleModuleTypeDataBase::UParticleModuleTypeDataBase() : Super()
+{
+    // bSpawnModule = false;
+    // bUpdateModule = false;
+}
+
+FParticleEmitterInstance* UParticleModuleTypeDataBase::CreateInstance(UParticleEmitter* InEmitterParent, UParticleSystemComponent* InComponent)
+{
+    return NULL;
+}
+
+UParticleModuleTypeDataMesh::UParticleModuleTypeDataMesh() : Super()
+{
+    CastShadows = false;
+    DoCollisions = false;
+    // MeshAlignment = PSMA_MeshFaceCameraWithRoll;
+    // AxisLockOption = EPAL_NONE;
+    // CameraFacingUpAxisOption_DEPRECATED = CameraFacing_NoneUP;
+    // CameraFacingOption = XAxisFacing_NoUp;
+    // bCollisionsConsiderPartilceSize = true;
+    bUseStaticMeshLODs = true;
+    LODSizeScale = 1.0f;
+}
+
+void UParticleModuleTypeDataMesh::SetToSensibleDefaults(UParticleEmitter* Owner)
+{
+    if ((Mesh == NULL))
+    {
+        FResourceManager::CreateStaticMesh("Contents/Reference/Reference.obj");
+        Mesh = FResourceManager::GetStaticMesh(L"Contents/Reference/Reference.obj");
+    }
+}
+
+void UParticleModuleLifetime::SetToSensibleDefaults(UParticleEmitter* Owner)
+{
+    // UDistributionFloatUniform* LifetimeDist = Cast<UDistributionFloatUniform>(Lifetime.Distribution);
+    // if (LifetimeDist)
+    // {
+    //     LifetimeDist->Min = 1.0f;
+    //     LifetimeDist->Max = 1.0f;
+    //     LifetimeDist->bIsDirty = true;
+    // }
 }

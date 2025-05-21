@@ -14,3 +14,8 @@ UParticleModuleRequired::UParticleModuleRequired()
     SubImages_Horizontal = 1;
     SubImages_Vertical = 1;
 }
+
+void UParticleModuleRequired::SetToSensibleDefaults(UParticleEmitter* Owner)
+{
+    Super::SetToSensibleDefaults(Owner);
+}

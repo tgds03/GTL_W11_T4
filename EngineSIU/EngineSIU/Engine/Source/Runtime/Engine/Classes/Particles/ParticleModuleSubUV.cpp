@@ -97,4 +97,20 @@ float UParticleModuleSubUV::DetermineImageIndex(FParticleEmitterInstance* Owner,
     return ImageIndex;
 }
 
+void UParticleModuleSubUV::SetToSensibleDefaults(UParticleEmitter* Owner)
+{
+    // SubImageIndex.Distribution = NewObject<UDistributionFloatConstantCurve>(this);
+    // UDistributionFloatConstantCurve* SubImageIndexDist = Cast<UDistributionFloatConstantCurve>(SubImageIndex.Distribution);
+    // if (SubImageIndexDist)
+    // {
+    //     // Add two points, one at time 0.0f and one at 1.0f
+    //     for (int32 Key = 0; Key < 2; Key++)
+    //     {
+    //         int32	KeyIndex = SubImageIndexDist->CreateNewKey(Key * 1.0f);
+    //         SubImageIndexDist->SetKeyOut(0, KeyIndex, 0.0f);
+    //     }
+    //     SubImageIndexDist->bIsDirty = true;
+    // }
+}
+
 

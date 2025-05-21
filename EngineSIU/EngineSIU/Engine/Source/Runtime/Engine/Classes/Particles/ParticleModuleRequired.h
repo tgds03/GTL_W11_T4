@@ -106,5 +106,7 @@ public:
     
     int32 SubImages_Horizontal;
     int32 SubImages_Vertical;
+
+    void SetToSensibleDefaults(UParticleEmitter* Owner) override;
 };
 

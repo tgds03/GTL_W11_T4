@@ -26,7 +26,7 @@ class UParticleModuleTypeDataMesh : public UParticleModuleTypeDataBase
 {
     DECLARE_CLASS(UParticleModuleTypeDataMesh, UParticleModuleTypeDataBase)
 public:
-    UParticleModuleTypeDataMesh() {}
+    UParticleModuleTypeDataMesh();
     UStaticMesh* Mesh;
 
     /** Random stream for the initial rotation distribution */
@@ -45,4 +45,6 @@ public:
     uint8 DoCollisions:1;
     
     virtual bool SupportsSubUV() const override { return true; }
+
+    void SetToSensibleDefaults(UParticleEmitter* Owner) override;
 };
