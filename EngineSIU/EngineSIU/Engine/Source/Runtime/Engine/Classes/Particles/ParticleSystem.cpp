@@ -71,10 +71,13 @@ void UParticleSystem::DeleteEmitter(UParticleEmitter* TargetEmitter)
         if (LODLevel->TypeDataModule)
         {
             GUObjectArray.MarkRemoveObject(LODLevel->TypeDataModule);
+            LODLevel->TypeDataModule = nullptr;
         }
         GUObjectArray.MarkRemoveObject(LODLevel->RequiredModule);
         GUObjectArray.MarkRemoveObject(LODLevel->SpawnModule);
         
+        LODLevel->RequiredModule = nullptr;
+        LODLevel->SpawnModule = nullptr;
         GUObjectArray.MarkRemoveObject(LODLevel);
     }
 

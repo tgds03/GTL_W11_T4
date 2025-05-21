@@ -8,6 +8,7 @@ UParticleModuleLocation::UParticleModuleLocation()
 {
     Flags = EModuleFlag::SpawnModule;
     DistributeOverNPoints = 0.f;
+    DistributeThreshold = 0.f;
 }
 
 void UParticleModuleLocation::InitializeDefaults()

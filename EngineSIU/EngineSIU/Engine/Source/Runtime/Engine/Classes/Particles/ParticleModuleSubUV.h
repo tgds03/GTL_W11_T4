@@ -33,7 +33,7 @@ public:
     float AlphaThreshold;
 
     /** UParticleModuleSubUV */
-    FDistributionFloat SubImageIndex;
+    FDistributionFloatUniform SubImageIndex;
     virtual EModuleType GetModuleType() const override { return EModuleType::EPMT_SubUV; }
 
     virtual void Spawn(FParticleEmitterInstance* Owner, uint32 Offset, float SpawnTime, FBaseParticle* ParticleBase) override;

@@ -585,34 +585,46 @@ void FParticleEditorPanel::RenderDetailInfos()
     }
     else if (UParticleModuleColor* ColorModule = Cast<UParticleModuleColor>(SelectedModule))
     {
-        //if (ImGui::TreeNodeEx("Initial Color", TreeNodePropertyFlags))
-        //{
-        //    // ColorModule->StartColor.RenderImGui("Start Color"); // FDistributionVector for RGB
-        //    // Assuming FDistributionVector has Constant member that is FVector (used as RGB)
-        //    // ImGui::ColorEdit3("Start Color", (float*)&ColorModule->StartColor.Constant);
-        //    ImGui::Text("Start Color (Constant RGB for now):");
-        //    ImGui::InputFloat3("RGB", (float*)&ColorModule->StartColor.GetValue());
-        //    ImGui::TreePop();
-        //}
-        //if (ImGui::TreeNodeEx("Initial Alpha", TreeNodePropertyFlags))
-        //{
-        //    // ColorModule->StartAlpha.RenderImGui("Start Alpha"); // FDistributionFloat
-        //    ImGui::Text("Start Alpha (Constant for now):");
-        //    float Color = ColorModule->StartAlpha.GetValue();
-        //    ImGui::InputFloat("Constant", (float*)&ColorModule->StartAlpha.GetValue());
-        //    ImGui::TreePop();
-        //}
+        if (ImGui::TreeNodeEx("Initial Color", TreeNodePropertyFlags))
+        {
+            // ColorModule->StartColor.RenderImGui("Start Color"); // FDistributionVector for RGB
+            // Assuming FDistributionVector has Constant member that is FVector (used as RGB)
+            // ImGui::ColorEdit3("Start Color", (float*)&ColorModule->StartColor.Constant);
+            ImGui::Text("Start Color:");
+            ImGui::InputFloat3("RGB Max", (float*)&ColorModule->StartColor.Max);
+            ImGui::InputFloat3("RGB Min", (float*)&ColorModule->StartColor.Min);
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNodeEx("Initial Alpha", TreeNodePropertyFlags))
+        {
+            // ColorModule->StartAlpha.RenderImGui("Start Alpha"); // FDistributionFloat
+            ImGui::Text("Start Alpha:");
+            ImGui::InputFloat("Alpha Max", (float*)&ColorModule->StartAlpha.Max);
+            ImGui::InputFloat("Alpha Min", (float*)&ColorModule->StartAlpha.Min);
+            ImGui::TreePop();
+        }
     }
     else if (UParticleModuleSubUV* SubUVModule = Cast<UParticleModuleSubUV>(SelectedModule))
     {
-        //if (ImGui::TreeNodeEx("SubUV Animation", TreeNodePropertyFlags))
-        //{
-        //    // SubUVModule->SubImageIndex.RenderImGui("SubImage Index");
-        //    ImGui::Text("SubImage Index (Constant for now):");
-        //    ImGui::InputFloat("Constant", &SubUVModule->SubImageIndex.GetValue());
-        //    // Add other SubUV properties (InterpolationMethod, etc., if not in Required)
-        //    ImGui::TreePop();
-        //}
+        if (ImGui::TreeNodeEx("SubUV Animation", TreeNodePropertyFlags))
+        {
+            // SubUVModule->SubImageIndex.RenderImGui("SubImage Index");
+            ImGui::Text("SubImage Index:");
+            ImGui::InputFloat("Index Max", &SubUVModule->SubImageIndex.Max);
+            ImGui::InputFloat("Index Min", &SubUVModule->SubImageIndex.Min);
+            // Add other SubUV properties (InterpolationMethod, etc., if not in Required)
+            ImGui::TreePop();
+        }
+    }
+    else if (UParticleModuleLocation* LocationModule = Cast<UParticleModuleLocation>(SelectedModule))
+    {
+        if (ImGui::TreeNodeEx("Location", TreeNodePropertyFlags))
+        {
+            ImGui::Text("Start Location:");
+            ImGui::InputFloat3("Position Max", (float*)&LocationModule->StartLocation.Max);
+            ImGui::InputFloat3("Position Min", (float*)&LocationModule->StartLocation.Min);
+            ImGui::TreePop();
+        }
     }
     else if (UParticleModuleTypeDataMesh* TypeDataMeshModule = Cast<UParticleModuleTypeDataMesh>(SelectedModule))
     {

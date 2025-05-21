@@ -8,8 +8,8 @@ class UParticleModuleColor: public UParticleModule
 public:
     UParticleModuleColor();
 
-    FDistributionVector StartColor;
-    FDistributionFloat StartAlpha;
+    FDistributionVectorUniform StartColor;
+    FDistributionFloatUniform StartAlpha;
     uint8 bClampAlpha: 1;
 
     virtual void Spawn(FParticleEmitterInstance* Owner, uint32 Offset, float SpawnTime, FBaseParticle* ParticleBase) override;

@@ -8,7 +8,7 @@ class UParticleModuleLocation: public UParticleModule
 public:
     UParticleModuleLocation();
 
-    FDistributionVector StartLocation;
+    FDistributionVectorUniform StartLocation;
     float DistributeOverNPoints;
     float DistributeThreshold;
 
