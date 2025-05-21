@@ -52,6 +52,7 @@ struct FParticleEmitterInstanceFixLayout
 struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
 {
     FParticleEmitterInstance();
+    ~FParticleEmitterInstance();
     
     UParticleEmitter* SpriteTemplate;
 
@@ -300,6 +301,11 @@ public:
     * Retrieves the current LOD level and asserts that it is valid.
     */
     class UParticleLODLevel* GetCurrentLODLevelChecked();
+
+    /**
+ * Fixup particle indices to only have valid entries.
+ */
+    void FixupParticleIndices();
 };
 
 

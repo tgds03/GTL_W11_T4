@@ -30,6 +30,7 @@ void UParticleModuleLifetime::SpawnEx(FParticleEmitterInstance* Owner, uint32 Of
     SPAWN_INIT;
     {
         float MaxLifetime = Lifetime.GetValue(Owner->EmitterTime, InRandomStream);
+        MaxLifetime = FMath::RandNormalized() * 10;
         if (Particle.OneOverMaxLifetime > 0.f)
         {
             Particle.OneOverMaxLifetime = 1.f / (MaxLifetime + 1.f / Particle.OneOverMaxLifetime);
