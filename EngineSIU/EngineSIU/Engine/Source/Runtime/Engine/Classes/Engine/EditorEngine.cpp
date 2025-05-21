@@ -305,7 +305,7 @@ void UEditorEngine::StartParticleEditMode(UParticleSystemComponent* InParticleCo
 
     FParticleEditorPanel* ParticlePanel = dynamic_cast<FParticleEditorPanel*>(GEngineLoop.GetUnrealEditor()->GetEditorPanel("ParticlePanel").get());
     ParticlePanel->SetParticlePreviewController(ParticlePreviewController.get());
-    ParticlePanel->SetParticleSystem(InParticleComponent->Template);
+    //ParticlePanel->SetParticleSystem(InParticleComponent->Template);
 
     // TODO: ParticlePreviewController의 Initialize에서 하도록 변경
     AActor* SpawnedActor = ActiveWorld->SpawnActor<AParticleActor>();

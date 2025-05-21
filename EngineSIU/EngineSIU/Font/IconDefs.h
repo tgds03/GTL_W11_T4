@@ -20,4 +20,6 @@
 #define ICON_STOP        0xE9E6
 #define ICON_SQUARE     0xE9E4
 
+#define ICON_SEARCH     0xE9D8
+
 #endif // !__ICON_FONT__
