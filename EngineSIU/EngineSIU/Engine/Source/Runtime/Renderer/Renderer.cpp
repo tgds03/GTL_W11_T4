@@ -442,7 +442,7 @@ void FRenderer::RenderTranslucency(const std::shared_ptr<FEditorViewportClient>&
 {
     const uint64 ShowFlag = Viewport->GetShowFlag();
 
-    if (ShowFlag & EEngineShowFlags::SF_Primitives)
+    if (ShowFlag & EEngineShowFlags::SF_Particles)
     {
         QUICK_SCOPE_CYCLE_COUNTER(UpdateCascadeParticleRenderPass_CPU)
         QUICK_GPU_SCOPE_CYCLE_COUNTER(UpdateCascadeParticleRenderPass_GPU, *GPUTimingManager)
