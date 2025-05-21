@@ -258,7 +258,7 @@ void FTranslucencyRenderPass::RenderParticles(const std::shared_ptr<FEditorViewp
                 // TODO Set Material
 
 
-                std::shared_ptr<FTexture> Texture = FEngineLoop::ResourceManager.GetTexture(L"Assets/Texture/emart.png");
+                std::shared_ptr<FTexture> Texture = FEngineLoop::ResourceManager.GetTexture(L"Assets/Texture/Spawnpoint.PNG");
                 if (Texture)
                 {
                     Graphics->DeviceContext->PSSetShaderResources(0, 1, &Texture->TextureSRV);

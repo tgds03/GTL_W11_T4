@@ -23,6 +23,7 @@ void FResourceManager::Initialize(FRenderer* renderer, FGraphicsDevice* device)
     LoadTextureFromFile(device->Device, L"Assets/Texture/ocean_sky.jpg");
     LoadTextureFromFile(device->Device, L"Assets/Texture/font.png");
     LoadTextureFromFile(device->Device, L"Assets/Texture/emart.png");
+    LoadTextureFromFile(device->Device, L"Assets/Texture/Spawnpoint.PNG");
     LoadTextureFromFile(device->Device, L"Assets/Texture/T_Explosion_SubUV.png");
     LoadTextureFromFile(device->Device, L"Assets/Texture/UUID_Font.png");
     LoadTextureFromFile(device->Device, L"Assets/Texture/Wooden Crate_Crate_BaseColor.png");
