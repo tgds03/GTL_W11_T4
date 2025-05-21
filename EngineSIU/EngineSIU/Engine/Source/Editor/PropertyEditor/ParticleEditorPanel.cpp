@@ -330,6 +330,14 @@ void FParticleEditorPanel::RenderEmitterInfos()
             
             TMap<const char*, UClass*> ModuleNames;
             ModuleNames.Add("Type Data Mesh", UParticleModuleTypeDataMesh::StaticClass());
+            ModuleNames.Add("Color", UParticleModuleColor::StaticClass());
+            ModuleNames.Add("Lifetime", UParticleModuleLifetime::StaticClass());
+            ModuleNames.Add("Type Data Mesh", UParticleModuleTypeDataMesh::StaticClass());
+            ModuleNames.Add("Location", UParticleModuleLocation::StaticClass());
+            ModuleNames.Add("Size", UParticleModuleSize::StaticClass());
+            ModuleNames.Add("Sub UV", UParticleModuleSubUV::StaticClass());
+            ModuleNames.Add("Velocity", UParticleModuleVelocity::StaticClass());
+
 
             if (ImGui::BeginCombo("##Particle Module", "", ImGuiComboFlags_None))
             {
@@ -337,9 +345,9 @@ void FParticleEditorPanel::RenderEmitterInfos()
                 {
                     if (ImGui::Selectable(ModuleName, false))
                     {
-                        if (SelectedEmitter->GetLODLevel(0)->InsertModule(StaticClass, SelectedEmitter))
+                        if (Emitter->GetLODLevel(0)->InsertModule(StaticClass, Emitter))
                         {
-                            SelectedEmitter->UpdateModuleLists();
+                            Emitter->UpdateModuleLists();
                             ParticlePreviewController->PreviewActor->Destroy();
                             ParticlePreviewController->Initialize(ParticlePreviewController->TargetParticleSystem);
                             SelectedModule = nullptr;

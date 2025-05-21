@@ -116,13 +116,14 @@ bool UParticleLODLevel::InsertModule(UClass* InStaticClass, UParticleEmitter* Ta
         }
     }
     
-    UParticleModule* Module = static_cast<UParticleModule*>(FObjectFactory::ConstructObject(InStaticClass, this));
-
-    if ((SpawnModule == Module) ||
-        (RequiredModule == Module))
+    if ((SpawnModule && UParticleModuleSpawn::StaticClass() == InStaticClass) || (RequiredModule && UParticleModuleRequired::StaticClass() == InStaticClass) ||
+        (TypeDataModule && UParticleModuleTypeDataMesh::StaticClass() == InStaticClass))
     {
         return false;
     }
+    
+    UParticleModule* Module = static_cast<UParticleModule*>(FObjectFactory::ConstructObject(InStaticClass, this));
+
 
     if (Module->IsA(UParticleModuleTypeDataBase::StaticClass()))
     {
@@ -150,17 +151,18 @@ bool UParticleLODLevel::InsertModule(UClass* InStaticClass, UParticleEmitter* Ta
 
 bool UParticleLODLevel::RemoveModule(UParticleModule* Module)
 {
-    if (Module->IsA(UParticleModuleTypeDataBase::StaticClass()))
-    {
-        return false;
-    }
-    else if (Module->IsA(UParticleModuleSpawn::StaticClass()))
+    if (Module->IsA(UParticleModuleSpawn::StaticClass()))
     {
         return false;
     }
     else if (Module->IsA(UParticleModuleRequired::StaticClass()))
     {
         return false;
+    }
+
+    if (Module->IsA(UParticleModuleTypeDataBase::StaticClass()))
+    {
+        TypeDataModule = nullptr;
     }
     
     GUObjectArray.MarkRemoveObject(Module);    
