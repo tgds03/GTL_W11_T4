@@ -309,7 +309,6 @@ void FParticleEditorPanel::RenderDetailInfos()
     {
         if (ImGui::TreeNodeEx("Transform", TreeNodePropertyFlags))
         {
-
             FVector Origin = RequiredModule->EmitterOrigin;
             FImGuiWidget::DrawVec3Control("Emitter Origin", Origin, 0.0f, 100.0f);
             RequiredModule->EmitterOrigin = Origin;
@@ -466,20 +465,20 @@ void FParticleEditorPanel::RenderDetailInfos()
     }
     else if (UParticleModuleVelocity* VelocityModule = Cast<UParticleModuleVelocity>(SelectedModule))
     {
-        //if (ImGui::TreeNodeEx("Start Velocity", TreeNodePropertyFlags))
-        //{
-        //    // VelocityModule->StartVelocity.RenderImGui("Start Velocity");
-        //    ImGui::Text("Start Velocity (Constant Vector for now):");
-        //    ImGui::InputFloat3("Constant XYZ", (float*)&VelocityModule->StartVelocity.GetValue());
-        //    ImGui::TreePop();
-        //}
-        //if (ImGui::TreeNodeEx("Radial Velocity", TreeNodePropertyFlags))
-        //{
-        //    // VelocityModule->StartVelocityRadial.RenderImGui("Start Velocity Radial");
-        //    ImGui::Text("Start Velocity Radial (Constant for now):");
-        //    ImGui::InputFloat("Constant", &VelocityModule->StartVelocityRadial.GetValue());
-        //    ImGui::TreePop();
-        //}
+        if (ImGui::TreeNodeEx("Start Velocity", TreeNodePropertyFlags))
+        {
+            // ImGui::Text("Start Velocity (Constant Vector for now):");
+            FImGuiWidget::DrawVec3Control("Max", VelocityModule->StartVelocity.Max, 0, 85);
+            FImGuiWidget::DrawVec3Control("Min", VelocityModule->StartVelocity.Min, 0, 85);
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNodeEx("Radial Velocity", TreeNodePropertyFlags))
+        {
+            // ImGui::Text("Start Velocity Radial (Constant for now):");
+            FImGuiWidget::DrawVec3Control("Max", VelocityModule->StartVelocityRadial.Max, 0, 85);
+            FImGuiWidget::DrawVec3Control("Min", VelocityModule->StartVelocityRadial.Min, 0, 85);
+            ImGui::TreePop();
+        }
     }
     else if (UParticleModuleColor* ColorModule = Cast<UParticleModuleColor>(SelectedModule))
     {
