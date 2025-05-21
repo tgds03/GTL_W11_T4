@@ -201,8 +201,15 @@ void FTranslucencyRenderPass::RenderParticles(const std::shared_ptr<FEditorViewp
                 TArray<FParticleSpriteVertex> InstanceData;
                 InstanceData.SetNum(InstanceCount);
                 // TODO 각 파티클 개체(각 입자)의 Instnace 데이터를 얻음. (Per Particle)
-                 DynamicSpriteEmitterData->GetVertexAndIndexData(InstanceData.GetData(), nullptr, Viewport->GetCameraLocation(), ParticleSystemComponent->GetWorldMatrix());
-            
+                DynamicSpriteEmitterData->GetVertexAndIndexData(InstanceData.GetData(), nullptr, Viewport->GetCameraLocation(), ParticleSystemComponent->GetWorldMatrix());
+                
+
+                // for (auto& Instance : InstanceData)
+                // {
+                //     Instance.OldPosition = Instance.Position;
+                //     Instance.Position = ParticleSystemComponent->GetWorldLocation() + FVector(FMath::RandHelper(100), FMath::RandHelper(100), FMath::RandHelper(100));
+                // } 
+                
                 UINT Offset = 0;
                 
                 // UINT InstanceStride = (UINT)DynamicSpriteEmitterData->GetDynamicVertexStride();

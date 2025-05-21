@@ -36,7 +36,8 @@ public:
     uint8 bUseLocalSpace: 1;
 
     virtual void UpdateModuleLists();
+
     int32 PeakActiveParticles;
-
-
+    
+    bool InsertModule(UClass* InStaticClass, UParticleEmitter* TargetEmitter);
 };

@@ -8,6 +8,7 @@
 #include "Particles/Event/ParticleModuleEventGenerator.h"
 #include "RandomStream.h"
 #include "Components/Material/Material.h"
+#include "Components/Mesh/StaticMeshRenderData.h"
 #include "Core/HAL/PlatformMemory.h"
 #include "Templates/AlignmentTemplates.h"
 #include "Runtime/Engine/World/World.h"
@@ -265,7 +266,7 @@ void FParticleEmitterInstance::Tick(float DeltaTime, bool bSuppressSpawning)
             // Update the orbit data...
             // UpdateOrbitData(DeltaTime);
             // Calculate bounding box and simulate velocity.
-            // UpdateBoundingBox(DeltaTime);
+            UpdateBoundingBox(DeltaTime);
         }
 
         Tick_ModuleFinalUpdate(DeltaTime, LODLevel);
@@ -410,7 +411,9 @@ void FParticleEmitterInstance::Tick_ModuleUpdate(float DeltaTime, UParticleLODLe
     for (int ModuleIndex = 0; ModuleIndex < CurrentLODLevel->UpdateModules.Num(); ++ModuleIndex)
     {
         UParticleModule* CurrentModule = CurrentLODLevel->UpdateModules[ModuleIndex];
-        if (CurrentModule && CurrentModule->GetFlag(EModuleFlag::Enabled) && CurrentModule->GetFlag(EModuleFlag::UpdateModule))
+        if (CurrentModule &&
+            // CurrentModule->GetFlag(EModuleFlag::Enabled) &&
+            CurrentModule->GetFlag(EModuleFlag::UpdateModule))
         {
             CurrentModule->Update(this, GetModuleDataOffset(HighestLODLevel->UpdateModules[ModuleIndex]), DeltaTime);
         }
@@ -423,11 +426,162 @@ void FParticleEmitterInstance::Tick_ModuleFinalUpdate(float DeltaTime, UParticle
     for (int ModuleIndex = 0; ModuleIndex < CurrentLODLevel->UpdateModules.Num(); ++ModuleIndex)
     {
         UParticleModule* CurrentModule = CurrentLODLevel->UpdateModules[ModuleIndex];
-        if (CurrentModule && CurrentModule->GetFlag(EModuleFlag::Enabled) && CurrentModule->GetFlag(EModuleFlag::UpdateModule))
+        if (CurrentModule &&
+            // CurrentModule->GetFlag(EModuleFlag::Enabled) &&
+            CurrentModule->GetFlag(EModuleFlag::UpdateModule))
         {
             CurrentModule->FinalUpdate(this, GetModuleDataOffset(HighestLODLevel->UpdateModules[ModuleIndex]), DeltaTime);
         }
     }
+}
+
+void FParticleEmitterInstance::UpdateBoundingBox(float DeltaTime)
+{
+    // SCOPE_CYCLE_COUNTER(STAT_ParticleUpdateBounds);
+	if (Component)
+	{
+		bool bUpdateBox =
+		    // ((Component->bWarmingUp == false) &&
+		        (Component->Template != NULL)
+		        // && (Component->Template->bUseFixedRelativeBoundingBox == false))
+	    ;
+
+		// Take component scale into account
+		FVector Scale = Component->GetComponentTransform().GetScale3D();
+
+		UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
+
+		FVector	NewLocation;
+		float	NewRotation;
+		if (bUpdateBox)
+		{
+			// ParticleBoundingBox.Init();
+		}
+		UParticleLODLevel* HighestLODLevel = SpriteTemplate->LODLevels[0];
+		assert(HighestLODLevel);
+
+		FVector ParticlePivotOffset(-0.5f,-0.5f,0.0f);
+		if( bUpdateBox )
+		{
+			uint32 NumModules = HighestLODLevel->Modules.Num();
+			// for( uint32 i = 0; i < NumModules; ++i )
+			// {
+			// 	UParticleModulePivotOffset* Module = Cast<UParticleModulePivotOffset>(HighestLODLevel->Modules[i]);
+			// 	if( Module )
+			// 	{
+			// 		FVector2D PivotOff = Module->PivotOffset;
+			// 		ParticlePivotOffset += FVector(PivotOff.X, PivotOff.Y, 0.0f);
+			// 		break;
+			// 	}
+			// }
+		}
+
+		// Store off the orbit offset, if there is one
+		// int32 OrbitOffsetValue = GetOrbitPayloadOffset();
+
+		// For each particle, offset the box appropriately 
+		// FVector MinVal(HALF_WORLD_MAX);
+		// FVector MaxVal(-HALF_WORLD_MAX);
+		
+		const bool bUseLocalSpace = LODLevel->RequiredModule->bUseLocalSpace;
+
+		const FMatrix ComponentToWorld = bUseLocalSpace 
+			? Component->GetWorldMatrix() 
+			: FMatrix::Identity;
+
+		// bool bSkipDoubleSpawnUpdate = !SpriteTemplate->bUseLegacySpawningBehavior;
+		for (int32 i=0; i<ActiveParticles; i++)
+		{
+			DECLARE_PARTICLE(Particle, ParticleData + ParticleStride * ParticleIndices[i]);
+			
+			// Do linear integrator and update bounding box
+			// Do angular integrator, and wrap result to within +/- 2 PI
+			Particle.OldLocation	= Particle.Location;
+
+			bool bJustSpawned = (Particle.Flags & STATE_Particle_JustSpawned) != 0;
+			Particle.Flags &= ~STATE_Particle_JustSpawned;
+
+			//Don't update position for newly spawned particles. They already have a partial update applied during spawn.
+			bool bSkipUpdate = bJustSpawned
+		    // && bSkipDoubleSpawnUpdate
+		    ;
+
+			if ((Particle.Flags & STATE_Particle_Freeze) == 0 && !bSkipUpdate)
+			{
+				if ((Particle.Flags & STATE_Particle_FreezeTranslation) == 0)
+				{
+					NewLocation = Particle.Location + FVector(Particle.Velocity) * DeltaTime;
+				}
+				else
+				{
+					NewLocation = Particle.Location;
+				}
+				if ((Particle.Flags & STATE_Particle_FreezeRotation) == 0)
+				{
+					NewRotation = (DeltaTime * Particle.RotationRate) + Particle.Rotation;
+				}
+				else
+				{
+					NewRotation = Particle.Rotation;
+				}
+			}
+			else
+			{
+				NewLocation = Particle.Location;
+				NewRotation = Particle.Rotation;
+			}
+
+			// FVector::FReal LocalMax(0.0f);
+
+			if (bUpdateBox)
+			{	
+				// if (OrbitOffsetValue == -1)
+				// {
+				// 	LocalMax = (FVector(Particle.Size) * Scale).GetAbsMax();
+				// }
+				// else
+				{
+					// int32 CurrentOffset = OrbitOffsetValue;
+					const uint8* ParticleBase = (const uint8*)&Particle;
+					// PARTICLE_ELEMENT(FOrbitChainModuleInstancePayload, OrbitPayload);
+					// LocalMax = OrbitPayload.Offset.GetAbsMax();
+				}
+
+				// LocalMax += (FVector(Particle.Size) * ParticlePivotOffset).GetAbsMax();
+			}
+
+			// NewLocation			+= PositionOffsetThisTick;
+			// Particle.OldLocation+= PositionOffsetThisTick;
+						
+			Particle.Location	 = NewLocation;
+			Particle.Rotation	 = FMath::Fmod(NewRotation, 2.f*(float)PI);
+
+			if (bUpdateBox)
+			{	
+				FVector PositionForBounds = NewLocation;
+
+				if (bUseLocalSpace)
+				{
+					// Note: building the bounding box in world space as that gives tighter bounds than transforming a local space AABB into world space
+					PositionForBounds = ComponentToWorld.TransformPosition(NewLocation);
+				}
+
+				// Treat each particle as a cube whose sides are the length of the maximum component
+				// This handles the particle's extents changing due to being camera facing
+				// MinVal[0] = FMath::Min(MinVal[0], PositionForBounds.X - LocalMax);
+				// MaxVal[0] = FMath::Max(MaxVal[0], PositionForBounds.X + LocalMax);
+				// MinVal[1] = FMath::Min(MinVal[1], PositionForBounds.Y - LocalMax);
+				// MaxVal[1] = FMath::Max(MaxVal[1], PositionForBounds.Y + LocalMax);
+				// MinVal[2] = FMath::Min(MinVal[2], PositionForBounds.Z - LocalMax);
+				// MaxVal[2] = FMath::Max(MaxVal[2], PositionForBounds.Z + LocalMax);
+			}
+		}
+
+		if (bUpdateBox)
+		{
+			// ParticleBoundingBox = FBox(MinVal, MaxVal);
+		}
+	}
 }
 
 uint32 FParticleEmitterInstance::GetModuleDataOffset(UParticleModule* Module)
@@ -490,7 +644,9 @@ float FParticleEmitterInstance::Spawn(float DeltaTime)
 	for (int32 SpawnModIndex = 0; SpawnModIndex < LODLevel->SpawningModules.Num(); SpawnModIndex++)
 	{
 		UParticleModuleSpawnBase* SpawnModule = LODLevel->SpawningModules[SpawnModIndex];
-		if (SpawnModule && SpawnModule->GetFlag(EModuleFlag::Enabled))
+		if (SpawnModule
+		    // && SpawnModule->GetFlag(EModuleFlag::Enabled)
+		    )
 		{
 			UParticleModule* OffsetModule = HighestLODLevel->SpawningModules[SpawnModIndex];
 			uint32 Offset = GetModuleDataOffset(OffsetModule);
@@ -650,7 +806,7 @@ void FParticleEmitterInstance::SpawnParticles(int32 Count, float StartTime, floa
             for (int32 ModuleIndex = 0; ModuleIndex < LODLevel->SpawnModules.Num(); ++ModuleIndex)
             {
                 UParticleModule* SpawnModule = LODLevel->SpawnModules[ModuleIndex];
-                if (SpawnModule->GetFlag(EModuleFlag::Enabled))
+                // if (SpawnModule->GetFlag(EModuleFlag::Enabled))
                 {
                     UParticleModule* OffsetModule = HighestLODLevel->SpawnModules[ModuleIndex];
                     SpawnModule->Spawn(this, GetModuleDataOffset(OffsetModule), SpawnTime, Particle);
@@ -1101,6 +1257,143 @@ void FParticleMeshEmitterInstance::Tick(float DeltaTime, bool bSuppressSpawning)
     // Remove from the Sprite count... happens because we use the Super::Tick
     // DEC_DWORD_STAT_BY(STAT_SpriteParticles, ActiveParticles);
     // INC_DWORD_STAT_BY(STAT_MeshParticles, ActiveParticles);
+}
+
+void FParticleMeshEmitterInstance::UpdateBoundingBox(float DeltaTime)
+{
+	// SCOPE_CYCLE_COUNTER(STAT_ParticleUpdateBounds);
+	//@todo. Implement proper bound determination for mesh emitters.
+	// Currently, just 'forcing' the mesh size to be taken into account.
+	if ((Component != NULL) && (ActiveParticles > 0))
+	{
+		bool bUpdateBox =
+		    // ((Component->bWarmingUp == false) &&
+			(Component->Template != NULL)
+			// && (Component->Template->bUseFixedRelativeBoundingBox == false))
+	    ;
+
+		// Take scale into account
+		FVector Scale = Component->GetComponentTransform().GetScale3D();
+
+		// Get the static mesh bounds
+		// FBoxSphereBounds MeshBound;
+		// if (Component->bWarmingUp == false)
+		// {	
+		// 	if (MeshTypeData->Mesh)
+		// 	{
+		// 		MeshBound = MeshTypeData->Mesh->GetBounds();
+		// 	}
+		// 	else
+		// 	{
+		// 		//UE_LOG(LogParticles, Log, TEXT("MeshEmitter with no mesh set?? - %s"), Component->Template ? *(Component->Template->GetPathName()) : TEXT("??????"));
+		// 		MeshBound = FBoxSphereBounds(FVector(0, 0, 0), FVector(0, 0, 0), 0);
+		// 	}
+		// }
+		// else
+		// {
+		// 	// This isn't used anywhere if the bWarmingUp flag is false, but GCC doesn't like it not touched.
+		// 	FMemory::Memzero(&MeshBound, sizeof(FBoxSphereBounds));
+		// }
+
+		UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
+
+		const bool bUseLocalSpace = LODLevel->RequiredModule->bUseLocalSpace;
+
+		const FMatrix ComponentToWorld = bUseLocalSpace 
+			? Component->GetWorldMatrix() 
+			: FMatrix::Identity;
+
+		FVector	NewLocation;
+		float	NewRotation;
+		if (bUpdateBox)
+		{
+			// ParticleBoundingBox.Init();
+		}
+
+		// For each particle, offset the box appropriately 
+		// FVector MinVal(HALF_WORLD_MAX);
+		// FVector MaxVal(-HALF_WORLD_MAX);
+		
+		//FPlatformMisc::Prefetch(ParticleData, ParticleStride * ParticleIndices[0]);
+		//FPlatformMisc::Prefetch(ParticleData, (ParticleIndices[0] * ParticleStride) + PLATFORM_CACHE_LINE_SIZE);
+
+		// bool bSkipDoubleSpawnUpdate = !SpriteTemplate->bUseLegacySpawningBehavior;
+		for (int32 i=0; i<ActiveParticles; i++)
+		{
+			DECLARE_PARTICLE(Particle, ParticleData + ParticleStride * ParticleIndices[i]);
+			// FPlatformMisc::Prefetch(ParticleData, ParticleStride * ParticleIndices[i+1]);
+			// FPlatformMisc::Prefetch(ParticleData, (ParticleIndices[i+1] * ParticleStride) + PLATFORM_CACHE_LINE_SIZE);
+
+			// Do linear integrator and update bounding box
+			Particle.OldLocation = Particle.Location;
+
+			bool bJustSpawned = (Particle.Flags & STATE_Particle_JustSpawned) != 0;
+			Particle.Flags &= ~STATE_Particle_JustSpawned;
+
+			//Don't update position for newly spawned particles. They already have a partial update applied during spawn.
+			bool bSkipUpdate = bJustSpawned
+		    // && bSkipDoubleSpawnUpdate
+		    ;
+
+			if ((Particle.Flags & STATE_Particle_Freeze) == 0 && !bSkipUpdate)
+			{
+				if ((Particle.Flags & STATE_Particle_FreezeTranslation) == 0)
+				{
+					NewLocation	= Particle.Location + (FVector)Particle.Velocity * DeltaTime;
+				}
+				else
+				{
+					NewLocation = Particle.Location;
+				}
+				if ((Particle.Flags & STATE_Particle_FreezeRotation) == 0)
+				{
+					NewRotation	= Particle.Rotation + DeltaTime * Particle.RotationRate;
+				}
+				else
+				{
+					NewRotation = Particle.Rotation;
+				}
+			}
+			else
+			{
+				// Don't move it...
+				NewLocation = Particle.Location;
+				NewRotation = Particle.Rotation;
+			}
+
+			// FVector LocalExtent = MeshBound.GetBox().GetExtent() * (FVector)Particle.Size * Scale;
+
+			// NewLocation			+= PositionOffsetThisTick;
+			// Particle.OldLocation+= PositionOffsetThisTick;
+
+			// Do angular integrator, and wrap result to within +/- 2 PI
+			Particle.Rotation = FMath::Fmod(NewRotation, 2.f * (float)PI);
+			Particle.Location = NewLocation;
+
+			if (bUpdateBox)
+			{	
+				FVector PositionForBounds = NewLocation;
+
+				if (bUseLocalSpace)
+				{
+					// Note: building the bounding box in world space as that gives tighter bounds than transforming a local space AABB into world space
+					PositionForBounds = ComponentToWorld.TransformPosition(NewLocation);
+				}
+
+				// MinVal[0] = FMath::Min(MinVal[0], PositionForBounds.X - LocalExtent.X);
+				// MaxVal[0] = FMath::Max(MaxVal[0], PositionForBounds.X + LocalExtent.X);
+				// MinVal[1] = FMath::Min(MinVal[1], PositionForBounds.Y - LocalExtent.Y);
+				// MaxVal[1] = FMath::Max(MaxVal[1], PositionForBounds.Y + LocalExtent.Y);
+				// MinVal[2] = FMath::Min(MinVal[2], PositionForBounds.Z - LocalExtent.Z);
+				// MaxVal[2] = FMath::Max(MaxVal[2], PositionForBounds.Z + LocalExtent.Z);
+			}
+		}
+
+		// if (bUpdateBox)
+		// {	
+		// 	ParticleBoundingBox = FBox(MinVal, MaxVal);
+		// }
+	}
 }
 
 FDynamicEmitterDataBase* FParticleMeshEmitterInstance::GetDynamicData(bool bSelected)

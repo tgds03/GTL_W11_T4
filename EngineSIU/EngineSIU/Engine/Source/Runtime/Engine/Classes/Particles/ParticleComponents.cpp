@@ -209,6 +209,49 @@ void UParticleEmitter::CacheEmitterModuleInfo()
 	}
 }
 
+void UParticleEmitter::UpdateModuleLists()
+{
+    for (int32 LODIndex = 0; LODIndex < LODLevels.Num(); LODIndex++)
+    {
+        UParticleLODLevel* LODLevel = LODLevels[LODIndex];
+        if (LODLevel)
+        {
+            LODLevel->UpdateModuleLists();
+        }
+    }
+    Build();
+}
+
+void UParticleEmitter::Build()
+{
+    const int32 LODCount = LODLevels.Num();
+    if ( LODCount > 0 )
+    {
+        UParticleLODLevel* HighLODLevel = LODLevels[0];
+        assert(HighLODLevel);
+        if (HighLODLevel->TypeDataModule != nullptr)
+        {
+            // if(HighLODLevel->TypeDataModule->RequiresBuild())
+            // {
+                // FParticleEmitterBuildInfo EmitterBuildInfo;
+// #if WITH_EDITOR
+//                 if(!GetOutermost()->bIsCookedForEditor)
+//                 {
+//                     HighLODLevel->CompileModules( EmitterBuildInfo );
+//                 }
+// #endif
+                // HighLODLevel->TypeDataModule->Build( EmitterBuildInfo );
+            // }
+
+            // Allow TypeData module to cache pointers to modules
+            // HighLODLevel->TypeDataModule->CacheModuleInfo(this);
+        }
+
+        // Cache particle size/offset data for all LOD Levels
+        CacheEmitterModuleInfo();
+    }
+}
+
 
 int32 UParticleEmitter::CreateLODLevel(int32 LODLevel)
 {

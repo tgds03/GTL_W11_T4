@@ -102,4 +102,8 @@ public:
     float QualityLevelSpawnRateScale;
 
     void CacheEmitterModuleInfo();
+
+    void UpdateModuleLists();
+
+    void Build();
 };

@@ -10,6 +10,7 @@
 #include "TypeData/ParticleModuleTypeDataBase.h"
 #include "TypeData/ParticleModuleTypeDataMesh.h"
 #include "UObject/Casts.h"
+#include "UObject/ObjectFactory.h"
 
 UParticleModule* UParticleLODLevel::GetModuleAtIndex(int32 InIndex)
 {
@@ -103,4 +104,43 @@ void UParticleLODLevel::UpdateModuleLists()
             } 
         }
     }
+}
+
+bool UParticleLODLevel::InsertModule(UClass* InStaticClass, UParticleEmitter* TargetEmitter)
+{
+    for (int32 i = 0; i < Modules.Num(); i++)
+    {
+        if (Modules[i]->StaticClass() == InStaticClass)
+        {
+            return false;
+        }
+    }
+    
+    UParticleModule* Module = static_cast<UParticleModule*>(FObjectFactory::ConstructObject(InStaticClass, this));
+
+    if ((SpawnModule == Module) ||
+        (RequiredModule == Module))
+    {
+        return false;
+    }
+
+    if (Module->IsA(UParticleModuleTypeDataBase::StaticClass()))
+    {
+        TypeDataModule = CastChecked<UParticleModuleTypeDataBase>(Module);
+    }
+    else if (Module->IsA(UParticleModuleSpawn::StaticClass()))
+    {
+        SpawnModule = CastChecked<UParticleModuleSpawn>(Module);
+    }
+    else if (Module->IsA(UParticleModuleRequired::StaticClass()))
+    {
+        RequiredModule = CastChecked<UParticleModuleRequired>(Module);
+    }
+    else
+    {
+        Modules.Add(Module); 
+    }
+
+    TargetEmitter->UpdateModuleLists();
+
 }

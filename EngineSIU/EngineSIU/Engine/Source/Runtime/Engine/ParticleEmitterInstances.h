@@ -205,6 +205,8 @@ struct FParticleEmitterInstance : FParticleEmitterInstanceFixLayout
 
     virtual void Tick_ModuleUpdate(float DeltaTime, UParticleLODLevel* CurrentLODLevel);
     virtual void Tick_ModuleFinalUpdate(float DeltaTime, UParticleLODLevel* CurrentLODLevel);
+
+    virtual void UpdateBoundingBox(float DeltaTime);
     
     /** Get offset for particle payload data for a particular module */
     uint32 GetModuleDataOffset(UParticleModule* Module);
@@ -332,7 +334,7 @@ struct FParticleMeshEmitterInstance : public FParticleEmitterInstance
 	virtual void InitParameters(UParticleEmitter* InTemplate, UParticleSystemComponent* InComponent) override;
 	virtual bool Resize(int32 NewMaxActiveParticles, bool bSetMaxActiveCount = true) override;
 	virtual void Tick(float DeltaTime, bool bSuppressSpawning) override;
-	// virtual void UpdateBoundingBox(float DeltaTime) override;
+	virtual void UpdateBoundingBox(float DeltaTime) override;
 	// virtual uint32 RequiredBytes() override;
 	virtual void PostSpawn(FBaseParticle* Particle, float InterpolationPercentage, float SpawnTime) override;
 	virtual FDynamicEmitterDataBase* GetDynamicData(bool bSelected) override;
