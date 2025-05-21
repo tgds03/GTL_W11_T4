@@ -215,8 +215,8 @@ void FTranslucencyRenderPass::RenderParticles(const std::shared_ptr<FEditorViewp
                     {
                         FVector campos = Viewport->GetCameraLocation();
                         float distA = (campos - a.Position).SquaredLength();
-                        float distB = (campos - a.Position).SquaredLength();
-                        return distA < distB;
+                        float distB = (campos - b.Position).SquaredLength();
+                        return distA > distB;
                     });
                 }
                 
