@@ -26,17 +26,17 @@ FParticleEditorPanel::FParticleEditorPanel()
     BackgroundColor = ImVec4(0.01f, 0.01f, 0.01f, 1.f);
 
     // TEST
-    UParticleEmitter* Emmitter = FObjectFactory::ConstructObject<UParticleEmitter>(nullptr);
-    Emmitter->LODLevels.Add(FObjectFactory::ConstructObject<UParticleLODLevel>(Emmitter));
-    Emmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleRequired>(Emmitter->LODLevels[0]));
-    Emmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleSpawn>(Emmitter->LODLevels[0]));
-    Emmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleLifetime>(Emmitter->LODLevels[0]));
-    Emmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleSize>(Emmitter->LODLevels[0]));
-    Emmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleVelocity>(Emmitter->LODLevels[0]));
-    Emmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleColor>(Emmitter->LODLevels[0]));
+    UParticleEmitter* Emitter = FObjectFactory::ConstructObject<UParticleEmitter>(nullptr);
+    Emitter->LODLevels.Add(FObjectFactory::ConstructObject<UParticleLODLevel>(Emitter));
+    Emitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleRequired>(Emitter->LODLevels[0]));
+    Emitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleSpawn>(Emitter->LODLevels[0]));
+    Emitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleLifetime>(Emitter->LODLevels[0]));
+    Emitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleSize>(Emitter->LODLevels[0]));
+    Emitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleVelocity>(Emitter->LODLevels[0]));
+    Emitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleColor>(Emitter->LODLevels[0]));
 
     TargetParticleSystem = FObjectFactory::ConstructObject<UParticleSystem>(nullptr);
-    TargetParticleSystem->Emitters.Add(Emmitter);
+    TargetParticleSystem->Emitters.Add(Emitter);
 }
 
 void FParticleEditorPanel::Render()
