@@ -153,6 +153,26 @@ void UEditorEngine::Tick(float DeltaTime)
                 }
             }
         }
+        else if (WorldContext->WorldType == EWorldType::ParticlePreview)
+        {
+            if (UWorld* World = WorldContext->World())
+            {
+                World->Tick(DeltaTime);
+                EditorPlayer->Tick(DeltaTime);
+                ULevel* Level = World->GetActiveLevel();
+                TArray CachedActors = Level->Actors;
+                if (Level)
+                {
+                    for (AActor* Actor : CachedActors)
+                    {
+                        if (Actor)
+                        {
+                            Actor->Tick(DeltaTime);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -301,15 +321,11 @@ void UEditorEngine::StartParticleEditMode(UParticleSystemComponent* InParticleCo
     StartParticlePreviewMode();
     FEditorViewportClient* Viewport = GEngineLoop.GetLevelEditor()->GetViewports()->get();
     ParticlePreviewController = std::make_shared<FParticlePreviewController>(ActiveWorld, Viewport);
-    ParticlePreviewController->Initialize(InParticleComponent->Template);
+    ParticlePreviewController->Initialize(InParticleComponent); // Begin Test
 
     FParticleEditorPanel* ParticlePanel = dynamic_cast<FParticleEditorPanel*>(GEngineLoop.GetUnrealEditor()->GetEditorPanel("ParticlePanel").get());
     ParticlePanel->SetParticlePreviewController(ParticlePreviewController.get());
     ParticlePanel->SetParticleSystem(InParticleComponent->Template);
-
-    // TODO: ParticlePreviewController의 Initialize에서 하도록 변경
-    AActor* SpawnedActor = ActiveWorld->SpawnActor<AParticleActor>();
-    SpawnedActor->SetActorLabel(TEXT("OBJ_PARTICLE"));
 
     FViewportResource* ViewportResource = ParticlePreviewController->GetViewportClient()->GetViewportResource();
     std::array<float, 4> BlackSceneClearColor = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -335,7 +351,7 @@ void UEditorEngine::EndParticlePreviewMode()
     if (!ParticlePreviewWorld)
         return;
 
-    if (FWorldContext* Context = GetEditorPreviewWorldContext())
+    if (FWorldContext* Context = GetParticlePreviewWorldContext())
         WorldList.Remove(Context);
 
     ParticlePreviewWorld->Release();
@@ -379,6 +395,18 @@ FWorldContext* UEditorEngine::GetEditorPreviewWorldContext()
     for (FWorldContext* WorldContext : WorldList)
     {
         if (WorldContext->WorldType == EWorldType::EditorPreview)
+        {
+            return WorldContext;
+        }
+    }
+    return nullptr;
+}
+
+FWorldContext* UEditorEngine::GetParticlePreviewWorldContext()
+{
+    for (FWorldContext* WorldContext : WorldList)
+    {
+        if (WorldContext->WorldType == EWorldType::ParticlePreview)
         {
             return WorldContext;
         }

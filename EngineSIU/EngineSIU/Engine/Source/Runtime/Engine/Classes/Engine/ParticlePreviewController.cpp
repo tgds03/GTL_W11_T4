@@ -1,14 +1,20 @@
 #include "ParticlePreviewController.h"
+#include "Actors/PrimitiveActors/AParticleActor.h"
+#include "World/World.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Particles/ParticleSystem.h"
 
-void FParticlePreviewController::Initialize(UParticleSystem* InParticleSystem)
+void FParticlePreviewController::Initialize(UParticleSystemComponent* InParticleSystemComponent)
 {
-    if (!InParticleSystem)
+    if (!InParticleSystemComponent)
     {
         return;
     }
-    TargetParticleSystem = InParticleSystem;
+    TargetParticleSystem = InParticleSystemComponent->Template;
 
-
+    PreviewActor = PreviewWorld->SpawnActor<AParticleActor>();
+    PreviewActor->SetActorLabel(TEXT("OBJ_PARTICLE"));
+    PreviewParticleSystemComponent = InParticleSystemComponent;
 }
 
 UParticleSystemComponent* FParticlePreviewController::GetParticleSystemComponent() const

@@ -68,7 +68,7 @@ void FParticleEditorPanel::RenderMenuBar(const ImVec2& InPos, const ImVec2& InSi
     ImGui::SetNextWindowPos(InPos);
     ImGui::SetNextWindowSize(InSize);
 
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.f, 0.f, 0.f, 1.f));
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.01f, 0.01f, 0.01f, 1.f));
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
@@ -157,7 +157,7 @@ void FParticleEditorPanel::RenderViewportPanel(const ImVec2& InPos, const ImVec2
 {
     ImGui::SetNextWindowPos(InPos);
     ImGui::SetNextWindowSize(InSize);
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.f, 0.f, 0.f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.01f, 0.01f, 0.01f, 1.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     ImGui::Begin("Viewport", nullptr,
         ImGuiWindowFlags_NoCollapse |
@@ -201,7 +201,7 @@ void FParticleEditorPanel::RenderEmitterPanel(const ImVec2& InPos, const ImVec2&
 {
     ImGui::SetNextWindowPos(InPos);
     ImGui::SetNextWindowSize(InSize);
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.f, 0.f, 0.f, 1.f));
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.01f, 0.01f, 0.01f, 1.f));
     ImGui::Begin("Emitters", nullptr,
         ImGuiWindowFlags_NoCollapse |
         ImGuiWindowFlags_NoMove |

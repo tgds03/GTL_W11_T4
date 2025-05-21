@@ -1,4 +1,4 @@
-﻿#include "AParticleActor.h"
+#include "AParticleActor.h"
 
 #include "ParticleHelper.h"
 #include "Particles/ParticleLODLevel.h"
@@ -14,14 +14,6 @@ AParticleActor::AParticleActor()
     RootComponent = ParticleSystemComponent;
     
     UParticleSystem* ParticleSystem = FObjectFactory::ConstructObject<UParticleSystem>(nullptr);
-    {
-        ParticleSystem->Delay = 1;
-        ParticleSystem->DelayLow = 0;
-        ParticleSystem->bUseDelayRange = false;
-
-        ParticleSystem->WarmupTime = 0;
-        ParticleSystem->WarmupTickRate = 30;
-    }
     ParticleSystemComponent->Template = ParticleSystem;
 
 
