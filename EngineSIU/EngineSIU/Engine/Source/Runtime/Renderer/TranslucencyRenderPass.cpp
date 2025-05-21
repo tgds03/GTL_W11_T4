@@ -225,11 +225,15 @@ void FTranslucencyRenderPass::RenderParticles(const std::shared_ptr<FEditorViewp
                     return distA > distB;
                 });
                 
-                // for (auto& Instance : InstanceData)
-                // {
+                for (auto& Instance : InstanceData)
+                {
+                    if (Instance.SubImagesHorizontal == 0 || Instance.SubImagesVertical == 0)
+                    {
+                        int a = 0;
+                    }
                 //     Instance.OldPosition = Instance.Position;
                 //     Instance.Position = ParticleSystemComponent->GetWorldLocation() + FVector(FMath::RandHelper(100), FMath::RandHelper(100), FMath::RandHelper(100));
-                // } 
+                } 
                 
                 UINT Offset = 0;
                 
@@ -258,7 +262,7 @@ void FTranslucencyRenderPass::RenderParticles(const std::shared_ptr<FEditorViewp
                 // TODO Set Material
 
 
-                std::shared_ptr<FTexture> Texture = FEngineLoop::ResourceManager.GetTexture(L"Assets/Texture/Spawnpoint.PNG");
+                std::shared_ptr<FTexture> Texture = FEngineLoop::ResourceManager.GetTexture(L"Assets/Texture/emart.png");
                 if (Texture)
                 {
                     Graphics->DeviceContext->PSSetShaderResources(0, 1, &Texture->TextureSRV);

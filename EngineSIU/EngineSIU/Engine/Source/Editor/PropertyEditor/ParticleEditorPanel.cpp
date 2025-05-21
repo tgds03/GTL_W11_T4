@@ -314,10 +314,45 @@ void FParticleEditorPanel::RenderEmitterInfos()
             }
         }
 
-        if (ImGui::Selectable("Delete Emitter", false, ImGuiSelectableFlags_DontClosePopups | ImGuiSelectableFlags_SpanAllColumns))
+        if (i != 0)
         {
-            DeleteEmitterIndex = i;
+            if (ImGui::Selectable("Delete Emitter", false, ImGuiSelectableFlags_DontClosePopups | ImGuiSelectableFlags_SpanAllColumns))
+            {
+                DeleteEmitterIndex = i;
+            }
         }
+        
+        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+        if (ImGui::TreeNodeEx("Add Module", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
+        {
+            ImGui::Text("Module");
+            ImGui::SameLine();
+            
+            TMap<const char*, UClass*> ModuleNames;
+            ModuleNames.Add("Type Data Mesh", UParticleModuleTypeDataMesh::StaticClass());
+
+            if (ImGui::BeginCombo("##Particle Module", "", ImGuiComboFlags_None))
+            {
+                for (auto& [ModuleName, StaticClass] : ModuleNames)
+                {
+                    if (ImGui::Selectable(ModuleName, false))
+                    {
+                        if (SelectedEmitter->GetLODLevel(0)->InsertModule(StaticClass, SelectedEmitter))
+                        {
+                            SelectedEmitter->UpdateModuleLists();
+                            ParticlePreviewController->PreviewActor->Destroy();
+                            ParticlePreviewController->Initialize(ParticlePreviewController->TargetParticleSystem);
+                            SelectedModule = nullptr;
+                            SelectedEmitter = nullptr;
+                        }
+                    }
+                }
+                ImGui::EndCombo();
+            }
+
+            ImGui::TreePop();
+        }
+        ImGui::PopStyleColor();
 
 
         ImGui::EndChild();
@@ -620,7 +655,7 @@ void FParticleEditorPanel::RenderDetailInfos()
     {
         ImGui::TextWrapped("Properties editor for this module type ('%s') is not yet implemented.", (*ModuleClassName));
     }
-
+    
     if (SelectedModule)
     {
         if (ImGui::Selectable("Delete Module", false, ImGuiSelectableFlags_AllowDoubleClick))

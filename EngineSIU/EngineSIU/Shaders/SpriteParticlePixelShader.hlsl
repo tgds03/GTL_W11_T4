@@ -26,10 +26,10 @@ float4 mainPS(PS_INPUT_SpriteParticle Input) : SV_Target
     float4 Color = Texture.Sample(Sampler, UV);
     float threshold = 0.01f;
     
-    if (Color.a < 0.1f)
+    if (max(max(Color.r, Color.g), Color.b) < threshold || Color.a < 0.1f)
     {
         discard;
     }
-    Color.a = .4f;
+    // Color.a = .4f;
     return Color;
 }
