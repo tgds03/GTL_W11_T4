@@ -8,6 +8,7 @@
 #include "World/World.h"
 #include "RandomStream.h"
 #include "ParticleEmitter.h"
+#include "ParticleModuleRequired.h"
 
 bool GIsAllowingParticles = true;
 
@@ -573,6 +574,7 @@ FParticleDynamicData* UParticleSystemComponent::GetDynamicData()
 						NewDynamicEmitterData->bValid = true;
 						ParticleDynamicData->DynamicEmitterDataArray.Add( NewDynamicEmitterData );
 						NewDynamicEmitterData->EmitterIndex = EmitterIndex;
+					    NewDynamicEmitterData->bTranslucent = EmitterInst->CurrentLODLevel->RequiredModule->bIsTranslucent;
 						
 						// Are we current capturing particle state?
 						// if( ReplayState == PRS_Capturing )

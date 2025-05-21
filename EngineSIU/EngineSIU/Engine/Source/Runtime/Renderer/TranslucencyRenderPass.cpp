@@ -122,9 +122,9 @@ void FTranslucencyRenderPass::CreateShader()
 
     D3D11_SAMPLER_DESC SamplerDesc = {};
     SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-    SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
-    SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
-    SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+    SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
     SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
     SamplerDesc.MinLOD = 0;
     SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
@@ -147,9 +147,6 @@ void FTranslucencyRenderPass::PrepareRenderState(const std::shared_ptr<FEditorVi
 
     Graphics->DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    Graphics->DeviceContext->OMSetBlendState(Graphics->AlphaBlendState, blendFactor, 0xffffffff);
-    Graphics->DeviceContext->OMSetDepthStencilState(Graphics->DepthStencilStateWriteDisabled, 0);
 }
 
 void FTranslucencyRenderPass::RenderParticles(const std::shared_ptr<FEditorViewportClient>& Viewport) const
@@ -165,6 +162,16 @@ void FTranslucencyRenderPass::RenderParticles(const std::shared_ptr<FEditorViewp
         for (int i = 0; i < DynamicData->DynamicEmitterDataArray.Num(); i++)
         {
             FDynamicEmitterDataBase* DynamicEmitterData = DynamicData->DynamicEmitterDataArray[i];
+            if (DynamicEmitterData->bTranslucent)
+            {
+                float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+                Graphics->DeviceContext->OMSetBlendState(Graphics->AlphaBlendState, blendFactor, 0xffffffff);
+                Graphics->DeviceContext->OMSetDepthStencilState(Graphics->DepthStencilStateWriteDisabled, 0);
+            } else
+            {
+                Graphics->DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
+                Graphics->DeviceContext->OMSetDepthStencilState(Graphics->DepthStencilState, 0);
+            }
             if (FDynamicSpriteEmitterData* DynamicSpriteEmitterData = dynamic_cast<FDynamicSpriteEmitterData*>(DynamicEmitterData))
             {
                 ID3D11InputLayout* InputLayout = ShaderManager->GetInputLayoutByKey(L"SpriteParticleVertexShader");
@@ -210,15 +217,13 @@ void FTranslucencyRenderPass::RenderParticles(const std::shared_ptr<FEditorViewp
                 DynamicSpriteEmitterData->GetVertexAndIndexData(InstanceData.GetData(), nullptr, Viewport->GetCameraLocation(), ParticleSystemComponent->GetWorldMatrix());
 
                 // if (DynamicSpriteEmitterData->sort)
+                InstanceData.Sort([&Viewport](auto& a, auto& b)->bool
                 {
-                    InstanceData.Sort([&Viewport](auto& a, auto& b)->bool
-                    {
-                        FVector campos = Viewport->GetCameraLocation();
-                        float distA = (campos - a.Position).SquaredLength();
-                        float distB = (campos - b.Position).SquaredLength();
-                        return distA > distB;
-                    });
-                }
+                    FVector campos = Viewport->GetCameraLocation();
+                    float distA = (campos - a.Position).SquaredLength();
+                    float distB = (campos - b.Position).SquaredLength();
+                    return distA > distB;
+                });
                 
                 // for (auto& Instance : InstanceData)
                 // {
@@ -323,6 +328,16 @@ void FTranslucencyRenderPass::RenderParticles(const std::shared_ptr<FEditorViewp
                 // TODO
                 // 각 파티클 개체(각 입자)의 Instnace 데이터를 얻음. (Per Particle)
                 DynamicMeshEmitterData->GetInstanceData(InstanceData.GetData(), ParticleSystemComponent->GetWorldMatrix());
+                
+                InstanceData.Sort([&Viewport](auto& a, auto& b)->bool
+                {
+                    FVector campos = Viewport->GetCameraLocation();
+                    FVector apos = FVector(a.Transform[0].W, a.Transform[1].W, a.Transform[2].W);
+                    FVector bpos = FVector(b.Transform[0].W, b.Transform[1].W, b.Transform[2].W);
+                    float distA = (campos - apos).SquaredLength();
+                    float distB = (campos - bpos).SquaredLength();
+                    return distA > distB;
+                });
                 
                 // VertexBuffer 구조체로 들어오는 MainVs -> VSINPUT 구조체에 이어 붙이면 됨.
                 FString ParticleSystemVertexBufferName = ParticleSystemComponent->GetName() + FString::FromInt(i) + "," + FString::FromInt(ParticleSystemComponent->GetUUID());

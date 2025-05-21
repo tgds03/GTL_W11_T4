@@ -342,6 +342,12 @@ void FParticleEditorPanel::RenderDetailInfos()
                 RequiredModule->bKillOnCompleted = bKillOnCompleted;
             }
 
+            bool bIsTranslucent = RequiredModule->bIsTranslucent;
+            if (ImGui::Checkbox("Is Translucent", &bIsTranslucent))
+            {
+                RequiredModule->bIsTranslucent = bIsTranslucent;
+            }
+
             const char* SortModeLabels[] = { "None", "ViewProjDepth", "DistanceToView", "Age_OldestFirst", "Age_NewestFirst" };
             int CurrentSortMode = static_cast<int>(RequiredModule->SortMode);
             if (ImGui::Combo("Sorting Mode", &CurrentSortMode, SortModeLabels, IM_ARRAYSIZE(SortModeLabels)))

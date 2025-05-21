@@ -13,6 +13,7 @@ UParticleModuleRequired::UParticleModuleRequired()
     EmitterLoops = 0;	
     SubImages_Horizontal = 1;
     SubImages_Vertical = 1;
+    bIsTranslucent = false;
 }
 
 void UParticleModuleRequired::SetToSensibleDefaults(UParticleEmitter* Owner)

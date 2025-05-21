@@ -410,6 +410,8 @@ struct FDynamicEmitterDataBase
     /** true if this emitter has valid rendering data */
     uint32	bValid:1;
 
+    uint32 bTranslucent:1;
+
     int32  EmitterIndex;
 };
 
