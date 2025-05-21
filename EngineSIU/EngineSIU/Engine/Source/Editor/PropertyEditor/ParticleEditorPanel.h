@@ -36,10 +36,11 @@ private:
 
     void CalculatePanelSize(RECT InRect);
 
+    FParticlePreviewController* ParticlePreviewController = nullptr;
+    
+    UParticleSystem* TargetParticleSystem = nullptr;
     UParticleModule* SelectedModule = nullptr;
     UParticleEmitter* SelectedEmitter = nullptr;
-    UParticleSystem* TargetParticleSystem = nullptr;
-    FParticlePreviewController* ParticlePreviewController = nullptr;
 
     ImVec4 BackgroundColor;
     ImVec2 IconSize;

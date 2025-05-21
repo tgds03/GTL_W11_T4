@@ -19,6 +19,7 @@
 #include "UnrealEd/ImGuiWidget.h"
 #include "UObject/Casts.h"
 #include "Font/IconDefs.h"
+#include "Particles/ParticleSpriteEmitter.h"
 
 #include "Classes/Engine/ParticlePreviewController.h"
 #include "Editor/UnrealEd/EditorViewportClient.h"
@@ -29,19 +30,6 @@ FParticleEditorPanel::FParticleEditorPanel()
 {
     // 초기화 필요시 작성
     BackgroundColor = ImVec4(0.01f, 0.01f, 0.01f, 1.f);
-
-    // TEST
-    UParticleEmitter* Emitter = FObjectFactory::ConstructObject<UParticleEmitter>(nullptr);
-    Emitter->LODLevels.Add(FObjectFactory::ConstructObject<UParticleLODLevel>(Emitter));
-    Emitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleRequired>(Emitter->LODLevels[0]));
-    Emitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleSpawn>(Emitter->LODLevels[0]));
-    Emitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleLifetime>(Emitter->LODLevels[0]));
-    Emitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleSize>(Emitter->LODLevels[0]));
-    Emitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleVelocity>(Emitter->LODLevels[0]));
-    Emitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleColor>(Emitter->LODLevels[0]));
-
-    TargetParticleSystem = FObjectFactory::ConstructObject<UParticleSystem>(nullptr);
-    TargetParticleSystem->Emitters.Add(Emitter);
 }
 
 void FParticleEditorPanel::Render()
@@ -236,12 +224,10 @@ void FParticleEditorPanel::RenderEmitterInfos()
 
     if (ImGui::Button("Add Emitter"))
     {
-        UParticleEmitter* NewEmitter = FObjectFactory::ConstructObject<UParticleEmitter>(TargetParticleSystem);
-        NewEmitter->LODLevels.Add(FObjectFactory::ConstructObject<UParticleLODLevel>(NewEmitter));
-        NewEmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleRequired>(NewEmitter->LODLevels[0]));
-        NewEmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleSpawn>(NewEmitter->LODLevels[0]));
-        NewEmitter->LODLevels[0]->Modules.Add(FObjectFactory::ConstructObject<UParticleModuleLifetime>(NewEmitter->LODLevels[0]));
-        TargetParticleSystem->Emitters.Add(NewEmitter);
+        UParticleSpriteEmitter* ParticleSpriteEmitter = FObjectFactory::ConstructObject<UParticleSpriteEmitter>(nullptr);
+        TargetParticleSystem->Emitters.Add(ParticleSpriteEmitter);
+        ParticleSpriteEmitter->CreateLODLevel(0);
+        ParticleSpriteEmitter->SetToSensibleDefaults();
     }
     ImGui::Separator();
 
