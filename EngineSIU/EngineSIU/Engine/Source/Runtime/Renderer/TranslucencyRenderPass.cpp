@@ -347,7 +347,7 @@ void FTranslucencyRenderPass::RenderParticles(const std::shared_ptr<FEditorViewp
     }
 }
 
-void FCascadeParticleRenderPass::ClearRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport) const
+void FTranslucencyRenderPass::ClearRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport) const
 {
     Graphics->DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
     Graphics->DeviceContext->OMSetDepthStencilState(Graphics->DepthStencilState, 0);
