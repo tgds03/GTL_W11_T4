@@ -80,39 +80,40 @@ void FParticleEmitterInstance::ResetParticleParameters(float DeltaTime)
     //     }
     // }
 
-    // bool bSkipDoubleSpawnUpdate = !SpriteTemplate->bUseLegacySpawningBehavior;
-    // for (int32 ParticleIndex = 0; ParticleIndex < ActiveParticles; ParticleIndex++)
-    // {
-    //     DECLARE_PARTICLE(Particle, ParticleData + ParticleStride * ParticleIndices[ParticleIndex]);
-    //     Particle.Velocity		= Particle.BaseVelocity;
-    //     Particle.Size = GetParticleBaseSize(Particle);
-    //     Particle.RotationRate	= Particle.BaseRotationRate;
-    //     Particle.Color = Particle.BaseColor;
-    //
-    //     bool bJustSpawned = (Particle.Flags & STATE_Particle_JustSpawned) != 0;
-    //
-    //     //Don't update position for newly spawned particles. They already have a partial update applied during spawn.
-    //     bool bSkipUpdate = bJustSpawned && bSkipDoubleSpawnUpdate;
-    //
-    //     Particle.RelativeTime	+= bSkipUpdate ? 0.0f : Particle.OneOverMaxLifetime * DeltaTime;
-    //
-    //     if (CameraPayloadOffset > 0)
-    //     {
-    //         int32 CurrentOffset = CameraPayloadOffset;
-    //         const uint8* ParticleBase = (const uint8*)&Particle;
-    //         PARTICLE_ELEMENT(FCameraOffsetParticlePayload, CameraOffsetPayload);
-    //         CameraOffsetPayload.Offset = CameraOffsetPayload.BaseOffset;
-    //     }
-    //     for (int32 OrbitIndex = 0; OrbitIndex < OrbitOffsets.Num(); OrbitIndex++)
-    //     {
-    //         int32 CurrentOffset = OrbitOffsets[OrbitIndex];
-    //         const uint8* ParticleBase = (const uint8*)&Particle;
-    //         PARTICLE_ELEMENT(FOrbitChainModuleInstancePayload, OrbitPayload);
-    //         OrbitPayload.PreviousOffset = OrbitPayload.Offset;
-    //         OrbitPayload.Offset = OrbitPayload.BaseOffset;
-    //         OrbitPayload.RotationRate = OrbitPayload.BaseRotationRate;
-    //     }
-    // }
+    //bool bSkipDoubleSpawnUpdate = !SpriteTemplate->bUseLegacySpawningBehavior;
+    bool bSkipDoubleSpawnUpdate = true;
+    for (int32 ParticleIndex = 0; ParticleIndex < ActiveParticles; ParticleIndex++)
+    {
+        DECLARE_PARTICLE(Particle, ParticleData + ParticleStride * ParticleIndices[ParticleIndex]);
+        Particle.Velocity		= Particle.BaseVelocity;
+        Particle.Size = GetParticleBaseSize(Particle);
+        Particle.RotationRate	= Particle.BaseRotationRate;
+        Particle.Color = Particle.BaseColor;
+    
+        bool bJustSpawned = (Particle.Flags & STATE_Particle_JustSpawned) != 0;
+    
+        //Don't update position for newly spawned particles. They already have a partial update applied during spawn.
+        bool bSkipUpdate = bJustSpawned && bSkipDoubleSpawnUpdate;
+    
+        Particle.RelativeTime	+= bSkipUpdate ? 0.0f : Particle.OneOverMaxLifetime * DeltaTime;
+    
+        if (CameraPayloadOffset > 0)
+        {
+            int32 CurrentOffset = CameraPayloadOffset;
+            const uint8* ParticleBase = (const uint8*)&Particle;
+            // PARTICLE_ELEMENT(FCameraOffsetParticlePayload, CameraOffsetPayload);
+            // CameraOffsetPayload.Offset = CameraOffsetPayload.BaseOffset;
+        }
+        for (int32 OrbitIndex = 0; OrbitIndex < OrbitOffsets.Num(); OrbitIndex++)
+        {
+            int32 CurrentOffset = OrbitOffsets[OrbitIndex];
+            const uint8* ParticleBase = (const uint8*)&Particle;
+            // PARTICLE_ELEMENT(FOrbitChainModuleInstancePayload, OrbitPayload);
+            // OrbitPayload.PreviousOffset = OrbitPayload.Offset;
+            // OrbitPayload.Offset = OrbitPayload.BaseOffset;
+            // OrbitPayload.RotationRate = OrbitPayload.BaseRotationRate;
+        }
+    }
 }
 
 void FParticleEmitterInstance::KillParticles()
@@ -121,8 +122,8 @@ void FParticleEmitterInstance::KillParticles()
     {
         return;
     }
-    // UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
-    // FParticleEventInstancePayload* EventPayload = NULL;
+    UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
+    FParticleEventInstancePayload* EventPayload = NULL;
     // if (LODLevel->EventGenerator)
     // {
     //     EventPayload = (FParticleEventInstancePayload*)GetModuleInstanceData(LODLevel->EventGenerator);
@@ -132,42 +133,42 @@ void FParticleEmitterInstance::KillParticles()
     //     }
     // }
     //
-    // bool bFoundCorruptIndices = false;
-    // // Loop over the active particles... If their RelativeTime is > 1.0f (indicating they are dead),
-    // // move them to the 'end' of the active particle list.
-    // for (int32 i=ActiveParticles-1; i>=0; i--)
-    // {
-    //     const int32	CurrentIndex	= ParticleIndices[i];
-    //     if (ensure(CurrentIndex < MaxActiveParticles))
-    //     { 
-    //         const uint8* ParticleBase = ParticleData + CurrentIndex * ParticleStride;
-    //         FBaseParticle& Particle = *((FBaseParticle*)ParticleBase);
-    //
-    //         if (Particle.RelativeTime > 1.0f)
-    //         {
-    //             if (EventPayload)
-    //             {
-    //                 LODLevel->EventGenerator->HandleParticleKilled(this, EventPayload, &Particle);
-    //             }
-    //             // Move it to the 'back' of the list
-    //             ParticleIndices[i] = ParticleIndices[ActiveParticles-1];
-    //             ParticleIndices[ActiveParticles-1]	= CurrentIndex;
-    //             ActiveParticles--;
-    //
-    //             INC_DWORD_STAT(STAT_SpriteParticlesKilled);
-    //         }
-    //     }
-    //     else
-    //     {
-    //         bFoundCorruptIndices = true;
-    //     }
-    // }
-    //
-    // if (bFoundCorruptIndices)
-    // {
-    //     UE_LOG(LogParticles, Error, TEXT("Detected corrupted particle indices. Template : %s, Component %s"), *GetNameSafe(Component && Component->IsValidLowLevel() ? Component->Template : nullptr), *GetFullNameSafe(Component));			
-    //     FixupParticleIndices();
-    // }
+    bool bFoundCorruptIndices = false;
+    // Loop over the active particles... If their RelativeTime is > 1.0f (indicating they are dead),
+    // move them to the 'end' of the active particle list.
+    for (int32 i=ActiveParticles-1; i>=0; i--)
+    {
+        const int32	CurrentIndex	= ParticleIndices[i];
+        if (CurrentIndex < MaxActiveParticles)
+        { 
+            const uint8* ParticleBase = ParticleData + CurrentIndex * ParticleStride;
+            FBaseParticle& Particle = *((FBaseParticle*)ParticleBase);
+    
+            if (Particle.RelativeTime > 1.0f)
+            {
+                if (EventPayload)
+                {
+                    // LODLevel->EventGenerator->HandleParticleKilled(this, EventPayload, &Particle);
+                }
+                // Move it to the 'back' of the list
+                ParticleIndices[i] = ParticleIndices[ActiveParticles-1];
+                ParticleIndices[ActiveParticles-1]	= CurrentIndex;
+                ActiveParticles--;
+    
+                // INC_DWORD_STAT(STAT_SpriteParticlesKilled);
+            }
+        }
+        else
+        {
+            bFoundCorruptIndices = true;
+        }
+        
+        if (bFoundCorruptIndices)
+        {
+            UE_LOG(LogLevel::Error, TEXT("Detected corrupted particle indices. Template : %s, Component %s"), *(Component && Component ? Component->Template : nullptr)->GetName(), *(Component)->GetName());			
+            FixupParticleIndices();
+        }
+    }
 }
 
 
@@ -282,18 +283,18 @@ void FParticleEmitterInstance::Tick(float DeltaTime, bool bSuppressSpawning)
 
 float FParticleEmitterInstance::Tick_EmitterTimeSetup(float DeltaTime, UParticleLODLevel* InCurrentLODLevel)
 {
-    // Make sure we don't try and do any interpolation on the first frame we are attached (OldLocation is not valid in this circumstance)
+    //Make sure we don't try and do any interpolation on the first frame we are attached (OldLocation is not valid in this circumstance)
 	// if (Component->bJustRegistered)
 	// {
 	// 	Location	= Component->GetComponentLocation();
 	// 	OldLocation	= Location;
 	// }
 	// else
-	// {
-	// 	// Keep track of location for world- space interpolation and other effects.
-	// 	OldLocation	= Location;
-	// 	Location	= Component->GetComponentLocation();
-	// }
+	{
+		// Keep track of location for world- space interpolation and other effects.
+		OldLocation	= Location;
+		Location	= Component->GetWorldLocation();
+	}
     
 	UpdateTransforms();
 	SecondsSinceCreation += DeltaTime;
@@ -301,19 +302,19 @@ float FParticleEmitterInstance::Tick_EmitterTimeSetup(float DeltaTime, UParticle
 	// Update time within emitter loop.
 	bool bLooped = false;
 	// if (InCurrentLODLevel->RequiredModule->bUseLegacyEmitterTime == false)
-	// {
-	// 	EmitterTime += DeltaTime;
-	// 	bLooped = (EmitterDuration > 0.0f) && (EmitterTime >= EmitterDuration);
-	// }
-	// else
 	{
-		EmitterTime = SecondsSinceCreation;
-		if (EmitterDuration > KINDA_SMALL_NUMBER)
-		{
-			EmitterTime = FMath::Fmod(SecondsSinceCreation, EmitterDuration);
-			bLooped = ((SecondsSinceCreation - (EmitterDuration * LoopCount)) >= EmitterDuration);
-		}
+		EmitterTime += DeltaTime;
+		bLooped = (EmitterDuration > 0.0f) && (EmitterTime >= EmitterDuration);
 	}
+	// else
+	// {
+	// 	EmitterTime = SecondsSinceCreation;
+	// 	if (EmitterDuration > KINDA_SMALL_NUMBER)
+	// 	{
+	// 		EmitterTime = FMath::Fmod(SecondsSinceCreation, EmitterDuration);
+	// 		bLooped = ((SecondsSinceCreation - (EmitterDuration * LoopCount)) >= EmitterDuration);
+	// 	}
+	// }
 
 	// Get the emitter delay time
 	float EmitterDelay = CurrentDelay;
@@ -333,9 +334,9 @@ float FParticleEmitterInstance::Tick_EmitterTimeSetup(float DeltaTime, UParticle
 // #endif	//#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 
 		// if (InCurrentLODLevel->RequiredModule->bUseLegacyEmitterTime == false)
-		// {
-		// 	EmitterTime -= EmitterDuration;
-		// }
+		{
+			EmitterTime -= EmitterDuration;
+		}
 
 		if ((InCurrentLODLevel->RequiredModule->bDurationRecalcEachLoop == true)
 			|| ((InCurrentLODLevel->RequiredModule->bDelayFirstLoopOnly == true) && (LoopCount == 1))
@@ -344,7 +345,6 @@ float FParticleEmitterInstance::Tick_EmitterTimeSetup(float DeltaTime, UParticle
 			SetupEmitterDuration();
 		}
 
-	    // for UParticleModule*_Seeded
 		// if (bRequiresLoopNotification == true)
 		// {
 		// 	for (int32 ModuleIdx = -3; ModuleIdx < InCurrentLODLevel->Modules.Num(); ModuleIdx++)
@@ -781,6 +781,9 @@ float FParticleEmitterInstance::Spawn(float DeltaTime)
  */
 void FParticleEmitterInstance::SpawnParticles(int32 Count, float StartTime, float Increment, const FVector& InitialLocation, const FVector& InitialVelocity, struct FParticleEventInstancePayload* EventPayload )
 {
+    static float time = 0;
+    time += FMath::Abs(StartTime);
+
 	UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
 
     assert(ActiveParticles <= MaxActiveParticles);
@@ -809,7 +812,15 @@ void FParticleEmitterInstance::SpawnParticles(int32 Count, float StartTime, floa
         const float InterpIncrement = (Count > 0 && Increment > 0.0f) ? (1.0f / static_cast<float>(Count)) : 0.0f;
         for (int32 i = 0; i < Count; ++i)
         {
+            // Workaround to corrupted indices.
             uint16 NextFreeIndex = ParticleIndices[ActiveParticles];
+            if (!(NextFreeIndex < MaxActiveParticles))
+            {
+                UE_LOG(LogLevel::Error, TEXT("Detected corrupted particle indices. Template : %s, Component %s"), *(Component && Component ? Component->Template : nullptr)->GetName(), *(Component)->GetName());
+                FixupParticleIndices();
+                NextFreeIndex = ParticleIndices[ActiveParticles];
+            }
+            
             DECLARE_PARTICLE_PTR(Particle, ParticleData + ParticleStride * NextFreeIndex);
             const uint32 CurrentParticleIndex = ActiveParticles++;
 
@@ -830,6 +841,9 @@ void FParticleEmitterInstance::SpawnParticles(int32 Count, float StartTime, floa
                 KillParticle(CurrentParticleIndex);
                 continue;
             }
+
+            SpawnTime -= Increment;
+            Interp -= InterpIncrement;
         }
     };
 
@@ -1043,6 +1057,48 @@ FParticleRandomSeedInstancePayload* FParticleEmitterInstance::GetModuleRandomSee
         }
     }
     return NULL;
+}
+
+void FParticleEmitterInstance::FixupParticleIndices()
+{
+    // Something is wrong and particle data are be invalid. Try to fix-up things.
+    TArray<uint8> UsedIndices;
+    UsedIndices.SetNumZeroed(MaxActiveParticles);
+
+    for (int32 i = 0; i < ActiveParticles; ++i)
+    {
+        const uint16 UsedIndex = ParticleIndices[i];
+        if (UsedIndex < MaxActiveParticles && UsedIndices[UsedIndex] == 0)
+        {
+            UsedIndices[UsedIndex] = 1;
+        }
+        else
+        {
+            if (i != ActiveParticles - 1)
+            {
+                // Remove this bad or duplicated index
+                ParticleIndices[i] = ParticleIndices[ActiveParticles - 1];
+            }
+            // Decrease particle count.
+            --ActiveParticles;
+
+            // Retry the new index.
+            --i;
+        }
+    }
+
+    for (int32 i = ActiveParticles; i < MaxActiveParticles; ++i)
+    {
+        const int32 FreeIndex = UsedIndices.Find(0);
+        if ((FreeIndex != INDEX_NONE))
+        {
+            ParticleIndices[i] =  (uint16)FreeIndex;
+        }
+        else // Can't really handle that.
+        {
+            ParticleIndices[i] = (uint16)i;
+        }
+    }
 }
 
 FParticleSpriteEmitterInstance::FParticleSpriteEmitterInstance() : FParticleEmitterInstance()
@@ -1574,14 +1630,14 @@ class UParticleLODLevel* FParticleEmitterInstance::GetCurrentLODLevelChecked()
 void FParticleEmitterInstance::PostSpawn(FBaseParticle* Particle, float InterpolationPercentage, float SpawnTime)
 {
     // Interpolate position if using world space.
-    // UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
-    // if (LODLevel->RequiredModule->bUseLocalSpace == false)
-    // {
-    //     if (FVector::Distance(OldLocation, Location) > 1.f)
-    //     {
-    //         Particle->Location += InterpolationPercentage * (OldLocation - Location);	
-    //     }
-    // }
+    UParticleLODLevel* LODLevel = GetCurrentLODLevelChecked();
+    if (LODLevel->RequiredModule->bUseLocalSpace == false)
+    {
+        if (FVector::Distance(OldLocation, Location) > 1.f)
+        {
+            Particle->Location += (OldLocation - Location) * InterpolationPercentage;	
+        }
+    }
     
     // Offset caused by any velocity
     Particle->OldLocation = Particle->Location;
@@ -1710,6 +1766,24 @@ FParticleEmitterInstance::FParticleEmitterInstance() :
     // , PositionOffsetThisTick(0)
     , PivotOffset(-0.5f,-0.5f)
 {
+}
+
+FParticleEmitterInstance::~FParticleEmitterInstance()
+{
+    // for (int32 i = 0; i < HighQualityLights.Num(); ++i)
+    // {
+    //     UPointLightComponent* PointLightComponent = HighQualityLights[i];
+    //     {
+    //         PointLightComponent->Modify();
+    //         PointLightComponent->DestroyComponent(false);
+    //     }
+    // }
+    // HighQualityLights.Reset();
+
+    FPlatformMemory::Free<EAT_Container>(ParticleData, ParticleStride * MaxActiveParticles);
+    FPlatformMemory::Free<EAT_Container>(ParticleIndices, sizeof(uint16) * (MaxActiveParticles + 1));
+    // FPlatformMemory::Free(InstanceData);
+    // BurstFired.Empty();
 }
 
 void FParticleEmitterInstance::SetMeshMaterials(const TArray<UMaterial*>& InMaterials)

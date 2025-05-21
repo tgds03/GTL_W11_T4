@@ -6,6 +6,7 @@
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSpriteEmitter.h"
 #include "Particles/ParticleLODLevel.h"
+#include "Particles/ParticleModuleLifetime.h"
 #include "Particles/ParticleModuleRequired.h"
 #include "Particles/ParticleModuleVelocity.h"
 
@@ -35,7 +36,8 @@ AParticleActor::AParticleActor()
     ParticleLodLevel->InsertModule(UParticleModuleVelocity::StaticClass(), ParticleSpriteEmitter);
     
     
-    
+    ParticleLodLevel->InsertModule(UParticleModuleLifetime::StaticClass(), ParticleSpriteEmitter);
+
     // TODO 빼버리기 아마 빼도 될거임. 아마? InsertModule 한번이라도 실행하면?
     ParticleSystem->UpdateAllModuleLists();
     ParticleSpriteEmitter->CacheEmitterModuleInfo();
