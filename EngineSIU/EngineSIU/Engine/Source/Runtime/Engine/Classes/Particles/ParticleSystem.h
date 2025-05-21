@@ -8,7 +8,7 @@ class UParticleSystem : public UObject
 {
     DECLARE_CLASS(UParticleSystem, UObject)
 public:
-    UParticleSystem() = default;
+    UParticleSystem();
 
     /** How long this Particle system should delay when ActivateSystem is called on it. */
     float Delay;

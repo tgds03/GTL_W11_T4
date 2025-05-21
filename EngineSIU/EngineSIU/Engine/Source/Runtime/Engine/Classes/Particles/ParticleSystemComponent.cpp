@@ -14,9 +14,9 @@ bool GIsAllowingParticles = true;
 
 
 UParticleSystemComponent::UParticleSystemComponent()
-    : Super(), FXSystem(NULL)
+    : Super(), FXSystem(NULL), Template(nullptr), EmitterInstances()
 {
-    Template = nullptr;
+    //Template = nullptr;
     // PrimaryComponentTick.bCanEverTick = true;
     // PrimaryComponentTick.TickGroup = TG_DuringPhysics;
     // PrimaryComponentTick.bAllowTickOnDedicatedServer = false;
@@ -130,7 +130,7 @@ void UParticleSystemComponent::InitializeSystem()
         //    return;
         //}
 
-        if (Template != NULL)
+        if (Template != nullptr)
         {
             EmitterDelay = Template->Delay;
 

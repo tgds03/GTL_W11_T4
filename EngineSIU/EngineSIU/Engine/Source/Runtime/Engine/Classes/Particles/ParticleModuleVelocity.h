@@ -8,8 +8,8 @@ class UParticleModuleVelocity: public UParticleModule
 public:
     UParticleModuleVelocity();
 
-    FDistributionVector StartVelocity;
-    FDistributionVector StartVelocityRadial;
+    FDistributionVectorUniform StartVelocity;
+    FDistributionVectorUniform StartVelocityRadial;
 
     uint8 bInWorldSpace: 1;
     uint8 bApplyOwnerScale: 1;

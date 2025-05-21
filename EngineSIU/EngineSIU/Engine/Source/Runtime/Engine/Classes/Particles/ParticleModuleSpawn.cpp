@@ -11,6 +11,8 @@ UParticleModuleSpawn::UParticleModuleSpawn() : Super()
     bProcessSpawnRate = true;
     // LODDuplicate = false;
     bApplyGlobalSpawnRateScale = true;
+    Rate.Constant = 20.f;
+    RateScale.Constant = 1.f;
 }
 
 void UParticleModuleSpawn::InitializeDefaults()
@@ -39,7 +41,7 @@ bool UParticleModuleSpawn::GetSpawnAmount(FParticleEmitterInstance* Owner, int32
 
 float UParticleModuleSpawn::GetMaximumSpawnRate()
 {
-    return Rate * RateScale;
+    return Rate.Constant * RateScale.Constant;
 }
 
 float UParticleModuleSpawn::GetEstimatedSpawnRate()

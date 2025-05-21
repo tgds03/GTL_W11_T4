@@ -1,8 +1,17 @@
-﻿#include "ParticleSystem.h"
+#include "ParticleSystem.h"
 
 #include "ParticleEmitter.h"
 #include "ParticleLODLevel.h"
 #include "TypeData/ParticleModuleTypeDataBase.h"
+
+UParticleSystem::UParticleSystem()
+    : Delay(1)
+    , DelayLow(0)
+    , bUseDelayRange(false)
+    , WarmupTime(0)
+    , WarmupTickRate(30)
+{
+}
 
 void UParticleSystem::UpdateAllModuleLists()
 {

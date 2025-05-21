@@ -10,6 +10,11 @@
 UParticleModuleVelocity::UParticleModuleVelocity()
 {
     Flags = EModuleFlag::SpawnModule;
+    StartVelocity.Max = FVector(10.f, 10.f, 10.f);
+    StartVelocity.Min = -FVector(10.f, 10.f, 10.f);
+
+    StartVelocityRadial.Max = FVector::ZeroVector;
+    StartVelocityRadial.Min = FVector::ZeroVector;
 }
 
 void UParticleModuleVelocity::Spawn(FParticleEmitterInstance* Owner, uint32 Offset, float SpawnTime, FBaseParticle* ParticleBase)
@@ -23,7 +28,6 @@ void UParticleModuleVelocity::SpawnEx(FParticleEmitterInstance* Owner, uint32 Of
     SPAWN_INIT;
     {
         FVector Vel = StartVelocity.GetValue(Owner->EmitterTime, InRandomStream);
-        Vel = FVector(FMath::RandNormalized(), FMath::RandNormalized(), FMath::RandNormalized()) * 5;
         FVector FromOrigin = (Particle.Location - Owner->EmitterToSimulation.GetTranslationVector()).GetSafeNormal();
 
         FVector OwnerScale = FVector::OneVector;

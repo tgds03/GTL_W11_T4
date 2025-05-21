@@ -4,7 +4,7 @@ class UParticleSystem;
 class UParticleSystemComponent;
 class UWorld;
 class FEditorViewportClient;
-class AActor;
+class AParticleActor;
 
 class FParticlePreviewController
 {
@@ -16,7 +16,7 @@ public:
     {
     }
 
-    void Initialize(UParticleSystem* InParticleSystem);
+    void Initialize(UParticleSystemComponent* InParticleSystemComponent);
 
     UParticleSystemComponent* GetParticleSystemComponent() const;
     FEditorViewportClient* GetViewportClient() const { return AttachedViewport; }
@@ -29,5 +29,5 @@ private:
 
     UParticleSystem* TargetParticleSystem = nullptr;
     UParticleSystemComponent* PreviewParticleSystemComponent = nullptr;
-    AActor* PreviewActor = nullptr;
+    AParticleActor* PreviewActor = nullptr;
 };

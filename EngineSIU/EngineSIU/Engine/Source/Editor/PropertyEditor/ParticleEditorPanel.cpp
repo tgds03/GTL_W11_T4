@@ -26,6 +26,10 @@
 #include "Engine/UnrealClient.h"
 #include <array>
 
+#include "Asset/StaticMeshAsset.h"
+#include "Components/Mesh/StaticMeshRenderData.h"
+#include "Engine/AssetManager.h"
+
 FParticleEditorPanel::FParticleEditorPanel()
 {
     // 초기화 필요시 작성
@@ -68,7 +72,7 @@ void FParticleEditorPanel::RenderMenuBar(const ImVec2& InPos, const ImVec2& InSi
     ImGui::SetNextWindowPos(InPos);
     ImGui::SetNextWindowSize(InSize);
 
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.f, 0.f, 0.f, 1.f));
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.01f, 0.01f, 0.01f, 1.f));
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
@@ -157,7 +161,7 @@ void FParticleEditorPanel::RenderViewportPanel(const ImVec2& InPos, const ImVec2
 {
     ImGui::SetNextWindowPos(InPos);
     ImGui::SetNextWindowSize(InSize);
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.f, 0.f, 0.f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.01f, 0.01f, 0.01f, 1.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     ImGui::Begin("Viewport", nullptr,
         ImGuiWindowFlags_NoCollapse |
@@ -201,7 +205,7 @@ void FParticleEditorPanel::RenderEmitterPanel(const ImVec2& InPos, const ImVec2&
 {
     ImGui::SetNextWindowPos(InPos);
     ImGui::SetNextWindowSize(InSize);
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.f, 0.f, 0.f, 1.f));
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.01f, 0.01f, 0.01f, 1.f));
     ImGui::Begin("Emitters", nullptr,
         ImGuiWindowFlags_NoCollapse |
         ImGuiWindowFlags_NoMove |
@@ -256,12 +260,34 @@ void FParticleEditorPanel::RenderEmitterInfos()
             if (ImGui::CollapsingHeader((*EmitterName), ImGuiTreeNodeFlags_DefaultOpen))
             {
                 ImGui::BeginChild("ModulesList", ImVec2(0, modulesListHeight), true, ImGuiWindowFlags_HorizontalScrollbar);
-                if (Emitter->LODLevels.Num() > 0 && Emitter->LODLevels[0])
+                if (Emitter->LODLevels.Num() > 0)
                 {
-                    TArray<UParticleModule*>& Modules = Emitter->LODLevels[0]->Modules;
-                    for (int j = 0; j < Modules.Num(); ++j)
+                    UParticleLODLevel* LODLevel = Emitter->GetLODLevel(0);
                     {
-                        UParticleModule* Module = Modules[j];
+                        bool bSelected = (LODLevel->RequiredModule == SelectedModule);
+                        if (ImGui::Selectable("Required Module", bSelected, ImGuiSelectableFlags_DontClosePopups | ImGuiSelectableFlags_SpanAllColumns))
+                        {
+                            SelectedModule = LODLevel->RequiredModule;
+                        }
+                    }
+                    {
+                        bool bSelected = (LODLevel->SpawnModule == SelectedModule);
+                        if (ImGui::Selectable("Spawn Module", bSelected, ImGuiSelectableFlags_DontClosePopups | ImGuiSelectableFlags_SpanAllColumns))
+                        {
+                            SelectedModule = LODLevel->SpawnModule;
+                        }
+                    }
+
+                    {
+                        bool bSelected = (LODLevel->TypeDataModule == SelectedModule);
+                        if (ImGui::Selectable("Type Data Module", bSelected, ImGuiSelectableFlags_DontClosePopups | ImGuiSelectableFlags_SpanAllColumns))
+                        {
+                            SelectedModule = LODLevel->TypeDataModule;
+                        }
+                    }
+                    
+                    for (UParticleModule* Module : LODLevel->Modules)
+                    {
                         if (!Module) continue;
 
                         bool bSelected = (Module == SelectedModule);
@@ -307,18 +333,43 @@ void FParticleEditorPanel::RenderDetailInfos()
 
     if (UParticleModuleRequired* RequiredModule = Cast<UParticleModuleRequired>(SelectedModule))
     {
+
+        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+        if (ImGui::TreeNodeEx("Materials", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
+        {
+            if (ImGui::Selectable(GetData(RequiredModule->Material->GetName()), false, ImGuiSelectableFlags_AllowDoubleClick))
+            {
+                if (ImGui::IsMouseDoubleClicked(0))
+                {
+                    // IsOpen = true;
+                }
+            }
+
+            // if (ImGui::Button("    +    "))
+            // {
+                // IsCreateMaterial = true;
+            // }
+
+            ImGui::TreePop();
+        }
+        ImGui::PopStyleColor();
+        
+        // if (IsOpen != -1)
+        // {
+        //     RenderMaterialView(RequiredModule->Material);
+        // }
+        // if (IsCreateMaterial)
+        // {
+        //     RenderCreateMaterialView();
+        // }
+        
+        
         if (ImGui::TreeNodeEx("Transform", TreeNodePropertyFlags))
         {
-
-            FVector Origin = RequiredModule->EmitterOrigin;
-            FImGuiWidget::DrawVec3Control("Emitter Origin", Origin, 0.0f, 100.0f);
-            RequiredModule->EmitterOrigin = Origin;
+            FImGuiWidget::DrawVec3Control("Emitter Origin", RequiredModule->EmitterOrigin, 0.0f, 100.0f);
             ImGui::Spacing();
-
-            FRotator Rotation = RequiredModule->EmitterRotation;
-            FVector RotVector = Rotation.ToVector();
-            FImGuiWidget::DrawVec3Control("Emitter Rotation", RotVector, 0.0f, 100.0f);
-            RequiredModule->EmitterRotation = Rotation;
+            FImGuiWidget::DrawRot3Control("Emitter Rotation", RequiredModule->EmitterRotation, 0.0f, 100.0f);
+            
             ImGui::TreePop();
         }
 
@@ -397,95 +448,57 @@ void FParticleEditorPanel::RenderDetailInfos()
     }
     else if (UParticleModuleSpawn* SpawnModule = Cast<UParticleModuleSpawn>(SelectedModule))
     {
-        if (ImGui::TreeNodeEx("Rate", TreeNodePropertyFlags))
+        ImGui::DragFloat("Rate", &SpawnModule->Rate.Constant);
+        ImGui::DragFloat("RateScale", &SpawnModule->RateScale.Constant);
+
+        bool bApplyGlobalSpawnRateScale = SpawnModule->bApplyGlobalSpawnRateScale;
+        if (ImGui::Checkbox("Apply Global Spawn Rate Scale", &bApplyGlobalSpawnRateScale))
         {
-            bool bSpawnRateUseRange = SpawnModule->bSpawnRateUseRange;
-            if (ImGui::Checkbox("Use Range##SpawnRate", &bSpawnRateUseRange))
-            {
-                SpawnModule->bSpawnRateUseRange = bSpawnRateUseRange;
-            }
-            if (!bSpawnRateUseRange)
-            {
-                ImGui::InputFloat("Value##SpawnRate", &SpawnModule->Rate);
-            } else
-            {
-                ImGui::InputFloat("Max##SpawnRate", &SpawnModule->Rate);
-                ImGui::InputFloat("Min##SpawnRate", &SpawnModule->RateLow); // Ensure unique ID
-            }
-            ImGui::TreePop();
-        }
-        
-        if (ImGui::TreeNodeEx("Rate Scale", TreeNodePropertyFlags))
-        {
-            bool bSpawnRateScaleUseRange = SpawnModule->bSpawnRateScaleUseRange;
-            if (ImGui::Checkbox("Use Range##SpawnRateScale", &bSpawnRateScaleUseRange))
-            {
-                SpawnModule->bSpawnRateScaleUseRange = bSpawnRateScaleUseRange;
-            }
-            if (!bSpawnRateScaleUseRange)
-            {
-                ImGui::InputFloat("Value##SpawnRateScale", &SpawnModule->RateScale);
-            } else
-            {
-                ImGui::InputFloat("Max##SpawnRateScale", &SpawnModule->RateScale);
-                ImGui::InputFloat("Min##SpawnRateScale", &SpawnModule->RateScaleLow); // Ensure unique ID
-            }
-            ImGui::TreePop();
+            SpawnModule->bApplyGlobalSpawnRateScale = bApplyGlobalSpawnRateScale;
         }
 
-        if (ImGui::TreeNodeEx("Behavior", TreeNodePropertyFlags))
+        bool bProcessSpawnRate = SpawnModule->bProcessSpawnRate;
+        if (ImGui::Checkbox("Process Spawn Rate", &bProcessSpawnRate))
         {
-            bool bApplyGlobalSpawnRateScale = SpawnModule->bApplyGlobalSpawnRateScale;
-            if (ImGui::Checkbox("Apply Global Spawn Rate Scale", &bApplyGlobalSpawnRateScale))
-            {
-                SpawnModule->bApplyGlobalSpawnRateScale = bApplyGlobalSpawnRateScale;
-            }
-
-            bool bProcessSpawnRate = SpawnModule->bProcessSpawnRate;
-            if (ImGui::Checkbox("Process Spawn Rate (Burst?)", &bProcessSpawnRate))
-            {
-                SpawnModule->bProcessSpawnRate = bProcessSpawnRate;
-            }
+            SpawnModule->bProcessSpawnRate = bProcessSpawnRate;
+        }
+    }
+    else if (UParticleModuleLifetime* LifetimeModule = Cast<UParticleModuleLifetime>(SelectedModule))
+    {
+        if (ImGui::TreeNodeEx("Lifetime", TreeNodePropertyFlags))
+        {
+            // ImGui::Text("Particle Lifetime (Constant for now):");
+            ImGui::DragFloat("Max", &LifetimeModule->Lifetime.Max);
+            ImGui::DragFloat("Min", &LifetimeModule->Lifetime.Min);
             ImGui::TreePop();
         }
     }
-    //else if (UParticleModuleLifetime* LifetimeModule = Cast<UParticleModuleLifetime>(SelectedModule))
-    //{
-    //    if (ImGui::TreeNodeEx("Lifetime", TreeNodePropertyFlags))
-    //    {
-    //        // LifetimeModule->Lifetime.RenderImGui("Particle Lifetime");
-    //        ImGui::Text("Particle Lifetime (Constant for now):");
-    //        ImGui::InputFloat("Constant", &LifetimeModule->GetLifetimeValue());
-    //        ImGui::TreePop();
-    //    }
-    //}
     else if (UParticleModuleSize* SizeModule = Cast<UParticleModuleSize>(SelectedModule))
     {
-        //if (ImGui::TreeNodeEx("Initial Size", TreeNodePropertyFlags))
-        //{
-        //    // SizeModule->StartSize.RenderImGui("Start Size"); // FDistributionVector
-        //    ImGui::Text("Start Size (Constant Vector for now):");
-        //    // Assuming FDistributionVector has Constant member that is FVector
-        //    ImGui::InputFloat3("Constant XYZ", (float*)&SizeModule->StartSize.GetValue());
-        //    ImGui::TreePop();
-        //}
+        if (ImGui::TreeNodeEx("Start Size", TreeNodePropertyFlags))
+        {
+            // ImGui::Text("Start Size (Constant Vector for now):");
+            FImGuiWidget::DrawVec3Control("Max", SizeModule->StartSize.Max, 0, 85);
+            FImGuiWidget::DrawVec3Control("Min", SizeModule->StartSize.Min, 0, 85);
+            ImGui::TreePop();
+        }
     }
     else if (UParticleModuleVelocity* VelocityModule = Cast<UParticleModuleVelocity>(SelectedModule))
     {
-        //if (ImGui::TreeNodeEx("Start Velocity", TreeNodePropertyFlags))
-        //{
-        //    // VelocityModule->StartVelocity.RenderImGui("Start Velocity");
-        //    ImGui::Text("Start Velocity (Constant Vector for now):");
-        //    ImGui::InputFloat3("Constant XYZ", (float*)&VelocityModule->StartVelocity.GetValue());
-        //    ImGui::TreePop();
-        //}
-        //if (ImGui::TreeNodeEx("Radial Velocity", TreeNodePropertyFlags))
-        //{
-        //    // VelocityModule->StartVelocityRadial.RenderImGui("Start Velocity Radial");
-        //    ImGui::Text("Start Velocity Radial (Constant for now):");
-        //    ImGui::InputFloat("Constant", &VelocityModule->StartVelocityRadial.GetValue());
-        //    ImGui::TreePop();
-        //}
+        if (ImGui::TreeNodeEx("Start Velocity", TreeNodePropertyFlags))
+        {
+            // ImGui::Text("Start Velocity (Constant Vector for now):");
+            FImGuiWidget::DrawVec3Control("Max", VelocityModule->StartVelocity.Max, 0, 85);
+            FImGuiWidget::DrawVec3Control("Min", VelocityModule->StartVelocity.Min, 0, 85);
+            ImGui::TreePop();
+        }
+        if (ImGui::TreeNodeEx("Radial Velocity", TreeNodePropertyFlags))
+        {
+            // ImGui::Text("Start Velocity Radial (Constant for now):");
+            FImGuiWidget::DrawVec3Control("Max", VelocityModule->StartVelocityRadial.Max, 0, 85);
+            FImGuiWidget::DrawVec3Control("Min", VelocityModule->StartVelocityRadial.Min, 0, 85);
+            ImGui::TreePop();
+        }
     }
     else if (UParticleModuleColor* ColorModule = Cast<UParticleModuleColor>(SelectedModule))
     {
@@ -522,7 +535,44 @@ void FParticleEditorPanel::RenderDetailInfos()
     {
         if (ImGui::TreeNodeEx("Mesh Properties", TreeNodePropertyFlags))
         {
-            // 
+            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+            if (ImGui::TreeNodeEx("Static Mesh", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
+            {
+                ImGui::Text("StaticMesh");
+                ImGui::SameLine();
+
+                FString PreviewName = FString("None");
+                if (UStaticMesh* StaticMesh = TypeDataMeshModule->Mesh)
+                {
+                    if (FStaticMeshRenderData* RenderData = StaticMesh->GetRenderData())
+                    {
+                        PreviewName = RenderData->DisplayName;
+                    }
+                }
+        
+                const TMap<FName, FAssetInfo> Assets = UAssetManager::Get().GetAssetRegistry();
+
+                if (ImGui::BeginCombo("##StaticMesh", GetData(PreviewName), ImGuiComboFlags_None))
+                {
+                    for (const auto& Asset : Assets)
+                    {
+                        if (ImGui::Selectable(GetData(Asset.Value.AssetName.ToString()), false))
+                        {
+                            FString MeshName = Asset.Value.PackagePath.ToString() + "/" + Asset.Value.AssetName.ToString();
+                            UStaticMesh* StaticMesh = FResourceManager::GetStaticMesh(MeshName.ToWideString());
+                            if (StaticMesh)
+                            {
+                                TypeDataMeshModule->Mesh = StaticMesh;
+                            }
+                        }
+                    }
+                    ImGui::EndCombo();
+                }
+
+                ImGui::TreePop();
+            }
+            ImGui::PopStyleColor();
+
             ImGui::TreePop();
         }
     }
@@ -567,4 +617,209 @@ void FParticleEditorPanel::CalculatePanelSize(RECT InRect)
     ViewportPanelHeight = UsableScreenHeight - DetailPanelHeight;
     if (ViewportPanelHeight < 0.0f) ViewportPanelHeight = 0.0f;
 
+}
+
+void FParticleEditorPanel::RenderMaterialView(UMaterial* Material)
+{
+    // ImGui::SetNextWindowSize(ImVec2(380, 400), ImGuiCond_Once);
+    // ImGui::Begin("Material Viewer", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNav);
+    //
+    // static ImGuiSelectableFlags BaseFlag = ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_None | ImGuiColorEditFlags_NoAlpha;
+    //
+    // const FVector MatDiffuseColor = Material->GetMaterialInfo().DiffuseColor;
+    // const FVector MatSpecularColor = Material->GetMaterialInfo().SpecularColor;
+    // const FVector MatAmbientColor = Material->GetMaterialInfo().AmbientColor;
+    // const FVector MatEmissiveColor = Material->GetMaterialInfo().EmissiveColor;
+    //
+    // const float DiffuseR = MatDiffuseColor.X;
+    // const float DiffuseG = MatDiffuseColor.Y;
+    // const float DiffuseB = MatDiffuseColor.Z;
+    // constexpr float DiffuseA = 1.0f;
+    // float DiffuseColorPick[4] = { DiffuseR, DiffuseG, DiffuseB, DiffuseA };
+    //
+    // ImGui::Text("Material Name |");
+    // ImGui::SameLine();
+    // ImGui::Text(*Material->GetMaterialInfo().MaterialName);
+    // ImGui::Separator();
+    //
+    // ImGui::Text("  Diffuse Color");
+    // ImGui::SameLine();
+    // if (ImGui::ColorEdit4("Diffuse##Color", reinterpret_cast<float*>(&DiffuseColorPick), BaseFlag))
+    // {
+    //     const FVector NewColor = { DiffuseColorPick[0], DiffuseColorPick[1], DiffuseColorPick[2] };
+    //     Material->SetDiffuse(NewColor);
+    // }
+    //
+    // const float SpecularR = MatSpecularColor.X;
+    // const float SpecularG = MatSpecularColor.Y;
+    // const float SpecularB = MatSpecularColor.Z;
+    // constexpr float SpecularA = 1.0f;
+    // float SpecularColorPick[4] = { SpecularR, SpecularG, SpecularB, SpecularA };
+    //
+    // ImGui::Text("Specular Color");
+    // ImGui::SameLine();
+    // if (ImGui::ColorEdit4("Specular##Color", reinterpret_cast<float*>(&SpecularColorPick), BaseFlag))
+    // {
+    //     const FVector NewColor = { SpecularColorPick[0], SpecularColorPick[1], SpecularColorPick[2] };
+    //     Material->SetSpecular(NewColor);
+    // }
+    //
+    // const float AmbientR = MatAmbientColor.X;
+    // const float AmbientG = MatAmbientColor.Y;
+    // const float AmbientB = MatAmbientColor.Z;
+    // constexpr float AmbientA = 1.0f;
+    // float AmbientColorPick[4] = { AmbientR, AmbientG, AmbientB, AmbientA };
+    //
+    // ImGui::Text("Ambient Color");
+    // ImGui::SameLine();
+    // if (ImGui::ColorEdit4("Ambient##Color", reinterpret_cast<float*>(&AmbientColorPick), BaseFlag))
+    // {
+    //     const FVector NewColor = { AmbientColorPick[0], AmbientColorPick[1], AmbientColorPick[2] };
+    //     Material->SetAmbient(NewColor);
+    // }
+    //
+    // const float EmissiveR = MatEmissiveColor.X;
+    // const float EmissiveG = MatEmissiveColor.Y;
+    // const float EmissiveB = MatEmissiveColor.Z;
+    // constexpr float EmissiveA = 1.0f;
+    // float EmissiveColorPick[4] = { EmissiveR, EmissiveG, EmissiveB, EmissiveA };
+    //
+    // ImGui::Text("Emissive Color");
+    // ImGui::SameLine();
+    // if (ImGui::ColorEdit4("Emissive##Color", reinterpret_cast<float*>(&EmissiveColorPick), BaseFlag))
+    // {
+    //     const FVector NewColor = { EmissiveColorPick[0], EmissiveColorPick[1], EmissiveColorPick[2] };
+    //     Material->SetEmissive(NewColor);
+    // }
+    //
+    // ImGui::Spacing();
+    // ImGui::Separator();
+    //
+    // ImGui::Text("Choose Material");
+    // ImGui::Spacing();
+    //
+    // ImGui::Text("Material Slot Name |");
+    // ImGui::SameLine();
+    // ImGui::Text(GetData(Material->GetName()));
+    //
+    // ImGui::Text("Override Material |");
+    // ImGui::SameLine();
+    // ImGui::SetNextItemWidth(160);
+    // // 메테리얼 이름 목록을 const char* 배열로 변환
+    // std::vector<const char*> MaterialChars;
+    // for (const auto& Material : FResourceManager::GetMaterials()) {
+    //     MaterialChars.push_back(*Material.Value->GetMaterialInfo().MaterialName);
+    // }
+    //
+    // //// 드롭다운 표시 (currentMaterialIndex가 범위를 벗어나지 않도록 확인)
+    // //if (currentMaterialIndex >= FManagerGetMaterialNum())
+    // //    currentMaterialIndex = 0;
+    //
+    // if (ImGui::Combo("##MaterialDropdown", &CurMaterialIndex, MaterialChars.data(), FResourceManager::GetMaterialNum())) {
+    //     UMaterial* Material = FResourceManager::GetMaterial(MaterialChars[CurMaterialIndex]);
+    //     SelectedStaticMeshComp->SetMaterial(SelectedMaterialIndex, Material);
+    // }
+    //
+    // if (ImGui::Button("Close"))
+    // {
+    //     SelectedMaterialIndex = -1;
+    //     SelectedStaticMeshComp = nullptr;
+    // }
+    //
+    // ImGui::End();
+}
+
+void FParticleEditorPanel::RenderCreateMaterialView()
+{
+    // ImGui::SetNextWindowSize(ImVec2(300, 500), ImGuiCond_Once);
+    // ImGui::Begin("Create Material Viewer", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNav);
+    //
+    // static ImGuiSelectableFlags BaseFlag = ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel | ImGuiColorEditFlags_None | ImGuiColorEditFlags_NoAlpha;
+    //
+    // ImGui::Text("New Name");
+    // ImGui::SameLine();
+    // static char MaterialName[256] = "New Material";
+    // // 기본 텍스트 입력 필드
+    // ImGui::SetNextItemWidth(128);
+    // if (ImGui::InputText("##NewName", MaterialName, IM_ARRAYSIZE(MaterialName))) {
+    //     tempMaterialInfo.MaterialName = MaterialName;
+    // }
+    //
+    // const FVector MatDiffuseColor = tempMaterialInfo.DiffuseColor;
+    // const FVector MatSpecularColor = tempMaterialInfo.SpecularColor;
+    // const FVector MatAmbientColor = tempMaterialInfo.AmbientColor;
+    // const FVector MatEmissiveColor = tempMaterialInfo.EmissiveColor;
+    //
+    // const float DiffuseR = MatDiffuseColor.X;
+    // const float DiffuseG = MatDiffuseColor.Y;
+    // const float DiffuseB = MatDiffuseColor.Z;
+    // constexpr float DiffuseA = 1.0f;
+    // float DiffuseColorPick[4] = { DiffuseR, DiffuseG, DiffuseB, DiffuseA };
+    //
+    // ImGui::Text("Set Property");
+    // ImGui::Indent();
+    //
+    // ImGui::Text("  Diffuse Color");
+    // ImGui::SameLine();
+    // if (ImGui::ColorEdit4("Diffuse##Color", reinterpret_cast<float*>(&DiffuseColorPick), BaseFlag))
+    // {
+    //     const FVector NewColor = { DiffuseColorPick[0], DiffuseColorPick[1], DiffuseColorPick[2] };
+    //     tempMaterialInfo.DiffuseColor = NewColor;
+    // }
+    //
+    // const float SpecularR = MatSpecularColor.X;
+    // const float SpecularG = MatSpecularColor.Y;
+    // const float SpecularB = MatSpecularColor.Z;
+    // constexpr float SpecularA = 1.0f;
+    // float SpecularColorPick[4] = { SpecularR, SpecularG, SpecularB, SpecularA };
+    //
+    // ImGui::Text("Specular Color");
+    // ImGui::SameLine();
+    // if (ImGui::ColorEdit4("Specular##Color", reinterpret_cast<float*>(&SpecularColorPick), BaseFlag))
+    // {
+    //     const FVector NewColor = { SpecularColorPick[0], SpecularColorPick[1], SpecularColorPick[2] };
+    //     tempMaterialInfo.SpecularColor = NewColor;
+    // }
+    //
+    // const float AmbientR = MatAmbientColor.X;
+    // const float AmbientG = MatAmbientColor.Y;
+    // const float AmbientB = MatAmbientColor.Z;
+    // constexpr float AmbientA = 1.0f;
+    // float AmbientColorPick[4] = { AmbientR, AmbientG, AmbientB, AmbientA };
+    //
+    // ImGui::Text("Ambient Color");
+    // ImGui::SameLine();
+    // if (ImGui::ColorEdit4("Ambient##Color", reinterpret_cast<float*>(&AmbientColorPick), BaseFlag))
+    // {
+    //     const FVector NewColor = { AmbientColorPick[0], AmbientColorPick[1], AmbientColorPick[2] };
+    //     tempMaterialInfo.AmbientColor = NewColor;
+    // }
+    //
+    // const float EmissiveR = MatEmissiveColor.X;
+    // const float EmissiveG = MatEmissiveColor.Y;
+    // const float EmissiveB = MatEmissiveColor.Z;
+    // constexpr float EmissiveA = 1.0f;
+    // float EmissiveColorPick[4] = { EmissiveR, EmissiveG, EmissiveB, EmissiveA };
+    //
+    // ImGui::Text("Emissive Color");
+    // ImGui::SameLine();
+    // if (ImGui::ColorEdit4("Emissive##Color", reinterpret_cast<float*>(&EmissiveColorPick), BaseFlag))
+    // {
+    //     const FVector NewColor = { EmissiveColorPick[0], EmissiveColorPick[1], EmissiveColorPick[2] };
+    //     tempMaterialInfo.EmissiveColor = NewColor;
+    // }
+    // ImGui::Unindent();
+    //
+    // ImGui::NewLine();
+    // if (ImGui::Button("Create Material")) {
+    //     FResourceManager::CreateMaterial(tempMaterialInfo);
+    // }
+    //
+    // ImGui::NewLine();
+    // if (ImGui::Button("Close"))
+    // {
+    //     IsCreateMaterial = false;
+    // }
+    //
+    // ImGui::End();
 }
