@@ -401,8 +401,24 @@ float FParticleEmitterInstance::Spawn(float DeltaTime)
 	if (bProcessSpawnRate)
 	{
 		// float RateScale = LODLevel->SpawnModule->RateScale.GetValue(EmitterTime) * LODLevel->SpawnModule->GetGlobalRateScale();
-		float RateScale = LODLevel->SpawnModule->RateScale.GetValue(EmitterTime);
-		SpawnRate += LODLevel->SpawnModule->Rate.GetValue(EmitterTime) * RateScale;
+	    float RateScale;
+	    if (LODLevel->SpawnModule->bSpawnRateScaleUseRange)
+	    {
+	        RateScale = LODLevel->SpawnModule->RateScale + (LODLevel->SpawnModule->RateScale - LODLevel->SpawnModule->RateScaleLow) * FMath::RandNormalized();
+	    } else
+	    {
+	        RateScale = LODLevel->SpawnModule->RateScale;
+	    }
+
+	    float Rate;
+	    if (LODLevel->SpawnModule->bSpawnRateUseRange)
+	    {
+	        Rate = LODLevel->SpawnModule->Rate + (LODLevel->SpawnModule->Rate - LODLevel->SpawnModule->RateLow) * FMath::RandNormalized();
+	    } else
+	    {
+	        Rate = LODLevel->SpawnModule->Rate;
+	    }
+		SpawnRate += Rate * RateScale;
 		SpawnRate = FMath::Max<float>(0.0f, SpawnRate);
 	}
 

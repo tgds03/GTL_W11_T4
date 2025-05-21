@@ -409,14 +409,41 @@ void FParticleEditorPanel::RenderDetailInfos()
     }
     else if (UParticleModuleSpawn* SpawnModule = Cast<UParticleModuleSpawn>(SelectedModule))
     {
-        //if (ImGui::TreeNodeEx("Rate", TreeNodePropertyFlags))
-        //{
-        //    ImGui::Text("Spawn Rate (Constant for now):");
-        //    ImGui::InputFloat("Constant", &SpawnModule->Rate.GetValue());
-        //    ImGui::Text("Rate Scale (Constant for now):");
-        //    ImGui::InputFloat("Constant##Scale", &SpawnModule->RateScale.GetValue());
-        //    ImGui::TreePop();
-        //}
+        if (ImGui::TreeNodeEx("Rate", TreeNodePropertyFlags))
+        {
+            bool bSpawnRateUseRange = SpawnModule->bSpawnRateUseRange;
+            if (ImGui::Checkbox("Use Range##SpawnRate", &bSpawnRateUseRange))
+            {
+                SpawnModule->bSpawnRateUseRange = bSpawnRateUseRange;
+            }
+            if (!bSpawnRateUseRange)
+            {
+                ImGui::InputFloat("Value##SpawnRate", &SpawnModule->Rate);
+            } else
+            {
+                ImGui::InputFloat("Max##SpawnRate", &SpawnModule->Rate);
+                ImGui::InputFloat("Min##SpawnRate", &SpawnModule->RateLow); // Ensure unique ID
+            }
+            ImGui::TreePop();
+        }
+        
+        if (ImGui::TreeNodeEx("Rate Scale", TreeNodePropertyFlags))
+        {
+            bool bSpawnRateScaleUseRange = SpawnModule->bSpawnRateScaleUseRange;
+            if (ImGui::Checkbox("Use Range##SpawnRateScale", &bSpawnRateScaleUseRange))
+            {
+                SpawnModule->bSpawnRateScaleUseRange = bSpawnRateScaleUseRange;
+            }
+            if (!bSpawnRateScaleUseRange)
+            {
+                ImGui::InputFloat("Value##SpawnRateScale", &SpawnModule->RateScale);
+            } else
+            {
+                ImGui::InputFloat("Max##SpawnRateScale", &SpawnModule->RateScale);
+                ImGui::InputFloat("Min##SpawnRateScale", &SpawnModule->RateScaleLow); // Ensure unique ID
+            }
+            ImGui::TreePop();
+        }
 
         if (ImGui::TreeNodeEx("Behavior", TreeNodePropertyFlags))
         {

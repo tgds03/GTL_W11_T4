@@ -15,10 +15,5 @@ bool UParticleModuleSpawn::GetSpawnAmount(FParticleEmitterInstance* Owner, int32
 
 float UParticleModuleSpawn::GetMaximumSpawnRate()
 {
-    float MinSpawn, MaxSpawn;
-    float MinScale, MaxScale;
-
-    Rate.GetOutRange(MinSpawn, MaxSpawn);
-    RateScale.GetOutRange(MinScale, MaxScale);
-    return MaxSpawn * MaxScale;
+    return Rate * RateScale;
 }
