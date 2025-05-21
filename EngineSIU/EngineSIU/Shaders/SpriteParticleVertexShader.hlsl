@@ -41,7 +41,7 @@ struct PS_INPUT_SpriteParticle
 {
     float4 Position : SV_POSITION;
     float2 UV : TEXCOORD;
-    float3 Color : COLOR;
+    float4 Color : COLOR;
 
     float SubImageIndex : SUB_IMAGE_INDEX;             
     float SubImagesHorizontal : SUB_IMAGE_Horizontal;  

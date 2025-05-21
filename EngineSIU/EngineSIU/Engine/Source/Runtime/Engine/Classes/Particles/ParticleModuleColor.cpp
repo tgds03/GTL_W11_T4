@@ -7,6 +7,11 @@ UParticleModuleColor::UParticleModuleColor()
 {
     Flags = static_cast<EModuleFlag::EModuleFlags>(EModuleFlag::SpawnModule | EModuleFlag::UpdateModule);
     bClampAlpha = true;
+
+    StartColor.Max = FVector::OneVector;
+    StartColor.Min = FVector::OneVector;
+    StartAlpha.Max = 1.0f;
+    StartAlpha.Min = 1.0f;
 }
 
 void UParticleModuleColor::Spawn(FParticleEmitterInstance* Owner, uint32 Offset, float SpawnTime, FBaseParticle* ParticleBase)

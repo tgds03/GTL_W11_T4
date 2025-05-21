@@ -62,7 +62,7 @@ float4 mainPS(PS_INPUT_MeshParticle Input) : SV_Target
 //     }
 //     else
     {
-        FinalColor = float4(DiffuseColor, 1);
+        FinalColor = float4(DiffuseColor * Input.Color.xyz, 1);
     }
 
     return FinalColor;
