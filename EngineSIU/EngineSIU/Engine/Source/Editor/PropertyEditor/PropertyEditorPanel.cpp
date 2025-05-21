@@ -140,7 +140,7 @@ void FPropertyEditorPanel::Render()
         RenderForShapeComponent(ShapeComponent);
     }
     if (USpringArmComponent* SpringArmComponent = GetTargetComponent<USpringArmComponent>(SelectedActor, SelectedComponent))
-    {
+    { 
         RenderForSpringArmComponent(SpringArmComponent);
     }
     if (UParticleSystemComponent* ParticleComponent = GetTargetComponent<UParticleSystemComponent>(SelectedActor, SelectedComponent))

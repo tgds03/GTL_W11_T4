@@ -19,6 +19,7 @@ public:
     void Initialize(UParticleSystem* InParticleSystem);
 
     UParticleSystemComponent* GetParticleSystemComponent() const;
+    FEditorViewportClient* GetViewportClient() const { return AttachedViewport; }
 
     void Release();
 
