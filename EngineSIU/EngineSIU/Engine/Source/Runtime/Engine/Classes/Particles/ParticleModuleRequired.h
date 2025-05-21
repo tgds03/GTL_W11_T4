@@ -19,7 +19,7 @@ class UParticleModuleRequired : public UParticleModule
 public:
     UParticleModuleRequired();
 
-    UMaterial* Material;
+    UMaterial*  Material;
     FVector EmitterOrigin;
     FRotator EmitterRotation;
     int32 EmitterLoops;

@@ -410,41 +410,53 @@ void FParticleEditorPanel::RenderDetailInfos()
 
     ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.25f, 0.25f, 0.25f, 1.0f));
     ImGuiTreeNodeFlags TreeNodePropertyFlags = ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth;
-
-
+    
     if (UParticleModuleRequired* RequiredModule = Cast<UParticleModuleRequired>(SelectedModule))
     {
-        if (RequiredModule->Material)
+        ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+        if (ImGui::TreeNodeEx("Materials", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
         {
-            ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
-            if (ImGui::TreeNodeEx("Materials", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
+            TMap<FString, UMaterial*>& Materials = FResourceManager::GetMaterials();
+
+            FString PrevName;
+            if (RequiredModule->Material)
             {
-                if (ImGui::Selectable(GetData(RequiredModule->Material->GetName()), false, ImGuiSelectableFlags_AllowDoubleClick))
+                PrevName = RequiredModule->Material->GetMaterialInfo().MaterialName;
+            }
+            else
+            {
+                PrevName = "None";
+            }
+            if (ImGui::BeginCombo("##Material", GetData(PrevName), ImGuiComboFlags_None))
+            {
+                for (auto& [MaterialName, Material] : Materials)
                 {
-                    if (ImGui::IsMouseDoubleClicked(0))
+                    if (ImGui::Selectable(GetData(MaterialName), false))
                     {
-                        // IsOpen = true;
+                        RequiredModule->Material = Material;
                     }
                 }
-
-                // if (ImGui::Button("    +    "))
-                // {
-                // IsCreateMaterial = true;
-                // }
-
-                ImGui::TreePop();
+                ImGui::EndCombo();
             }
-            ImGui::PopStyleColor();
+
+            ImGui::TreePop();
+
+
+            if (RequiredModule->Material)
+            {
+                if (RequiredModule->Material->GetMaterialInfo().TextureInfos.Num() > 0)
+                {
+                    auto Texture = FEngineLoop::ResourceManager.GetTexture(RequiredModule->Material->GetMaterialInfo().TextureInfos[0].TexturePath);
+                    if (Texture)
+                    {
+                        ImGui::SameLine();
+                        auto TextureId = (ImTextureID)Texture->TextureSRV;
+                        ImGui::Image(TextureId, ImVec2(128, 128));
+                    }
+                }
+            }
         }
-        
-        // if (IsOpen != -1)
-        // {
-        //     RenderMaterialView(RequiredModule->Material);
-        // }
-        // if (IsCreateMaterial)
-        // {
-        //     RenderCreateMaterialView();
-        // }
+        ImGui::PopStyleColor();
         
         
         if (ImGui::TreeNodeEx("Transform", TreeNodePropertyFlags))

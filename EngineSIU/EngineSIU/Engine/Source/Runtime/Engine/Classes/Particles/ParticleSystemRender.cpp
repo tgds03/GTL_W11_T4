@@ -20,7 +20,7 @@ FVector2D GetParticleSize(const FBaseParticle& Particle, const FDynamicSpriteEmi
 
 FDynamicSpriteEmitterReplayDataBase::FDynamicSpriteEmitterReplayDataBase()
     :
-// MaterialInterface(nullptr),
+      Material(nullptr),
     // RequiredModule(nullptr),
       NormalsSphereCenter(FVector::ZeroVector)
     , NormalsCylinderDirection(FVector::ZeroVector)
