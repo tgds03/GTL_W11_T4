@@ -2,6 +2,13 @@
 
 void FParticlePreviewController::Initialize(UParticleSystem* InParticleSystem)
 {
+    if (!InParticleSystem)
+    {
+        return;
+    }
+    TargetParticleSystem = InParticleSystem;
+
+
 }
 
 UParticleSystemComponent* FParticlePreviewController::GetParticleSystemComponent() const

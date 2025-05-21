@@ -40,6 +40,7 @@ FParticleEditorPanel::FParticleEditorPanel()
 void FParticleEditorPanel::Render()
 {
     UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
+    
 
     HWND Hwnd = ::GetActiveWindow();
     RECT ClientRect = { 0,0,0,0 };

@@ -21,12 +21,14 @@
 #include "Animation/UAnimInstance.h"
 #include "UObject/Casts.h"
 
-#include "Launch/EngineLoop.h"
-#include "LevelEditor/SLevelEditor.h"
-
 #include "Particles/ParticleSystemComponent.h"
 #include "Engine/ParticlePreviewController.h"
 #include "Actors/PrimitiveActors/AParticleActor.h"
+
+#include "UnrealEd/UnrealEd.h"
+#include "PropertyEditor/ParticleEditorPanel.h"
+
+extern FEngineLoop GEngineLoop;
 
 namespace PrivateEditorSelection
 {
@@ -297,11 +299,15 @@ void UEditorEngine::StartAnimaitonEditMode(UAnimInstance* InAnim)
 void UEditorEngine::StartParticleEditMode(UParticleSystemComponent* InParticleComponent)
 {
     StartParticlePreviewMode();
-    FEditorViewportClient* ViewPort = GEngineLoop.GetLevelEditor()->GetViewports()->get();
-    ParticlePreviewController = std::make_shared<FParticlePreviewController>(ActiveWorld, ViewPort);
+    FEditorViewportClient* Viewport = GEngineLoop.GetLevelEditor()->GetViewports()->get();
+    ParticlePreviewController = std::make_shared<FParticlePreviewController>(ActiveWorld, Viewport);
     ParticlePreviewController->Initialize(InParticleComponent->Template);
-    
-    // TODO: UParticleSystemComponent를 사용해서 생성하도록 변경
+
+    FParticleEditorPanel* ParticlePanel = dynamic_cast<FParticleEditorPanel*>(GEngineLoop.GetUnrealEditor()->GetEditorPanel("ParticlePanel").get());
+    ParticlePanel->SetParticlePreviewController(ParticlePreviewController.get());
+    ParticlePanel->SetParticleSystem(InParticleComponent->Template);
+
+    // TODO: ParticlePreviewController의 Initialize에서 하도록 변경
     AActor* SpawnedActor = ActiveWorld->SpawnActor<AParticleActor>();
     SpawnedActor->SetActorLabel(TEXT("OBJ_PARTICLE"));
 
