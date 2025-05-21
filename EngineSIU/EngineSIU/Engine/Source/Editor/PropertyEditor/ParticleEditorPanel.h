@@ -36,6 +36,9 @@ private:
 
     void CalculatePanelSize(RECT InRect);
 
+    void RenderMaterialView(UMaterial* Material);
+    void RenderCreateMaterialView();
+
     FParticlePreviewController* ParticlePreviewController = nullptr;
     
     UParticleSystem* TargetParticleSystem = nullptr;
