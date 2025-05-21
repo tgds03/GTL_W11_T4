@@ -21,9 +21,14 @@
 #include "Animation/UAnimInstance.h"
 #include "UObject/Casts.h"
 
-#include "Launch/EngineLoop.h"
-#include "LevelEditor/SLevelEditor.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Engine/ParticlePreviewController.h"
+#include "Actors/PrimitiveActors/AParticleActor.h"
 
+#include "UnrealEd/UnrealEd.h"
+#include "PropertyEditor/ParticleEditorPanel.h"
+
+extern FEngineLoop GEngineLoop;
 
 namespace PrivateEditorSelection
 {
@@ -272,7 +277,7 @@ void UEditorEngine::StartSkeletalMeshEditMode(USkeletalMesh* InMesh)
 {
     StartEditorPreviewMode();
     FEditorViewportClient* ViewPort = GEngineLoop.GetLevelEditor()->GetViewports()->get();
-    DataPreviewController = std::make_shared<UDataPreviewController>(ActiveWorld, ViewPort);
+    DataPreviewController = std::make_shared<FDataPreviewController>(ActiveWorld, ViewPort);
     DataPreviewController->Initialize(InMesh);
 
     // TODO : Initialize에서 InMesh를 받아서 처리하도록 변경
@@ -287,8 +292,54 @@ void UEditorEngine::StartAnimaitonEditMode(UAnimInstance* InAnim)
 {
     StartEditorPreviewMode();
     FEditorViewportClient* ViewPort = GEngineLoop.GetLevelEditor()->GetViewports()->get();
-    DataPreviewController = std::make_shared<UDataPreviewController>(ActiveWorld, ViewPort);
+    DataPreviewController = std::make_shared<FDataPreviewController>(ActiveWorld, ViewPort);
     DataPreviewController->Initialize(InAnim);
+}
+
+void UEditorEngine::StartParticleEditMode(UParticleSystemComponent* InParticleComponent)
+{
+    StartParticlePreviewMode();
+    FEditorViewportClient* Viewport = GEngineLoop.GetLevelEditor()->GetViewports()->get();
+    ParticlePreviewController = std::make_shared<FParticlePreviewController>(ActiveWorld, Viewport);
+    ParticlePreviewController->Initialize(InParticleComponent->Template);
+
+    FParticleEditorPanel* ParticlePanel = dynamic_cast<FParticleEditorPanel*>(GEngineLoop.GetUnrealEditor()->GetEditorPanel("ParticlePanel").get());
+    ParticlePanel->SetParticlePreviewController(ParticlePreviewController.get());
+    //ParticlePanel->SetParticleSystem(InParticleComponent->Template);
+
+    // TODO: ParticlePreviewController의 Initialize에서 하도록 변경
+    AActor* SpawnedActor = ActiveWorld->SpawnActor<AParticleActor>();
+    SpawnedActor->SetActorLabel(TEXT("OBJ_PARTICLE"));
+
+    //ViewPort->SetShowFlag()
+}
+
+void UEditorEngine::StartParticlePreviewMode()
+{ 
+    if (ParticlePreviewWorld)
+        return;
+
+    FWorldContext& PreviewWorldContext = CreateNewWorldContext(EWorldType::ParticlePreview);
+
+    ParticlePreviewWorld = UWorld::CreateWorld(this, EWorldType::ParticlePreview, TEXT("ParticlePreviewWorld"));
+
+    PreviewWorldContext.SetCurrentWorld(ParticlePreviewWorld);
+    ActiveWorld = ParticlePreviewWorld;
+}
+
+void UEditorEngine::EndParticlePreviewMode()
+{
+    if (!ParticlePreviewWorld)
+        return;
+
+    if (FWorldContext* Context = GetEditorPreviewWorldContext())
+        WorldList.Remove(Context);
+
+    ParticlePreviewWorld->Release();
+    GUObjectArray.MarkRemoveObject(ParticlePreviewWorld);
+    ParticlePreviewWorld = nullptr;
+
+    ActiveWorld = EditorWorld;
 }
 
 FWorldContext& UEditorEngine::GetEditorWorldContext(/*bool bEnsureIsGWorld*/)

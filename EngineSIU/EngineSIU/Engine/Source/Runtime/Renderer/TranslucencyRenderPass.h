@@ -2,13 +2,14 @@
 #include "IRenderPass.h"
 #include "Container/Array.h"
 
+struct ID3D11BlendState;
 class UParticleSystemComponent;
 
-class FCascadeParticleRenderPass : public IRenderPass
+class FTranslucencyRenderPass : public IRenderPass
 {
 public:
-    FCascadeParticleRenderPass() = default;
-    virtual ~FCascadeParticleRenderPass() override;
+    FTranslucencyRenderPass() = default;
+    virtual ~FTranslucencyRenderPass() override;
     
     virtual void Initialize(FDXDBufferManager* InBufferManager, FGraphicsDevice* InGraphics, FDXDShaderManager* InShaderManage) override;
     
@@ -22,10 +23,16 @@ private:
     void CreateShader();
     void ReleaseShader();
     
-    void PrepareRenderState();
-    void RenderParticles();
-    void ReleaseResources();
+    void PrepareRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport);
+    void RenderParticles(const std::shared_ptr<FEditorViewportClient>& Viewport) const;
+    void ClearRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport) const;
 
 private:
     TArray<UParticleSystemComponent*> ParticleSystemComponents;
+
+    
+    struct ID3D11SamplerState* SamplerState;
+    FDXDBufferManager* BufferManager;
+    FGraphicsDevice* Graphics;
+    FDXDShaderManager* ShaderManager;
 };

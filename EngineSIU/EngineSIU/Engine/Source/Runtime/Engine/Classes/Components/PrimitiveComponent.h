@@ -25,7 +25,7 @@ public:
     
     void GetProperties(TMap<FString, FString>& OutProperties) const override;
     void SetProperties(const TMap<FString, FString>& InProperties) override;
-    
+
     FBoundingBox AABB;
 
     bool GetGenerateOverlapEvents() const { return bGenerateOverlapEvents; }

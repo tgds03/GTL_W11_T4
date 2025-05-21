@@ -179,6 +179,45 @@ FVector JungleMath::QuaternionToEuler(const FQuat& quat)
     return euler;
 }
 
+FQuat JungleMath::FindBetween_Helper(const FVector& A, const FVector& B, float NormAB)
+{
+    float W = NormAB + FVector::DotProduct(A, B);
+    FQuat Result;
+
+    if (W >= 1e-6f * NormAB)
+    {
+        //Result = FVector::CrossProduct(A, B);
+        Result = FQuat(
+            W,
+            A.Y * B.Z - A.Z * B.Y,
+            A.Z * B.X - A.X * B.Z,
+            A.X * B.Y - A.Y * B.X
+            );
+    }
+    else
+    {
+        // A and B point in opposite directions
+        W = 0.f;
+        const float X = FMath::Abs(A.X);
+        const float Y = FMath::Abs(A.Y);
+        const float Z = FMath::Abs(A.Z);
+
+        // Find orthogonal basis. 
+        const FVector Basis = (X > Y && X > Z) ? FVector::YAxisVector : -FVector::XAxisVector;
+
+        //Result = FVector::CrossProduct(A, Basis);
+        Result = FQuat(
+            W,
+            A.Y * Basis.Z - A.Z * Basis.Y,
+            A.Z * Basis.X - A.X * Basis.Z,
+            A.X * Basis.Y - A.Y * Basis.X
+            );
+    }
+
+    Result.Normalize();
+    return Result;
+}
+
 FVector JungleMath::FVectorRotate(FVector& origin, const FRotator& InRotation)
 {
     return InRotation.ToQuaternion().RotateVector(origin);

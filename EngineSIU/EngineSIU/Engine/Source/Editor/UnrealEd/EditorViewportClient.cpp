@@ -54,7 +54,8 @@ void FEditorViewportClient::Initialize(EViewScreenLocation InViewportIndex, cons
 void FEditorViewportClient::Tick(const float DeltaTime)
 {
     if (GEngine->ActiveWorld->WorldType == EWorldType::Editor ||
-        GEngine->ActiveWorld->WorldType == EWorldType::EditorPreview)
+        GEngine->ActiveWorld->WorldType == EWorldType::EditorPreview ||
+        GEngine->ActiveWorld->WorldType == EWorldType::ParticlePreview)
     {
         UpdateEditorCameraMovement(DeltaTime);
     }

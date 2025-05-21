@@ -3,7 +3,7 @@
 #include "Math/JungleMath.h"
 #include "UObject/Casts.h"
 #include "UObject/ObjectFactory.h"
-#include "Engine/HitResult.h""
+#include "Engine/HitResult.h"
 #include "GameFramework/Actor.h"
 
 USceneComponent::USceneComponent()
@@ -128,6 +128,35 @@ void USceneComponent::DestroyComponent(bool bPromoteChildren)
     }
 
     Super::DestroyComponent(bPromoteChildren);
+}
+
+bool USceneComponent::CanEverRender() const
+{
+    return true;
+    // AActor* Owner = GetOwner();
+
+//     if (Owner)
+//     {
+//         if (UChildActorComponent* ParentComponent = Owner->GetParentComponent())
+//         {
+//             if (!ParentComponent->CanEverRender())
+//             {
+//                 return false;
+//             }
+//         }
+//     }
+//
+//     const bool bShowInEditor =
+// #if WITH_EDITOR
+//         GIsEditor ? (!Owner || !Owner->IsHiddenEd()) : false;
+// #else
+//             false;
+// #endif
+//     UWorld *World = GetWorld();
+//     const bool bInGameWorld = World && World->UsesGameHiddenFlags();
+//
+//     const bool bShowInGame = (!Owner || !Owner->IsHidden());
+//     return ((bInGameWorld && bShowInGame) || (!bInGameWorld && bShowInEditor));
 }
 
 FVector USceneComponent::GetForwardVector() const
@@ -339,6 +368,15 @@ void USceneComponent::SetRelativeRotation(const FQuat& InQuat)
 
     RelativeRotation = NormalizedQuat.Rotator();
     RelativeRotation.Normalize();
+}
+
+FTransform USceneComponent::GetComponentTransform() const
+{
+    FQuat Rotation = GetWorldRotation().ToQuaternion();
+    FVector Location = GetWorldLocation();
+    FVector Scale = GetRelativeScale3D();
+
+    return FTransform(Rotation, Location, Scale);
 }
 
 void USceneComponent::UpdateOverlaps(const TArray<FOverlapInfo>* PendingOverlaps, bool bDoNotifies, const TArray<const FOverlapInfo>* OverlapsAtEndLocation)

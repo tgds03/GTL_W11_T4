@@ -170,6 +170,11 @@ FMatrix FMatrix::Inverse(const FMatrix& Mat)
     return Result;
 }
 
+FMatrix FMatrix::CreateRotationMatrix(const FRotator& InRotator)
+{
+    return CreateRotationMatrix(InRotator.Roll, InRotator.Pitch, InRotator.Yaw);
+}
+
 FMatrix FMatrix::CreateRotationMatrix(float roll, float pitch, float yaw)
 {
     float radRoll = roll * (PI / 180.0f);
@@ -229,14 +234,45 @@ FMatrix FMatrix::CreateTranslationMatrix(const FVector& position)
     return translationMatrix;
 }
 
+FMatrix FMatrix::CreateRotationTranslationMatrix(const FVector& position, const FVector& eulerAnglesDegrees)
+{
+    FMatrix ResultMatrix = FMatrix::Identity;
+
+    float SP, SY, SR;
+    float CP, CY, CR;
+
+    FMath::SinCos(&SP, &CP, FMath::DegreesToRadians(eulerAnglesDegrees.X)); // Pitch
+    FMath::SinCos(&SY, &CY, FMath::DegreesToRadians(eulerAnglesDegrees.Y)); // Yaw
+    FMath::SinCos(&SR, &CR, FMath::DegreesToRadians(eulerAnglesDegrees.Z)); // Roll
+
+    ResultMatrix.M[0][0] = CP * CY;
+    ResultMatrix.M[0][1] = CP * SY;
+    ResultMatrix.M[0][2] = SP;
+
+    ResultMatrix.M[1][0] = SR * SP * CY - CR * SY;
+    ResultMatrix.M[1][1] = SR * SP * SY + CR * CY;
+    ResultMatrix.M[1][2] = -SR * CP;
+
+    ResultMatrix.M[2][0] = -(CR * SP * CY + SR * SY);
+    ResultMatrix.M[2][1] = CY * SR - CR * SP * SY;
+    ResultMatrix.M[2][2] = CR * CP;
+
+    ResultMatrix.M[3][0] = position.X;
+    ResultMatrix.M[3][1] = position.Y;
+    ResultMatrix.M[3][2] = position.Z;
+    ResultMatrix.M[3][3] = 1.0f; // 항등 행렬 초기화 시 이미 1
+
+    return ResultMatrix;
+}
+
 FVector FMatrix::TransformVector(const FVector& v, const FMatrix& m)
 {
     FVector result;
 
     // 4x4 행렬을 사용하여 벡터 변환 (W = 0으로 가정, 방향 벡터)
-    result.X = v.X * m.M[0][0] + v.Y * m.M[1][0] + v.Z * m.M[2][0] + 0.0f * m.M[3][0];
-    result.Y = v.X * m.M[0][1] + v.Y * m.M[1][1] + v.Z * m.M[2][1] + 0.0f * m.M[3][1];
-    result.Z = v.X * m.M[0][2] + v.Y * m.M[1][2] + v.Z * m.M[2][2] + 0.0f * m.M[3][2];
+    result.X = v.X * m.M[0][0] + v.Y * m.M[1][0] + v.Z * m.M[2][0];
+    result.Y = v.X * m.M[0][1] + v.Y * m.M[1][1] + v.Z * m.M[2][1];
+    result.Z = v.X * m.M[0][2] + v.Y * m.M[1][2] + v.Z * m.M[2][2];
 
 
     return result;

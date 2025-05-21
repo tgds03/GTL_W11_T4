@@ -36,6 +36,7 @@
 #include "Actors/PrimitiveActors/CapsuleActor.h"
 #include "Actors/Character/Pawn.h"
 #include "Actors/Character/Character.h"
+#include "Actors/PrimitiveActors/AParticleActor.h"
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Contents/Actors/Fish.h"
@@ -45,7 +46,7 @@
 #include "Contents/Actors/TriggerBox.h"
 #include "Renderer/CompositingPass.h"
 
-void ControlEditorPanel::Render()
+void FControlEditorPanel::Render()
 {
     /* Pre Setup */
     const ImGuiIO& IO = ImGui::GetIO();
@@ -100,7 +101,7 @@ void ControlEditorPanel::Render()
     ImGui::End();
 }
 
-void ControlEditorPanel::CreateMenuButton(const ImVec2 ButtonSize, ImFont* IconFont)
+void FControlEditorPanel::CreateMenuButton(const ImVec2 ButtonSize, ImFont* IconFont)
 {
     ImGui::PushFont(IconFont);
     if (ImGui::Button("\ue9ad", ButtonSize)) // Menu
@@ -112,7 +113,7 @@ void ControlEditorPanel::CreateMenuButton(const ImVec2 ButtonSize, ImFont* IconF
     if (bOpenMenu)
     {
         ImGui::SetNextWindowPos(ImVec2(10, 55), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(135, 170), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(135, 190), ImGuiCond_Always);
 
         ImGui::Begin("Menu", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
 
@@ -199,6 +200,13 @@ void ControlEditorPanel::CreateMenuButton(const ImVec2 ButtonSize, ImFont* IconF
 
         ImGui::Separator();
 
+        if (ImGui::MenuItem("ParticleEditor"))
+        {
+            
+        }
+
+        ImGui::Separator();
+
         if (ImGui::MenuItem("Quit"))
         {
             ImGui::OpenPopup("프로그램 종료");
@@ -240,7 +248,7 @@ void ControlEditorPanel::CreateMenuButton(const ImVec2 ButtonSize, ImFont* IconF
     }
 }
 
-void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* IconFont)
+void FControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* IconFont)
 {
     ImGui::PushFont(IconFont);
     if (ImGui::Button("\ue9c4", ButtonSize)) // Slider
@@ -318,7 +326,7 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
             { .Label= "SpotLight", .OBJ= OBJ_SPOTLIGHT },
             { .Label= "DirectionalLight", .OBJ= OBJ_DIRECTIONALLGIHT },
             { .Label= "AmbientLight", .OBJ= OBJ_AMBIENTLIGHT },
-            { .Label= "Particle",  .OBJ= OBJ_PARTICLE },
+            { .Label= "LegacyParticle",  .OBJ= OBJ_LEGACY_PARTICLE },
             { .Label= "Text",      .OBJ= OBJ_TEXT },
             { .Label= "Fireball",  .OBJ = OBJ_FIREBALL},
             { .Label= "Fog",       .OBJ= OBJ_FOG },
@@ -331,6 +339,7 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
             {.Label = "Coin", .OBJ = OBJ_COIN},
             {.Label = "TriggerBox", .OBJ = OBJ_TRIGGERBOX},
             {.Label = "SkeletalMesh", .OBJ = OBJ_SKELETALMESH},
+            { .Label= "Particle",  .OBJ= OBJ_PARTICLE },
         };
 
         for (const auto& primitive : primitives)
@@ -381,10 +390,10 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
                     LightActor->SetActorLabel(TEXT("OBJ_AMBIENTLIGHT"));
                     break;
                 }
-                case OBJ_PARTICLE:
+                case OBJ_LEGACY_PARTICLE:
                 {
                     SpawnedActor = World->SpawnActor<AActor>();
-                    SpawnedActor->SetActorLabel(TEXT("OBJ_PARTICLE"));
+                    SpawnedActor->SetActorLabel(TEXT("OBJ_LEGACY_PARTICLE"));
                     UParticleSubUVComponent* ParticleComponent = SpawnedActor->AddComponent<UParticleSubUVComponent>();
                     ParticleComponent->SetTexture(L"Assets/Texture/T_Explosion_SubUV.png");
                     ParticleComponent->SetRowColumnCount(6, 6);
@@ -465,6 +474,12 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
                         SpawnedActor->SetActorLabel(TEXT("OBJ_APAWN"));
                         break;
                     }
+                case OBJ_PARTICLE:
+                    {
+                        SpawnedActor = World->SpawnActor<AParticleActor>();
+                        SpawnedActor->SetActorLabel(TEXT("OBJ_PARTICLE"));
+                        break;
+                    }
                 case OBJ_CAMERA:
                 case OBJ_PLAYER:
                 case OBJ_END:
@@ -483,7 +498,7 @@ void ControlEditorPanel::CreateModifyButton(const ImVec2 ButtonSize, ImFont* Ico
     }
 }
 
-void ControlEditorPanel::CreateFlagButton()
+void FControlEditorPanel::CreateFlagButton()
 {
     const std::shared_ptr<FEditorViewportClient> ActiveViewport = GEngineLoop.GetLevelEditor()->GetActiveViewportClient();
 
@@ -553,7 +568,7 @@ void ControlEditorPanel::CreateFlagButton()
     ShowFlags::GetInstance().Draw(ActiveViewport);
 }
 
-void ControlEditorPanel::CreatePIEButton(const ImVec2 ButtonSize, ImFont* IconFont)
+void FControlEditorPanel::CreatePIEButton(const ImVec2 ButtonSize, ImFont* IconFont)
 {
     UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
     if (!Engine)
@@ -582,7 +597,7 @@ void ControlEditorPanel::CreatePIEButton(const ImVec2 ButtonSize, ImFont* IconFo
 }
 
 // code is so dirty / Please refactor
-void ControlEditorPanel::CreateSRTButton(ImVec2 ButtonSize)
+void FControlEditorPanel::CreateSRTButton(ImVec2 ButtonSize)
 {
     const UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
     AEditorPlayer* Player = Engine->GetEditorPlayer();
@@ -631,7 +646,7 @@ void ControlEditorPanel::CreateSRTButton(ImVec2 ButtonSize)
     }
 }
 
-void ControlEditorPanel::OnResize(const HWND hWnd)
+void FControlEditorPanel::OnResize(const HWND hWnd)
 {
     RECT ClientRect;
     GetClientRect(hWnd, &ClientRect);
@@ -639,7 +654,7 @@ void ControlEditorPanel::OnResize(const HWND hWnd)
     Height = ClientRect.bottom - ClientRect.top;
 }
 
-void ControlEditorPanel::CreateLightSpawnButton(const ImVec2 InButtonSize, ImFont* IconFont)
+void FControlEditorPanel::CreateLightSpawnButton(const ImVec2 InButtonSize, ImFont* IconFont)
 {
     UWorld* World = GEngine->ActiveWorld;
     const ImVec2 WindowSize = ImGui::GetIO().DisplaySize;

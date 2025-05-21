@@ -22,6 +22,7 @@ class UHeightFogComponent;
 class AEditorPlayer;
 class UStaticMeshComponent;
 class USkeletalMeshComponent;
+class UParticleSystemComponent;
 class UMaterial;
 
 // 헬퍼 함수 예시
@@ -44,7 +45,7 @@ void DrawColorProperty(const char* Label, Getter Get, Setter Set)
 }
 
 
-class PropertyEditorPanel : public UEditorPanel
+class FPropertyEditorPanel : public FEditorPanel
 {
 public:
     virtual void Render() override;
@@ -85,6 +86,8 @@ private:
 
     void RenderForShapeComponent(UShapeComponent* ShapeComponent) const;
     void RenderForSpringArmComponent(USpringArmComponent* SpringArmComponent) const;
+
+    void RenderForParticleSystemComponent(UParticleSystemComponent* ParticleComponent) const;
     
     template<typename T>
         requires std::derived_from<T, UActorComponent>
@@ -108,7 +111,7 @@ private:
 };
 
 template <typename T> requires std::derived_from<T, UActorComponent>
-T* PropertyEditorPanel::GetTargetComponent(AActor* SelectedActor, USceneComponent* SelectedComponent)
+T* FPropertyEditorPanel::GetTargetComponent(AActor* SelectedActor, USceneComponent* SelectedComponent)
 {
     T* ResultComp = nullptr;
     if (SelectedComponent != nullptr)

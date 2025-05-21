@@ -3,7 +3,7 @@
 #include "UnrealEd/EditorPanel.h"
 #include "LightGridGenerator.h"
 
-class ControlEditorPanel : public UEditorPanel
+class FControlEditorPanel : public FEditorPanel
 {
 public:
     virtual void Render() override;
@@ -21,6 +21,7 @@ private:
     float Width = 300, Height = 100;
     bool bOpenMenu = false;
     bool bShowImGuiDemoWindow = false; // 데모 창 표시 여부를 관리하는 변수
+    bool bShowParticleEditorWindow = false; // 파티클 에디터 창 표시 여부를 관리하는 변수
 
     float* FOV = nullptr;
     float CameraSpeed = 0.0f;

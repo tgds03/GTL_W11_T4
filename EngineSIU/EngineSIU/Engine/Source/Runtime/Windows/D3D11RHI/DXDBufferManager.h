@@ -72,7 +72,10 @@ public:
     void UpdateConstantBuffer(const FString& key, const TArray<T>& data) const;
 
     template<typename T>
-    void UpdateDynamicVertexBuffer(const FString& KeyName, const TArray<T>& vertices) const;
+    void UpdateDynamicVertexBuffer(const FString& KeyName, const TArray<T>& vertices);
+
+    template<typename T>
+    void UpdateDynamicIndexBuffer(const FString& KeyName, const TArray<T>& Indices);
 
     void BindConstantBuffers(const TArray<FString>& Keys, UINT StartSlot, EShaderStage Stage) const;
     void BindConstantBuffer(const FString& Key, UINT StartSlot, EShaderStage Stage) const;
@@ -134,6 +137,7 @@ HRESULT FDXDBufferManager::CreateVertexBufferInternal(const FString& KeyName, co
 
     OutVertexInfo.NumVertices = static_cast<uint32>(vertices.Num());
     OutVertexInfo.VertexBuffer = NewBuffer;
+    OutVertexInfo.CapacityVertices = static_cast<uint32>(vertices.Num());
     OutVertexInfo.Stride = Stride;
     VertexBufferPool.Add(KeyName, OutVertexInfo);
 
@@ -203,6 +207,7 @@ HRESULT FDXDBufferManager::CreateVertexBufferInternal(const FWString& KeyName, c
         return hr;
 
     OutVertexInfo.NumVertices = static_cast<uint32>(vertices.Num());
+    OutVertexInfo.CapacityVertices = static_cast<uint32>(vertices.Num());
     OutVertexInfo.VertexBuffer = NewBuffer;
     OutVertexInfo.Stride = Stride;
     TextAtlasVertexBufferPool.Add(KeyName, OutVertexInfo);
@@ -330,7 +335,7 @@ void FDXDBufferManager::UpdateConstantBuffer(const FString& key, const TArray<T>
 }
 
 template<typename T>
-void FDXDBufferManager::UpdateDynamicVertexBuffer(const FString& KeyName, const TArray<T>& vertices) const
+void FDXDBufferManager::UpdateDynamicVertexBuffer(const FString& KeyName, const TArray<T>& vertices)
 {
     if (!VertexBufferPool.Contains(KeyName))
     {
@@ -339,6 +344,14 @@ void FDXDBufferManager::UpdateDynamicVertexBuffer(const FString& KeyName, const 
     }
     FVertexInfo vbInfo = VertexBufferPool[KeyName];
 
+    const size_t RequiredSize = sizeof(T) * vertices.Num();
+    if (RequiredSize > vbInfo.CapacityVertices * vbInfo.Stride) // 직접 저장한 크기
+    {
+        vbInfo.VertexBuffer->Release();
+        VertexBufferPool.Remove(KeyName);
+        CreateDynamicVertexBuffer(KeyName, vertices, vbInfo);
+    }
+    
     D3D11_MAPPED_SUBRESOURCE mapped;
     HRESULT hr = DXDeviceContext->Map(vbInfo.VertexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
     if (FAILED(hr))
@@ -349,6 +362,32 @@ void FDXDBufferManager::UpdateDynamicVertexBuffer(const FString& KeyName, const 
 
     memcpy(mapped.pData, vertices.GetData(), sizeof(T) * vertices.Num());
     DXDeviceContext->Unmap(vbInfo.VertexBuffer, 0);
+    VertexBufferPool[KeyName].NumVertices = vertices.Num();
+}
+
+template <typename T>
+void FDXDBufferManager::UpdateDynamicIndexBuffer(const FString& KeyName, const TArray<T>& Indices)
+{
+    if (!IndexBufferPool.Contains(KeyName))
+    {
+        UE_LOG(LogLevel::Error, TEXT("UpdateDynamicIndexBuffer 호출: 키 %s에 해당하는 Index 버퍼가 없습니다."), *KeyName);
+        return;
+    }
+
+    
+    FIndexInfo IndexBufferInfo = IndexBufferPool[KeyName];
+
+    D3D11_MAPPED_SUBRESOURCE mapped;
+    HRESULT hr = DXDeviceContext->Map(IndexBufferInfo.IndexBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapped);
+    if (FAILED(hr))
+    {
+        UE_LOG(LogLevel::Error, TEXT("VertexBuffer Map 실패, HRESULT: 0x%X"), hr);
+        return;
+    }
+
+    memcpy(mapped.pData, Indices.GetData(), sizeof(T) * Indices.Num());
+    DXDeviceContext->Unmap(IndexBufferInfo.IndexBuffer, 0);
+    IndexBufferPool[KeyName].NumIndices = Indices.Num();
 }
 
 template<typename T>

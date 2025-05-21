@@ -1,5 +1,6 @@
 #include "Quat.h"
 
+#include "JungleMath.h"
 #include "Vector.h"
 #include "Matrix.h"
 
@@ -254,4 +255,15 @@ FQuat FQuat::Slerp(const FQuat& A, const FQuat& B, float Alpha)
         ScaleA * A.Z + ScaleB * Target.Z
     );
     return Result;
+}
+
+FQuat FQuat::FindBetweenNormals(const FVector& A, const FVector& B)
+{
+    const float NormAB = 1.f;
+    return JungleMath::FindBetween_Helper(A, B, NormAB);
+}
+
+FQuat FQuat::Inverse() const
+{
+    return FQuat(-X, -Y, -Z, W);
 }

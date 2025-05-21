@@ -18,6 +18,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMesh/SkeletalMeshComponent.h"
 #include "Components/TextComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "Engine/EditorEngine.h"
 #include "Engine/FObjLoader.h"
 #include "UnrealEd/ImGuiWidget.h"
@@ -36,7 +37,7 @@
 #include "imgui/imgui_bezier.h"
 #include "imgui/imgui_curve.h"
 
-void PropertyEditorPanel::Render()
+void FPropertyEditorPanel::Render()
 {
     UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
     if (!Engine)
@@ -139,14 +140,18 @@ void PropertyEditorPanel::Render()
         RenderForShapeComponent(ShapeComponent);
     }
     if (USpringArmComponent* SpringArmComponent = GetTargetComponent<USpringArmComponent>(SelectedActor, SelectedComponent))
-    {
+    { 
         RenderForSpringArmComponent(SpringArmComponent);
+    }
+    if (UParticleSystemComponent* ParticleComponent = GetTargetComponent<UParticleSystemComponent>(SelectedActor, SelectedComponent))
+    {
+        RenderForParticleSystemComponent(ParticleComponent);
     }
 
     ImGui::End();
 }
 
-void PropertyEditorPanel::RGBToHSV(const float R, const float G, const float B, float& H, float& S, float& V)
+void FPropertyEditorPanel::RGBToHSV(const float R, const float G, const float B, float& H, float& S, float& V)
 {
     const float MX = FMath::Max(R, FMath::Max(G, B));
     const float MN = FMath::Min(R, FMath::Min(G, B));
@@ -183,7 +188,7 @@ void PropertyEditorPanel::RGBToHSV(const float R, const float G, const float B, 
     }
 }
 
-void PropertyEditorPanel::HSVToRGB(const float H, const float S, const float V, float& R, float& G, float& B)
+void FPropertyEditorPanel::HSVToRGB(const float H, const float S, const float V, float& R, float& G, float& B)
 {
     // h: 0~360, s:0~1, v:0~1
     const float C = V * S;
@@ -202,7 +207,7 @@ void PropertyEditorPanel::HSVToRGB(const float H, const float S, const float V, 
 }
 
 
-void PropertyEditorPanel::RenderForSceneComponent(USceneComponent* SceneComponent, AEditorPlayer* Player) const
+void FPropertyEditorPanel::RenderForSceneComponent(USceneComponent* SceneComponent, AEditorPlayer* Player) const
 {
     ImGui::SetItemDefaultFocus();
     // TreeNode 배경색을 변경 (기본 상태)
@@ -247,12 +252,12 @@ void PropertyEditorPanel::RenderForSceneComponent(USceneComponent* SceneComponen
     ImGui::PopStyleColor();
 }
 
-void PropertyEditorPanel::RenderForCameraComponent(UCameraComponent* InCameraComponent)
+void FPropertyEditorPanel::RenderForCameraComponent(UCameraComponent* InCameraComponent)
 {
     
 }
 
-void PropertyEditorPanel::RenderForPlayerActor(APlayer* InPlayerActor)
+void FPropertyEditorPanel::RenderForPlayerActor(APlayer* InPlayerActor)
 {
     if (ImGui::Button("SetMainPlayer"))
     {
@@ -260,7 +265,7 @@ void PropertyEditorPanel::RenderForPlayerActor(APlayer* InPlayerActor)
     }
 }
 
-void PropertyEditorPanel::RenderForActor(AActor* SelectedActor, USceneComponent* TargetComponent) const
+void FPropertyEditorPanel::RenderForActor(AActor* SelectedActor, USceneComponent* TargetComponent) const
 {
     if (ImGui::Button("Duplicate"))
     {
@@ -359,7 +364,7 @@ void PropertyEditorPanel::RenderForActor(AActor* SelectedActor, USceneComponent*
     }
 }
 
-void PropertyEditorPanel::RenderForStaticMesh(UStaticMeshComponent* StaticMeshComp) const
+void FPropertyEditorPanel::RenderForStaticMesh(UStaticMeshComponent* StaticMeshComp) const
 {
     ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
     if (ImGui::TreeNodeEx("Static Mesh", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
@@ -400,7 +405,7 @@ void PropertyEditorPanel::RenderForStaticMesh(UStaticMeshComponent* StaticMeshCo
     ImGui::PopStyleColor();
 }
 
-void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* SkeletalMeshComp) const
+void FPropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* SkeletalMeshComp) const
 {
     float InputHeight = ImGui::GetFrameHeight();
 
@@ -499,7 +504,7 @@ void PropertyEditorPanel::RenderForSkeletalMesh(USkeletalMeshComponent* Skeletal
     ImGui::PopStyleColor();
 }
 
-void PropertyEditorPanel::RenderForAmbientLightComponent(UAmbientLightComponent* AmbientLightComponent) const
+void FPropertyEditorPanel::RenderForAmbientLightComponent(UAmbientLightComponent* AmbientLightComponent) const
 {
     ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
@@ -514,7 +519,7 @@ void PropertyEditorPanel::RenderForAmbientLightComponent(UAmbientLightComponent*
     ImGui::PopStyleColor();
 }
 
-void PropertyEditorPanel::RenderForDirectionalLightComponent(UDirectionalLightComponent* DirectionalLightComponent) const
+void FPropertyEditorPanel::RenderForDirectionalLightComponent(UDirectionalLightComponent* DirectionalLightComponent) const
 {
     ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
@@ -557,7 +562,7 @@ void PropertyEditorPanel::RenderForDirectionalLightComponent(UDirectionalLightCo
     ImGui::PopStyleColor();
 }
 
-void PropertyEditorPanel::RenderForPointLightComponent(UPointLightComponent* PointlightComponent) const
+void FPropertyEditorPanel::RenderForPointLightComponent(UPointLightComponent* PointlightComponent) const
 {
     ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
@@ -611,7 +616,7 @@ void PropertyEditorPanel::RenderForPointLightComponent(UPointLightComponent* Poi
     ImGui::PopStyleColor();
 }
 
-void PropertyEditorPanel::RenderForSpotLightComponent(USpotLightComponent* SpotLightComponent) const
+void FPropertyEditorPanel::RenderForSpotLightComponent(USpotLightComponent* SpotLightComponent) const
 {
     ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
@@ -672,7 +677,7 @@ void PropertyEditorPanel::RenderForSpotLightComponent(USpotLightComponent* SpotL
     ImGui::PopStyleColor();
 }
 
-void PropertyEditorPanel::RenderForLightCommon(ULightComponentBase* LightComponent) const
+void FPropertyEditorPanel::RenderForLightCommon(ULightComponentBase* LightComponent) const
 {
     ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
@@ -712,7 +717,7 @@ void PropertyEditorPanel::RenderForLightCommon(ULightComponentBase* LightCompone
     ImGui::PopStyleColor();
 }
 
-void PropertyEditorPanel::RenderForProjectileMovementComponent(UProjectileMovementComponent* ProjectileComp) const
+void FPropertyEditorPanel::RenderForProjectileMovementComponent(UProjectileMovementComponent* ProjectileComp) const
 {
     ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
@@ -757,7 +762,7 @@ void PropertyEditorPanel::RenderForProjectileMovementComponent(UProjectileMoveme
     ImGui::PopStyleColor();
 }
 
-void PropertyEditorPanel::RenderForTextComponent(UTextComponent* TextComponent) const
+void FPropertyEditorPanel::RenderForTextComponent(UTextComponent* TextComponent) const
 {
     ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
     if (ImGui::TreeNodeEx("Text Component", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen)) // 트리 노드 생성
@@ -792,7 +797,7 @@ void PropertyEditorPanel::RenderForTextComponent(UTextComponent* TextComponent) 
     ImGui::PopStyleColor();
 }
 
-void PropertyEditorPanel::RenderForExponentialHeightFogComponent(UHeightFogComponent* FogComponent) const
+void FPropertyEditorPanel::RenderForExponentialHeightFogComponent(UHeightFogComponent* FogComponent) const
 {
     ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
@@ -892,7 +897,7 @@ void PropertyEditorPanel::RenderForExponentialHeightFogComponent(UHeightFogCompo
     ImGui::PopStyleColor();
 }
 
-void PropertyEditorPanel::RenderForShapeComponent(UShapeComponent* ShapeComponent) const
+void FPropertyEditorPanel::RenderForShapeComponent(UShapeComponent* ShapeComponent) const
 {
     ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
     if (USphereComponent* Component = Cast<USphereComponent>(ShapeComponent))
@@ -953,7 +958,7 @@ void PropertyEditorPanel::RenderForShapeComponent(UShapeComponent* ShapeComponen
     ImGui::PopStyleColor();
 }
 
-void PropertyEditorPanel::RenderForSpringArmComponent(USpringArmComponent* SpringArmComponent) const
+void FPropertyEditorPanel::RenderForSpringArmComponent(USpringArmComponent* SpringArmComponent) const
 {
     if (ImGui::TreeNodeEx("SpringArm", ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_DefaultOpen))
     {
@@ -1027,7 +1032,16 @@ void PropertyEditorPanel::RenderForSpringArmComponent(USpringArmComponent* Sprin
     }
 }
 
-void PropertyEditorPanel::RenderForMaterial(UStaticMeshComponent* StaticMeshComp)
+void FPropertyEditorPanel::RenderForParticleSystemComponent(UParticleSystemComponent* ParticleComponent) const
+{
+    if (ImGui::Button("Particle Editor"))
+    {
+        UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
+        Engine->StartParticleEditMode(ParticleComponent);
+    }
+}
+
+void FPropertyEditorPanel::RenderForMaterial(UStaticMeshComponent* StaticMeshComp)
 {
     if (StaticMeshComp->GetStaticMesh() == nullptr)
     {
@@ -1093,7 +1107,7 @@ void PropertyEditorPanel::RenderForMaterial(UStaticMeshComponent* StaticMeshComp
     }
 }
 
-void PropertyEditorPanel::RenderMaterialView(UMaterial* Material)
+void FPropertyEditorPanel::RenderMaterialView(UMaterial* Material)
 {
     ImGui::SetNextWindowSize(ImVec2(380, 400), ImGuiCond_Once);
     ImGui::Begin("Material Viewer", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNav);
@@ -1203,7 +1217,7 @@ void PropertyEditorPanel::RenderMaterialView(UMaterial* Material)
     ImGui::End();
 }
 
-void PropertyEditorPanel::RenderCreateMaterialView()
+void FPropertyEditorPanel::RenderCreateMaterialView()
 {
     ImGui::SetNextWindowSize(ImVec2(300, 500), ImGuiCond_Once);
     ImGui::Begin("Create Material Viewer", nullptr, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoNav);
@@ -1298,7 +1312,7 @@ void PropertyEditorPanel::RenderCreateMaterialView()
     ImGui::End();
 }
 
-void PropertyEditorPanel::OnResize(HWND hWnd)
+void FPropertyEditorPanel::OnResize(HWND hWnd)
 {
     RECT ClientRect;
     GetClientRect(hWnd, &ClientRect);

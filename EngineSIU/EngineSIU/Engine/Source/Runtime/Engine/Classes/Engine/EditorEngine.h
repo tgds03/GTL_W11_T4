@@ -11,8 +11,10 @@
 class AActor;
 class USceneComponent;
 class USkeletalMesh;
-class UDataPreviewController;
+class FDataPreviewController;
 class UAnimInstance;
+class UParticleSystemComponent;
+class FParticlePreviewController;
 
 class UEditorEngine : public UEngine
 {
@@ -29,6 +31,7 @@ public:
     UWorld* EditorWorld = nullptr;
     UWorld* SkeletalMeshEditWorld = nullptr;
     UWorld* PreviewWorld = nullptr;
+    UWorld* ParticlePreviewWorld = nullptr;
 
     void StartPIE();
     void BindEssentialObjects();
@@ -40,7 +43,11 @@ public:
     void StartSkeletalMeshEditMode(USkeletalMesh* InMesh);
     void StartAnimaitonEditMode(UAnimInstance* InAnim);
 
-    std::shared_ptr<UDataPreviewController> GetSkeletalMeshEditorController() const
+    void StartParticleEditMode(UParticleSystemComponent* InParticleComponent);
+    void StartParticlePreviewMode();
+    void EndParticlePreviewMode();
+
+    std::shared_ptr<FDataPreviewController> GetSkeletalMeshEditorController() const
     {
         return DataPreviewController;
     }
@@ -81,5 +88,6 @@ public:
 private:
     AEditorPlayer* EditorPlayer = nullptr;
 
-    std::shared_ptr<UDataPreviewController> DataPreviewController = nullptr;
+    std::shared_ptr<FDataPreviewController> DataPreviewController = nullptr;
+    std::shared_ptr<FParticlePreviewController> ParticlePreviewController = nullptr;
 };

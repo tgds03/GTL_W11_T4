@@ -364,6 +364,34 @@ struct FMath
         return dist(rng);
     }
 
+    static float RandNormalized()
+    {
+        static std::mt19937 rng(std::random_device{}());
+        std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+        return dist(rng);
+    }
+
+    /**
+    * Returns signed fractional part of a float.
+    * @param Value	Floating point value to convert
+    * @return		A float between >=0 and < 1 for nonnegative input. A float between >= -1 and < 0 for negative input.
+    */
+    static float Fractional(float Value)
+    {
+        return Value - TruncToFloat(Value);
+    }
+
+    /**
+     * Converts a float to an integer value with truncation towards zero.
+     * @param F		Floating point value to convert
+     * @return		Truncated integer value.
+     */
+    static FORCEINLINE float TruncToFloat(float F)
+    {
+        return truncf(F);
+    }
+
+
     static const int p[512];
 
     static float fade(float t) {

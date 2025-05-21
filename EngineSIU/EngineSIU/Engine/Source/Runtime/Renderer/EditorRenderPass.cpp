@@ -359,6 +359,7 @@ void FEditorRenderPass::LazyLoad()
     
     Resources.Primitives.Arrow.VertexInfo.VertexBuffer = VertexInfo.VertexBuffer;
     Resources.Primitives.Arrow.VertexInfo.NumVertices = VertexInfo.NumVertices;
+    Resources.Primitives.Arrow.VertexInfo.CapacityVertices = VertexInfo.CapacityVertices;
     Resources.Primitives.Arrow.VertexInfo.Stride = sizeof(FStaticMeshVertex); // Directional Light의 Arrow에 해당됨
     Resources.Primitives.Arrow.IndexInfo.IndexBuffer = IndexInfo.IndexBuffer;
     Resources.Primitives.Arrow.IndexInfo.NumIndices = IndexInfo.NumIndices;

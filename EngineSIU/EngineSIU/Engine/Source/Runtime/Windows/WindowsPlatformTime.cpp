@@ -1,4 +1,4 @@
-﻿#include "WindowsPlatformTime.h"
+#include "WindowsPlatformTime.h"
 
 
 double FWindowsPlatformTime::GSecondsPerCycle = 0.0;
@@ -50,4 +50,11 @@ uint64 FWindowsPlatformTime::Cycles64()
     LARGE_INTEGER CycleCount;
     QueryPerformanceCounter(&CycleCount);
     return static_cast<uint64>(CycleCount.QuadPart);
+}
+
+uint64 FWindowsPlatformTime::Cycles()
+{
+    LARGE_INTEGER CycleCount;
+    QueryPerformanceCounter(&CycleCount);
+    return static_cast<uint32>(CycleCount.QuadPart);
 }

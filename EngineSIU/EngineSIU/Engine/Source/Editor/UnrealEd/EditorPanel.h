@@ -11,10 +11,10 @@
 
 #endif // !__ICON_FONT_INDEX__
 
-class UEditorPanel
+class FEditorPanel
 {
 public:
-    virtual ~UEditorPanel() = default;
+    virtual ~FEditorPanel() = default;
 
     virtual void Render() = 0;
     virtual void OnResize(HWND hWnd) = 0;
