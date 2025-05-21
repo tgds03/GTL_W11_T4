@@ -7,7 +7,7 @@
 #include "Engine/Source/Editor/UnrealEd/EditorViewportClient.h"
 #include "Actors/Character/Pawn.h"
 
-void UDataPreviewController::Initialize(USkeletalMesh* InMesh)
+void FDataPreviewController::Initialize(USkeletalMesh* InMesh)
 {
     OriginalMesh = InMesh;
     EdittingMesh = OriginalMesh->DuplicateSkeletalMesh();
@@ -19,7 +19,7 @@ void UDataPreviewController::Initialize(USkeletalMesh* InMesh)
     SetBoneGizmo(OriginalMesh);
 }
 
-void UDataPreviewController::Initialize(UAnimInstance* InAnim)
+void FDataPreviewController::Initialize(UAnimInstance* InAnim)
 {
     if (!InAnim)
     {
@@ -57,7 +57,7 @@ void UDataPreviewController::Initialize(UAnimInstance* InAnim)
     SetBoneGizmo(OriginalMesh);
 }
 
-void UDataPreviewController::Release()
+void FDataPreviewController::Release()
 {
     AttachedViewport = nullptr;
     OriginalMesh = nullptr;
@@ -68,7 +68,7 @@ void UDataPreviewController::Release()
     BoneGizmos.Empty();
 }
 
-void UDataPreviewController::SetBoneGizmo(USkeletalMesh* InMesh)
+void FDataPreviewController::SetBoneGizmo(USkeletalMesh* InMesh)
 {
     if (InMesh == nullptr)
         return;
@@ -95,7 +95,7 @@ void UDataPreviewController::SetBoneGizmo(USkeletalMesh* InMesh)
     }
 }
 
-int UDataPreviewController::GetBoneIndex(ABoneGizmo* InBoneGizmo)
+int FDataPreviewController::GetBoneIndex(ABoneGizmo* InBoneGizmo)
 {
     for (int i = 0; i < BoneGizmos.Num(); i++) 
     {
@@ -107,12 +107,12 @@ int UDataPreviewController::GetBoneIndex(ABoneGizmo* InBoneGizmo)
     return -1;
 }
 
-int UDataPreviewController::GetSelectedBoneIndex()
+int FDataPreviewController::GetSelectedBoneIndex()
 {
     return GetBoneIndex(SelectedGizmo);
 }
 
-void UDataPreviewController::SetSelectedBoneIndex(int index)
+void FDataPreviewController::SetSelectedBoneIndex(int index)
 {
     if (index >= BoneGizmos.Num()) 
     {

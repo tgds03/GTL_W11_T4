@@ -25,6 +25,7 @@
 #include "LevelEditor/SLevelEditor.h"
 
 #include "Particles/ParticleSystemComponent.h"
+#include "Engine/ParticlePreviewController.h"
 #include "Actors/PrimitiveActors/AParticleActor.h"
 
 namespace PrivateEditorSelection
@@ -274,7 +275,7 @@ void UEditorEngine::StartSkeletalMeshEditMode(USkeletalMesh* InMesh)
 {
     StartEditorPreviewMode();
     FEditorViewportClient* ViewPort = GEngineLoop.GetLevelEditor()->GetViewports()->get();
-    DataPreviewController = std::make_shared<UDataPreviewController>(ActiveWorld, ViewPort);
+    DataPreviewController = std::make_shared<FDataPreviewController>(ActiveWorld, ViewPort);
     DataPreviewController->Initialize(InMesh);
 
     // TODO : Initialize에서 InMesh를 받아서 처리하도록 변경
@@ -289,7 +290,7 @@ void UEditorEngine::StartAnimaitonEditMode(UAnimInstance* InAnim)
 {
     StartEditorPreviewMode();
     FEditorViewportClient* ViewPort = GEngineLoop.GetLevelEditor()->GetViewports()->get();
-    DataPreviewController = std::make_shared<UDataPreviewController>(ActiveWorld, ViewPort);
+    DataPreviewController = std::make_shared<FDataPreviewController>(ActiveWorld, ViewPort);
     DataPreviewController->Initialize(InAnim);
 }
 
@@ -297,7 +298,10 @@ void UEditorEngine::StartParticleEditMode(UParticleSystemComponent* InParticleCo
 {
     StartParticlePreviewMode();
     FEditorViewportClient* ViewPort = GEngineLoop.GetLevelEditor()->GetViewports()->get();
+    ParticlePreviewController = std::make_shared<FParticlePreviewController>(ActiveWorld, ViewPort);
+    ParticlePreviewController->Initialize(InParticleComponent->Template);
     
+    // TODO: UParticleSystemComponent를 사용해서 생성하도록 변경
     AActor* SpawnedActor = ActiveWorld->SpawnActor<AParticleActor>();
     SpawnedActor->SetActorLabel(TEXT("OBJ_PARTICLE"));
 

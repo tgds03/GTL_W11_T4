@@ -13,13 +13,13 @@ class UAnimInstance;
 class FSkeleton;
 class ABoneGizmo;
 
-class UDataPreviewController
+class FDataPreviewController
 {
 public:
-    UDataPreviewController(UWorld* InWorld, FEditorViewportClient* InViewport)
+    FDataPreviewController(UWorld* InWorld, FEditorViewportClient* InViewport)
         : PreviewWorld(InWorld), AttachedViewport(InViewport) {
     }
-    ~UDataPreviewController() = default;
+    ~FDataPreviewController() = default;
 
     void Initialize(USkeletalMesh* InMesh);
     void Initialize(UAnimInstance* InAnim);

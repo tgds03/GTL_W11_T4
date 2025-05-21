@@ -12,7 +12,7 @@
 void FSkeletonMeshEditorPanel::Render()
 {
     UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
-    std::shared_ptr<UDataPreviewController> Controller = Engine->GetSkeletalMeshEditorController();
+    std::shared_ptr<FDataPreviewController> Controller = Engine->GetSkeletalMeshEditorController();
     EPreviewType PreviewType = Controller->GetType();
 
     // 1) 메인 뷰포트 정보 가져오기

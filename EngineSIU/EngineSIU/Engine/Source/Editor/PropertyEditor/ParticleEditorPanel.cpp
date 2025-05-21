@@ -1,5 +1,5 @@
 #include "ParticleEditorPanel.h"
-//#include "Engine/EditorEngine.h"
+#include "Engine/EditorEngine.h"
 
 #include "Particles/ParticleEmitter.h"
 #include "Particles/ParticleLODLevel.h"
@@ -39,6 +39,8 @@ FParticleEditorPanel::FParticleEditorPanel()
 
 void FParticleEditorPanel::Render()
 {
+    UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
+
     HWND Hwnd = ::GetActiveWindow();
     RECT ClientRect = { 0,0,0,0 };
     if (Hwnd)
@@ -117,7 +119,11 @@ void FParticleEditorPanel::RenderMenuBar(const ImVec2& InPos, const ImVec2& InSi
             if (ImGui::MenuItem("Save Particle System", "Ctrl+S")) { /* TODO */ }
             if (ImGui::MenuItem("Save As...")) { /* TODO */ }
             ImGui::Separator();
-            if (ImGui::MenuItem("Exit")) { /* TODO: RequestExit(); */ }
+            if (ImGui::MenuItem("Exit")) 
+            {
+                UEditorEngine* Engine = Cast<UEditorEngine>(GEngine);
+                Engine->EndParticlePreviewMode();
+            }
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Edit"))

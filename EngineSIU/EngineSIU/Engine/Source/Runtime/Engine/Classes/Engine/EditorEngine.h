@@ -11,9 +11,10 @@
 class AActor;
 class USceneComponent;
 class USkeletalMesh;
-class UDataPreviewController;
+class FDataPreviewController;
 class UAnimInstance;
 class UParticleSystemComponent;
+class FParticlePreviewController;
 
 class UEditorEngine : public UEngine
 {
@@ -46,7 +47,7 @@ public:
     void StartParticlePreviewMode();
     void EndParticlePreviewMode();
 
-    std::shared_ptr<UDataPreviewController> GetSkeletalMeshEditorController() const
+    std::shared_ptr<FDataPreviewController> GetSkeletalMeshEditorController() const
     {
         return DataPreviewController;
     }
@@ -87,5 +88,6 @@ public:
 private:
     AEditorPlayer* EditorPlayer = nullptr;
 
-    std::shared_ptr<UDataPreviewController> DataPreviewController = nullptr;
+    std::shared_ptr<FDataPreviewController> DataPreviewController = nullptr;
+    std::shared_ptr<FParticlePreviewController> ParticlePreviewController = nullptr;
 };

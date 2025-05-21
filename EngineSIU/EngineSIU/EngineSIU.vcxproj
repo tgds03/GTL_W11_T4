@@ -200,6 +200,7 @@ xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configurati
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Distribution\Distribution.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaScriptManager.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaTypes\LuaUserTypes.cpp" />
+    <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Engine\ParticlePreviewController.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\Event\ParticleModuleEventBase.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\Event\ParticleModuleEventGenerator.cpp" />
     <ClCompile Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleLODLevel.cpp" />
@@ -521,6 +522,7 @@ xcopy /y /d "$(ProjectDir)Engine\Source\ThirdParty\FBX_SDK\lib\x64\$(Configurati
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaTypes\LuaUserTypes.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaUtils\LuaBindUtils.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\Lua\LuaUtils\LuaTypeMacros.h" />
+    <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Engine\ParticlePreviewController.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\Event\ParticleModuleEventBase.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\Event\ParticleModuleEventGenerator.h" />
     <ClInclude Include="Engine\Source\Runtime\Engine\Classes\Particles\ParticleLODLevel.h" />
