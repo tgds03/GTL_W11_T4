@@ -18,10 +18,12 @@
 #include "Particles/TypeData/ParticleModuleTypeDataMesh.h"
 #include "UnrealEd/ImGuiWidget.h"
 #include "UObject/Casts.h"
+#include "Font/IconDefs.h"
 
 FParticleEditorPanel::FParticleEditorPanel()
 {
     // 초기화 필요시 작성
+    BackgroundColor = ImVec4(0.01f, 0.01f, 0.01f, 1.f);
 
     // TEST
     UParticleEmitter* Emmitter = FObjectFactory::ConstructObject<UParticleEmitter>(nullptr);
@@ -48,44 +50,16 @@ void FParticleEditorPanel::Render()
         GetClientRect(Hwnd, &ClientRect);
     }
 
-    float WinWidth = static_cast<float>(ClientRect.right - ClientRect.left);
-    float WinHeight = static_cast<float>(ClientRect.bottom - ClientRect.top);
+    const ImGuiIO& IO = ImGui::GetIO();
+    ImFont* IconFont = IO.Fonts->Fonts[FEATHER_FONT];
+    ImVec2 IconSize = ImVec2(32, 32);
 
-    if (WinWidth <= 0) WinWidth = 1280;
-    if (WinHeight <= 0) WinHeight = 720;
-
-    float MenuBarHeight = 30.0f;
-    float ToolBarHeight = 30.0f;
-    float TopBarsTotalHeight = MenuBarHeight + ToolBarHeight;
+    CalculatePanelSize(ClientRect);
 
     RenderMenuBar(ImVec2(0.0f, 0.0f), ImVec2(WinWidth, MenuBarHeight));
-    RenderToolBar(ImVec2(0.0f, MenuBarHeight), ImVec2(WinWidth, ToolBarHeight));
-
-    float UsableScreenYOffset = TopBarsTotalHeight;
-    float UsableScreenHeight = WinHeight - TopBarsTotalHeight;
-    if (UsableScreenHeight < 0.0f) UsableScreenHeight = 0.0f;
-
-    float EmitterPanelWidthRatio = 0.75f;
-    float EmitterPanelWidth = WinWidth * EmitterPanelWidthRatio;
-    if (EmitterPanelWidth < 0.0f) EmitterPanelWidth = 0.0f;
-    float EmitterPanelXPos = WinWidth - EmitterPanelWidth;
-    if (EmitterPanelXPos < 0.0f) EmitterPanelXPos = 0.0f;
-
+    RenderToolBar(ImVec2(0.0f, MenuBarHeight), ImVec2(WinWidth, ToolBarHeight), IconFont);
     RenderEmitterPanel(ImVec2(EmitterPanelXPos, UsableScreenYOffset), ImVec2(EmitterPanelWidth, UsableScreenHeight));
-
-    float LeftAreaWidth = WinWidth - EmitterPanelWidth;
-    if (LeftAreaWidth < 0.0f) LeftAreaWidth = 0.0f;
-
-    float DetailPanelHeightRatio = 0.5f;
-    float DetailPanelHeight = UsableScreenHeight * DetailPanelHeightRatio;
-    if (DetailPanelHeight < 0.0f) DetailPanelHeight = 0.0f;
-    float DetailPanelYPos = UsableScreenYOffset + (UsableScreenHeight - DetailPanelHeight);
-
     RenderDetailPanel(ImVec2(0.0f, DetailPanelYPos), ImVec2(LeftAreaWidth, DetailPanelHeight));
-
-    float ViewportPanelHeight = UsableScreenHeight - DetailPanelHeight;
-    if (ViewportPanelHeight < 0.0f) ViewportPanelHeight = 0.0f;
-
     RenderViewportPanel(ImVec2(0.0f, UsableScreenYOffset), ImVec2(LeftAreaWidth, ViewportPanelHeight));
 }
 
@@ -100,7 +74,7 @@ void FParticleEditorPanel::RenderMenuBar(const ImVec2& InPos, const ImVec2& InSi
     ImGui::SetNextWindowPos(InPos);
     ImGui::SetNextWindowSize(InSize);
 
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.12f, 0.12f, 0.12f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, BackgroundColor);
     ImGui::Begin("MenuBar", nullptr,
         ImGuiWindowFlags_NoTitleBar |
         ImGuiWindowFlags_NoResize |
@@ -149,12 +123,12 @@ void FParticleEditorPanel::RenderMenuBar(const ImVec2& InPos, const ImVec2& InSi
     ImGui::PopStyleColor();
 }
 
-void FParticleEditorPanel::RenderToolBar(const ImVec2& InPos, const ImVec2& InSize)
+void FParticleEditorPanel::RenderToolBar(const ImVec2& InPos, const ImVec2& InSize, ImFont* IconFont)
 {
     ImGui::SetNextWindowPos(InPos);
     ImGui::SetNextWindowSize(InSize);
 
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.12f, 0.12f, 0.12f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, BackgroundColor);
     // ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(2,2)); // Reduce padding for compact toolbar
     ImGui::Begin("ToolBar", nullptr,
         ImGuiWindowFlags_NoTitleBar |
@@ -164,15 +138,13 @@ void FParticleEditorPanel::RenderToolBar(const ImVec2& InPos, const ImVec2& InSi
         ImGuiWindowFlags_NoCollapse
     );
 
-    // Example Toolbar Buttons
-    if (ImGui::Button("Save")) { /* TODO: Save logic */ }
+    ImGui::PushFont(IconFont);
+    if (ImGui::Button("\ue9d6", IconSize)) {/* TODO: Save logic */ }\
     ImGui::SameLine();
-    // Add more buttons: Play, Pause, Stop for particle preview, etc.
-    if (ImGui::Button("Play")) { /* TODO: Play particle system */ }
+    if (ImGui::Button("\ue9d8", IconSize)) { /* TODO: Play particle system */ }
     ImGui::SameLine();
-    if (ImGui::Button("Pause")) { /* TODO: Pause particle system */ }
-    ImGui::SameLine();
-    if (ImGui::Button("Stop")) { /* TODO: Stop particle system */ }
+    ImGui::PopFont();
+
 
     ImGui::End();
     // ImGui::PopStyleVar();
@@ -183,7 +155,7 @@ void FParticleEditorPanel::RenderViewportPanel(const ImVec2& InPos, const ImVec2
 {
     ImGui::SetNextWindowPos(InPos);
     ImGui::SetNextWindowSize(InSize);
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.05f, 0.05f, 0.05f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.f, 0.f, 0.f, 1.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
     ImGui::Begin("Viewport", nullptr,
         ImGuiWindowFlags_NoCollapse |
@@ -211,7 +183,7 @@ void FParticleEditorPanel::RenderDetailPanel(const ImVec2& InPos, const ImVec2& 
 {
     ImGui::SetNextWindowPos(InPos);
     ImGui::SetNextWindowSize(InSize);
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.18f, 0.18f, 0.18f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, BackgroundColor);
     ImGui::Begin("Properties", nullptr,
         ImGuiWindowFlags_NoCollapse |
         ImGuiWindowFlags_NoMove |
@@ -230,7 +202,7 @@ void FParticleEditorPanel::RenderEmitterPanel(const ImVec2& InPos, const ImVec2&
 {
     ImGui::SetNextWindowPos(InPos);
     ImGui::SetNextWindowSize(InSize);
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.18f, 0.18f, 0.18f, 1.0f));
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.f, 0.f, 0.f, 1.f));
     ImGui::Begin("Emitters", nullptr,
         ImGuiWindowFlags_NoCollapse |
         ImGuiWindowFlags_NoMove |
@@ -262,46 +234,59 @@ void FParticleEditorPanel::RenderEmitterInfos()
     }
     ImGui::Separator();
 
+    ImGui::BeginChild("EmittersHorizontalArea", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
+
+    bool bIsFirstEmitter = true;
+    const float emitterColumnWidth = 200.f;
+    const float modulesListHeight = 800.f;
     for (int i = 0; i < TargetParticleSystem->Emitters.Num(); ++i)
     {
         UParticleEmitter* Emitter = TargetParticleSystem->Emitters[i];
         if (!Emitter) continue;
 
-        // FString EmitterName = Emitter->EmitterName.IsValid() ? Emitter->EmitterName.ToString() : FString::Printf(TEXT("Emitter %d"), i);
-        FString EmitterName = FString::Printf(TEXT("Emitter %d"), i);
-
-        ImGui::PushID(Emitter); // Unique ID for the emitter section
-
-        if (ImGui::CollapsingHeader((*EmitterName), ImGuiTreeNodeFlags_DefaultOpen))
+        if (!bIsFirstEmitter)
         {
-            ImGui::BeginChild("ModulesList", ImVec2(0, 150), false, ImGuiWindowFlags_HorizontalScrollbar);
-            if (Emitter->LODLevels.Num() > 0 && Emitter->LODLevels[0]) // Check LOD validity
+            ImGui::SameLine();
+        }
+        bIsFirstEmitter = false;
+
+        ImGui::PushID(Emitter);
+
+        ImGui::BeginChild(ImGui::GetID("EmitterColumn"), ImVec2(emitterColumnWidth, 0), false, ImGuiWindowFlags_NoScrollbar);
+        {
+            FString EmitterName = FString::Printf(TEXT("Emitter %d"), i);
+
+            if (ImGui::CollapsingHeader((*EmitterName), ImGuiTreeNodeFlags_DefaultOpen))
             {
-                TArray<UParticleModule*>& Modules = Emitter->LODLevels[0]->Modules;
-                for (int j = 0; j < Modules.Num(); ++j)
+                ImGui::BeginChild("ModulesList", ImVec2(0, modulesListHeight), true, ImGuiWindowFlags_HorizontalScrollbar);
+                if (Emitter->LODLevels.Num() > 0 && Emitter->LODLevels[0])
                 {
-                    UParticleModule* Module = Modules[j];
-                    if (!Module) continue;
-
-                    bool bSelected = (Module == SelectedModule);
-
-                    FString ModuleDisplayName = Module->GetClass()->GetName();
-                    //ModuleDisplayName.RemoveFromStart(TEXT("ParticleModule")); // "Required" from "ParticleModuleRequired"
-
-                    if (ImGui::Selectable((*ModuleDisplayName), bSelected, ImGuiSelectableFlags_DontClosePopups))
+                    TArray<UParticleModule*>& Modules = Emitter->LODLevels[0]->Modules;
+                    for (int j = 0; j < Modules.Num(); ++j)
                     {
-                        SelectedModule = Module;
+                        UParticleModule* Module = Modules[j];
+                        if (!Module) continue;
+
+                        bool bSelected = (Module == SelectedModule);
+                        FString ModuleDisplayName = Module->GetClass()->GetName();
+                        // ModuleDisplayName.RemoveFromStart(TEXT("ParticleModule"));
+
+                        if (ImGui::Selectable((*ModuleDisplayName), bSelected, ImGuiSelectableFlags_DontClosePopups | ImGuiSelectableFlags_SpanAllColumns))
+                        {
+                            SelectedModule = Module;
+                        }
                     }
                 }
+                ImGui::EndChild();
             }
-            ImGui::EndChild();
-
-            // TODO: Add context menu for adding/removing modules to this emitter
         }
-        ImGui::PopID(); // Pop Emitter ID
-    }
-}
 
+        ImGui::EndChild();
+        ImGui::PopID();
+    }
+
+    ImGui::EndChild();
+}
 
 void FParticleEditorPanel::RenderDetailInfos()
 {
@@ -544,4 +529,39 @@ void FParticleEditorPanel::RenderDetailInfos()
     }
 
     ImGui::PopStyleColor();
+}
+
+void FParticleEditorPanel::CalculatePanelSize(RECT InRect)
+{
+    WinWidth = static_cast<float>(InRect.right - InRect.left);
+    float WinHeight = static_cast<float>(InRect.bottom - InRect.top);
+
+    if (WinWidth <= 0) WinWidth = 1280;
+    if (WinHeight <= 0) WinHeight = 720;
+
+    MenuBarHeight = 40.0f;
+    ToolBarHeight = 40.0f;
+    float TopBarsTotalHeight = MenuBarHeight + ToolBarHeight;
+
+    UsableScreenYOffset = TopBarsTotalHeight;
+    UsableScreenHeight = WinHeight - TopBarsTotalHeight;
+    if (UsableScreenHeight < 0.0f) UsableScreenHeight = 0.0f;
+
+    float EmitterPanelWidthRatio = 0.75f;
+    EmitterPanelWidth = WinWidth * EmitterPanelWidthRatio;
+    if (EmitterPanelWidth < 0.0f) EmitterPanelWidth = 0.0f;
+    EmitterPanelXPos = WinWidth - EmitterPanelWidth;
+    if (EmitterPanelXPos < 0.0f) EmitterPanelXPos = 0.0f;
+
+    LeftAreaWidth = WinWidth - EmitterPanelWidth;
+    if (LeftAreaWidth < 0.0f) LeftAreaWidth = 0.0f;
+
+    float DetailPanelHeightRatio = 0.5f;
+    DetailPanelHeight = UsableScreenHeight * DetailPanelHeightRatio;
+    if (DetailPanelHeight < 0.0f) DetailPanelHeight = 0.0f;
+    DetailPanelYPos = UsableScreenYOffset + (UsableScreenHeight - DetailPanelHeight);
+
+    ViewportPanelHeight = UsableScreenHeight - DetailPanelHeight;
+    if (ViewportPanelHeight < 0.0f) ViewportPanelHeight = 0.0f;
+
 }
