@@ -8,7 +8,7 @@ class UParticleModuleLifetime: public UParticleModule
 public:
     UParticleModuleLifetime();
 
-    FDistributionFloat Lifetime;
+    FDistributionFloatUniform Lifetime;
 
     virtual void Spawn(FParticleEmitterInstance* Owner, uint32 Offset, float SpawnTime, FBaseParticle* ParticleBase) override;
 

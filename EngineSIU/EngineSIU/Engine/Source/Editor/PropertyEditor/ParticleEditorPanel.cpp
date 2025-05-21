@@ -256,12 +256,34 @@ void FParticleEditorPanel::RenderEmitterInfos()
             if (ImGui::CollapsingHeader((*EmitterName), ImGuiTreeNodeFlags_DefaultOpen))
             {
                 ImGui::BeginChild("ModulesList", ImVec2(0, modulesListHeight), true, ImGuiWindowFlags_HorizontalScrollbar);
-                if (Emitter->LODLevels.Num() > 0 && Emitter->LODLevels[0])
+                if (Emitter->LODLevels.Num() > 0)
                 {
-                    TArray<UParticleModule*>& Modules = Emitter->LODLevels[0]->Modules;
-                    for (int j = 0; j < Modules.Num(); ++j)
+                    UParticleLODLevel* LODLevel = Emitter->GetLODLevel(0);
                     {
-                        UParticleModule* Module = Modules[j];
+                        bool bSelected = (LODLevel->RequiredModule == SelectedModule);
+                        if (ImGui::Selectable("Required Module", bSelected, ImGuiSelectableFlags_DontClosePopups | ImGuiSelectableFlags_SpanAllColumns))
+                        {
+                            SelectedModule = LODLevel->RequiredModule;
+                        }
+                    }
+                    {
+                        bool bSelected = (LODLevel->SpawnModule == SelectedModule);
+                        if (ImGui::Selectable("Spawn Module", bSelected, ImGuiSelectableFlags_DontClosePopups | ImGuiSelectableFlags_SpanAllColumns))
+                        {
+                            SelectedModule = LODLevel->SpawnModule;
+                        }
+                    }
+
+                    {
+                        bool bSelected = (LODLevel->TypeDataModule == SelectedModule);
+                        if (ImGui::Selectable("Type Data Module", bSelected, ImGuiSelectableFlags_DontClosePopups | ImGuiSelectableFlags_SpanAllColumns))
+                        {
+                            SelectedModule = LODLevel->TypeDataModule;
+                        }
+                    }
+                    
+                    for (UParticleModule* Module : LODLevel->Modules)
+                    {
                         if (!Module) continue;
 
                         bool bSelected = (Module == SelectedModule);
@@ -390,78 +412,40 @@ void FParticleEditorPanel::RenderDetailInfos()
     }
     else if (UParticleModuleSpawn* SpawnModule = Cast<UParticleModuleSpawn>(SelectedModule))
     {
-        if (ImGui::TreeNodeEx("Rate", TreeNodePropertyFlags))
+        ImGui::DragFloat("Rate", &SpawnModule->Rate.Constant);
+        ImGui::DragFloat("RateScale", &SpawnModule->RateScale.Constant);
+
+        bool bApplyGlobalSpawnRateScale = SpawnModule->bApplyGlobalSpawnRateScale;
+        if (ImGui::Checkbox("Apply Global Spawn Rate Scale", &bApplyGlobalSpawnRateScale))
         {
-            bool bSpawnRateUseRange = SpawnModule->bSpawnRateUseRange;
-            if (ImGui::Checkbox("Use Range##SpawnRate", &bSpawnRateUseRange))
-            {
-                SpawnModule->bSpawnRateUseRange = bSpawnRateUseRange;
-            }
-            if (!bSpawnRateUseRange)
-            {
-                ImGui::InputFloat("Value##SpawnRate", &SpawnModule->Rate);
-            } else
-            {
-                ImGui::InputFloat("Max##SpawnRate", &SpawnModule->Rate);
-                ImGui::InputFloat("Min##SpawnRate", &SpawnModule->RateLow); // Ensure unique ID
-            }
-            ImGui::TreePop();
-        }
-        
-        if (ImGui::TreeNodeEx("Rate Scale", TreeNodePropertyFlags))
-        {
-            bool bSpawnRateScaleUseRange = SpawnModule->bSpawnRateScaleUseRange;
-            if (ImGui::Checkbox("Use Range##SpawnRateScale", &bSpawnRateScaleUseRange))
-            {
-                SpawnModule->bSpawnRateScaleUseRange = bSpawnRateScaleUseRange;
-            }
-            if (!bSpawnRateScaleUseRange)
-            {
-                ImGui::InputFloat("Value##SpawnRateScale", &SpawnModule->RateScale);
-            } else
-            {
-                ImGui::InputFloat("Max##SpawnRateScale", &SpawnModule->RateScale);
-                ImGui::InputFloat("Min##SpawnRateScale", &SpawnModule->RateScaleLow); // Ensure unique ID
-            }
-            ImGui::TreePop();
+            SpawnModule->bApplyGlobalSpawnRateScale = bApplyGlobalSpawnRateScale;
         }
 
-        if (ImGui::TreeNodeEx("Behavior", TreeNodePropertyFlags))
+        bool bProcessSpawnRate = SpawnModule->bProcessSpawnRate;
+        if (ImGui::Checkbox("Process Spawn Rate", &bProcessSpawnRate))
         {
-            bool bApplyGlobalSpawnRateScale = SpawnModule->bApplyGlobalSpawnRateScale;
-            if (ImGui::Checkbox("Apply Global Spawn Rate Scale", &bApplyGlobalSpawnRateScale))
-            {
-                SpawnModule->bApplyGlobalSpawnRateScale = bApplyGlobalSpawnRateScale;
-            }
-
-            bool bProcessSpawnRate = SpawnModule->bProcessSpawnRate;
-            if (ImGui::Checkbox("Process Spawn Rate (Burst?)", &bProcessSpawnRate))
-            {
-                SpawnModule->bProcessSpawnRate = bProcessSpawnRate;
-            }
+            SpawnModule->bProcessSpawnRate = bProcessSpawnRate;
+        }
+    }
+    else if (UParticleModuleLifetime* LifetimeModule = Cast<UParticleModuleLifetime>(SelectedModule))
+    {
+        if (ImGui::TreeNodeEx("Lifetime", TreeNodePropertyFlags))
+        {
+            // ImGui::Text("Particle Lifetime (Constant for now):");
+            ImGui::DragFloat("Max", &LifetimeModule->Lifetime.Max);
+            ImGui::DragFloat("Min", &LifetimeModule->Lifetime.Min);
             ImGui::TreePop();
         }
     }
-    //else if (UParticleModuleLifetime* LifetimeModule = Cast<UParticleModuleLifetime>(SelectedModule))
-    //{
-    //    if (ImGui::TreeNodeEx("Lifetime", TreeNodePropertyFlags))
-    //    {
-    //        // LifetimeModule->Lifetime.RenderImGui("Particle Lifetime");
-    //        ImGui::Text("Particle Lifetime (Constant for now):");
-    //        ImGui::InputFloat("Constant", &LifetimeModule->GetLifetimeValue());
-    //        ImGui::TreePop();
-    //    }
-    //}
     else if (UParticleModuleSize* SizeModule = Cast<UParticleModuleSize>(SelectedModule))
     {
-        //if (ImGui::TreeNodeEx("Initial Size", TreeNodePropertyFlags))
-        //{
-        //    // SizeModule->StartSize.RenderImGui("Start Size"); // FDistributionVector
-        //    ImGui::Text("Start Size (Constant Vector for now):");
-        //    // Assuming FDistributionVector has Constant member that is FVector
-        //    ImGui::InputFloat3("Constant XYZ", (float*)&SizeModule->StartSize.GetValue());
-        //    ImGui::TreePop();
-        //}
+        if (ImGui::TreeNodeEx("Start Size", TreeNodePropertyFlags))
+        {
+            // ImGui::Text("Start Size (Constant Vector for now):");
+            FImGuiWidget::DrawVec3Control("Max", SizeModule->StartSize.Max, 0, 85);
+            FImGuiWidget::DrawVec3Control("Min", SizeModule->StartSize.Min, 0, 85);
+            ImGui::TreePop();
+        }
     }
     else if (UParticleModuleVelocity* VelocityModule = Cast<UParticleModuleVelocity>(SelectedModule))
     {

@@ -8,7 +8,7 @@ class UParticleModuleSize: public UParticleModule
 public:
     UParticleModuleSize();
 
-    FDistributionVector StartSize;
+    FDistributionVectorUniform StartSize;
     virtual void Spawn(FParticleEmitterInstance* Owner, uint32 Offset, float SpawnTime, FBaseParticle* ParticleBase) override;
 
 protected:
