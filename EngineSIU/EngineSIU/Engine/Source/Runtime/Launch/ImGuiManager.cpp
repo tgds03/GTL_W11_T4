@@ -95,6 +95,9 @@ void UImGuiManager::PreferenceStyle() const
     ImGui::GetStyle().Colors[ImGuiCol_TabActive] = ImVec4{ 0.28f, 0.2805f, 0.281f, 1.0f };
     ImGui::GetStyle().Colors[ImGuiCol_TabUnfocused] = ImVec4{ 0.15f, 0.1505f, 0.151f, 1.0f };
     ImGui::GetStyle().Colors[ImGuiCol_TabUnfocusedActive] = ImVec4{ 0.2f, 0.205f, 0.21f, 1.0f };
+
+    // MenuBar
+    ImGui::GetStyle().Colors[ImGuiCol_MenuBarBg] = ImVec4{ 0.01f, 0.01f, 0.01f, 1.f };
 }
 
 void UImGuiManager::Shutdown()

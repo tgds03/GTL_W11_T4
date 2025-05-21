@@ -20,6 +20,11 @@
 #include "UObject/Casts.h"
 #include "Font/IconDefs.h"
 
+#include "Classes/Engine/ParticlePreviewController.h"
+#include "Editor/UnrealEd/EditorViewportClient.h"
+#include "Engine/UnrealClient.h"
+#include <array>
+
 FParticleEditorPanel::FParticleEditorPanel()
 {
     // 초기화 필요시 작성
@@ -75,7 +80,11 @@ void FParticleEditorPanel::RenderMenuBar(const ImVec2& InPos, const ImVec2& InSi
     ImGui::SetNextWindowPos(InPos);
     ImGui::SetNextWindowSize(InSize);
 
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, BackgroundColor);
+    ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.f, 0.f, 0.f, 1.f));
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
+
     ImGui::Begin("MenuBar", nullptr,
         ImGuiWindowFlags_NoTitleBar |
         ImGuiWindowFlags_NoResize |
@@ -84,7 +93,6 @@ void FParticleEditorPanel::RenderMenuBar(const ImVec2& InPos, const ImVec2& InSi
         ImGuiWindowFlags_NoCollapse |
         ImGuiWindowFlags_MenuBar
     );
-
     if (ImGui::BeginMenuBar())
     {
         if (ImGui::BeginMenu("File"))
@@ -120,8 +128,10 @@ void FParticleEditorPanel::RenderMenuBar(const ImVec2& InPos, const ImVec2& InSi
         ImGui::EndMenuBar();
     }
 
+
     ImGui::End();
     ImGui::PopStyleColor();
+    ImGui::PopStyleVar(2);
 }
 
 void FParticleEditorPanel::RenderToolBar(const ImVec2& InPos, const ImVec2& InSize, ImFont* IconFont)
@@ -130,7 +140,10 @@ void FParticleEditorPanel::RenderToolBar(const ImVec2& InPos, const ImVec2& InSi
     ImGui::SetNextWindowSize(InSize);
 
     ImGui::PushStyleColor(ImGuiCol_WindowBg, BackgroundColor);
-    // ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(2,2)); // Reduce padding for compact toolbar
+
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.f);
+
     ImGui::Begin("ToolBar", nullptr,
         ImGuiWindowFlags_NoTitleBar |
         ImGuiWindowFlags_NoResize |
@@ -148,8 +161,8 @@ void FParticleEditorPanel::RenderToolBar(const ImVec2& InPos, const ImVec2& InSi
 
 
     ImGui::End();
-    // ImGui::PopStyleVar();
     ImGui::PopStyleColor();
+    ImGui::PopStyleVar(2);
 }
 
 void FParticleEditorPanel::RenderViewportPanel(const ImVec2& InPos, const ImVec2& InSize)
@@ -164,21 +177,19 @@ void FParticleEditorPanel::RenderViewportPanel(const ImVec2& InPos, const ImVec2
         ImGuiWindowFlags_NoResize |
         ImGuiWindowFlags_NoScrollbar
     );
+    FViewportResource* ViewportResource = ParticlePreviewController->GetViewportClient()->GetViewportResource();
+    FRenderTargetRHI* RenderTargetRHI = ViewportResource->GetRenderTarget(EResourceType::ERT_Compositing);
 
-    // ImGui::Text("Viewport Panel Content"); // Remove if rendering an image
-    // Example: Render particle system preview here
-    // ImVec2 viewportSize = ImGui::GetContentRegionAvail();
-    // if (ViewportTextureID) {
-    //    ImGui::Image((void*)ViewportTextureID, viewportSize, ImVec2(0,0), ImVec2(1,1));
-    // } else {
-    ImGui::TextDisabled("Particle Preview Here");
-    // }
+    ID3D11ShaderResourceView* SRV = RenderTargetRHI->SRV;
+    ImGui::Image(reinterpret_cast<ImTextureID>(SRV),InSize);
+
+    ImGui::SameLine();
+
 
     ImGui::End();
     ImGui::PopStyleVar();
     ImGui::PopStyleColor();
 }
-
 
 void FParticleEditorPanel::RenderDetailPanel(const ImVec2& InPos, const ImVec2& InSize)
 {
@@ -197,7 +208,6 @@ void FParticleEditorPanel::RenderDetailPanel(const ImVec2& InPos, const ImVec2& 
     ImGui::End();
     ImGui::PopStyleColor();
 }
-
 
 void FParticleEditorPanel::RenderEmitterPanel(const ImVec2& InPos, const ImVec2& InSize)
 {
@@ -238,7 +248,7 @@ void FParticleEditorPanel::RenderEmitterInfos()
     ImGui::BeginChild("EmittersHorizontalArea", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
 
     bool bIsFirstEmitter = true;
-    const float emitterColumnWidth = 200.f;
+    const float emitterColumnWidth = 300.f;
     const float modulesListHeight = 800.f;
     for (int i = 0; i < TargetParticleSystem->Emitters.Num(); ++i)
     {
@@ -540,8 +550,8 @@ void FParticleEditorPanel::CalculatePanelSize(RECT InRect)
     if (WinWidth <= 0) WinWidth = 1280;
     if (WinHeight <= 0) WinHeight = 720;
 
-    MenuBarHeight = 40.0f;
-    ToolBarHeight = 40.0f;
+    MenuBarHeight = 32.0f;
+    ToolBarHeight = 32.0f;
     float TopBarsTotalHeight = MenuBarHeight + ToolBarHeight;
 
     UsableScreenYOffset = TopBarsTotalHeight;

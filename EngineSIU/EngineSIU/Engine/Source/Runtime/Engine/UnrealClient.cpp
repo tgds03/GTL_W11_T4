@@ -260,6 +260,11 @@ std::array<float, 4> FViewportResource::GetClearColor(EResourceType Type) const
     return { 0.0f, 0.0f, 0.0f, 1.0f };
 }
 
+void FViewportResource::SetClearColor(EResourceType Type, const std::array<float, 4>& Color)
+{
+    ClearColors.Add(Type, Color);
+}
+
 void FViewportResource::ReleaseAllResources()
 {
     for (auto& [Type, Resource] : RenderTargets)
