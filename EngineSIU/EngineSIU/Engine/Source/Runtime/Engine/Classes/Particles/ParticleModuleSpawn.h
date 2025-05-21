@@ -15,14 +15,10 @@ public:
     UParticleModuleSpawn();
     
     /** The rate at which to spawn particles. */
-    float Rate;
-    float RateLow;
-    uint32 bSpawnRateUseRange: 1;
+    FDistributionFloatConstant Rate;
 
     /** The scalar to apply to the rate. */
-    float RateScale;
-    float RateScaleLow;
-    uint32 bSpawnRateScaleUseRange: 1;
+    FDistributionFloatConstant RateScale;
     
     /** The array of burst entries. */
     // TArray<FParticleBurst> BurstList;

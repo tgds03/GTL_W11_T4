@@ -79,8 +79,19 @@ void FDistributionVectorConstant::RenderProperty()
 
 FVector FDistributionVectorUniform::GetValue(float F, FRandomStream* InRandomStream) const
 {
-    float fraction = (InRandomStream == nullptr) ? FMath::RandNormalized() : InRandomStream->GetFraction();
-    return Min + (Max - Min) * fraction;
+    FVector LocalMax = Max;
+    FVector LocalMin = Min;
+    
+    float fX = (InRandomStream == nullptr) ? FMath::RandNormalized() : InRandomStream->GetFraction();
+    float fY = (InRandomStream == nullptr) ? FMath::RandNormalized() : InRandomStream->GetFraction();
+    float fZ = (InRandomStream == nullptr) ? FMath::RandNormalized() : InRandomStream->GetFraction();
+
+
+    fX = LocalMax.X + (LocalMin.X - LocalMax.X) * fX;
+    fY = LocalMax.Y + (LocalMin.Y - LocalMax.Y) * fY;
+    fZ = LocalMax.Z + (LocalMin.Z - LocalMax.Z) * fZ;
+    
+    return FVector(fX, fY, fZ);
 }
 
 void FDistributionVectorUniform::GetOutRange(FVector& Min, FVector& Max) const
