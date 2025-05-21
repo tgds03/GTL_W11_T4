@@ -30,7 +30,8 @@ public:
     ID3D11RasterizerState* RasterizerShadow = nullptr;
 
     ID3D11DepthStencilState* DepthStencilState = nullptr;
-    
+    ID3D11DepthStencilState* DepthStencilStateWriteDisabled = nullptr;
+
     ID3D11BlendState* AlphaBlendState = nullptr;
     
     DXGI_SWAP_CHAIN_DESC SwapchainDesc;

@@ -111,6 +111,17 @@ void FGraphicsDevice::CreateDepthStencilState()
     if (FAILED(hr))
     {
         // 오류 처리
+        MessageBox(NULL, L"DepthStencilState 생성에 실패했습니다!", L"Error", MB_ICONERROR | MB_OK);
+        return;
+    }
+
+    // DepthStencilWriteDisabled 생성 (반투명 전용)
+    DepthStencilStateDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+    hr = Device->CreateDepthStencilState(&DepthStencilStateDesc, &DepthStencilStateWriteDisabled);
+    if (FAILED(hr))
+    {
+        // 오류 처리
+        MessageBox(NULL, L"DepthStencilState 생성에 실패했습니다!", L"Error", MB_ICONERROR | MB_OK);
         return;
     }
 }
@@ -220,6 +231,12 @@ void FGraphicsDevice::ReleaseDepthStencilResources()
     {
         DepthStencilState->Release();
         DepthStencilState = nullptr;
+    }
+
+    if (DepthStencilStateWriteDisabled)
+    {
+        DepthStencilStateWriteDisabled->Release();
+        DepthStencilStateWriteDisabled = nullptr;
     }
 }
 

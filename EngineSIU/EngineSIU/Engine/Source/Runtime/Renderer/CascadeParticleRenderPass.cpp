@@ -48,6 +48,8 @@ void FCascadeParticleRenderPass::Render(const std::shared_ptr<FEditorViewportCli
     RenderParticles(Viewport);
 
     Graphics->DeviceContext->OMSetRenderTargets(0, nullptr, nullptr);
+
+    ClearRenderState(Viewport);
 }
 
 void FCascadeParticleRenderPass::ClearRenderArr()
@@ -144,6 +146,10 @@ void FCascadeParticleRenderPass::PrepareRenderState(const std::shared_ptr<FEdito
     Graphics->DeviceContext->OMSetRenderTargets(1, &RenderTargetRHI->RTV, ViewportResource->GetDepthStencil(EResourceType::ERT_Scene)->DSV);
 
     Graphics->DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    Graphics->DeviceContext->OMSetBlendState(Graphics->AlphaBlendState, blendFactor, 0xffffffff);
+    Graphics->DeviceContext->OMSetDepthStencilState(Graphics->DepthStencilStateWriteDisabled, 0);
 }
 
 void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorViewportClient>& Viewport) const
@@ -323,4 +329,10 @@ void FCascadeParticleRenderPass::RenderParticles(const std::shared_ptr<FEditorVi
             }
         }
     }
+}
+
+void FCascadeParticleRenderPass::ClearRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport) const
+{
+    Graphics->DeviceContext->OMSetBlendState(nullptr, nullptr, 0xffffffff);
+    Graphics->DeviceContext->OMSetDepthStencilState(Graphics->DepthStencilState, 0);
 }

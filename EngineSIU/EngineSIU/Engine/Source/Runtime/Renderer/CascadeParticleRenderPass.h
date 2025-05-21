@@ -2,6 +2,7 @@
 #include "IRenderPass.h"
 #include "Container/Array.h"
 
+struct ID3D11BlendState;
 class UParticleSystemComponent;
 
 class FCascadeParticleRenderPass : public IRenderPass
@@ -24,6 +25,7 @@ private:
     
     void PrepareRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport);
     void RenderParticles(const std::shared_ptr<FEditorViewportClient>& Viewport) const;
+    void ClearRenderState(const std::shared_ptr<FEditorViewportClient>& Viewport) const;
 
 private:
     TArray<UParticleSystemComponent*> ParticleSystemComponents;
